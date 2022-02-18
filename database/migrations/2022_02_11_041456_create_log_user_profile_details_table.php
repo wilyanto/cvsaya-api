@@ -13,20 +13,22 @@ class CreateLogUserProfileDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('cvsaya_log_employee_details', function (Blueprint $table) {
+        Schema::create('cv_log_profile_details', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('employee_detail_id')->unsigned();
-            $table->bigInteger('position_id')->unsigned()->nullable();
+            $table->bigInteger('profile_detail_id')->unsigned();
             $table->longText('about')->nullable();
             $table->string('website_url')->nullable();
-            $table->json('selfie_picture')->nullable();
-            $table->enum('religion',['Buddha','Islam','Kristen','Kong Hu Cu'])->nullable();
+            $table->json('selfie_about')->nullable();
+            $table->string('religion')->nullable();
             $table->string('reference')->nullable();
+            $table->string('identity_number')->nullable();
+            $table->date('birth_date')->nullable();
+            $table->string('location_birth')->nullable();
             $table->timestamp('created_at');
         });
 
-        Schema::table('cvsaya_log_employee_details',function(Blueprint $table){
-            $table->foreign('employee_detail_id')->references('id')->on('cvsaya_employee_details');
+        Schema::table('cv_log_profile_details',function(Blueprint $table){
+            $table->foreign('profile_detail_id')->references('id')->on('cv_profile_details');
         });
     }
 
@@ -37,11 +39,11 @@ class CreateLogUserProfileDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::table('cvsaya_log_employee_details',function(Blueprint $table){
+        Schema::table('cv_log_profile_details',function(Blueprint $table){
             // $table->dropForeign(['position_id']);
-            $table->dropForeign(['employee_detail_id']);
+            $table->dropForeign(['profile_detail_id']);
         });
 
-        Schema::dropIfExists('cvsaya_log_employee_details');
+        Schema::dropIfExists('cv_log_profile_details');
     }
 }

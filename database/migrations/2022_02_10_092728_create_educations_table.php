@@ -13,7 +13,7 @@ class CreateEducationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('cvsaya_educations', function (Blueprint $table) {
+        Schema::create('cv_educations', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->string('school');
@@ -29,7 +29,7 @@ class CreateEducationsTable extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('cvsaya_log_educations', function (Blueprint $table) {
+        Schema::create('cv_log_educations', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('education_id')->unsigned();
             $table->string('school')->nullable();
@@ -44,8 +44,8 @@ class CreateEducationsTable extends Migration
             $table->timestamp('created_at');
         });
 
-        Schema::table('cvsaya_log_educations',function(Blueprint $table){
-            $table->foreign('education_id')->references('id')->on('cvsaya_educations');
+        Schema::table('cv_log_educations',function(Blueprint $table){
+            $table->foreign('education_id')->references('id')->on('cv_educations');
         });
     }
 
@@ -56,12 +56,12 @@ class CreateEducationsTable extends Migration
      */
     public function down()
     {
-        Schema::table('cvsaya_log_educations',function(Blueprint $table){
+        Schema::table('cv_log_educations',function(Blueprint $table){
             $table->dropForeign(['education_id']);
         });
 
-        Schema::dropIfExists('cvsaya_log_educations');
+        Schema::dropIfExists('cv_log_educations');
 
-        Schema::dropIfExists('cvsaya_educations');
+        Schema::dropIfExists('cv_educations');
     }
 }

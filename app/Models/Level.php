@@ -10,7 +10,7 @@ class Level extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $table = 'cvsaya_levels';
+    protected $table = 'levels';
 
     public $fillable = [
         'id',

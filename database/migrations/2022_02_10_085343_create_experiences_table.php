@@ -13,21 +13,11 @@ class CreateExperiencesTable extends Migration
      */
     public function up()
     {
-        Schema::create('cvsaya_experiences', function (Blueprint $table) {
+        Schema::create('cv_experiences', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->string('position');
-            $table->enum('employment_type',
-                [
-                    'full-time',
-                    'part-time',
-                    'self-employed',
-                    'freelance',
-                    'contract',
-                    'internship',
-                    'apprenticeship',
-                    'seasonal'
-                ]);
+            $table->string('employment_type');
             $table->longText('location');
             $table->date('start_at');
             $table->date('until_at')->nullable();
@@ -37,21 +27,11 @@ class CreateExperiencesTable extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('cvsaya_log_experiences', function (Blueprint $table) {
+        Schema::create('cv_log_experiences', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('experience_id')->unsigned();
             $table->string('position')->nullable();
-            $table->enum('employment_type',
-                [
-                    'full-time',
-                    'part-time',
-                    'self-employed',
-                    'freelance',
-                    'contract',
-                    'internship',
-                    'apprenticeship',
-                    'seasonal'
-                ])->nullable();
+            $table->string('employment_type')->nullable();
             $table->longText('location')->nullable();
             $table->date('start_at')->nullable();
             $table->date('until_at')->nullable();
@@ -60,8 +40,8 @@ class CreateExperiencesTable extends Migration
             $table->timestamp('created_at');
         });
 
-        Schema::table('cvsaya_log_experiences',function(Blueprint $table){
-            $table->foreign('experience_id')->references('id')->on('cvsaya_experiences');
+        Schema::table('cv_log_experiences',function(Blueprint $table){
+            $table->foreign('experience_id')->references('id')->on('cv_experiences');
         });
 
 
@@ -74,12 +54,12 @@ class CreateExperiencesTable extends Migration
      */
     public function down()
     {
-        Schema::table('cvsaya_log_experiences',function(Blueprint $table){
+        Schema::table('cv_log_experiences',function(Blueprint $table){
             $table->dropForeign(['experience_id']);
         });
 
-        Schema::dropIfExists('cvsaya_log_experiences');
+        Schema::dropIfExists('cv_log_experiences');
 
-        Schema::dropIfExists('cvsaya_experiences');
+        Schema::dropIfExists('cv_experiences');
     }
 }

@@ -8,8 +8,8 @@ use Laravel\Passport\HasApiTokens;
 // laravel passport token
 use App\Models\VoucherClaim;
 use App\Models\Voucher;
-use App\Models\CvSaya\CvSayaUserProfileDetail;
-use App\Models\CvSaya\CvSayaCertifications;
+use App\Models\UserProfileDetail;
+use App\Models\Certifications;
 // use App\Models\CvSaya\CvSayaUserProfileDetail;
 // use App\Models\CvSaya\CvSayaUserProfileDetail;
 // use App\Models\CvSaya\CvSayaUserProfileDetail;
@@ -27,6 +27,7 @@ class User extends Authenticatable
     protected $primaryKey = 'id_kustomer';
     protected $table =  'kustomer';
     public $timestamps = false;
+    protected $connection = 'kada';
     /**
      * The attributes that are mass assignable.
      *
@@ -74,29 +75,5 @@ class User extends Authenticatable
     public function beautyTreatmentCarts()
     {
         return $this->hasMany(BeautyTreatmentCart::class, 'user_id', 'id_kustomer');
-    }
-
-    public function userProfileDetail(){
-        return $this->hasMany(CvSayaUserProfileDetail::class,'user_id','id_kustomer');
-    }
-
-    public function experiences(){
-        return $this->hasMany(CvSayaUserProfileDetail::class,'user_id','id_kustomer');
-    }
-
-    public function certifications(){
-        return $this->hasMany(CvSayaCertifications::class,'user_id','id_kustomer');
-    }
-
-    public function specialities(){
-        return $this->hasMany(CvSayaUserProfileDetail::class,'user_id','id_kustomer');
-    }
-
-    public function social_medias(){
-        return $this->hasMany(CvSayaUserProfileDetail::class,'user_id','id_kustomer');
-    }
-
-    public function hobbies(){
-        return $this->hasMany(CvSayaUserProfileDetail::class,'user_id','id_kustomer');
     }
 }

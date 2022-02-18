@@ -13,23 +13,22 @@ class CreateCvSayaPositionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('cvsaya_positions', function (Blueprint $table) {
+        Schema::create('positions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->bigInteger('department_id')->unsigned();
             $table->bigInteger('level_id')->unsigned();
             $table->bigInteger('parent_id')->unsigned()->nullable();
+            $table->integer('remaining_slot')->nullable();
             $table->timestamps();
         });
 
-        Schema::table('cvsaya_positions', function (Blueprint $table) {
-            $table->foreign('department_id')->references('id')->on('cvsaya_departments');
-            $table->foreign('parent_id')->references('id')->on('cvsaya_positions');
+        Schema::table('positions', function (Blueprint $table) {
+            $table->foreign('department_id')->references('id')->on('departments');
+            $table->foreign('parent_id')->references('id')->on('positions');
         });
 
-        Schema::table('cvsaya_employee_details', function (Blueprint $table) {
-            $table->foreign('position_id')->references('id')->on('cvsaya_positions');
-        });
+
     }
 
     /**
@@ -39,14 +38,11 @@ class CreateCvSayaPositionsTable extends Migration
      */
     public function down()
     {
-        Schema::table('cvsaya_employee_details', function (Blueprint $table) {
-            $table->dropForeign(['position_id']);
-        });
-        Schema::table('cvsaya_positions', function (Blueprint $table) {
+        Schema::table('positions', function (Blueprint $table) {
             $table->dropForeign(['department_id']);
             $table->dropForeign(['parent_id']);
         });
 
-        Schema::dropIfExists('cvsaya_positions');
+        Schema::dropIfExists('positions');
     }
 }

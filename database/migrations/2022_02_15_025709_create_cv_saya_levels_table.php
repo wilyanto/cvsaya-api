@@ -13,7 +13,7 @@ class CreateCvSayaLevelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('cvsaya_levels', function (Blueprint $table) {
+        Schema::create('levels', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->bigInteger('company_id')->unsigned();
@@ -21,8 +21,8 @@ class CreateCvSayaLevelsTable extends Migration
             $table->softDeletes();
         });
 
-        Schema::table('cvsaya_positions',function(Blueprint $table){
-            $table->foreign('level_id')->references('id')->on('cvsaya_levels');
+        Schema::table('positions',function(Blueprint $table){
+            $table->foreign('level_id')->references('id')->on('levels');
         });
     }
 
@@ -33,10 +33,10 @@ class CreateCvSayaLevelsTable extends Migration
      */
     public function down()
     {
-        Schema::table('cvsaya_positions',function(Blueprint $table){
+        Schema::table('positions',function(Blueprint $table){
             $table->dropForeign(['level_id']);
         });
 
-        Schema::dropIfExists('cvsaya_levels');
+        Schema::dropIfExists('levels');
     }
 }

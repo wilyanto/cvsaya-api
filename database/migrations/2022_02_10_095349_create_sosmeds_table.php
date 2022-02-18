@@ -13,7 +13,7 @@ class CreateSosmedsTable extends Migration
      */
     public function up()
     {
-        Schema::create('cvsaya_social_medias', function (Blueprint $table) {
+        Schema::create('cv_social_medias', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->string('name');
@@ -22,7 +22,7 @@ class CreateSosmedsTable extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('cvsaya_log_social_medias', function (Blueprint $table) {
+        Schema::create('cv_log_social_medias', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('sosial_media_id')->unsigned();
             $table->string('name');
@@ -30,8 +30,8 @@ class CreateSosmedsTable extends Migration
             $table->timestamp('created_at');
         });
 
-        Schema::table('cvsaya_log_social_medias',function(Blueprint $table){
-            $table->foreign('sosial_media_id')->references('id')->on('cvsaya_social_medias');
+        Schema::table('cv_log_social_medias',function(Blueprint $table){
+            $table->foreign('sosial_media_id')->references('id')->on('cv_social_medias');
         });
     }
 
@@ -42,12 +42,12 @@ class CreateSosmedsTable extends Migration
      */
     public function down()
     {
-        Schema::table('cvsaya_log_social_medias',function(Blueprint $table){
+        Schema::table('cv_log_social_medias',function(Blueprint $table){
             $table->dropForeign(['sosial_media_id']);
         });
 
-        Schema::dropIfExists('cvsaya_log_social_medias');
+        Schema::dropIfExists('cv_log_social_medias');
 
-        Schema::dropIfExists('cvsaya_social_medias');
+        Schema::dropIfExists('cv_social_medias');
     }
 }

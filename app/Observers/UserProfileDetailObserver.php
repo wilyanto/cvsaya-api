@@ -12,7 +12,7 @@ class UserProfileDetailObserver
     public function created(UserProfileDetail $profileDetail)
     {
         $newLog = new LogUserProfileDetails;
-        $newLog->user_profile_detail_id = $profileDetail->id;
+        $newLog->employee_detail_id = $profileDetail->id;
         $newLog->about = $profileDetail->about;
         $newLog->website_url = $profileDetail->website_url;
         $newLog->selfie_picture = $profileDetail->selfie_picture;
@@ -27,7 +27,7 @@ class UserProfileDetailObserver
     public function updated(UserProfileDetail $profileDetail)
     {
         $newLog = new LogUserProfileDetails;
-        $newLog->user_profile_detail_id = $profileDetail->id;
+        $newLog->employee_detail_id = $profileDetail->id;
         $newLog->about = $profileDetail->about;
         $newLog->website_url = $profileDetail->website_url;
         $newLog->selfie_picture = $profileDetail->selfie_picture;

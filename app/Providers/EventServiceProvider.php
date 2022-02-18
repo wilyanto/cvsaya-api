@@ -7,20 +7,20 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use App\Observers\UserProfileDetailObserver;
-use App\Models\Experiences;
-use App\Models\UserProfileDetail;
+use App\Models\CvExperiences;
+use App\Models\CvProfileDetail;
 use App\Observers\ExperiencesObserver;
-use App\Models\Educations;
+use App\Models\CvEducations;
 use App\Observers\EducationObserver;
-use App\Models\Certifications;
+use App\Models\CvCertifications;
 use App\Observers\CertificationsObserver;
-use App\Models\Hobbies;
+use App\Models\CvHobbies;
 use App\Observers\HobbiesObserver;
-use App\Models\Sosmeds;
+use App\Models\CvSosmeds;
 use App\Observers\SosmedObserver;
-use App\Models\Specialities;
+use App\Models\CvSpecialities;
 use App\Observers\SpecialitiesObserver;
-use App\Models\SpecialityCertificates;
+use App\Models\CvSpecialityCertificates;
 use App\Observers\SpecialityCertificatesObserver;
 
 class EventServiceProvider extends ServiceProvider
@@ -43,13 +43,13 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        UserProfileDetail::observe(UserProfileDetailObserver::class);
-        Experiences::observe(ExperiencesObserver::class);
-        Educations::observe(EducationObserver::class);
-        Certifications::observe(CertificationsObserver::class);
-        Hobbies::observe(HobbiesObserver::class);
-        Sosmeds::observe(SosmedObserver::class);
-        Specialities::observe(SpecialitiesObserver::class);
-        SpecialityCertificates::observe(SpecialityCertificatesObserver::class);
+        CvProfileDetail::observe(UserProfileDetailObserver::class);
+        CvExperiences::observe(ExperiencesObserver::class);
+        CvEducations::observe(EducationObserver::class);
+        CvCertifications::observe(CertificationsObserver::class);
+        CvHobbies::observe(HobbiesObserver::class);
+        CvSosmeds::observe(SosmedObserver::class);
+        CvSpecialities::observe(SpecialitiesObserver::class);
+        CvSpecialityCertificates::observe(SpecialityCertificatesObserver::class);
     }
 }

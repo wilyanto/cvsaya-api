@@ -13,17 +13,21 @@ class CreateUserProfileDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('cvsaya_employee_details', function (Blueprint $table) {
+        Schema::create('cv_profile_details', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
+            $table->string('first_name');
+            $table->string('last_name');
             $table->longText('about')->nullable();
-            $table->bigInteger('position_id')->unsigned();
             $table->string('website_url')->nullable();
             $table->json('selfie_about')->nullable();
-            $table->enum('religion',['Buddha','Islam','Kristen','Kong Hu Cu'])->nullable();
+            $table->string('religion')->nullable();
             $table->string('reference')->nullable();
+            $table->string('identity_number')->nullable();
+            $table->date('birth_date')->nullable();
+            $table->string('birth_location')->nullable();
+            $table->bigInteger('address_id')->unsigned()->nullable();
             $table->timestamps();
-
         });
     }
 
@@ -34,6 +38,6 @@ class CreateUserProfileDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cvsaya_employee_details');
+        Schema::dropIfExists('cv_profile_details');
     }
 }

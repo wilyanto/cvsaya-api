@@ -13,7 +13,7 @@ class CreateCvSayaDepartmentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('cvsaya_departments', function (Blueprint $table) {
+        Schema::create('departments', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->bigInteger('company_id')->unsigned();
@@ -29,6 +29,6 @@ class CreateCvSayaDepartmentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cvsaya_departments');
+        Schema::dropIfExists('departments');
     }
 }

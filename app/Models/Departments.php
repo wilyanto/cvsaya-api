@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Departments extends Model
 {
     use HasFactory,SoftDeletes;
-
-    protected $table = 'cvsaya_departments';
+    protected $table = 'departments';
 
     public $fillable = [
         'id',

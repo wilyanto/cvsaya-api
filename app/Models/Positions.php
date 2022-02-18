@@ -10,7 +10,7 @@ class Positions extends Model
 {
     use HasFactory;
 
-    protected $table = 'cvsaya_positions';
+    protected $table = 'positions';
 
     public $fillable = [
         'id',

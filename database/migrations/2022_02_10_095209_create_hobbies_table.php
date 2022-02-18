@@ -13,7 +13,7 @@ class CreateHobbiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('cvsaya_hobbies', function (Blueprint $table) {
+        Schema::create('cv_hobbies', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->string('name');
@@ -21,15 +21,15 @@ class CreateHobbiesTable extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('cvsaya_log_hobbies', function (Blueprint $table) {
+        Schema::create('cv_log_hobbies', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('hobby_id')->unsigned();
             $table->string('name');
             $table->timestamp('created_at');
         });
 
-        Schema::table('cvsaya_log_hobbies',function(Blueprint $table){
-            $table->foreign('hobby_id')->references('id')->on('cvsaya_hobbies');
+        Schema::table('cv_log_hobbies',function(Blueprint $table){
+            $table->foreign('hobby_id')->references('id')->on('cv_hobbies');
         });
     }
 
@@ -40,13 +40,13 @@ class CreateHobbiesTable extends Migration
      */
     public function down()
     {
-        Schema::table('cvsaya_log_hobbies',function(Blueprint $table){
+        Schema::table('cv_log_hobbies',function(Blueprint $table){
             $table->dropForeign(['hobby_id']);
         });
 
-        Schema::dropIfExists('cvsaya_log_hobbies');
+        Schema::dropIfExists('cv_log_hobbies');
 
-        Schema::dropIfExists('cvsaya_hobbies');
+        Schema::dropIfExists('cv_hobbies');
 
     }
 }
