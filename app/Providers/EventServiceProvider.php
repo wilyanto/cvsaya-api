@@ -21,7 +21,9 @@ use App\Observers\SosmedObserver;
 use App\Models\CvSpecialities;
 use App\Observers\SpecialitiesObserver;
 use App\Models\CvSpecialityCertificates;
+use App\Models\CandidateEmployees;
 use App\Observers\SpecialityCertificatesObserver;
+use App\Observers\CandidateEmpolyessObserver;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -51,5 +53,6 @@ class EventServiceProvider extends ServiceProvider
         CvSosmeds::observe(SosmedObserver::class);
         CvSpecialities::observe(SpecialitiesObserver::class);
         CvSpecialityCertificates::observe(SpecialityCertificatesObserver::class);
+        CandidateEmployees::observe(CandidateEmpolyessObserver::class);
     }
 }

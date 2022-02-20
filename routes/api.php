@@ -46,8 +46,13 @@ Route::prefix('v1')->group(function () {
             Route::controller(CandidateEmployeesController::class)->group(function(){
                 Route::prefix('index')->group(function(){
                     Route::get('on-blast','indexCandidateBlast');
-                    Route::get('on-insert-cv','indexCandidate');
+                    Route::get('on-cv','indexCandidateCv');
+                    Route::get('on-interview','indexCandidateOnInterview');
                     Route::get('on-finish','indexNotCandidate');
+                });
+
+                Route::prefix('create')->group(function(){
+                    Route::post('candidate','addCandidateToBlast');
                 });
             });
         });

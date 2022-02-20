@@ -21,6 +21,9 @@ class CandidateEmployees extends Model
         'country_code',
         'phone_number',
         'user_id',
+        'status',
+        'suggest_by',
+        'filled_form',
         'register_date',
     ];
 }

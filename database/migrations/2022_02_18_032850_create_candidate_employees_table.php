@@ -19,7 +19,9 @@ return new class extends Migration
             $table->string('name');
             $table->integer('country_code');
             $table->integer('phone_number');
-            $table->date('register_date');
+            $table->date('register_date')->nullable();
+            $table->bigInteger('status')->unsigned();
+            $table->bigInteger('suggest_by')->unsigned()->nullable();
             $table->integer('filled_form')->unsigned()->nullable();
             $table->timestamps();
         });
@@ -27,17 +29,23 @@ return new class extends Migration
         Schema::create('candidate_log_employees', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('candidate_id')->unsigned();
-            $table->string('name');
-            $table->integer('country_code');
-            $table->integer('phone_number');
-            $table->bigInteger('user_id');
-            $table->date('register_date');
+            $table->string('name')->nullable();;
+            $table->integer('country_code')->nullable();;
+            $table->integer('phone_number')->nullable();;
+            $table->bigInteger('user_id')->nullable();;
+            $table->date('register_date')->nullable();
+            $table->bigInteger('status')->unsigned();
+            $table->bigInteger('suggest_by')->nullable();
             $table->integer('filled_form')->unsigned()->nullable();
             $table->timestamps();
         });
 
         Schema::table('candidate_log_employees',function(Blueprint $table){
             $table->foreign('candidate_id')->references('id')->on('candidate_employees');
+        });
+
+        Schema::table('candidate_employees',function(Blueprint $table){
+            $table->foreign('suggest_by')->references('id')->on('employee_details');
         });
     }
 
@@ -48,6 +56,10 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::table('candidate_employees',function(Blueprint $table){
+            $table->dropForeign(['suggest_by']);
+        });
+
         Schema::table('candidate_log_employees',function(Blueprint $table){
             $table->dropForeign(['candidate_id']);
         });
