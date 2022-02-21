@@ -52,9 +52,7 @@ Route::prefix('v1')->group(function () {
                     Route::get('on-finish','indexNotCandidate');
                 });
 
-                Route::prefix('create')->group(function(){
-                    Route::post('candidate','addCandidateToBlast');
-                });
+                    Route::post('/create','addCandidateToBlast');
             });
         });
 

@@ -87,8 +87,8 @@ class CandidateEmployeesController extends Controller
         $user = auth()->user();
         $request->validate([
             'name' => 'string|required',
-            'country_code' => 'integer|required',
-            'phone_num' => 'integer|required',
+            'country_code' => 'string|required',
+            'phone_number' => 'integer|required',
         ]);
 
         $posistion = EmployeeDetails::where('user_id',$user->id_kustomer)->first();

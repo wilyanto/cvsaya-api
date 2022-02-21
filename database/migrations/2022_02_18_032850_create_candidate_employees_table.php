@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id')->unsigned()->nullable();
             $table->string('name');
-            $table->integer('country_code');
-            $table->integer('phone_number');
+            $table->string('country_code');
+            $table->string('phone_number');
             $table->date('register_date')->nullable();
             $table->bigInteger('status')->unsigned();
             $table->bigInteger('suggest_by')->unsigned()->nullable();
@@ -30,8 +30,8 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('candidate_id')->unsigned();
             $table->string('name')->nullable();;
-            $table->integer('country_code')->nullable();;
-            $table->integer('phone_number')->nullable();;
+            $table->string('country_code')->nullable();;
+            $table->string('phone_number')->nullable();;
             $table->bigInteger('user_id')->nullable();;
             $table->date('register_date')->nullable();
             $table->bigInteger('status')->unsigned();
