@@ -46,7 +46,7 @@ class PositionsController extends Controller
         $request->validate([
             'name' => 'required|string',
             'department_id' => 'required|integer',
-            'level' => 'required|integer',
+            'level_id' => 'required|integer',
             'parent_id' => 'nullable|integer',
         ]);
 
@@ -55,7 +55,7 @@ class PositionsController extends Controller
             return $this->errorResponse('department_id not found',404,40401);
         }
 
-        $getLevel = Level::where('id',$request->level)->first();
+        $getLevel = Level::where('id',$request->level_id)->first();
         if(!$getLevel){
             return $this->errorResponse('level_id not found',404,40401);
         }

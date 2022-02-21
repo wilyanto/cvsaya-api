@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\v1\DepartmentsController;
 use App\Http\Controllers\Api\v1\LevelController;
 use App\Http\Controllers\Api\v1\PositionsController;
 use App\Http\Controllers\Api\v1\CandidateEmployeesController;
+use App\Http\Controllers\Api\v1\EmployeeDetailsController;
 use App\Models\Certifications;
 
 /*
@@ -54,6 +55,13 @@ Route::prefix('v1')->group(function () {
                 Route::prefix('create')->group(function(){
                     Route::post('candidate','addCandidateToBlast');
                 });
+            });
+        });
+
+        Route::prefix('empolyee')->group(function(){
+            Route::controller(EmployeeDetailsController::class)->group(function(){
+                Route::get('/','index');
+                Route::post('/create','create');
             });
         });
 
@@ -111,7 +119,7 @@ Route::prefix('v1')->group(function () {
 
 
         Route::prefix('levels')->group(function () {
-            Route::post('/', [LevelController::class, 'index']);
+            Route::get('/', [LevelController::class, 'index']);
             Route::post('/add', [LevelController::class, 'create']);
             Route::post('/update', [LevelController::class, 'update']);;
         });

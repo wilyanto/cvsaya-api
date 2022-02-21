@@ -1,12 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\v1;
 
 use App\Models\EmployeeDetails;
 use Illuminate\Http\Request;
+use App\Traits\ApiResponser;
+use App\Http\Controllers\Controller;
+use App\Models\Positions;
 
 class EmployeeDetailsController extends Controller
 {
+    use ApiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +18,13 @@ class EmployeeDetailsController extends Controller
      */
     public function index()
     {
-        //
+            $user = auth()->user();
+            // var_dump($user);
+            $employeeDetails = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
+            if(!$employeeDetails){
+                return $this->errorResponse('id not found',404,40401);
+            }
+            return $this->showOne($employeeDetails);
     }
 
     /**
@@ -22,9 +32,9 @@ class EmployeeDetailsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+
     }
 
     /**

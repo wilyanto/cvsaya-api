@@ -14,4 +14,10 @@ class EmployeeDetails extends Model
     protected $guard = 'id';
 
     protected $primaryKey = 'id';
+
+    public $fillable = [
+        'position_id',
+        'filled_form',
+        'salary',
+    ];
 }

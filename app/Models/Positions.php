@@ -16,7 +16,7 @@ class Positions extends Model
         'id',
         'name',
         'department_id',
-        'level',
+        'level_id',
         'parent_id',
     ];
     protected $guard = 'id';
@@ -60,7 +60,7 @@ class Positions extends Model
             'id' => $this->id,
             'name' =>$this->name,
             'department' => $this->departments,
-            'level' => $this->levels,
+            'level_id' => $this->levels,
             'parent_id'=>$this->parent_id,
             'created_at' => $this->created_at,
             'updated_at'=>$this->updated_at,
