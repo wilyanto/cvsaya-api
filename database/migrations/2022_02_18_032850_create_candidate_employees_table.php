@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('register_date')->nullable();
             $table->bigInteger('status')->unsigned();
             $table->bigInteger('suggest_by')->unsigned()->nullable();
-            $table->integer('filled_form')->unsigned()->nullable();
+            $table->integer('many_request')->unsigned()->nullable();
             $table->timestamps();
         });
 
@@ -36,7 +36,7 @@ return new class extends Migration
             $table->date('register_date')->nullable();
             $table->bigInteger('status')->unsigned();
             $table->bigInteger('suggest_by')->nullable();
-            $table->integer('filled_form')->unsigned()->nullable();
+            $table->integer('many_request')->unsigned()->nullable();
             $table->timestamps();
         });
 

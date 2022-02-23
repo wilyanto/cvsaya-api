@@ -18,6 +18,8 @@ class Positions extends Model
         'department_id',
         'level_id',
         'parent_id',
+        'min_salary',
+        'max_salary'
     ];
     protected $guard = 'id';
 
@@ -64,6 +66,8 @@ class Positions extends Model
             'parent_id'=>$this->parent_id,
             'created_at' => $this->created_at,
             'updated_at'=>$this->updated_at,
+            'min_salary'=>$this->min_salary,
+            'max_salary'=>$this->max_salary
         ];
     }
 

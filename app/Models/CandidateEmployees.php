@@ -9,6 +9,22 @@ class CandidateEmployees extends Model
 {
     use HasFactory;
 
+    public const BLASTING = 1;
+
+    public const REGISTEREDKADA = 2;
+
+    public const INPUTINGKADA = 3;
+
+    public const INTERVIEW = 5;
+
+    public const STANDBY = 6;
+
+    public const PASS = 6;
+
+    public const ACCEPTED = 7;
+
+    public const DECLINE = 8;
+
     protected $table = 'candidate_employees';
 
     protected $guard = 'id';

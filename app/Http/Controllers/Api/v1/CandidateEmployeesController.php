@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\EmployeeDetails;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 
 class CandidateEmployeesController extends Controller
 {
@@ -17,7 +18,7 @@ class CandidateEmployeesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function indexCandidateBlast()
+    public function index(Request $request)
     {
         $user = auth()->user();
 
@@ -25,93 +26,79 @@ class CandidateEmployeesController extends Controller
         // if(!$posistion){
         //     return $this->errorResponse('user tidak di temukan',404,40401);
         // }
-        $candidates = CandidateEmployees::where('status',1)->get();
+        $request->validate([
+            'filterBy' => 'string|nullable',
+        ]);
 
+        switch ($request->filterBy) {
+            case ('blast'):
+                $candidates = CandidateEmployees::where('status', 1)->get();
+                break;
+            default:
+                $candidates = CandidateEmployees::all();
+        }
+        // $candidates = CandidateEmployees::where('status', 1)->get();
         return $this->showOne($candidates);
     }
 
-    public function indexCandidateCv()
+    public function addCandidateToBlast(Request $request)
     {
         $user = auth()->user();
+        $request->validate([
+            'name' => 'string|nullable',
+            'country_code' => 'string|required',
+            'phone_number' => 'integer|required',
+        ]);
 
-        $posistion = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
-        if(!$posistion){
-            return $this->errorResponse('user tidak di temukan',404,40401);
+        $posistion = EmployeeDetails::where('user_id', $user->id_kustomer)->first();
+        if (!$posistion) {
+            return $this->errorResponse('User tidak di temukan', 404, 40401);
         }
-        $candidates = CandidateEmployees::whereIn('status',[2,3])->get();
+        $candidateHasSuggestOrNot = CandidateEmployees::where('phone_number', $request->phone_number)->first();
+        if (!$candidateHasSuggestOrNot) {
+            $candidateHasSuggestOrNot->many_request += 1;
+            $candidateHasSuggestOrNot->save();
+            return $this->errorResponse('Candidate has been suggested', 409, 40901);
+        }
+
+        $data = $request->all();
+        $data['status'] = CandidateEmployees::BLASTING;
+        $data['suggest_by'] = $posistion->id;
+
+        $candidates = CandidateEmployees::create($data);
 
         return $this->showOne($candidates);
     }
 
-    public function indexCandidateOnInterview()
+    public function updateStatus(Request $request)
     {
-        $user = auth()->user();
-
-        $posistion = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
-        if(!$posistion){
-            return $this->errorResponse('user tidak di temukan',404,40401);
-        }
-        $candidates = CandidateEmployees::whereIn('status',[4,5])->get();
-
-        return $this->showOne($candidates);
-    }
-
-    public function indexCandidate(){
-        $user = auth()->user();
-
-        $posistion = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
-        if(!$posistion){
-            return $this->errorResponse('user tidak di temukan',404,40401);
-        }
-        $candidates = CandidateEmployees::whereIn('status','!=',[1,6,7])->get();
-
-        return $this->showOne($candidates);
-    }
-
-
-    public function indexNotCandidate()
-    {
-        $user = auth()->user();
-
-        $posistion = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
-        if(!$posistion){
-            return $this->errorResponse('user tidak di temukan',404,40401);
-        }
-        $candidates = CandidateEmployees::whereIn('status',[6,7])->get();
-
-        return $this->showOne($candidates);
-    }
-
-
-    public function addCandidateToBlast(Request $request){
-        $user = auth()->user();
         $request->validate([
             'name' => 'string|required',
             'country_code' => 'string|required',
             'phone_number' => 'integer|required',
         ]);
 
-        $posistion = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
-        if(!$posistion){
-            return $this->errorResponse('user tidak di temukan',404,40401);
+        $candidateEmployees = CandidateEmployees::where('phone_number', $request->phone_number)->where('country_code', $request->country_code)->first();
+        if (!$candidateEmployees) {
+            return $this->errorResponse('Candidate Not Found', 404, 40401);
         }
 
-        $data = $request->all();
-        $data['status'] = 1;
-        $data['suggest_by'] =$posistion->id;
-
-        $candidates = CandidateEmployees::create($data);
-
-        return $this->showOne($candidates);
+        $candidateEmployees->phone_number = $request->phone_number;
+        $candidateEmployees->country_code = $request->country_code;
+        if (!$candidateEmployees->name) {
+            $candidateEmployees->name = $request->name;
+        }
+        $candidateEmployees->status = CandidateEmployees::REGISTEREDKADA;
+        $candidateEmployees->save();
     }
+
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function createBy()
     {
-
     }
 
     /**
@@ -122,7 +109,6 @@ class CandidateEmployeesController extends Controller
      */
     public function store(Request $request)
     {
-
     }
 
     /**

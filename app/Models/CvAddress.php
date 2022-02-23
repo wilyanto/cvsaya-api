@@ -9,7 +9,7 @@ class CvAddress extends Model
 {
     use HasFactory;
 
-    protected $table = 'cv_address';
+    protected $table = 'cv_addresses';
 
     protected $guard = 'id';
 
@@ -17,9 +17,15 @@ class CvAddress extends Model
 
     public $fillable = [
         'id',
+        'user_id',
         'empolyee_candidate_id',
         'date_time',
         'interview_by',
+        'country_id',
+        'province_id',
+        'city_id',
+        'district_id',
+        'village_id',
         'result',
         'note',
     ];

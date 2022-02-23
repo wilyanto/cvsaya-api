@@ -9,7 +9,7 @@ class CvLogSosmeds extends Model
 {
     use HasFactory;
 
-    protected $table = 'log_social_medias';
+    protected $table = 'cv_log_social_medias';
 
     protected $guard = 'id';
 

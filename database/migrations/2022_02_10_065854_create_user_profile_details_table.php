@@ -18,15 +18,12 @@ class CreateUserProfileDetailsTable extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->string('first_name');
             $table->string('last_name');
-            $table->longText('about')->nullable();
-            $table->string('website_url')->nullable();
-            $table->json('selfie_about')->nullable();
-            $table->string('religion')->nullable();
-            $table->string('reference')->nullable();
-            $table->string('identity_number')->nullable();
-            $table->date('birth_date')->nullable();
             $table->string('birth_location')->nullable();
-            $table->bigInteger('address_id')->unsigned()->nullable();
+            $table->date('birth_date')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('identity_number')->nullable();
+            $table->string('religion')->nullable();
+            $table->string('married')->nullable();
             $table->timestamps();
         });
     }

@@ -2,10 +2,10 @@
 
 namespace App\Observers;
 
-use App\Models\Sosmeds;
-use App\Models\LogSosmeds;
+use App\Models\CvSosmeds;
+use App\Models\CvLogSosmeds;
 
-class SosmedObserver
+class CvSosmedObserver
 {
     /**
      * Handle the CvSayaSosmed "created" event.
@@ -13,12 +13,15 @@ class SosmedObserver
      * @param  \App\Models\CvSayaSosmed  $cvSayaSosmed
      * @return void
      */
-    public function created(Sosmeds $cvSayaSosmed)
+    public function created(CvSosmeds $cvSayaSosmed)
     {
-        $newLog = new LogSosmeds();
+        $newLog = new CvLogSosmeds();
         $newLog->sosial_media_id=$cvSayaSosmed->id;
-        $newLog->name = $cvSayaSosmed->name;
-        $newLog->value = $cvSayaSosmed->value;
+        $newLog->instagram = $cvSayaSosmed->instagram;
+        $newLog->tiktok = $cvSayaSosmed->tiktok;
+        $newLog->youtube = $cvSayaSosmed->youtube;
+        $newLog->facebook = $cvSayaSosmed->facebook;
+        $newLog->website_url = $cvSayaSosmed->website_url;
         $newLog->created_at =  date('Y-m-d h:i:s',time());
         $newLog->save();
     }
@@ -29,12 +32,15 @@ class SosmedObserver
      * @param  \App\Models\CvSayaSosmed  $cvSayaSosmed
      * @return void
      */
-    public function updated(Sosmeds $cvSayaSosmed)
+    public function updated(CvSosmeds $cvSayaSosmed)
     {
-        $newLog = new LogSosmeds();
+        $newLog = new CvLogSosmeds();
         $newLog->sosial_media_id=$cvSayaSosmed->id;
-        $newLog->name = $cvSayaSosmed->name;
-        $newLog->value = $cvSayaSosmed->value;
+        $newLog->instagram = $cvSayaSosmed->instagram;
+        $newLog->tiktok = $cvSayaSosmed->tiktok;
+        $newLog->youtube = $cvSayaSosmed->youtube;
+        $newLog->facebook = $cvSayaSosmed->facebook;
+        $newLog->website_url = $cvSayaSosmed->website_url;
         $newLog->created_at =  date('Y-m-d h:i:s',time());
         $newLog->save();
     }
@@ -45,7 +51,7 @@ class SosmedObserver
      * @param  \App\Models\CvSayaSosmed  $cvSayaSosmed
      * @return void
      */
-    public function deleted(Sosmeds $cvSayaSosmed)
+    public function deleted(CvSosmeds $cvSayaSosmed)
     {
         //
     }
@@ -56,7 +62,7 @@ class SosmedObserver
      * @param  \App\Models\Sosmed  $cvSayaSosmed
      * @return void
      */
-    public function restored(Sosmeds $cvSayaSosmed)
+    public function restored(CvSosmeds $cvSayaSosmed)
     {
         //
     }
@@ -67,7 +73,7 @@ class SosmedObserver
      * @param  \App\Models\CvSayaSosmed  $cvSayaSosmed
      * @return void
      */
-    public function forceDeleted(Sosmeds $cvSayaSosmed)
+    public function forceDeleted(CvSosmeds $cvSayaSosmed)
     {
         //
     }

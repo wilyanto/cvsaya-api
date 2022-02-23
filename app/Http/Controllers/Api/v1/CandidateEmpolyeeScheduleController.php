@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CandidateEmployees;
 use App\Models\CandidateEmpolyeeSchedule;
 use Illuminate\Http\Request;
+use App\Traits\ApiResponser;
 
 class CandidateEmpolyeeScheduleController extends Controller
 {
+    use ApiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -35,7 +38,37 @@ class CandidateEmpolyeeScheduleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = auth()->user();
+        // $posistion = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
+        // if(!$posistion){
+        //     return $this->errorResponse('user tidak di temukan',404,40401);
+        // }
+        $request->validate([
+            'employee_candidate_id' => 'integer|required',
+            'date_time' => 'date|nullable',
+            'interview_by' => 'integer|required',
+            'result_id' => 'integer|nullable',
+            'note' => 'longtext|nullable',
+        ]);
+        $candidate = CandidateEmployees::where('user_id', $user->id_kustomer)->first();
+        if (!$candidate) {
+            return $this->errorResponse('Candidate not found', 404, 40401);
+        }
+
+        // switch ($candidate->status) {
+        //     case (CandidateEmployees::ins):
+        //         $candidate->status = CandidateEmployees;
+        //     case (CandidateEmployees):
+        //         $candidate->status = CandidateEmployees;
+        //     case (CandidateEmployees):
+        //         $candidate->status = CandidateEmployees;
+        //     default:
+        //         $candidate = 0;
+        // }
+
+        $candidateEmpolyeeSchedule = CandidateEmpolyeeSchedule::create($request->all());
+
+        return $this->showOne($candidateEmpolyeeSchedule);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\v1\UserProfileDetailController;
+use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Http\Controllers\Api\v1\CertificationsController;
 use App\Http\Controllers\Api\v1\ExperiencesController;
 use App\Http\Controllers\Api\v1\EducationsController;
@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\v1\PositionsController;
 use App\Http\Controllers\Api\v1\CandidateEmployeesController;
 use App\Http\Controllers\Api\v1\EmployeeDetailsController;
 use App\Models\Certifications;
+use App\Models\CvProfileDetail;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,27 +33,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->group(function () {
-
+    Route::prefix('candidate')->group(function(){
+        Route::controller(CandidateEmployeesController::class)->group(function(){
+            Route::post('/','index');
+            Route::post('create','addCandidateToBlast');
+            // Route::post('update-status','updateStatus');
+        });
+    });
 
     Route::middleware('auth:api')->group(function () {
         Route::prefix('profile-detail')->group(function () {
-            Route::controller(UserProfileDetailController::class)->group(function () {
+            Route::controller(CvProfileDetailController::class)->group(function () {
                 Route::post('/',  'detail');
                 Route::post('/add', 'store');
                 Route::post('/update', 'update');
-            });
-        });
-
-        Route::prefix('candidate')->group(function(){
-            Route::controller(CandidateEmployeesController::class)->group(function(){
-                Route::prefix('index')->group(function(){
-                    Route::get('on-blast','indexCandidateBlast');
-                    Route::get('on-cv','indexCandidateCv');
-                    Route::get('on-interview','indexCandidateOnInterview');
-                    Route::get('on-finish','indexNotCandidate');
-                });
-
-                    Route::post('/create','addCandidateToBlast');
             });
         });
 

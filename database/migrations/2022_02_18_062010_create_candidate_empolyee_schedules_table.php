@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('candidate_empolyee_schedules', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('empolyee_candidate_id')->unsigned();
-            $table->timestamp('date_time');
+            $table->timestamp('date_time')->nullable();
             $table->bigInteger('interview_by')->unsigned()->nullable();
             $table->bigInteger('result_id')->unsigned()->nullable();
             $table->longText('note')->nullable();
@@ -26,7 +26,7 @@ return new class extends Migration
         Schema::create('candidate_log_empolyee_schedules', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('empolyee_candidate_id')->unsigned();
-            $table->timestamp('date_time');
+            $table->timestamp('date_time')->nullable();
             $table->bigInteger('interview_by')->unsigned()->nullable();
             $table->bigInteger('result_id')->unsigned()->nullable();
             $table->longText('note')->nullable();

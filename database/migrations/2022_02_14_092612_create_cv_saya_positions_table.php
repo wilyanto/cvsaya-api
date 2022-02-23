@@ -21,7 +21,7 @@ class CreateCvSayaPositionsTable extends Migration
             $table->bigInteger('parent_id')->unsigned()->nullable();
             $table->integer('remaining_slot')->nullable();
             $table->integer('min_salary')->nullable();
-            $table->integer('max_saslary')->nullable();
+            $table->integer('max_salary')->nullable();
             $table->timestamps();
         });
 

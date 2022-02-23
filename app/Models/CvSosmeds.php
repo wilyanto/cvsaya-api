@@ -4,14 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CvSosmeds extends Model
 {
     use HasFactory;
-    use SoftDeletes;
+    // use SoftDeletes;
 
-    protected $table = 'social_medias';
+    protected $table = 'cv_social_medias';
 
     protected $guard = 'id';
 
@@ -20,7 +19,10 @@ class CvSosmeds extends Model
     public $fillable = [
         'id',
         'user_id',
-        'name',
-        'value'
+        'instagram',
+        'tiktok',
+        'youtube',
+        'facebook',
+        'website_url',
     ];
 }

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->integer('amount_before');
-            $table->integer('amount_now');
             $table->integer('expected_amount');
             $table->bigInteger('expected_position')->unsigned()->nullable();
             $table->string('reason_position')->nullable();
@@ -30,7 +29,6 @@ return new class extends Migration
             $table->uuid('id');
             $table->bigInteger('expected_salary_id')->unsigned();
             $table->integer('amount_before');
-            $table->integer('amount_now');
             $table->integer('expected_amount');
             $table->bigInteger('expected_position')->unsigned()->nullable();
             $table->string('reason_position')->nullable();

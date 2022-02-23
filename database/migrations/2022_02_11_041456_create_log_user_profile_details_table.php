@@ -16,14 +16,14 @@ class CreateLogUserProfileDetailsTable extends Migration
         Schema::create('cv_log_profile_details', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('profile_detail_id')->unsigned();
-            $table->longText('about')->nullable();
-            $table->string('website_url')->nullable();
-            $table->json('selfie_about')->nullable();
-            $table->string('religion')->nullable();
-            $table->string('reference')->nullable();
-            $table->string('identity_number')->nullable();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('birth_location')->nullable();
             $table->date('birth_date')->nullable();
-            $table->string('location_birth')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('identity_number')->nullable();
+            $table->string('religion')->nullable();
+            $table->string('married')->nullable();
             $table->timestamp('created_at');
         });
 

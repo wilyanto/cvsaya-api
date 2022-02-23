@@ -16,17 +16,23 @@ class CreateSosmedsTable extends Migration
         Schema::create('cv_social_medias', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
-            $table->string('name');
-            $table->string('value');
+            $table->string('instagram')->nullable();
+            $table->string('tiktok')->nullable();
+            $table->string('youtube')->nullable();
+            $table->string('facebook')->nullable();
+            $table->string('website_url')->nullable();
             $table->timestamps();
-            $table->softDeletes();
+            // $table->softDeletes();
         });
 
         Schema::create('cv_log_social_medias', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('sosial_media_id')->unsigned();
-            $table->string('name');
-            $table->string('value');
+            $table->string('instagram')->nullable();
+            $table->string('tiktok')->nullable();
+            $table->string('youtube')->nullable();
+            $table->string('facebook')->nullable();
+            $table->string('website_url')->nullable();
             $table->timestamp('created_at');
         });
 
