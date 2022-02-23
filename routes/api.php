@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Http\Controllers\Api\v1\CvDocumentationsController;
+use App\Http\Controllers\Api\v1\CvExpectedSalariesController;
 use App\Http\Controllers\Api\v1\CertificationsController;
 use App\Http\Controllers\Api\v1\ExperiencesController;
 use App\Http\Controllers\Api\v1\EducationsController;
@@ -34,10 +35,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->group(function () {
-    Route::prefix('candidate')->group(function(){
-        Route::controller(CandidateEmployeesController::class)->group(function(){
-            Route::post('/','index');
-            Route::post('create','addCandidateToBlast');
+    Route::prefix('candidate')->group(function () {
+        Route::controller(CandidateEmployeesController::class)->group(function () {
+            Route::post('/', 'index');
+            Route::post('create', 'addCandidateToBlast');
             // Route::post('update-status','updateStatus');
         });
     });
@@ -51,17 +52,51 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('documents')->group(function (){
-            Route::controller(CvDocumentationsController::class)->group(function(){
-                Route::get('/','index');
-                Route::post('/create','store');
+        Route::prefix('documents')->group(function () {
+            Route::controller(CvDocumentationsController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/create', 'store');
             });
         });
 
-        Route::prefix('empolyee')->group(function(){
-            Route::controller(EmployeeDetailsController::class)->group(function(){
+        Route::prefix('department')->group(function () {
+            Route::controller(DepartmentsController::class)->group(function(){
                 Route::get('/','index');
-                Route::post('/create','create');
+                Route::post('/add','create');
+                Route::post('/update','update');
+            });
+        });
+
+
+        Route::prefix('levels')->group(function () {
+            Route::controller(LevelController::class)->group(function(){
+                Route::get('/','index');
+                Route::post('/add','create');
+                Route::post('/update','update');
+
+            });
+        });
+
+        Route::prefix('expected-salaries')->group(function(){
+            Route::controller(CvExpectedSalariesController::class)->group(function(){
+               Route::get('/','index');
+               Route::post('/create','store');
+            });
+        });
+
+        Route::prefix('positions')->group(function () {
+            Route::controller(PositionsController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/add', 'store');
+                Route::post('/structure-organization','show');
+                Route::post('/update','update');
+            });
+        });
+
+        Route::prefix('empolyee')->group(function () {
+            Route::controller(EmployeeDetailsController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/create', 'create');
             });
         });
 
@@ -109,26 +144,6 @@ Route::prefix('v1')->group(function () {
             Route::post('/update-intergration', [SpecialitiesController::class, 'store']);
             Route::post('/update', [SpecialitiesController::class, 'update']);
             Route::post('/delete', [SpecialitiesController::class, 'destroy']);
-        });
-
-        Route::prefix('department')->group(function () {
-            Route::post('/', [DepartmentsController::class, 'index']);
-            Route::post('/add', [DepartmentsController::class, 'create']);
-            Route::post('/update', [DepartmentsController::class, 'update']);
-        });
-
-
-        Route::prefix('levels')->group(function () {
-            Route::get('/', [LevelController::class, 'index']);
-            Route::post('/add', [LevelController::class, 'create']);
-            Route::post('/update', [LevelController::class, 'update']);;
-        });
-
-        Route::prefix('positions')->group(function () {
-            Route::post('/', [PositionsController::class, 'index']);
-            Route::post('/add', [PositionsController::class, 'store']);
-            Route::post('/structure-organization', [PositionsController::class, 'show']);
-            Route::post('/update', [PositionsController::class, 'update']);;
         });
     });
 });

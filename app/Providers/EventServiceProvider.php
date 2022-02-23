@@ -28,6 +28,8 @@ use App\Observers\SpecialityCertificatesObserver;
 use App\Observers\CandidateEmpolyessObserver;
 use App\Observers\CvAddressObserver;
 use App\Models\CvAddress;
+use App\Models\CvExpectedSalaries;
+use App\Observers\CvExpectedSalariesObserver;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -53,6 +55,7 @@ class EventServiceProvider extends ServiceProvider
         CvSosmeds::observe(CvSosmedObserver::class);
         CvAddress::observe(CvAddressObserver::class);
         CvDocumentations::observe(CvDocumentationsObserver::class);
+        CvExpectedSalaries::observe(CvExpectedSalariesObserver::class);
 
 
         CvExperiences::observe(ExperiencesObserver::class);

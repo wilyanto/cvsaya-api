@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CvExpectedSalaries extends Model
 {
@@ -19,8 +20,13 @@ class CvExpectedSalaries extends Model
         'id',
         'user_id',
         'amount_before',
-        'amount_now',
+        'expected_position ',
         'expected_amount',
+        'reason_position',
         'reasons',
     ];
+
+    public function Positions(){
+        return $this->HasMany(Positions::class,'id','expected_position');
+    }
 }

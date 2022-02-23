@@ -4,11 +4,13 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\ExpectedSalaries;
+use App\Models\CvExpectedSalaries;
 use Illuminate\Http\Request;
+use App\Traits\ApiResponser;
 
-class ExpectedSalariesController extends Controller
+class CvExpectedSalariesController extends Controller
 {
+    use ApiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +18,14 @@ class ExpectedSalariesController extends Controller
      */
     public function index()
     {
-        //
+        $user = auth()->user();
+
+        $expectedSalaries = CvExpectedSalaries::where('user_id',$user->id_kustomer)->first();
+        if(!$expectedSalaries){
+            return $this->errorResponse('Expected Salaries Not found',404,40401);
+        }
+        return $this->showOne($expectedSalaries);
+
     }
 
     /**
@@ -37,7 +46,28 @@ class ExpectedSalariesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = auth()->user();
+
+        $request->validate([
+            'expected_position' => 'exists:App\Models\Positions,id|required',
+            'expected_amount' => 'integer|required',
+            'reason_position' => 'string|required|min:50',
+            'reasons' => 'string|required|min:50',
+        ]);
+        $data = $request->all();
+        $data['user_id'] = $user->id_kustomer;
+        // dd($data);
+
+        $expectedSalaries = CvExpectedSalaries::where('user_id',$user->id_kustomer)->first();
+        if(!$expectedSalaries){
+            $expectedSalaries = CvExpectedSalaries::create($data);
+
+            return $this->showOne($expectedSalaries);
+        }
+        $expectedSalaries->update($data);
+
+        return $this->showOne($expectedSalaries);
+
     }
 
     /**
@@ -46,7 +76,7 @@ class ExpectedSalariesController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function show(ExpectedSalaries $expectedSalaries)
+    public function show(CvExpectedSalaries $expectedSalaries)
     {
         //
     }
@@ -57,7 +87,7 @@ class ExpectedSalariesController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function edit(ExpectedSalaries $expectedSalaries)
+    public function edit(CvExpectedSalaries $expectedSalaries)
     {
         //
     }
@@ -69,7 +99,7 @@ class ExpectedSalariesController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ExpectedSalaries $expectedSalaries)
+    public function update(Request $request, CvExpectedSalaries $expectedSalaries)
     {
         //
     }
@@ -80,7 +110,7 @@ class ExpectedSalariesController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ExpectedSalaries $expectedSalaries)
+    public function destroy(CvExpectedSalaries $expectedSalaries)
     {
         //
     }
