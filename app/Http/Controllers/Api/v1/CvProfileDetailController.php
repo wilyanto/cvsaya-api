@@ -23,35 +23,17 @@ class CvProfileDetailController extends Controller
         $user = auth()->user();
         // dump($userCollection);
         $array = [];
-        $userProfileDetails = CvProfileDetail::where('id', $user->id)->first();
-        if ($userProfileDetails) {
+        $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
+        $userAddress = CvAddress::where('user_id', $user->id_kustomer)->first();
+        $userSosmed = CvSosmeds::where('user_id', $user->id_kustomer)->first();
 
-            $array = [
-                'name' => $user->nama_lengkap,
-                // 'grander' => $user->jeniskelamin,
-                'position' => 'Unkonwon',
-                'company_id' => $user->ID_perusahaan,
-                'address' => $user->alamat,
-                'about' => $userProfileDetails->about,
-                'phone_num' => $user->telpon,
-                'webiste_url' => $userProfileDetails->website_url,
-                'religion' => $userProfileDetails->religion,
-                'webiste_url' => $userProfileDetails->website_url,
-            ];
-        } else {
-            $array = [
-                'name' => $user->nama_lengkap,
-                'grander' => $user->jeniskelamin,
-                'position' => 'Unknown',
-                'company_id' => $user->ID_perusahaan,
-                'address' => $user->alamat,
-                'about' => null,
-                'phone_num' => $user->telpon,
-                'webiste_url' => null,
-                'religion' => null,
-                'webiste_url' => null,
-            ];
+        if (!$userProfileDetail || !$userAddress || !$userSosmed) {
+            return $this->errorResponse('profile or address or sosmed data not found', 404, 40401);
         }
+
+        $array['profile_detail'] = $userProfileDetail;
+        $array['address'] = $userAddress;
+        $array['sosmed'] = $userSosmed;
         $collectionArray = collect($array);
         return $this->showOne($collectionArray);
     }
