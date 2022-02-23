@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Models\CvProfileDetail;
-use App\Http\Controllers\Controller;
 use App\Models\CvAddress;
 use App\Models\CvSosmeds;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;

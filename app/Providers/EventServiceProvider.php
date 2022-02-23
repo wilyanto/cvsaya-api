@@ -7,6 +7,8 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use App\Observers\CvProfileDetailObserver;
+use App\Observers\CvDocumentationsObserver;
+use App\Models\CvDocumentations;
 use App\Models\CvExperiences;
 use App\Models\CvProfileDetail;
 use App\Observers\ExperiencesObserver;
@@ -50,6 +52,8 @@ class EventServiceProvider extends ServiceProvider
         CvProfileDetail::observe(CvProfileDetailObserver::class);
         CvSosmeds::observe(CvSosmedObserver::class);
         CvAddress::observe(CvAddressObserver::class);
+        CvDocumentations::observe(CvDocumentationsObserver::class);
+
 
         CvExperiences::observe(ExperiencesObserver::class);
         CvEducations::observe(EducationObserver::class);

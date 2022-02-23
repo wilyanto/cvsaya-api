@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
+use App\Http\Controllers\Api\v1\CvDocumentationsController;
 use App\Http\Controllers\Api\v1\CertificationsController;
 use App\Http\Controllers\Api\v1\ExperiencesController;
 use App\Http\Controllers\Api\v1\EducationsController;
@@ -47,6 +48,13 @@ Route::prefix('v1')->group(function () {
                 Route::post('/',  'detail');
                 Route::post('/add', 'store');
                 Route::post('/update', 'update');
+            });
+        });
+
+        Route::prefix('documents')->group(function (){
+            Route::controller(CvDocumentationsController::class)->group(function(){
+                Route::get('/','index');
+                Route::post('/create','store');
             });
         });
 

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->longText('selfie_front')->nullable();
             $table->longText('selfie_left')->nullable();
             $table->longText('selfie_right')->nullable();
-            $table->longText('mirrage_certificate')->nullable();
+            // $table->longText('mirrage_certificate')->nullable();
             $table->timestamps();
         });
 
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->longText('selfie_front')->nullable();
             $table->longText('selfie_left')->nullable();
             $table->longText('selfie_right')->nullable();
-            $table->longText('mirrage_certificate')->nullable();
+            // $table->longText('mirrage_certificate')->nullable();
             $table->timestamp('created_at');
         });
 
