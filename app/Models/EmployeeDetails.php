@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Positions;
 
 class EmployeeDetails extends Model
 {
@@ -19,4 +20,8 @@ class EmployeeDetails extends Model
         'position_id',
         'salary',
     ];
+
+    public function position(){
+        return $this->belongsTo(Positions::class,'id','position_id');
+    }
 }

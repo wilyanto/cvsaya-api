@@ -15,6 +15,7 @@ use App\Models\CvExperiences;
 use App\Models\CvDocumentations;
 use App\Models\CvExpectedSalaries;
 use Illuminate\Http\Request;
+use App\Models\EmployeeDetails;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 
@@ -85,32 +86,54 @@ class CvProfileDetailController extends Controller
         $document = CvDocumentations::where('user_id', $user->id_kustomer)->first();
         $expectedSalaries = CvExpectedSalaries::where('user_id', $user->id_kustomer)->first();
 
-        $data['Profile'] = true;
-        $data['Works'] = true;
-        $data['Document'] = true;
-        $data['CV'] = true;
+        $data['is_profile_filled'] = true;
+        $data['is_works_filled'] = true;
+        $data['is_document_filled'] = true;
+        $data['is_cv_filled'] = true;
 
         // dump($experience);
-
         if (!$userProfileDetail || !$userAddress || !$userSosmed) {
-            $data['Profile'] = false;
+            $data['is_profile_filled'] = false;
         }
         // dump($userProfileDetail);
 
         if (!$expectedSalaries) {
-            $data['Works'] = false;
+            $data['is_works_filled'] = false;
         }
 
 
         if (!$education || !$experience || !$certifications || !$specialities || !$hobbies) {
-            $data['CV'] = false;
+            $data['is_cv_filled'] = false;
         }
 
         if (!$document) {
-            $data['Document'] = false;
+            $data['is_document_filled'] = false;
         }
 
-        return $this->showOne($data);
+        $employee = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
+        if($employee){
+            $result['is_empolyee'] = true;
+            $result['position'] = $employee->position()->name;
+        }else{
+            $result['is_empolyee'] = false;
+            $result['position'] = null;
+        }
+
+        $result['first_name'] = $userProfileDetail->first_name;
+        $result['last_name'] = $userProfileDetail->last_name;
+
+        $array = count(array_filter($data));;
+
+        switch ($array) {
+            case (4):
+                $result['is_all_form_filled'] = true;
+                break;
+            default:
+                $result['is_all_form_filled'] = false;
+        }
+        $result['forms'] = $data;
+
+        return $this->showOne($result);
     }
 
     /**
@@ -155,14 +178,14 @@ class CvProfileDetailController extends Controller
     public function createCandidate($user, $request)
     {
 
-        $candidate = CandidateEmployees::where('phone_number', "0" . $user->phone_number)->first();
+        $candidate = CandidateEmployees::where('phone_number', "0" . $user->telpon)->first();
         if (!$candidate) {
             $candidate = new CandidateEmployees();
         }
         $candidate->user_id = $user->id_kustomer;
         $candidate->name = $request->first_name . " " . $request->last_name;
-        $candidate->country_code = +62;
-        $candidate->phone_number = substr($user->phone_number, 1);
+        $candidate->country_code = 62;
+        $candidate->phone_number =(integer) substr($user->telpon, 1);
         $candidate->register_date = date('Y-m-d H:i:s', time());
         $candidate->status = 3;
         $candidate->save();
