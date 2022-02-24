@@ -10,7 +10,7 @@ class CvLogSpecialityCertificates extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $table = 'log_speciality_certifications';
+    protected $table = 'cv_log_speciality_certifications';
 
     protected $guard = 'id';
 

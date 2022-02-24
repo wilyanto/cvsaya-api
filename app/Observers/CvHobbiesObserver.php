@@ -2,10 +2,10 @@
 
 namespace App\Observers;
 
-use App\Models\Hobbies;
-use App\Models\LogHobbies;
+use App\Models\CvHobbies;
+use App\Models\CvLogHobbies;
 
-class HobbiesObserver
+class CvHobbiesObserver
 {
     /**
      * Handle the CvSayaHobbies "created" event.
@@ -13,9 +13,9 @@ class HobbiesObserver
      * @param  \App\Models\CvSayaHobbies  $cvSayaHobbies
      * @return void
      */
-    public function created(Hobbies $cvSayaHobbies)
+    public function created(CvHobbies $cvSayaHobbies)
     {
-        $newLog = new LogHobbies();
+        $newLog = new CvLogHobbies();
         $newLog->hobby_id = $cvSayaHobbies->id;
         $newLog->name = $cvSayaHobbies->name;
         $newLog->created_at =  date('Y-m-d h:i:s',time());
@@ -28,9 +28,9 @@ class HobbiesObserver
      * @param  \App\Models\CvSayaHobbies  $cvSayaHobbies
      * @return void
      */
-    public function updated(Hobbies $cvSayaHobbies)
+    public function updated(CvHobbies $cvSayaHobbies)
     {
-        $newLog = new LogHobbies();
+        $newLog = new CvLogHobbies();
         $newLog->hobby_id = $cvSayaHobbies->id;
         $newLog->name = $cvSayaHobbies->name;
         $newLog->created_at =  date('Y-m-d h:i:s',time());
@@ -43,7 +43,7 @@ class HobbiesObserver
      * @param  \App\Models\CvSayaHobbies  $cvSayaHobbies
      * @return void
      */
-    public function deleted(Hobbies $cvSayaHobbies)
+    public function deleted(CvHobbies $cvSayaHobbies)
     {
         //
     }
@@ -54,7 +54,7 @@ class HobbiesObserver
      * @param  \App\Models\CvSayaHobbies  $cvSayaHobbies
      * @return void
      */
-    public function restored(Hobbies $cvSayaHobbies)
+    public function restored(CvHobbies $cvSayaHobbies)
     {
         //
     }
@@ -65,7 +65,7 @@ class HobbiesObserver
      * @param  \App\Models\CvSayaHobbies  $cvSayaHobbies
      * @return void
      */
-    public function forceDeleted(Hobbies $cvSayaHobbies)
+    public function forceDeleted(CvLogHobbies $cvSayaHobbies)
     {
         //
     }

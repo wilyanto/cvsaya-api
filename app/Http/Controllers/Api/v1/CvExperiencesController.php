@@ -4,11 +4,11 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Experiences;
+use App\Models\CvExperiences;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 
-class ExperiencesController extends Controller
+class CvExperiencesController extends Controller
 {
     use ApiResponser;
     /**
@@ -21,7 +21,7 @@ class ExperiencesController extends Controller
         $user = auth()->user();
         // dump($user);
         $data = [];
-        $experiences = Experiences::where('user_id', $user->id_kustomer)->get();
+        $experiences = CvExperiences::where('user_id', $user->id_kustomer)->get();
         return $this->showAll($experiences);
     }
 
@@ -41,7 +41,7 @@ class ExperiencesController extends Controller
             'until_at' => 'nullable|date|after:start_at',
             'description' => 'nullable|string',
         ]);
-        $experience = new Experiences();
+        $experience = new CvExperiences();
         $experience->user_id = $user->id_kustomer;
         $experience->position = $request->position;
         $experience->employment_type = $request->employment_type;
@@ -106,7 +106,7 @@ class ExperiencesController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $experience = Experiences::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
+        $experience = CvExperiences::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
         if (!$experience) {
             return $this->errorResponse('Id not indentify in database', 422, 42200);
         }
@@ -147,7 +147,7 @@ class ExperiencesController extends Controller
             'id' => 'required|integer',
         ]);
 
-        $experience = Experiences::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
+        $experience = CvExperiences::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
         if(!$experience){
             return $this->errorResponse('id not found',404,40401);
         }

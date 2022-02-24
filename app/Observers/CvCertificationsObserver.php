@@ -2,10 +2,10 @@
 
 namespace App\Observers;
 
-use App\Models\Certifications;
-use App\Models\LogCertifications;
+use App\Models\CvCertifications;
+use App\Models\CvLogCertifications;
 
-class CertificationsObserver
+class CvCertificationsObserver
 {
     /**
      * Handle the CvSayaCertifications "created" event.
@@ -13,9 +13,9 @@ class CertificationsObserver
      * @param  \App\Models\Certifications  $cvSayaCertifications
      * @return void
      */
-    public function created(Certifications $cvSayaCertifications)
+    public function created(CvCertifications $cvSayaCertifications)
     {
-        $newLog = new LogCertifications();
+        $newLog = new CvLogCertifications();
         $newLog->certification_id = $cvSayaCertifications->id;
         $newLog->name = $cvSayaCertifications->name;
         $newLog->organization = $cvSayaCertifications->organization;
@@ -33,9 +33,9 @@ class CertificationsObserver
      * @param  \App\Models\Certifications  $cvSayaCertifications
      * @return void
      */
-    public function updated(Certifications $cvSayaCertifications)
+    public function updated(CvCertifications $cvSayaCertifications)
     {
-        $newLog = new LogCertifications();
+        $newLog = new CvLogCertifications();
         $newLog->certification_id = $cvSayaCertifications->id;
         $newLog->name = $cvSayaCertifications->name;
         $newLog->organization = $cvSayaCertifications->organization;
@@ -53,7 +53,7 @@ class CertificationsObserver
      * @param  \App\Models\CvSayaCertifications  $cvSayaCertifications
      * @return void
      */
-    public function deleted(Certifications $cvSayaCertifications)
+    public function deleted(CvCertifications $cvSayaCertifications)
     {
         //
     }
@@ -64,7 +64,7 @@ class CertificationsObserver
      * @param  \App\Models\CvSayaCertifications  $cvSayaCertifications
      * @return void
      */
-    public function restored(Certifications $cvSayaCertifications)
+    public function restored(CvCertifications $cvSayaCertifications)
     {
         //
     }
@@ -75,7 +75,7 @@ class CertificationsObserver
      * @param  \App\Models\CvSayaCertifications  $cvSayaCertifications
      * @return void
      */
-    public function forceDeleted(Certifications $cvSayaCertifications)
+    public function forceDeleted(CvCertifications $cvSayaCertifications)
     {
         //
     }

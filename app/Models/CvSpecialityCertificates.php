@@ -4,15 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\CvSaya\Specialities;
-use App\Models\CvSaya\Certifications;
+use App\Models\CvSpecialities;
+use App\Models\CvCertifications;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CvSpecialityCertificates extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
-    protected $table = 'speciality_certifications';
+    protected $table = 'cv_speciality_certifications';
 
     protected $guard = 'id';
 
@@ -24,11 +25,11 @@ class CvSpecialityCertificates extends Model
     ];
 
     public function speciality(){
-        return $this->belongsTo(Specialities::class,'speciality_id','id');
+        return $this->belongsTo(CvSpecialities::class,'speciality_id','id');
     }
 
     public function certifcate(){
-        return $this->belongsTo(Certifications::class,'certificate_id','id');
+        return $this->belongsTo(CvCertifications::class,'certificate_id','id');
     }
 
     // public function toArray()

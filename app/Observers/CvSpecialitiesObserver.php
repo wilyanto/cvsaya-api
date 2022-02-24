@@ -2,10 +2,10 @@
 
 namespace App\Observers;
 
-use App\Models\Specialities;
-use App\Models\LogSpecialities;
+use App\Models\CvSpecialities;
+use App\Models\CvLogSpecialities;
 
-class SpecialitiesObserver
+class CvSpecialitiesObserver
 {
     /**
      * Handle the CvSayaSepecialities "created" event.
@@ -13,9 +13,9 @@ class SpecialitiesObserver
      * @param  \App\Models\CvSayaSepecialities  $cvSayaSepecialities
      * @return void
      */
-    public function created(Specialities $cvSayaSepecialities)
+    public function created(CvSpecialities $cvSayaSepecialities)
     {
-        $newLog = new LogSpecialities;
+        $newLog = new CvLogSpecialities;
         $newLog->name = $cvSayaSepecialities->name;
         $newLog->specialities_id = $cvSayaSepecialities->id;
         $newLog->speciality_certificate_id = $cvSayaSepecialities->speciality_certificate_id;
@@ -28,9 +28,9 @@ class SpecialitiesObserver
      * @param  \App\Models\CvSayaSepecialities  $cvSayaSepecialities
      * @return void
      */
-    public function updated(Specialities $cvSayaSepecialities)
+    public function updated(CvSpecialities $cvSayaSepecialities)
     {
-        $newLog = new LogSpecialities;
+        $newLog = new CvLogSpecialities;
         $newLog->name = $cvSayaSepecialities->name;
         $newLog->specialities_id = $cvSayaSepecialities->id;
         $newLog->speciality_certificate_id = $cvSayaSepecialities->speciality_certificate_id;
@@ -43,7 +43,7 @@ class SpecialitiesObserver
      * @param  \App\Models\CvSayaSepecialities  $cvSayaSepecialities
      * @return void
      */
-    public function deleted(Specialities $cvSayaSepecialities)
+    public function deleted(CvSpecialities $cvSayaSepecialities)
     {
         //
     }
@@ -54,7 +54,7 @@ class SpecialitiesObserver
      * @param  \App\Models\CvSayaSepecialities  $cvSayaSepecialities
      * @return void
      */
-    public function restored(Specialities $cvSayaSepecialities)
+    public function restored(CvSpecialities $cvSayaSepecialities)
     {
         //
     }
@@ -65,7 +65,7 @@ class SpecialitiesObserver
      * @param  \App\Models\CvSayaSepecialities  $cvSayaSepecialities
      * @return void
      */
-    public function forceDeleted(Specialities $cvSayaSepecialities)
+    public function forceDeleted(CvSpecialities $cvSayaSepecialities)
     {
         //
     }

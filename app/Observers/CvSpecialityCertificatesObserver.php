@@ -2,10 +2,10 @@
 
 namespace App\Observers;
 
-use App\Models\LogSpecialityCertificates;
-use App\Models\SpecialityCertificates;
+use App\Models\CvLogSpecialityCertificates;
+use App\Models\CvSpecialityCertificates;
 
-class SpecialityCertificatesObserver
+class CvSpecialityCertificatesObserver
 {
     /**
      * Handle the CvSayaSpecialityCertificates "created" event.
@@ -13,9 +13,9 @@ class SpecialityCertificatesObserver
      * @param  \App\Models\CvSayaSpecialityCertificates  $cvSayaSpecialityCertificates
      * @return void
      */
-    public function created(SpecialityCertificates $cvSayaSpecialityCertificates)
+    public function created(CvSpecialityCertificates $cvSayaSpecialityCertificates)
     {
-        $newLog = new LogSpecialityCertificates();
+        $newLog = new CvLogSpecialityCertificates();
         $newLog->speciality_certifications_id = $cvSayaSpecialityCertificates->id;
         $newLog->certificate_id = $cvSayaSpecialityCertificates->certificate_id;
         $newLog->speciality_id = $cvSayaSpecialityCertificates->speciality_id;
@@ -29,9 +29,9 @@ class SpecialityCertificatesObserver
      * @param  \App\Models\CvSayaSpecialityCertificates  $cvSayaSpecialityCertificates
      * @return void
      */
-    public function updated(SpecialityCertificates $cvSayaSpecialityCertificates)
+    public function updated(CvSpecialityCertificates $cvSayaSpecialityCertificates)
     {
-        $newLog = new LogSpecialityCertificates();
+        $newLog = new CvLogSpecialityCertificates();
         $newLog->speciality_certifications_id = $cvSayaSpecialityCertificates->id;
         $newLog->certificate_id = $cvSayaSpecialityCertificates->certificate_id;
         $newLog->speciality_id = $cvSayaSpecialityCertificates->speciality_id;
@@ -45,7 +45,7 @@ class SpecialityCertificatesObserver
      * @param  \App\Models\CvSayaSpecialityCertificates  $cvSayaSpecialityCertificates
      * @return void
      */
-    public function deleted(SpecialityCertificates $cvSayaSpecialityCertificates)
+    public function deleted(CvSpecialityCertificates $cvSayaSpecialityCertificates)
     {
         //
     }
@@ -56,7 +56,7 @@ class SpecialityCertificatesObserver
      * @param  \App\Models\CvSayaSpecialityCertificates  $cvSayaSpecialityCertificates
      * @return void
      */
-    public function restored(SpecialityCertificates $cvSayaSpecialityCertificates)
+    public function restored(CvSpecialityCertificates $cvSayaSpecialityCertificates)
     {
         //
     }
@@ -67,7 +67,7 @@ class SpecialityCertificatesObserver
      * @param  \App\Models\CvSayaSpecialityCertificates  $cvSayaSpecialityCertificates
      * @return void
      */
-    public function forceDeleted(SpecialityCertificates $cvSayaSpecialityCertificates)
+    public function forceDeleted(CvSpecialityCertificates $cvSayaSpecialityCertificates)
     {
         //
     }

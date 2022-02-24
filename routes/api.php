@@ -5,12 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Http\Controllers\Api\v1\CvDocumentationsController;
 use App\Http\Controllers\Api\v1\CvExpectedSalariesController;
-use App\Http\Controllers\Api\v1\CertificationsController;
-use App\Http\Controllers\Api\v1\ExperiencesController;
-use App\Http\Controllers\Api\v1\EducationsController;
-use App\Http\Controllers\Api\v1\HobbiesController;
-use App\Http\Controllers\Api\v1\SosmedsController;
-use App\Http\Controllers\Api\v1\SpecialitiesController;
+use App\Http\Controllers\Api\v1\CvCertificationsController;
+use App\Http\Controllers\Api\v1\CvExperiencesController;
+use App\Http\Controllers\Api\v1\CvEducationsController;
+use App\Http\Controllers\Api\v1\CvHobbiesController;
+use App\Http\Controllers\Api\v1\CvSpecialitiesController;
 use App\Http\Controllers\Api\v1\DepartmentsController;
 use App\Http\Controllers\Api\v1\LevelController;
 use App\Http\Controllers\Api\v1\PositionsController;
@@ -46,6 +45,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::prefix('profile-detail')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
+                Route::get('/cv-page','cvDetail');
                 Route::post('/',  'detail');
                 Route::post('/add', 'store');
                 Route::post('/update', 'update');
@@ -60,27 +60,26 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('department')->group(function () {
-            Route::controller(DepartmentsController::class)->group(function(){
-                Route::get('/','index');
-                Route::post('/add','create');
-                Route::post('/update','update');
+            Route::controller(DepartmentsController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/add', 'create');
+                Route::post('/update', 'update');
             });
         });
 
 
         Route::prefix('levels')->group(function () {
-            Route::controller(LevelController::class)->group(function(){
-                Route::get('/','index');
-                Route::post('/add','create');
-                Route::post('/update','update');
-
+            Route::controller(LevelController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/add', 'create');
+                Route::post('/update', 'update');
             });
         });
 
-        Route::prefix('expected-salaries')->group(function(){
-            Route::controller(CvExpectedSalariesController::class)->group(function(){
-               Route::get('/','index');
-               Route::post('/create','store');
+        Route::prefix('expected-salaries')->group(function () {
+            Route::controller(CvExpectedSalariesController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/create', 'store');
             });
         });
 
@@ -88,8 +87,26 @@ Route::prefix('v1')->group(function () {
             Route::controller(PositionsController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::post('/add', 'store');
-                Route::post('/structure-organization','show');
-                Route::post('/update','update');
+                Route::post('/structure-organization', 'show');
+                Route::post('/update', 'update');
+            });
+        });
+
+        Route::prefix('educations')->group(function () {
+            Route::controller(CvEducationsController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/add', 'add');
+                Route::post('/delete', 'destroy');
+                Route::post('/update',  'update');
+            });
+        });
+
+        Route::prefix('experiences')->group(function () {
+            Route::controller(CvExperiencesController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/add', 'add');
+                Route::post('/update', 'update');
+                Route::post('/delete',  'destroy');
             });
         });
 
@@ -101,7 +118,7 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('certifications')->group(function () {
-            Route::controller(CertificationsController::class)->group(function () {
+            Route::controller(CvCertificationsController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::post('/create', 'create');
                 Route::post('/update', 'update');
@@ -109,25 +126,27 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('experiences')->group(function () {
-            Route::get('/', [ExperiencesController::class, 'index']);
-            Route::post('/add', [ExperiencesController::class, 'add']);
-            Route::post('/update', [ExperiencesController::class, 'update']);
-            Route::post('/delete', [ExperiencesController::class, 'destroy']);
+        Route::prefix('specialities')->group(function () {
+            Route::controller(CvSpecialitiesController::class)->group(function () {
+                Route::get('/',  'index');
+                Route::get('/list','show');
+                Route::get('/top-ten-list','showTopTenList');
+                Route::post('/add', 'create');
+                Route::post('/update-intergration', 'store');
+                Route::post('/update',  'update');
+                Route::post('/delete', 'destroy');
+                Route::post('/delete-intergration', 'destroyIntergrity');
+            });
         });
 
-        Route::prefix('educations')->group(function () {
-            Route::get('/', [EducationsController::class, 'index']);
-            Route::post('/add', [EducationsController::class, 'add']);
-            Route::post('/delete', [EducationsController::class, 'destroy']);
-            Route::post('/update', [EducationsController::class, 'update']);
-        });
 
         Route::prefix('hobbies')->group(function () {
-            Route::get('/', [HobbiesController::class, 'index']);
-            Route::post('/add', [HobbiesController::class, 'create']);
-            Route::post('/delete', [HobbiesController::class, 'destroy']);
-            Route::post('/update', [HobbiesController::class, 'update']);
+            Route::controller(CvHobbiesController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/add', 'create');
+                Route::post('/delete', 'destroy');
+                Route::post('/update', 'update');
+            });
         });
 
         Route::prefix('sosmed')->group(function () {
@@ -135,15 +154,6 @@ Route::prefix('v1')->group(function () {
             Route::post('/add', [SosmedsController::class, 'create']);
             Route::post('/update', [SosmedsController::class, 'update']);
             Route::post('/delete', [SosmedsController::class, 'destroy']);
-        });
-
-
-        Route::prefix('specialities')->group(function () {
-            Route::get('/', [SpecialitiesController::class, 'index']);
-            Route::post('/add', [SpecialitiesController::class, 'create']);
-            Route::post('/update-intergration', [SpecialitiesController::class, 'store']);
-            Route::post('/update', [SpecialitiesController::class, 'update']);
-            Route::post('/delete', [SpecialitiesController::class, 'destroy']);
         });
     });
 });

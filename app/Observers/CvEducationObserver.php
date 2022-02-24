@@ -5,7 +5,7 @@ namespace App\Observers;
 use App\Models\CvEducations;
 use App\Models\CvLogEducations;
 
-class EducationObserver
+class CvEducationObserver
 {
     /**
      * Handle the CvSayaEducations "created" event.

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Models\Sosmeds;
+use App\Models\CvHobbies;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use  App\Http\Controllers\Controller;
 use App\Traits\ApiResponser;
 
 
-class SosmedsController extends Controller
+class CvHobbiesController extends Controller
 {
     use ApiResponser;
     /**
@@ -20,9 +21,9 @@ class SosmedsController extends Controller
     {
         $user = auth()->user();
 
-        $sosmeds = Sosmeds::where('user_id',$user->id_kustomer)->get();
+        $hobbies = CvHobbies::where('user_id', $user->id_kustomer)->get();
 
-        return $this->showAll($sosmeds);
+        return $this->showAll($hobbies);
     }
 
     /**
@@ -35,13 +36,11 @@ class SosmedsController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'name'=>'required|string',
-            'value'=>'required|string'
+            'name' => 'required|string'
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        // dd($data);
-        $hobbies = Sosmeds::create($data);
+        $hobbies = CvHobbies::create($data);
 
         return $this->showOne($hobbies);
     }
@@ -60,7 +59,7 @@ class SosmedsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Sosmeds  $sosmeds
+     * @param  \App\Models\Hobbies  $hobbies
      * @return \Illuminate\Http\Response
      */
     public function show()
@@ -71,7 +70,7 @@ class SosmedsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Sosmeds  $sosmeds
+     * @param  \App\Models\Hobbies  $hobbies
      * @return \Illuminate\Http\Response
      */
     public function edit()
@@ -83,7 +82,7 @@ class SosmedsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Sosmeds  $sosmeds
+     * @param  \App\Models\Hobbies  $hobbies
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request)
@@ -91,16 +90,16 @@ class SosmedsController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'id'=>'required|integer',
-            'name'=>'required|string',
-            'value'=>'required|string'
+            'id' => 'required|integer',
+            'name' => 'required|string'
         ]);
-
-        $hobbies = Sosmeds::where('user_id',$user->id_kustomer)->where('id',$request->id)->first();
-        if(!$hobbies){
-            return $this->errorResponse('id not found',404,40401);
+        $data = $request->all();
+        $data['user_id'] = $user->id_kustomer;
+        $hobbies = CvHobbies::where('user_id', $user->id_kustomer)->where('id', $request->id)->first();
+        if (!$hobbies) {
+            return $this->errorResponse('id not found', 409, 40901);
         }
-        $hobbies->update($request);
+        $hobbies->update($data);
 
         return $this->showOne($hobbies);
     }
@@ -108,7 +107,7 @@ class SosmedsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Sosmeds  $sosmeds
+     * @param  \App\Models\Hobbies  $hobbies
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request)
@@ -117,11 +116,12 @@ class SosmedsController extends Controller
         $request->validate([
             'id' => 'required|integer',
         ]);
-
-        $hobbies = Sosmeds::where('user_id',$user->id_kustomer)->where('id',$request->id)->first();
+        $hobbies = CvHobbies::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
+        if(!$hobbies){
+            return $this->errorResponse('id not found',404,40401);
+        }
         $hobbies->delete();
 
         return $this->showOne(null);
-
     }
 }

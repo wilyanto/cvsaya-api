@@ -4,11 +4,11 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Educations;
+use App\Models\CvEducations;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 
-class EducationsController extends Controller
+class CvEducationsController extends Controller
 {
     use ApiResponser;
 
@@ -21,7 +21,10 @@ class EducationsController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $educations = Educations::where('user_id',$user->id_kustomer)->get();
+        $educations = CvEducations::where('user_id',$user->id_kustomer)->get();
+        if(count($educations) <= 0){
+            return $this->errorResponse('Education not found',404,40401);
+        }
 
         return $this->showAll($educations);
     }
@@ -49,7 +52,7 @@ class EducationsController extends Controller
         $data['user_id'] = $user->id_kustomer;
         $data['start_at'] = date('Y-m-d',strtotime($data['start_at']));
         $data['until_at'] = date('Y-m-d',strtotime($data['until_at']));
-        $educations = Educations::create($data);
+        $educations = CvEducations::create($data);
         return $this->showOne($educations);
 
     }
@@ -112,7 +115,7 @@ class EducationsController extends Controller
         $data['user_id'] = $user->id_kustomer;
         $data['start_at'] = date('Y-m-d',strtotime($data['start_at']));
         $data['until_at'] = date('Y-m-d',strtotime($data['until_at']));
-        $educations = Educations::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
+        $educations = CvEducations::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
         if(!$educations){
             return $this->errorResponse('id not found',404,40401);
         }
@@ -135,7 +138,7 @@ class EducationsController extends Controller
         $request->validate([
             'id'=> 'required|integer',
         ]);
-        $educations = Educations::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
+        $educations = CvEducations::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
         if(!$educations){
             return $this->errorResponse('id not found',404,40401);
         }

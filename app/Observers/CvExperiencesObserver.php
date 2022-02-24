@@ -2,10 +2,10 @@
 
 namespace App\Observers;
 
-use App\Models\Experiences;
-use App\Models\LogExperiences;
+use App\Models\CvExperiences;
+use App\Models\CvLogExperiences;
 
-class ExperiencesObserver
+class CvExperiencesObserver
 {
     /**
      * Handle the CvSayaExperiences "created" event.
@@ -13,9 +13,9 @@ class ExperiencesObserver
      * @param  \App\Models\Experiences  $cvSayaExperiences
      * @return void
      */
-    public function created(Experiences $cvSayaExperiences)
+    public function created(CvExperiences $cvSayaExperiences)
     {
-        $newLog = new LogExperiences();
+        $newLog = new CvLogExperiences();
         $newLog->experience_id = $cvSayaExperiences->id;
         $newLog->position = $cvSayaExperiences->position;
         $newLog->employment_type = $cvSayaExperiences->employment_type;
@@ -34,10 +34,10 @@ class ExperiencesObserver
      * @param  \App\Models\Experiences  $cvSayaExperiences
      * @return void
      */
-    public function updated(Experiences $cvSayaExperiences)
+    public function updated(CvExperiences $cvSayaExperiences)
     {
 
-        $newLog = new LogExperiences();
+        $newLog = new CvLogExperiences();
         $newLog->experience_id = $cvSayaExperiences->id;
         $newLog->position = $cvSayaExperiences->position;
         $newLog->employment_type = $cvSayaExperiences->employment_type;
@@ -55,7 +55,7 @@ class ExperiencesObserver
      * @param  \App\Models\Experiences  $cvSayaExperiences
      * @return void
      */
-    public function deleted(Experiences $cvSayaExperiences)
+    public function deleted(CvExperiences $cvSayaExperiences)
     {
         //
     }
@@ -66,7 +66,7 @@ class ExperiencesObserver
      * @param  \App\Models\Experiences  $cvSayaExperiences
      * @return void
      */
-    public function restored(Experiences $cvSayaExperiences)
+    public function restored(CvExperiences $cvSayaExperiences)
     {
         //
     }
@@ -77,7 +77,7 @@ class ExperiencesObserver
      * @param  \App\Models\Experiences  $cvSayaExperiences
      * @return void
      */
-    public function forceDeleted(Experiences $cvSayaExperiences)
+    public function forceDeleted(CvExperiences $cvSayaExperiences)
     {
         //
     }

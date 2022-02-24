@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Certifications;
+use App\Models\CvCertifications;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 
-class CertificationsController extends Controller
+class CvCertificationsController extends Controller
 {
     use ApiResponser;
 
@@ -20,7 +20,7 @@ class CertificationsController extends Controller
     {
         $user = Auth()->user();
 
-        $certifications = Certifications::where('user_id',$user->id_kustomer)->get();
+        $certifications = CvCertifications::where('user_id',$user->id_kustomer)->get();
 
         return $this->showAll($certifications);
     }
@@ -48,7 +48,7 @@ class CertificationsController extends Controller
         $data['expired_at'] = date('Y-m-d',strtotime($request->expired_at));
         // dd($data);
         // dd($data);
-        $certifications = Certifications::create($data);
+        $certifications = CvCertifications::create($data);
 
         return $this->showOne($certifications);
     }
@@ -112,7 +112,7 @@ class CertificationsController extends Controller
         $data['expired_at'] = date('Y-m-d',strtotime($request->expired_at));
         // dd($data);
         // dd($data);
-        $certifications = Certifications::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
+        $certifications = CvCertifications::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
 
         if(!$certifications){
             return $this->errorResponse('id not found',404,40401);
@@ -135,7 +135,7 @@ class CertificationsController extends Controller
             $request->validate([
                 'id'=> 'required|integer',
             ]);
-            $certifications = Certifications::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
+            $certifications = CvCertifications::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
             if(!$certifications){
                 return $this->errorResponse('id not found',404,40401);
             }

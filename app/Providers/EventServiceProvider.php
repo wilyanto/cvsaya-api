@@ -11,20 +11,20 @@ use App\Observers\CvDocumentationsObserver;
 use App\Models\CvDocumentations;
 use App\Models\CvExperiences;
 use App\Models\CvProfileDetail;
-use App\Observers\ExperiencesObserver;
+use App\Observers\CvExperiencesObserver;
 use App\Models\CvEducations;
-use App\Observers\EducationObserver;
+use App\Observers\CvEducationObserver;
 use App\Models\CvCertifications;
-use App\Observers\CertificationsObserver;
+use App\Observers\CvCertificationsObserver;
 use App\Models\CvHobbies;
-use App\Observers\HobbiesObserver;
+use App\Observers\CvHobbiesObserver;
 use App\Models\CvSosmeds;
 use App\Observers\CvSosmedObserver;
 use App\Models\CvSpecialities;
-use App\Observers\SpecialitiesObserver;
+use App\Observers\CvSpecialitiesObserver;
 use App\Models\CvSpecialityCertificates;
 use App\Models\CandidateEmployees;
-use App\Observers\SpecialityCertificatesObserver;
+use App\Observers\CvSpecialityCertificatesObserver;
 use App\Observers\CandidateEmpolyessObserver;
 use App\Observers\CvAddressObserver;
 use App\Models\CvAddress;
@@ -56,14 +56,14 @@ class EventServiceProvider extends ServiceProvider
         CvAddress::observe(CvAddressObserver::class);
         CvDocumentations::observe(CvDocumentationsObserver::class);
         CvExpectedSalaries::observe(CvExpectedSalariesObserver::class);
+        CvExperiences::observe(CvExperiencesObserver::class);
+        CvEducations::observe(CvEducationObserver::class);
+        CvCertifications::observe(CvCertificationsObserver::class);
+        CvSpecialities::observe(CvSpecialitiesObserver::class);
+        CvSpecialityCertificates::observe(CvSpecialityCertificatesObserver::class);
+        CvHobbies::observe(CvHobbiesObserver::class);
 
 
-        CvExperiences::observe(ExperiencesObserver::class);
-        CvEducations::observe(EducationObserver::class);
-        CvCertifications::observe(CertificationsObserver::class);
-        CvHobbies::observe(HobbiesObserver::class);
-        CvSpecialities::observe(SpecialitiesObserver::class);
-        CvSpecialityCertificates::observe(SpecialityCertificatesObserver::class);
         CandidateEmployees::observe(CandidateEmpolyessObserver::class);
     }
 }

@@ -6,6 +6,11 @@ use App\Models\CvProfileDetail;
 use App\Models\CvAddress;
 use App\Models\CvSosmeds;
 use App\Http\Controllers\Controller;
+use App\Models\CvEducations;
+use App\Models\CvCertifications;
+use App\Models\CvSpecialities;
+use App\Models\CvHobbies;
+use App\Models\CvExperiences;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +41,29 @@ class CvProfileDetailController extends Controller
         $array['sosmed'] = $userSosmed;
         $collectionArray = collect($array);
         return $this->showOne($collectionArray);
+    }
+
+    public function cvDetail(){
+        $user = auth()->user();
+
+        $education = CvEducations::where('user_id',$user->id_kustomer)->get();
+        $data['education'] = $education;
+
+        $experience = CvExperiences::where('user_id',$user->id_kustomer)->get();
+        $data['experience'] = $experience;
+
+        $certifications = CvCertifications::where('user_id',$user->id_kustomer)->get();
+        $data['certifications'] = $certifications;
+
+        $specialities = CvSpecialities::where('user_id',$user->id_kustomer)->get();
+        $data['specialities'] = $specialities;
+
+        $hobbies = CvHobbies::where('user_id',$user->id_kustomer)->get();
+        $data['hobbies'] = $hobbies;
+
+        $data = (object)$data;
+
+        return $this->showOne(collect($data));
     }
 
     /**

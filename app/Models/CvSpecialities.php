@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\CvSaya\CvSayaSpecialityCertificates;
+use App\Models\CvSpecialityCertificates;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CvSpecialities extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
-    protected $table = 'specialities';
+    protected $table = 'cv_specialities';
 
     protected $guard = 'id';
 
@@ -24,7 +25,7 @@ class CvSpecialities extends Model
     ];
 
     public function certifcates(){
-        return $this->hasMany(CvSayaSpecialityCertificates::class,'speciality_id','id');
+        return $this->hasMany(CvSpecialityCertificates::class,'speciality_id','id');
     }
 
 
