@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\CandidateEmployees;
 use App\Models\CvLogProfileDetails;
 use  App\Models\CvProfileDetail;
 use Carbon\Carbon;
@@ -23,7 +24,6 @@ class CvProfileDetailObserver
         $newLog->married = $profileDetail->married;
         $newLog->created_at = date('Y-m-d h:i:s',time());
         $newLog->save();
-
     }
 
     public function updated(CvProfileDetail $profileDetail)

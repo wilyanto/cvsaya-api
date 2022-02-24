@@ -46,6 +46,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('profile-detail')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
                 Route::get('/cv-page','cvDetail');
+                Route::get('/status', 'getStatus');
                 Route::post('/',  'detail');
                 Route::post('/add', 'store');
                 Route::post('/update', 'update');

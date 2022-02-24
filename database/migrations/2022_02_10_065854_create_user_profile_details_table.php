@@ -24,6 +24,7 @@ class CreateUserProfileDetailsTable extends Migration
             $table->string('identity_number')->nullable();
             $table->string('religion')->nullable();
             $table->string('married')->nullable();
+            $table->string('reference')->nullable();
             $table->timestamps();
         });
     }

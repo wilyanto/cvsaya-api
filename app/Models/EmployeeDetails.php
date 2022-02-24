@@ -17,7 +17,6 @@ class EmployeeDetails extends Model
 
     public $fillable = [
         'position_id',
-        'filled_form',
         'salary',
     ];
 }

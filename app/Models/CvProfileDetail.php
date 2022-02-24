@@ -22,7 +22,7 @@ class CvProfileDetail extends Model
         'gender',
         'identity_number',
         'religion',
-        'religion',
+        'reference',
     ];
 
     protected $table = 'cv_profile_details';

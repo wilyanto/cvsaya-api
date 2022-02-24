@@ -6,11 +6,14 @@ use App\Models\CvProfileDetail;
 use App\Models\CvAddress;
 use App\Models\CvSosmeds;
 use App\Http\Controllers\Controller;
+use App\Models\CandidateEmployees;
 use App\Models\CvEducations;
 use App\Models\CvCertifications;
 use App\Models\CvSpecialities;
 use App\Models\CvHobbies;
 use App\Models\CvExperiences;
+use App\Models\CvDocumentations;
+use App\Models\CvExpectedSalaries;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
@@ -43,27 +46,71 @@ class CvProfileDetailController extends Controller
         return $this->showOne($collectionArray);
     }
 
-    public function cvDetail(){
+    public function cvDetail()
+    {
         $user = auth()->user();
 
-        $education = CvEducations::where('user_id',$user->id_kustomer)->get();
+        $education = CvEducations::where('user_id', $user->id_kustomer)->get();
         $data['education'] = $education;
 
-        $experience = CvExperiences::where('user_id',$user->id_kustomer)->get();
+        $experience = CvExperiences::where('user_id', $user->id_kustomer)->get();
         $data['experience'] = $experience;
 
-        $certifications = CvCertifications::where('user_id',$user->id_kustomer)->get();
+        $certifications = CvCertifications::where('user_id', $user->id_kustomer)->get();
         $data['certifications'] = $certifications;
 
-        $specialities = CvSpecialities::where('user_id',$user->id_kustomer)->get();
+        $specialities = CvSpecialities::where('user_id', $user->id_kustomer)->get();
         $data['specialities'] = $specialities;
 
-        $hobbies = CvHobbies::where('user_id',$user->id_kustomer)->get();
+        $hobbies = CvHobbies::where('user_id', $user->id_kustomer)->get();
         $data['hobbies'] = $hobbies;
 
         $data = (object)$data;
 
         return $this->showOne(collect($data));
+    }
+
+    public function getStatus()
+    {
+        $user = auth()->user();
+
+        $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
+        $userAddress = CvAddress::where('user_id', $user->id_kustomer)->first();
+        $userSosmed = CvSosmeds::where('user_id', $user->id_kustomer)->first();
+        $education = CvEducations::where('user_id', $user->id_kustomer)->first();
+        $experience = CvExperiences::where('user_id', $user->id_kustomer)->first();
+        $certifications = CvCertifications::where('user_id', $user->id_kustomer)->first();
+        $specialities = CvSpecialities::where('user_id', $user->id_kustomer)->first();
+        $hobbies = CvHobbies::where('user_id', $user->id_kustomer)->first();
+        $document = CvDocumentations::where('user_id', $user->id_kustomer)->first();
+        $expectedSalaries = CvExpectedSalaries::where('user_id', $user->id_kustomer)->first();
+
+        $data['Profile'] = true;
+        $data['Works'] = true;
+        $data['Document'] = true;
+        $data['CV'] = true;
+
+        // dump($experience);
+
+        if (!$userProfileDetail || !$userAddress || !$userSosmed) {
+            $data['Profile'] = false;
+        }
+        // dump($userProfileDetail);
+
+        if (!$expectedSalaries) {
+            $data['Works'] = false;
+        }
+
+
+        if (!$education || !$experience || !$certifications || !$specialities || !$hobbies) {
+            $data['CV'] = false;
+        }
+
+        if (!$document) {
+            $data['Document'] = false;
+        }
+
+        return $this->showOne($data);
     }
 
     /**
@@ -87,15 +134,38 @@ class CvProfileDetailController extends Controller
         $request->validate([
             'first_name' => 'string|required|min:3',
             'last_name' => 'string|required|min:3',
+            'reference' => 'string|nullable',
         ]);
 
         // $data = $request->all();
         // dd($data);
+
+        if (CvProfileDetail::where('user_id', $user->id_kustomer)->first()) {
+            return $this->errorResponse('User already created', 409, 40901);
+        }
+
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
+        $this->createCandidate($user, $request);
         // dd($data);
         $userProfileDetail = CvProfileDetail::create($data);
         return $this->showOne($userProfileDetail);
+    }
+
+    public function createCandidate($user, $request)
+    {
+
+        $candidate = CandidateEmployees::where('phone_number', "0" . $user->phone_number)->first();
+        if (!$candidate) {
+            $candidate = new CandidateEmployees();
+        }
+        $candidate->user_id = $user->id_kustomer;
+        $candidate->name = $request->first_name . " " . $request->last_name;
+        $candidate->country_code = +62;
+        $candidate->phone_number = substr($user->phone_number, 1);
+        $candidate->register_date = date('Y-m-d H:i:s', time());
+        $candidate->status = 3;
+        $candidate->save();
     }
 
     /**

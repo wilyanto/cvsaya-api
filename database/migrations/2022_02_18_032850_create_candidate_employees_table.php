@@ -37,7 +37,7 @@ return new class extends Migration
             $table->bigInteger('status')->unsigned();
             $table->bigInteger('suggest_by')->nullable();
             $table->integer('many_request')->unsigned()->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at');
         });
 
         Schema::table('candidate_log_employees',function(Blueprint $table){

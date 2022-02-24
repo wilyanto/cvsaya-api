@@ -39,7 +39,6 @@ class CandidateEmployees extends Model
         'user_id',
         'status',
         'suggest_by',
-        'filled_form',
         'register_date',
     ];
 }

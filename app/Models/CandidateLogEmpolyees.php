@@ -14,4 +14,6 @@ class CandidateLogEmpolyees extends Model
     protected $guard = 'id';
 
     protected $primaryKey = 'id';
+
+    public $timestamps = false;
 }
