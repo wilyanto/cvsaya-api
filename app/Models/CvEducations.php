@@ -28,4 +28,20 @@ class CvEducations extends Model
         'activity',
         'description'
     ];
+
+    public function Experiences(){
+        return $this->hasOne(CvExperiences::class,'user_id','user_id');
+    }
+
+    public function Certifications(){
+        return $this->hasOne(CvCertifications::class,'user_id','user_id');
+    }
+
+    public function Specialities(){
+        return $this->hasOne(CvSpecialities::class,'user_id','user_id');
+    }
+
+    public function Hobbies(){
+        return $this->hasOne(CvHobbies::class,'user_id','user_id');
+    }
 }

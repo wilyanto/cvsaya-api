@@ -31,4 +31,11 @@ class CvProfileDetail extends Model
 
     protected $primaryKey = 'id';
 
+    public function Addresses(){
+        return $this->hasOne(CvAddress::class,'user_id','user_id');
+    }
+
+    public function Sosmeds(){
+        return $this->hasOne(CvSosmeds::class,'user_id','user_id');
+    }
 }

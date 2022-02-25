@@ -33,4 +33,8 @@ class CvAddress extends Model
     public function Result(){
         return $this->hasOne(Result::class,'id','result_id');
     }
+
+    public function profileDetails(){
+        return $this->belongsTo(CvProfileDetail::class,'user_id','user_id');
+    }
 }

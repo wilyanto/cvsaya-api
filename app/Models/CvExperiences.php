@@ -20,4 +20,5 @@ class CvExperiences extends Model
     public function user(){
         return $this->belongsTo(User::class,'id_kustomer','user_id');
     }
+
 }

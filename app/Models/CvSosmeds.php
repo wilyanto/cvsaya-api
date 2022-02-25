@@ -25,4 +25,8 @@ class CvSosmeds extends Model
         'facebook',
         'website_url',
     ];
+
+    public function profileDetails(){
+        return $this->belongsTo(CvProfileDetail::class,'user_id','user_id');
+    }
 }

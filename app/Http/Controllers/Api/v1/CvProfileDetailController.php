@@ -76,13 +76,7 @@ class CvProfileDetailController extends Controller
         $user = auth()->user();
 
         $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
-        $userAddress = CvAddress::where('user_id', $user->id_kustomer)->first();
-        $userSosmed = CvSosmeds::where('user_id', $user->id_kustomer)->first();
         $education = CvEducations::where('user_id', $user->id_kustomer)->first();
-        $experience = CvExperiences::where('user_id', $user->id_kustomer)->first();
-        $certifications = CvCertifications::where('user_id', $user->id_kustomer)->first();
-        $specialities = CvSpecialities::where('user_id', $user->id_kustomer)->first();
-        $hobbies = CvHobbies::where('user_id', $user->id_kustomer)->first();
         $document = CvDocumentations::where('user_id', $user->id_kustomer)->first();
         $expectedSalaries = CvExpectedSalaries::where('user_id', $user->id_kustomer)->first();
 
@@ -92,7 +86,7 @@ class CvProfileDetailController extends Controller
         $data['is_cv_filled'] = true;
 
         // dump($experience);
-        if (!$userProfileDetail || !$userAddress || !$userSosmed) {
+        if (!$userProfileDetail || !$userProfileDetail->addresses || !$userProfileDetail->sosmeds) {
             $data['is_profile_filled'] = false;
         }
         // dump($userProfileDetail);
@@ -102,7 +96,7 @@ class CvProfileDetailController extends Controller
         }
 
 
-        if (!$education || !$experience || !$certifications || !$specialities || !$hobbies) {
+        if (!$education || !$education->experience || !$education->certifications || !$education->specialities || !$education->hobbies) {
             $data['is_cv_filled'] = false;
         }
 

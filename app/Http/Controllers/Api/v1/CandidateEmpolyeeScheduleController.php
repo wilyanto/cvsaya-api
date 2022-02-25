@@ -17,7 +17,7 @@ class CandidateEmpolyeeScheduleController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**
@@ -56,7 +56,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         }
 
         // switch ($candidate->status) {
-        //     case (CandidateEmployees::ins):
+        //     case (CandidateEmployees::):
         //         $candidate->status = CandidateEmployees;
         //     case (CandidateEmployees):
         //         $candidate->status = CandidateEmployees;
