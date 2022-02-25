@@ -8,7 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\EmployeeDetails;
 use App\Http\Controllers\Controller;
+use App\Models\Positions;
+use App\Models\CandidateLogEmpolyees;
 use App\Models\User;
+use App\Models\CvExpectedSalaries;
+use App\Models\CvAddress;
 
 class CandidateEmployeesController extends Controller
 {
@@ -28,18 +32,29 @@ class CandidateEmployeesController extends Controller
         // }
         $request->validate([
             'filterBy' => 'string|nullable',
+            'position_id' => 'integer|nullable',
+            'city_id' => 'integer|nullable',
+        ]);
+        $posistion = CvExpectedSalaries::where('expected_position','like','%'.$request->posistion_id.'%')->pluck('user_id');
+
+        $address= CvAddress::where('city_id','like','%'.$request->city_id.'%')->pluck('id');
+
+        $candidates = CandidateEmployees::where('status','like','%'.$request->filterBy.'%')->whereIn('user_id',$address)->whereIn('user_id',$posistion)->get();
+        return $this->showAll($candidates);
+    }
+
+    public function indexDetail(Request $request){
+        $user = auth()->user();
+
+        $request->validate([
+            'user_id'=> 'string|required',
         ]);
 
-        switch ($request->filterBy) {
-            case ('blast'):
-                $candidates = CandidateEmployees::where('status', 1)->get();
-                break;
-            default:
-                $candidates = CandidateEmployees::all();
-        }
-        // $candidates = CandidateEmployees::where('status', 1)->get();
-        return $this->showOne($candidates);
+        $candidate = CandidateLogEmpolyees::where('user_id',$request->id)->get();
+        return $this->all($candidate);
     }
+
+
 
     public function addCandidateToBlast(Request $request)
     {
@@ -70,27 +85,63 @@ class CandidateEmployeesController extends Controller
         return $this->showOne($candidates);
     }
 
-    public function updateStatus(Request $request)
-    {
+    public function setDecline(Request $request){
+        $user = auth()->user();
+
         $request->validate([
-            'name' => 'string|required',
-            'country_code' => 'string|required',
-            'phone_number' => 'integer|required',
+            'user_id'=> 'integer|required',
         ]);
 
-        $candidateEmployees = CandidateEmployees::where('phone_number', $request->phone_number)->where('country_code', $request->country_code)->first();
-        if (!$candidateEmployees) {
-            return $this->errorResponse('Candidate Not Found', 404, 40401);
+        $candidate = CandidateEmployees::where('user_id',$request->user_id)->first();
+        if(!$candidate){
+            return $this->errorResponse('Candidate Not Found', 404 ,40401);
         }
 
-        $candidateEmployees->phone_number = $request->phone_number;
-        $candidateEmployees->country_code = $request->country_code;
-        if (!$candidateEmployees->name) {
-            $candidateEmployees->name = $request->name;
-        }
-        $candidateEmployees->status = CandidateEmployees::REGISTEREDKADA;
-        $candidateEmployees->save();
+        $candidate->delete();
+
+        return $this->showOne($candidate);
     }
+
+    public function getPosition(){
+        $user = auth()->user();
+
+        $positions = Positions::distinct('id')->where('company_id',$user->ID_perusahaan)->pluck('id');
+
+        foreach ($positions as $position){
+            $emplyeeList = CvExpectedSalaries::where('expected_position',$position)->pluck('user_id');
+            $applied[$position] = CandidateEmployees::whereIn('user_id',$emplyeeList)->where('status','<',CandidateEmployees::INTERVIEW)->count();
+            $interview[$position] = CandidateEmployees::whereIn('user_id',$emplyeeList)->where('status',CandidateEmployees::INTERVIEW)->count();
+            $rejected[$position] = CandidateEmployees::whereIn('user_id',$emplyeeList)->where('status',CandidateEmployees::DECLINE)->count();
+            $consider[$position] =  CandidateEmployees::whereIn('user_id',$emplyeeList)->where('status',CandidateEmployees::CONSIDER)->count();
+            $standBy[$position] =  CandidateEmployees::whereIn('user_id',$emplyeeList)->where('status',CandidateEmployees::STANDBY)->count();
+            $pass[$position] =  CandidateEmployees::whereIn('user_id',$emplyeeList)->where('status',CandidateEmployees::PASS)->count();
+
+        }
+
+        
+    }
+
+    // public function updateStatus(Request $request)
+    // {
+    //     $request->validate([
+    //         'name' => 'string|required',
+    //         'country_code' => 'string|required',
+    //         'phone_number' => 'integer|required',
+    //     ]);
+
+    //     $candidateEmployees = CandidateEmployees::where('phone_number', $request->phone_number)->where('country_code', $request->country_code)->first();
+    //     if (!$candidateEmployees) {
+    //         return $this->errorResponse('Candidate Not Found', 404, 40401);
+    //     }
+
+    //     $candidateEmployees->phone_number = $request->phone_number;
+    //     $candidateEmployees->country_code = $request->country_code;
+    //     if (!$candidateEmployees->name) {
+    //         $candidateEmployees->name = $request->name;
+    //     }
+    //     $candidateEmployees->status = CandidateEmployees::REGISTEREDKADA;
+    //     $candidateEmployees->save();
+    // }
 
     /**
      * Show the form for creating a new resource.
