@@ -19,11 +19,13 @@ class CandidateEmployees extends Model
 
     public const STANDBY = 6;
 
-    public const PASS = 6;
+    public const PASS = 7;
 
-    public const ACCEPTED = 7;
+    public const CONSIDER = 8;
 
-    public const DECLINE = 8;
+    public const ACCEPTED = 9;
+
+    public const DECLINE = 10;
 
     protected $table = 'candidate_employees';
 
