@@ -54,7 +54,7 @@ trait ApiResponser
         );
     }
 
-    protected function showPaginate($resultKey, $resultValues, $nextPageUrl, $statusCode = null, $metaMessage = null)
+    protected function showPaginate($resultKey,Collection $resultValues, Collection $paginateCollection, $statusCode = null, $metaMessage = null)
     {
         return response()->json(
             [
@@ -64,8 +64,12 @@ trait ApiResponser
                     'message' => $metaMessage ?? 'Request success',
                 ],
                 'data' => [
-                    $resultKey => $resultValues,
-                    'next_page_url' => $nextPageUrl
+                    $resultKey => $resultValues->values(),
+                    'page_info' => [
+                        'last_page' => $paginateCollection['last_page'],
+                        'current_page' => $paginateCollection['current_page'],
+                        'path' => $paginateCollection['path'],
+                    ]
                 ]
             ],
             $statusCode ?? 200

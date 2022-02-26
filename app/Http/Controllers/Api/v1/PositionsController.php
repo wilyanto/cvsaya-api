@@ -48,6 +48,7 @@ class PositionsController extends Controller
             'department_id' => 'required|integer',
             'level_id' => 'required|integer',
             'parent_id' => 'nullable|integer',
+            'company_id'=> 'nullable|integer',
         ]);
 
         $getDepartment = Departments::where('id',$request->department_id)->first();

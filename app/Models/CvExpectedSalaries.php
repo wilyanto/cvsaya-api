@@ -29,4 +29,8 @@ class CvExpectedSalaries extends Model
     public function Positions(){
         return $this->HasMany(Positions::class,'id','expected_position');
     }
+
+    public function Candidate(){
+        return $this->hasMany(CandidateEmployees::class,'user_id','user_id');
+    }
 }

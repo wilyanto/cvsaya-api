@@ -34,15 +34,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->group(function () {
-    Route::prefix('candidate')->group(function () {
-        Route::controller(CandidateEmployeesController::class)->group(function () {
-            Route::post('/', 'index');
-            Route::post('create', 'addCandidateToBlast');
-            // Route::post('update-status','updateStatus');
-        });
-    });
 
     Route::middleware('auth:api')->group(function () {
+        Route::prefix('candidate')->group(function () {
+            Route::controller(CandidateEmployeesController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::get('/position','getPosition');
+                Route::post('create', 'addCandidateToBlast');
+                // Route::post('update-status','updateStatus');
+            });
+        });
+
         Route::prefix('profile-detail')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
                 Route::get('/cv-page','cvDetail');

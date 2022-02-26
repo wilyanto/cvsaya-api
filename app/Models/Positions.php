@@ -19,21 +19,22 @@ class Positions extends Model
         'level_id',
         'parent_id',
         'min_salary',
-        'max_salary'
+        'max_salary',
+        'company_id'
     ];
     protected $guard = 'id';
 
     protected $priamryKey = 'id';
 
 
-    public function children ()
+    public function children()
     {
-        return $this->hasMany(Positions::class,'parent_id');
+        return $this->hasMany(Positions::class, 'parent_id');
     }
 
-    public function parent ()
+    public function parent()
     {
-        return $this->belongsTo(Positions::class,'parent_id');
+        return $this->belongsTo(Positions::class, 'parent_id');
     }
 
     public function getAllChildren()
@@ -48,26 +49,46 @@ class Positions extends Model
         return $sections;
     }
 
-    public function departments(){
-        return $this->belongsTo(Departments::class,'department_id','id');
+    public function departments()
+    {
+        return $this->belongsTo(Departments::class, 'department_id', 'id');
     }
 
-    public function levels(){
-        return $this->belongsTo(Level::class,'level_id','id');
+    public function levels()
+    {
+        return $this->belongsTo(Level::class, 'level_id', 'id');
+    }
+
+    public function Candidate()
+    {
+        return $this->hasManyThrough(CandidateEmployees::class, CvExpectedSalaries::class, 'expected_position', 'user_id', 'id', 'user_id');
+    }
+
+    public function ExpectedPositions()
+    {
+        return $this->hasMany(CvExpectedSalaries::class, 'expected_position', 'id');
+    }
+
+    public function toCandidate()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name
+        ];
     }
 
     public function toArray()
     {
         return [
             'id' => $this->id,
-            'name' =>$this->name,
+            'name' => $this->name,
             'department' => $this->departments,
             'level_id' => $this->levels,
-            'parent_id'=>$this->parent_id,
+            'parent_id' => $this->parent_id,
             'created_at' => $this->created_at,
-            'updated_at'=>$this->updated_at,
-            'min_salary'=>$this->min_salary,
-            'max_salary'=>$this->max_salary
+            'updated_at' => $this->updated_at,
+            'min_salary' => $this->min_salary,
+            'max_salary' => $this->max_salary
         ];
     }
 

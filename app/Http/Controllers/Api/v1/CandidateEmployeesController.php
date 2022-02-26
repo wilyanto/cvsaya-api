@@ -35,22 +35,30 @@ class CandidateEmployeesController extends Controller
             'position_id' => 'integer|nullable',
             'city_id' => 'integer|nullable',
         ]);
-        $posistion = CvExpectedSalaries::where('expected_position','like','%'.$request->posistion_id.'%')->pluck('user_id');
 
-        $address= CvAddress::where('city_id','like','%'.$request->city_id.'%')->pluck('id');
+        $position = [];
+        $position = CvExpectedSalaries::where('expected_position', 'like', '%' . $request->posistion_id . '%')->pluck('user_id');
 
-        $candidates = CandidateEmployees::where('status','like','%'.$request->filterBy.'%')->whereIn('user_id',$address)->whereIn('user_id',$posistion)->get();
+        $address = [];
+        $address = CvAddress::where('city_id', 'like', '%' . $request->city_id . '%')->pluck('id');
+
+        if ($request->input()) {
+            $candidates = CandidateEmployees::where('status', 'like', '%' . $request->filterBy . '%')->whereIn('user_id', $address)->whereIn('user_id', $position)->get();
+        } else {
+            $candidates = CandidateEmployees::all();
+        }
         return $this->showAll($candidates);
     }
 
-    public function indexDetail(Request $request){
+    public function indexDetail(Request $request)
+    {
         $user = auth()->user();
 
         $request->validate([
-            'user_id'=> 'string|required',
+            'user_id' => 'string|required',
         ]);
 
-        $candidate = CandidateLogEmpolyees::where('user_id',$request->id)->get();
+        $candidate = CandidateLogEmpolyees::where('user_id', $request->id)->get();
         return $this->all($candidate);
     }
 
@@ -85,16 +93,17 @@ class CandidateEmployeesController extends Controller
         return $this->showOne($candidates);
     }
 
-    public function setDecline(Request $request){
+    public function setDecline(Request $request)
+    {
         $user = auth()->user();
 
         $request->validate([
-            'user_id'=> 'integer|required',
+            'user_id' => 'integer|required',
         ]);
 
-        $candidate = CandidateEmployees::where('user_id',$request->user_id)->first();
-        if(!$candidate){
-            return $this->errorResponse('Candidate Not Found', 404 ,40401);
+        $candidate = CandidateEmployees::where('user_id', $request->user_id)->first();
+        if (!$candidate) {
+            return $this->errorResponse('Candidate Not Found', 404, 40401);
         }
 
         $candidate->delete();
@@ -102,23 +111,60 @@ class CandidateEmployeesController extends Controller
         return $this->showOne($candidate);
     }
 
-    public function getPosition(){
+    public function getPosition(Request $request)
+    {
         $user = auth()->user();
+        $request->validate([
+            // 'company_id' => 'integer|required',
+            'page' => 'required|numeric|gt:0',
+            'page_size' => 'required|numeric|gt:0'
+        ]);
 
-        $positions = Positions::distinct('id')->where('company_id',$user->ID_perusahaan)->pluck('id');
-
-        foreach ($positions as $position){
-            $emplyeeList = CvExpectedSalaries::where('expected_position',$position)->pluck('user_id');
-            $applied[$position] = CandidateEmployees::whereIn('user_id',$emplyeeList)->where('status','<',CandidateEmployees::INTERVIEW)->count();
-            $interview[$position] = CandidateEmployees::whereIn('user_id',$emplyeeList)->where('status',CandidateEmployees::INTERVIEW)->count();
-            $rejected[$position] = CandidateEmployees::whereIn('user_id',$emplyeeList)->where('status',CandidateEmployees::DECLINE)->count();
-            $consider[$position] =  CandidateEmployees::whereIn('user_id',$emplyeeList)->where('status',CandidateEmployees::CONSIDER)->count();
-            $standBy[$position] =  CandidateEmployees::whereIn('user_id',$emplyeeList)->where('status',CandidateEmployees::STANDBY)->count();
-            $pass[$position] =  CandidateEmployees::whereIn('user_id',$emplyeeList)->where('status',CandidateEmployees::PASS)->count();
-
+        // dump($user);
+        $result = [];
+        $positions = Positions::where('company_id', $user->ID_perusahaan)->orderBy('name', 'ASC')
+            // ->get()
+            ->paginate(
+                $perpage = $request->page_size,
+                $columns =  ['*'],
+                $pageName = 'page',
+                $pageBody = $request->page
+            );
+        foreach ($positions as $position) {
+            $result[] = [
+                'id' => $position->id,
+                'name' => $position->name,
+                'statistics' => $this->getCount($position),
+            ];
         }
 
-        
+        // return $this->showAll(collect($result));
+        return $this->showPaginate('positions', collect($result), collect($positions));
+    }
+
+    public function getCount($position)
+    {
+        // dump($position);
+        $data['before_interview'] = collect($position->candidate)->filter(function ($item) {
+            return $item->status <= CandidateEmployees::INTERVIEW;
+        })->count();
+        $data['interview'] = collect($position->candidate)->filter(function ($item) {
+            return $item->status == CandidateEmployees::INTERVIEW;
+        })->count();
+        $data['decline'] = collect($position->candidate)->filter(function ($item) {
+            return $item->status <= CandidateEmployees::DECLINE;
+        })->count();
+        $data['standby'] = collect($position->candidate)->filter(function ($item) {
+            return $item->status <= CandidateEmployees::STANDBY;
+        })->count();
+        $data['pass'] = collect($position->candidate)->filter(function ($item) {
+            return $item->status <= CandidateEmployees::PASS;
+        })->count();
+        $data['consider'] = collect($position->candidate)->filter(function ($item) {
+            return $item->status <= CandidateEmployees::CONSIDER;
+        })->count();
+
+        return $data;
     }
 
     // public function updateStatus(Request $request)
