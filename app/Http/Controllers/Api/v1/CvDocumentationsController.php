@@ -6,6 +6,7 @@ use App\Models\CvDocumentations;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Traits\ApiResponser;
+use Illuminate\Support\Facades\Storage;
 
 class CvDocumentationsController extends Controller
 {
@@ -62,6 +63,30 @@ class CvDocumentationsController extends Controller
         $document->update($data);
         // dd($document);
         return $this->showOne($document);
+    }
+
+    public function uploadStorage(Request $request){
+        $user = auth()->user();
+
+        $request->validate([
+            'file' => 'file|required',
+            'title' => 'string|required',
+        ]);
+
+        $extension = $request->file('file')->getClientOriginalExtension();
+        $digits = 4;
+        $randomValue = rand(pow(10, $digits-1), pow(10, $digits)-1);
+
+        $filename = date('Y-m-d_H-i-s',time()).'_'.$user->id_kustomer.'_'.$randomValue.'.'.$extension;
+
+        $path = $request->file('file')->storeAs('public/'.$request->title,$filename);
+
+        $data = [
+            'filePath' => $filename,
+            'title' => $request->title,
+        ];
+
+        return $this->showOne($data);
     }
 
     /**

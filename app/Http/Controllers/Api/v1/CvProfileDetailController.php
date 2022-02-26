@@ -71,6 +71,8 @@ class CvProfileDetailController extends Controller
         return $this->showOne(collect($data));
     }
 
+    
+
     public function getStatus()
     {
         $user = auth()->user();

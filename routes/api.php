@@ -58,6 +58,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('documents')->group(function () {
             Route::controller(CvDocumentationsController::class)->group(function () {
                 Route::get('/', 'index');
+                Route::post('/upload','uploadStorage');
                 Route::post('/create', 'store');
             });
         });
