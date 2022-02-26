@@ -23,4 +23,18 @@ class CvDocumentations extends Model
         'selfie_right',
         'mirrage_certificate',
     ];
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'identity_picture_card' => 'http://'.env('APP_URL').'/storage/'.'ktp'.'/'.$this->identity_picture_card,
+            'selfie_front' => 'http://'.env('APP_URL').'/storage/'.'selfie'.'/'.$this->selfie_front,
+            'selfie_left' => 'http://'.env('APP_URL').'/storage/'.'selfie'.'/'.$this->selfie_left,
+            'selfie_right' => 'http://'.env('APP_URL').'/storage/'.'selfie'.'/'.$this->selfie_right,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
 }

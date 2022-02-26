@@ -56,6 +56,12 @@ class CvDocumentationsController extends Controller
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
+        // dump($data);
+        $data['identity_picture_card'] = explode("/", $data['identity_picture_card'])[5];
+        $data['selfie_front'] = explode("/", $data['selfie_front'])[5];
+        $data['selfie_left'] = explode("/", $data['selfie_left'])[5];
+        $data['selfie_right'] = explode("/", $data['selfie_right'])[5];
+        // dd($data);
         $document = CvDocumentations::where('user_id',$data['user_id'])->first();
         if(!$document){
             $document = CvDocumentations::create($data);
@@ -65,24 +71,31 @@ class CvDocumentationsController extends Controller
         return $this->showOne($document);
     }
 
+    public function random4Digits(){
+        $digits = 4;
+        $randomValue = rand(pow(10, $digits-1), pow(10, $digits)-1);
+
+        return $randomValue;
+    }
+
     public function uploadStorage(Request $request){
         $user = auth()->user();
 
         $request->validate([
             'file' => 'file|required',
-            'title' => 'string|required',
+            'type' => 'string|required',
         ]);
 
         $extension = $request->file('file')->getClientOriginalExtension();
-        $digits = 4;
-        $randomValue = rand(pow(10, $digits-1), pow(10, $digits)-1);
 
-        $filename = date('Y-m-d_H-i-s',time()).'_'.$user->id_kustomer.'_'.$randomValue.'.'.$extension;
+        $filename = date('Y-m-d_H-i-s',time()).'_'.$user->id_kustomer.'_'.$this->random4Digits().'.'.$extension;
 
-        $path = $request->file('file')->storeAs('public/'.$request->title,$filename);
+        $path = 'http://'.env('APP_URL').'/storage/'.$request->type.'/'.$filename;
+        // dd(env('APP_URL'));
+        $pathFormStorage = $request->file('file')->storeAs('public/'.$request->type,$filename);
 
         $data = [
-            'filePath' => $filename,
+            'filePath' => $path,
             'title' => $request->title,
         ];
 
