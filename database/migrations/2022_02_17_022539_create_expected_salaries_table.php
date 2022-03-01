@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('cv_expected_salaries', function (Blueprint $table) {
+        Schema::create('cv_expected_positions', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             // $table->integer('amount_before');
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('cv_log_expected_salaries', function (Blueprint $table) {
+        Schema::create('cv_log_expected_positions', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('expected_salary_id')->unsigned();
             // $table->integer('amount_before');
@@ -37,13 +37,10 @@ return new class extends Migration
             $table->timestamp('created_at');
         });
 
-        Schema::table('cv_log_expected_salaries', function (Blueprint $table) {
-            $table->foreign('expected_salary_id')->references('id')->on('cv_expected_salaries');
+        Schema::table('cv_log_expected_positions', function (Blueprint $table) {
+            $table->foreign('expected_salary_id')->references('id')->on('cv_expected_positions');
         });
 
-        Schema::table('cv_expected_salaries', function (Blueprint $table) {
-            $table->foreign('expected_position')->references('id')->on('positions');
-        });
     }
 
     /**
@@ -53,14 +50,11 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('cv_expected_salaries', function (Blueprint $table) {
-            $table->dropForeign(['expected_position']);
-        });
 
-        Schema::table('cv_log_expected_salaries', function (Blueprint $table) {
+        Schema::table('cv_log_expected_positions', function (Blueprint $table) {
             $table->dropForeign(['expected_salary_id']);
         });
-        Schema::dropIfExists('cv_log_expected_salaries');
-        Schema::dropIfExists('cv_expected_salaries');
+        Schema::dropIfExists('cv_log_expected_positions');
+        Schema::dropIfExists('cv_expected_positions');
     }
 };
