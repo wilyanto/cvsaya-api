@@ -99,7 +99,7 @@ class CvExperiencesController extends Controller
         $request->validate([
             'id' => 'required|integer',
             'position' => 'nullable|string',
-            'employment_type' => 'nullable|in:full-time,part-time,self-employed,freelance,contract,internship,apprenticeship,seasonal',
+            'employment_type' => 'nullable','in:full-time,part-time,self-employed,freelance,contract,internship,apprenticeship,seasonal',
             'location' => 'nullable|string',
             'start_at' => 'nullable|date',
             'until_at' => 'nullable|date|after:start_at',

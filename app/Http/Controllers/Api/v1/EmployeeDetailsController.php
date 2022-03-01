@@ -34,6 +34,7 @@ class EmployeeDetailsController extends Controller
             'position_id' => 'integer|nullable',
             'department_id' => 'integer|nullable',
             'level_id' => 'integer|nullable',
+            'name' => 'integer|nullable',
         ]);
         $request->company_id = 1;
         // $request->position_id = 2;
@@ -66,7 +67,7 @@ class EmployeeDetailsController extends Controller
         // dump($department);
         // dump($level);
         // dd($position);
-        $employee = EmployeeDetails::whereIn('position_id', $position)->get();
+        $employee = EmployeeDetails::whereIn('position_id', $position)->Where('name', 'like', '%' . $request->name . '%')->get();
         return $this->showAll($employee);
     }
 

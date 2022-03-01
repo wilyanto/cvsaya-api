@@ -18,6 +18,8 @@ use Illuminate\Http\Request;
 use App\Models\EmployeeDetails;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class CvProfileDetailController extends Controller
 {
@@ -71,7 +73,7 @@ class CvProfileDetailController extends Controller
         return $this->showOne(collect($data));
     }
 
-    
+
 
     public function getStatus()
     {
@@ -97,8 +99,7 @@ class CvProfileDetailController extends Controller
             $data['is_works_filled'] = false;
         }
 
-
-        if (!$education || !$education->experience || !$education->certifications || !$education->specialities || !$education->hobbies) {
+        if (!$education || !$education->experiences || !$education->certifications || !$education->specialities || !$education->hobbies) {
             $data['is_cv_filled'] = false;
         }
 
@@ -108,10 +109,10 @@ class CvProfileDetailController extends Controller
 
         $employee = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
         if($employee){
-            $result['is_empolyee'] = true;
-            $result['position'] = $employee->position()->name;
+            $result['is_employee'] = true;
+            $result['position'] = $employee->position->name ;
         }else{
-            $result['is_empolyee'] = false;
+            $result['is_employee'] = false;
             $result['position'] = null;
         }
 
@@ -159,6 +160,7 @@ class CvProfileDetailController extends Controller
         // $data = $request->all();
         // dd($data);
 
+        // dd(CvProfileDetail::where('user_id', $user->id_kustomer)->first());
         if (CvProfileDetail::where('user_id', $user->id_kustomer)->first()) {
             return $this->errorResponse('User already created', 409, 40901);
         }
@@ -174,7 +176,7 @@ class CvProfileDetailController extends Controller
     public function createCandidate($user, $request)
     {
 
-        $candidate = CandidateEmployees::where('phone_number', "0" . $user->telpon)->first();
+        $candidate = CandidateEmployees::where('phone_number', substr($user->telpon,1))->first();
         if (!$candidate) {
             $candidate = new CandidateEmployees();
         }
@@ -235,8 +237,8 @@ class CvProfileDetailController extends Controller
             'profile_detail.birth_location' => 'string|required',
             'profile_detail.birth_date' => 'date|required',
             'profile_detail.gender' => 'required|string',
-            'profile_detail.identity_number' => 'required|min:5',
-            'profile_detail.religion' => 'required|in:Buddha,Islam,Kristen,Hindu,Kong Hu Cu',
+            'profile_detail.identity_number' => 'required|integer|min:5',
+            'profile_detail.religion' => 'in:Buddha,Islam,Kristen,Hindu,Kong Hu Cu|required',
             'profile_detail.married' => 'required|string',
 
             #Address

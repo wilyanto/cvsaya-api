@@ -22,6 +22,6 @@ class EmployeeDetails extends Model
     ];
 
     public function position(){
-        return $this->belongsTo(Positions::class,'id','position_id');
+        return $this->hasOne(Positions::class,'id','position_id');
     }
 }
