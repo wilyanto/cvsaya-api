@@ -13,47 +13,38 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('candidate_empolyee_schedules', function (Blueprint $table) {
+        Schema::create('candidate_employee_schedules', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('empolyee_candidate_id')->unsigned();
+            $table->bigInteger('employee_candidate_id')->unsigned();
             $table->timestamp('date_time')->nullable();
             $table->bigInteger('interview_by')->unsigned()->nullable();
-            $table->bigInteger('result_id')->unsigned()->nullable();
+            $table->bigInteger('result')->unsigned()->nullable();
             $table->longText('note')->nullable();
             $table->timestamps();
         });
 
-        Schema::create('candidate_log_empolyee_schedules', function (Blueprint $table) {
+        Schema::create('candidate_log_employee_schedules', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('empolyee_candidate_id')->unsigned();
+            $table->bigInteger('employee_candidate_id')->unsigned();
             $table->timestamp('date_time')->nullable();
             $table->bigInteger('interview_by')->unsigned()->nullable();
-            $table->bigInteger('result_id')->unsigned()->nullable();
+            $table->bigInteger('result')->unsigned()->nullable();
             $table->longText('note')->nullable();
             $table->timestamps();
         });
 
-        Schema::table('candidate_log_empolyee_schedules',function(Blueprint $table){
-            $table->foreign('empolyee_candidate_id')->references('id')->on('candidate_empolyee_schedules');
+        Schema::table('candidate_log_employee_schedules',function(Blueprint $table){
+            $table->foreign('employee_candidate_id')->references('id')->on('candidate_employee_schedules');
         });
 
-        Schema::create('candidate_result',function(Blueprint $table){
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
+        Schema::table('candidate_employee_schedules',function(Blueprint $table){
+            $table->foreign('employee_candidate_id')->references('id')->on('candidate_employees');
         });
 
-        Schema::table('candidate_empolyee_schedules',function(Blueprint $table){
-            $table->foreign('empolyee_candidate_id')->references('id')->on('candidate_empolyee_schedules');
-        });
-
-        Schema::table('candidate_empolyee_schedules',function(Blueprint $table){
+        Schema::table('candidate_employee_schedules',function(Blueprint $table){
             $table->foreign('interview_by')->references('id')->on('employee_details');
         });
 
-        Schema::table('candidate_empolyee_schedules',function(Blueprint $table){
-            $table->foreign('result_id')->references('id')->on('candidate_result');
-        });
     }
 
     /**
@@ -63,26 +54,21 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('candidate_empolyee_schedules',function(Blueprint $table){
+        Schema::table('candidate_employee_schedules',function(Blueprint $table){
             $table->dropForeign(['interview_by']);
         });
 
-        Schema::table('candidate_empolyee_schedules',function(Blueprint $table){
-            $table->dropForeign(['empolyee_candidate_id']);
+        Schema::table('candidate_employee_schedules',function(Blueprint $table){
+            $table->dropForeign(['employee_candidate_id']);
         });
 
-        Schema::table('candidate_empolyee_schedules',function(Blueprint $table){
-            $table->dropForeign(['result_id']);
+
+        Schema::table('candidate_log_employee_schedules',function(Blueprint $table){
+            $table->dropForeign(['employee_candidate_id']);
         });
 
-        Schema::dropIfExists('candidate_result');
+        Schema::dropIfExists('candidate_log_employee_schedules');
 
-        Schema::table('candidate_log_empolyee_schedules',function(Blueprint $table){
-            $table->dropForeign(['empolyee_candidate_id']);
-        });
-
-        Schema::dropIfExists('candidate_log_empolyee_schedules');
-
-        Schema::dropIfExists('candidate_empolyee_schedules');
+        Schema::dropIfExists('candidate_employee_schedules');
     }
 };
