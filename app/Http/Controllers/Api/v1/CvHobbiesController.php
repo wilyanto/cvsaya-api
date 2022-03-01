@@ -62,10 +62,34 @@ class CvHobbiesController extends Controller
      * @param  \App\Models\Hobbies  $hobbies
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show(Request $request)
     {
-        //
+        $user = auth()->user();
+        $request->validate([
+            'filter_by' => 'string|nullable',
+        ]);
+        $specialities = CvHobbies::where('name','LIKE', '%'.$request->filter_by.'%')->withTrashed()->get();
+        $specialities = collect($specialities)->pluck('name');
+        if($request->filter_by){
+            $specialities->push($request->filter_by);
+        }
+        $specialities = $specialities->unique();
+
+        return $this->showAll($specialities);
+
     }
+
+    public function showTopTenList(Request $request){
+        $user = auth()->user();
+
+        $specialities = CvHobbies::select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit(10)->get();
+
+        $specialities = collect($specialities)->pluck('name');
+     //    dd($specialities);
+
+        return $this->showAll($specialities);
+
+     }
 
     /**
      * Show the form for editing the specified resource.

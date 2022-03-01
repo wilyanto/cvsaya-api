@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\v1\LevelController;
 use App\Http\Controllers\Api\v1\PositionsController;
 use App\Http\Controllers\Api\v1\CandidateEmployeesController;
 use App\Http\Controllers\Api\v1\EmployeeDetailsController;
+use App\Http\Controllers\Api\v1\CandidateEmpolyeeScheduleController;
 use App\Models\Certifications;
 use App\Models\CvProfileDetail;
 
@@ -42,8 +43,15 @@ Route::prefix('v1')->group(function () {
                 Route::get('/position','getPosition');
                 Route::post('create', 'addCandidateToBlast');
                 // Route::post('update-status','updateStatus');
+                Route::prefix('schedulue')->group(function(){
+                    Route::controller(CandidateEmpolyeeScheduleController::class)->group(function(){
+                        Route::post('/store','store');
+                        Route::post('/update','update');
+                    });
+                });
             });
         });
+
 
         Route::prefix('profile-detail')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
@@ -147,6 +155,8 @@ Route::prefix('v1')->group(function () {
         Route::prefix('hobbies')->group(function () {
             Route::controller(CvHobbiesController::class)->group(function () {
                 Route::get('/', 'index');
+                Route::post('/list', 'show');
+                Route::get('/top-ten-list','showTopTenList');
                 Route::post('/add', 'create');
                 Route::post('/delete', 'destroy');
                 Route::post('/update', 'update');

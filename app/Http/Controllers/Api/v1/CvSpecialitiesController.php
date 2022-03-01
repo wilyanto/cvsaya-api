@@ -94,18 +94,13 @@ class CvSpecialitiesController extends Controller
         $request->validate([
             'filter_by' => 'string|nullable',
         ]);
-        // dump($request->filter_by);
-        $data=  '%'.$request->filter_by.'%';
-        // $specialities = CvSpecialities::where('name',     'LIKE', '%' . 'as' . '%')->get();
         $specialities = CvSpecialities::where('name','LIKE', '%'.$request->filter_by.'%')->withTrashed()->get();
         $specialities = collect($specialities)->pluck('name');
         if($request->filter_by){
             $specialities->push($request->filter_by);
         }
         $specialities = $specialities->unique();
-        // $specialities = collect($specialities)->unique('name');
 
-        // dd($specialities);
         return $this->showAll($specialities);
 
     }
