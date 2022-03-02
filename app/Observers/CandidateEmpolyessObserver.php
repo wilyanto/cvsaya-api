@@ -11,7 +11,6 @@ class CandidateEmpolyessObserver
         $newlog= new CandidateLogEmpolyees();
         $newlog->candidate_id = $candidateEmployees->id;
         $newlog->name =$candidateEmployees->name;
-        $newlog->country_code = $candidateEmployees->country_code;
         $newlog->phone_number = $candidateEmployees->phone_number;
         $newlog->user_id = $candidateEmployees->user_id;
         $newlog->register_date = $candidateEmployees->register_date;
@@ -26,7 +25,6 @@ class CandidateEmpolyessObserver
         $newlog= new CandidateLogEmpolyees();
         $newlog->candidate_id = $candidateEmployees->id;
         $newlog->name =$candidateEmployees->name;
-        $newlog->country_code = $candidateEmployees->country_code;
         $newlog->phone_number = $candidateEmployees->phone_number;
         $newlog->user_id = $candidateEmployees->user_id;
         $newlog->register_date = $candidateEmployees->register_date;

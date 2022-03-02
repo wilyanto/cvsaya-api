@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id')->unsigned()->nullable();
             $table->string('name');
-            $table->string('country_code');
             $table->string('phone_number');
             $table->date('register_date')->nullable();
             $table->bigInteger('status')->unsigned();
@@ -30,7 +29,6 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('candidate_id')->unsigned();
             $table->string('name')->nullable();;
-            $table->string('country_code')->nullable();;
             $table->string('phone_number')->nullable();;
             $table->bigInteger('user_id')->nullable();;
             $table->date('register_date')->nullable();
@@ -39,6 +37,7 @@ return new class extends Migration
             $table->integer('many_request')->unsigned()->nullable();
             $table->timestamp('created_at');
         });
+
 
         Schema::table('candidate_log_employees',function(Blueprint $table){
             $table->foreign('candidate_id')->references('id')->on('candidate_employees');

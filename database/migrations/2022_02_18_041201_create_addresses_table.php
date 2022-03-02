@@ -27,7 +27,7 @@ return new class extends Migration
 
         Schema::create('cv_log_addresses', function(Blueprint $table){
             $table->id();
-            $table->bigInteger('address_id')->unsigned()->nullable();
+            $table->bigInteger('cv_address_id')->unsigned()->nullable();
             $table->bigInteger('country_id')->unsigned()->nullable();
             $table->bigInteger('province_id')->unsigned()->nullable();
             $table->bigInteger('city_id')->unsigned()->nullable();
@@ -38,7 +38,7 @@ return new class extends Migration
         });
 
         Schema::table('cv_log_addresses', function(Blueprint $table){
-            $table->foreign('address_id')->references('id')->on('cv_addresses');
+            $table->foreign('cv_address_id')->references('id')->on('cv_addresses');
         });
 
 
@@ -53,7 +53,7 @@ return new class extends Migration
     {
 
         Schema::table('cv_log_addresses', function(Blueprint $table){
-            $table->dropForeign(['address_id']);
+            $table->dropForeign(['cv_address_id']);
         });
 
         Schema::dropIfExists('cv_log_addresses');

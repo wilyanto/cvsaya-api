@@ -2,12 +2,12 @@
 
 namespace App\Observers;
 
-use App\Models\CvExpectedSalaries;
+use App\Models\CvExpectedPositions;
 use App\Models\CvLogExpectedSalaries;
 
-class CvExpectedSalariesObserver
+class CvExpectedPositionsObserver
 {
-    public function created(CvExpectedSalaries $cvExpectedSalaries)
+    public function created(CvExpectedPositions $cvExpectedSalaries)
     {
         $newLog = new CvLogExpectedSalaries();
         $newLog->expected_salary_id = $cvExpectedSalaries->id;
@@ -19,7 +19,7 @@ class CvExpectedSalariesObserver
         $newLog->save();
     }
 
-    public function updated(CvExpectedSalaries $cvExpectedSalaries)
+    public function updated(CvExpectedPositions $cvExpectedSalaries)
     {
         $newLog = new CvLogExpectedSalaries();
         $newLog->expected_salary_id = $cvExpectedSalaries->id;

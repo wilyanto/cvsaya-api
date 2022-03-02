@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\CvAddress;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,6 +15,8 @@ class CandidateEmployees extends Model
     public const REGISTEREDKADA = 2;
 
     public const INPUTINGKADA = 3;
+
+    public const ReadyToInterview = 4;
 
     public const INTERVIEW = 5;
 
@@ -36,11 +39,15 @@ class CandidateEmployees extends Model
     public $fillable = [
         'id',
         'name',
-        'country_code',
         'phone_number',
         'user_id',
         'status',
         'suggest_by',
         'register_date',
     ];
+
+    public function address(){
+        // dd($)
+        return $this->hasMany(CvAddress::class,'user_id','user_id');
+    }
 }

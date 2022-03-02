@@ -10,7 +10,7 @@ class CandidateEmpolyeeSchedule extends Model
 {
     use HasFactory;
 
-    protected $table = 'candidate_empolyee_schedules';
+    protected $table = 'candidate_employee_schedules';
 
     protected $guard = 'id';
 
@@ -18,7 +18,7 @@ class CandidateEmpolyeeSchedule extends Model
 
     public $fillable = [
         'id',
-        'empolyee_candidate_id',
+        'employee_candidate_id',
         'date_time',
         'interview_by',
         'result_id',
@@ -26,7 +26,7 @@ class CandidateEmpolyeeSchedule extends Model
     ];
 
     public function log(){
-        return $this->hasMany(LogCandidateEmpolyeeSchedule::class,'empolyee_candidate_id');
+        return $this->hasMany(LogCandidateEmpolyeeSchedule::class,'employee_candidate_id');
     }
 
     public function result(){

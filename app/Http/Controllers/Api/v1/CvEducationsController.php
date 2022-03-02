@@ -22,9 +22,6 @@ class CvEducationsController extends Controller
     {
         $user = auth()->user();
         $educations = CvEducations::where('user_id',$user->id_kustomer)->get();
-        if(count($educations) <= 0){
-            return $this->errorResponse('Education not found',404,40401);
-        }
 
         return $this->showAll($educations);
     }

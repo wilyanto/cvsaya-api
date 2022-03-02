@@ -9,7 +9,7 @@ class CandidateLogEmpolyeeSchedule extends Model
 {
     use HasFactory;
 
-    protected $table = 'candidate_empolyee_schedules';
+    protected $table = 'candidate_log_employee_schedules';
 
     protected $guard = 'id';
 
