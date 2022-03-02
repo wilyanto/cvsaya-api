@@ -11,7 +11,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Positions;
 use App\Models\CandidateLogEmpolyees;
 use App\Models\User;
-use App\Models\CvExpectedSalaries;
+use App\Models\CandidatePositions;
+use App\Models\CandidateResult;
+use App\Models\CvExpectedPositions;
 use App\Models\CvAddress;
 
 class CandidateEmployeesController extends Controller
@@ -29,21 +31,75 @@ class CandidateEmployeesController extends Controller
         // $posistion = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
         // if(!$posistion){
         //     return $this->errorResponse('user tidak di temukan',404,40401);
-        // }
-        $request->validate([
-            'filterBy' => 'string|nullable',
-            'position_id' => 'integer|nullable',
-            'city_id' => 'integer|nullable',
-        ]);
-
-        $position = [];
-        $position = CvExpectedSalaries::where('expected_position', 'like', '%' . $request->posistion_id . '%')->pluck('user_id');
-
-        $address = [];
-        $address = CvAddress::where('city_id', 'like', '%' . $request->city_id . '%')->pluck('id');
-
+        // };
         if ($request->input()) {
-            $candidates = CandidateEmployees::where('status', 'like', '%' . $request->filterBy . '%')->whereIn('user_id', $address)->whereIn('user_id', $position)->get();
+            $request->validate([
+                'name' => 'nullable|string',
+                'status' => 'nullable|integer',
+                'start_date' => 'nullable|date',
+                'end_date' => 'nullable|date',
+                'country_id' => 'nullable',
+                'province_id' => 'nullable|string',
+                'city_id' => 'nullable|string',
+                'district_id' => 'nullable|string',
+                'village_id' => 'nullable|string',
+            ]);
+            $name = $request->name;
+            $status = $request->status;
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $country_id = $request->country_id;
+            $province_id = $request->province_id;
+            $city_id = $request->city_id;
+            $district_id = $request->district_id;
+            $village_id = $request->village_id;
+
+            // $request->validate([
+            //     'filter_by' => 'string|required',
+            //     'filter_result' => 'required',
+            // ]);
+            $candidates = CandidateEmployees::where(function ($query) use ($name, $status, $start_date, $end_date, $country_id, $province_id, $city_id, $district_id, $village_id) {
+                if ($name != null) {
+                    $query->where('name', $name);
+                }
+
+                if ($status != null) {
+                    // if($status == CandidateEmployees::)
+                    $query->where('status', $status);
+                }
+
+                if ($start_date != null) {
+                    $query->where('start_date', $start_date);
+                }
+
+                if ($end_date != null) {
+                    $query->where('end_date', $end_date);
+                }
+                if (($country_id != null) || ($province_id != null) || ($city_id != null) || ($district_id != null) || ($village_id != null)) {
+                    $query->whereHas('address', function ($secondQuery) use ($country_id, $province_id, $city_id, $district_id, $village_id) {
+                        if ($country_id != null) {
+                            $secondQuery->where('country_id', $country_id);
+                        }
+                        if ($province_id != null) {
+                            $secondQuery->where('country_id', $province_id);
+                        }
+                        if ($city_id != null) {
+                            $secondQuery->where('country_id', $city_id);
+                        }
+                        if ($district_id != null) {
+                            $secondQuery->where('country_id', $district_id);
+                        }
+                        if ($village_id != null) {
+                            $secondQuery->where('country_id', $village_id);
+                        }
+                    });
+                }
+            })
+                ->get();
+            // $candidate->push($candidate->positions);
+
+
+            // $candidates = CandidateEmployees::where($request->filter_by, $request->filter_resul)->get();
         } else {
             $candidates = CandidateEmployees::all();
         }
@@ -55,11 +111,11 @@ class CandidateEmployeesController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'user_id' => 'string|required',
+            'candidate_id' => 'required',
         ]);
 
-        $candidate = CandidateLogEmpolyees::where('user_id', $request->id)->get();
-        return $this->all($candidate);
+        $candidate = CandidateLogEmpolyees::where('candidate_id', $request->candidate_id)->get();
+        return $this->showAll($candidate);
     }
 
 
@@ -122,7 +178,7 @@ class CandidateEmployeesController extends Controller
 
         // dump($user);
         $result = [];
-        $positions = Positions::where('company_id', $user->ID_perusahaan)->orderBy('name', 'ASC')
+        $positions = CandidatePositions::orderBy('name', 'ASC')
             // ->get()
             ->paginate(
                 $perpage = $request->page_size,
@@ -130,6 +186,7 @@ class CandidateEmployeesController extends Controller
                 $pageName = 'page',
                 $pageBody = $request->page
             );
+        // dump($positions);
         foreach ($positions as $position) {
             $result[] = [
                 'id' => $position->id,
@@ -152,16 +209,16 @@ class CandidateEmployeesController extends Controller
             return $item->status == CandidateEmployees::INTERVIEW;
         })->count();
         $data['decline'] = collect($position->candidate)->filter(function ($item) {
-            return $item->status <= CandidateEmployees::DECLINE;
+            return $item->status == CandidateEmployees::DECLINE;
         })->count();
         $data['standby'] = collect($position->candidate)->filter(function ($item) {
-            return $item->status <= CandidateEmployees::STANDBY;
+            return $item->status == CandidateEmployees::STANDBY;
         })->count();
         $data['pass'] = collect($position->candidate)->filter(function ($item) {
-            return $item->status <= CandidateEmployees::PASS;
+            return $item->status == CandidateEmployees::PASS;
         })->count();
         $data['consider'] = collect($position->candidate)->filter(function ($item) {
-            return $item->status <= CandidateEmployees::CONSIDER;
+            return $item->status == CandidateEmployees::CONSIDER;
         })->count();
 
         return $data;

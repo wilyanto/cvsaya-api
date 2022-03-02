@@ -187,6 +187,8 @@ class CandidateEmpolyeeScheduleController extends Controller
                 $newEmpolyee->save();
             }
         }
+
+        return $this->showOne($schedule);
     }
 
     /**
