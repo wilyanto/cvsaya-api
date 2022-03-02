@@ -73,16 +73,23 @@ class CvProfileDetailController extends Controller
         return $this->showOne(collect($data));
     }
 
-
-
-    public function getStatus()
-    {
+    public function status(){
         $user = auth()->user();
 
-        $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
-        $education = CvEducations::where('user_id', $user->id_kustomer)->first();
-        $document = CvDocumentations::where('user_id', $user->id_kustomer)->first();
-        $expectedSalaries = CvExpectedPositions::where('user_id', $user->id_kustomer)->first();
+        $status = $this->getStatus($user->id_kustomer);
+
+        return $status;
+    }
+
+
+    public function getStatus($id)
+    {
+
+
+        $userProfileDetail = CvProfileDetail::where('user_id', $id)->first();
+        $education = CvEducations::where('user_id', $id)->first();
+        $document = CvDocumentations::where('user_id', $id)->first();
+        $expectedSalaries = CvExpectedPositions::where('user_id', $id)->first();
 
         $data['is_profile_filled'] = true;
         $data['is_works_filled'] = true;
@@ -110,7 +117,7 @@ class CvProfileDetailController extends Controller
             $data['is_document_filled'] = false;
         }
 
-        $employee = EmployeeDetails::where('user_id', $user->id_kustomer)->first();
+        $employee = EmployeeDetails::where('user_id', $id)->first();
         // dump($employee);
         if ($employee) {
             $result['is_employee'] = true;

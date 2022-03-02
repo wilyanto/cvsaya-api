@@ -65,7 +65,7 @@ class CandidateEmpolyeeScheduleController extends Controller
 
         $candidateController = new CvProfileDetailController;
 
-        $status = $candidateController->getStatus();
+        $status = $candidateController->getStatus($candidate->user_id);
         $status = $status->original;
         $status = $status['data']['is_all_form_filled'];
         if (

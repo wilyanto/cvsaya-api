@@ -63,11 +63,6 @@ class CandidateEmployeesController extends Controller
                     $query->where('name', $name);
                 }
 
-                if ($status != null) {
-                    // if($status == CandidateEmployees::)
-                    $query->where('status', $status);
-                }
-
                 if ($start_date != null) {
                     $query->where('start_date', $start_date);
                 }
@@ -94,12 +89,29 @@ class CandidateEmployeesController extends Controller
                         }
                     });
                 }
-            })
-                ->get();
-            // $candidate->push($candidate->positions);
+                if ($status != null) {
+                    if ($status == CandidateEmployees::ReadyToInterview) {
+                        $query->where('status', 3);
+                    }else{
+                        $query->where('status', $status);
+                    }
+                }
+            })->get();
+            // dump($candidates);
+            if ($status == CandidateEmployees::ReadyToInterview) {
+                $data = [];
+                foreach($candidates as $candidate){
+                    $candidateController = new CvProfileDetailController;
 
-
-            // $candidates = CandidateEmployees::where($request->filter_by, $request->filter_resul)->get();
+                    $status = $candidateController->getStatus($candidate->user_id);
+                    $status = $status->original;
+                    $status = $status['data']['is_all_form_filled'];
+                    if($status != false){
+                        $data[] = $candidate;
+                    }
+                }
+                return $this->showAll(collect($data));
+            }
         } else {
             $candidates = CandidateEmployees::all();
         }
