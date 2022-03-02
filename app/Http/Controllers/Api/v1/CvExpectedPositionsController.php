@@ -4,11 +4,12 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\CvExpectedSalaries;
+use App\Models\CvExpectedPositions;
+use App\Models\CandidatePositions;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 
-class CvExpectedSalariesController extends Controller
+class CvExpectedPositionsController extends Controller
 {
     use ApiResponser;
     /**
@@ -20,9 +21,9 @@ class CvExpectedSalariesController extends Controller
     {
         $user = auth()->user();
 
-        $expectedSalaries = CvExpectedSalaries::where('user_id',$user->id_kustomer)->first();
+        $expectedSalaries = CvExpectedPositions::where('user_id',$user->id_kustomer)->first();
         if(!$expectedSalaries){
-            return $this->errorResponse('Expected Salaries Not found',404,40401);
+            return $this->errorResponse('Expected Positions Not found',404,40401);
         }
         return $this->showOne($expectedSalaries);
 
@@ -49,7 +50,7 @@ class CvExpectedSalariesController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'expected_position' => 'exists:App\Models\Positions,id|required',
+            'expected_position' => 'required',
             'expected_amount' => 'integer|required',
             'reason_position' => 'string|required|min:50',
             'reasons' => 'string|required|min:50',
@@ -57,10 +58,19 @@ class CvExpectedSalariesController extends Controller
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
         // dd($data);
-
-        $expectedSalaries = CvExpectedSalaries::where('user_id',$user->id_kustomer)->first();
+        $data['expected_position'] = json_decode($request->expected_position);
+        // dump($data);
+        $position = CandidatePositions::where('id',$data['expected_position']->id)->orWhere('name',$data['expected_position']->name)->first();
+        if(!$position){
+            $position = new CandidatePositions();
+            $position->name = $data['expected_position']->name;
+            $position->inserted_by = $user->id_kustomer;
+            $position->save();
+        }
+        $data['expected_position'] = $position->id;
+        $expectedSalaries = CvExpectedPositions::where('user_id',$user->id_kustomer)->first();
         if(!$expectedSalaries){
-            $expectedSalaries = CvExpectedSalaries::create($data);
+            $expectedSalaries = CvExpectedPositions::create($data);
 
             return $this->showOne($expectedSalaries);
         }
@@ -76,9 +86,15 @@ class CvExpectedSalariesController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function show(CvExpectedSalaries $expectedSalaries)
+    public function show(Request $request)
     {
-        //
+        $user = auth()->user();
+        $request->validate([
+            'filter_by' => 'string|nullable',
+        ]);
+        $specialities = CandidatePositions::where('name','LIKE', '%'.$request->filter_by.'%')->whereNotNull('validated_at')->get();
+
+        return $this->showAll($specialities);
     }
 
     /**
@@ -87,7 +103,7 @@ class CvExpectedSalariesController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function edit(CvExpectedSalaries $expectedSalaries)
+    public function edit(CvExpectedPositions $expectedSalaries)
     {
         //
     }
@@ -99,7 +115,7 @@ class CvExpectedSalariesController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, CvExpectedSalaries $expectedSalaries)
+    public function update(Request $request, CvExpectedPositions $expectedSalaries)
     {
         //
     }
@@ -110,7 +126,7 @@ class CvExpectedSalariesController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CvExpectedSalaries $expectedSalaries)
+    public function destroy(CvExpectedPositions $expectedSalaries)
     {
         //
     }

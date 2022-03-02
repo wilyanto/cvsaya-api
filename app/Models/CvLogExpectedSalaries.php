@@ -9,7 +9,7 @@ class CvLogExpectedSalaries extends Model
 {
     use HasFactory;
 
-    protected $table = 'cv_log_expected_salaries';
+    protected $table = 'cv_log_expected_positions';
 
     protected $guard = 'id';
 

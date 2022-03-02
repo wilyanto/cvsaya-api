@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Http\Controllers\Api\v1\CvDocumentationsController;
-use App\Http\Controllers\Api\v1\CvExpectedSalariesController;
+use App\Http\Controllers\Api\v1\CvExpectedPositionsController;
 use App\Http\Controllers\Api\v1\CvCertificationsController;
 use App\Http\Controllers\Api\v1\CvExperiencesController;
 use App\Http\Controllers\Api\v1\CvEducationsController;
@@ -40,6 +40,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('candidate')->group(function () {
             Route::controller(CandidateEmployeesController::class)->group(function () {
                 Route::get('/', 'index');
+                Route::get('/detail','indexDetail');
                 Route::get('/position','getPosition');
                 Route::post('create', 'addCandidateToBlast');
                 // Route::post('update-status','updateStatus');
@@ -88,9 +89,10 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('expected-salaries')->group(function () {
-            Route::controller(CvExpectedSalariesController::class)->group(function () {
+        Route::prefix('expected-positions')->group(function () {
+            Route::controller(CvExpectedPositionsController::class)->group(function () {
                 Route::get('/', 'index');
+                Route::get('/list','show');
                 Route::post('/create', 'store');
             });
         });
@@ -155,7 +157,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('hobbies')->group(function () {
             Route::controller(CvHobbiesController::class)->group(function () {
                 Route::get('/', 'index');
-                Route::post('/list', 'show');
+                Route::get('/list', 'show');
                 Route::get('/top-ten-list','showTopTenList');
                 Route::post('/add', 'create');
                 Route::post('/delete', 'destroy');

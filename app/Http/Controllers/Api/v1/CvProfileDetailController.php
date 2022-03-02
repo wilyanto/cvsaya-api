@@ -13,7 +13,7 @@ use App\Models\CvSpecialities;
 use App\Models\CvHobbies;
 use App\Models\CvExperiences;
 use App\Models\CvDocumentations;
-use App\Models\CvExpectedSalaries;
+use App\Models\CvExpectedPositions;
 use Illuminate\Http\Request;
 use App\Models\EmployeeDetails;
 use App\Traits\ApiResponser;
@@ -82,13 +82,16 @@ class CvProfileDetailController extends Controller
         $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
         $education = CvEducations::where('user_id', $user->id_kustomer)->first();
         $document = CvDocumentations::where('user_id', $user->id_kustomer)->first();
-        $expectedSalaries = CvExpectedSalaries::where('user_id', $user->id_kustomer)->first();
+        $expectedSalaries = CvExpectedPositions::where('user_id', $user->id_kustomer)->first();
 
         $data['is_profile_filled'] = true;
         $data['is_works_filled'] = true;
         $data['is_document_filled'] = true;
         $data['is_cv_filled'] = true;
-
+        // dump($userProfileDetail);
+        if (!$userProfileDetail) {
+            return $this->errorResponse('User not registerd yet', 418, 40901);
+        }
         // dump($experience);
         if (!$userProfileDetail || !$userProfileDetail->addresses || !$userProfileDetail->sosmeds) {
             $data['is_profile_filled'] = false;
@@ -107,11 +110,16 @@ class CvProfileDetailController extends Controller
             $data['is_document_filled'] = false;
         }
 
-        $employee = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
-        if($employee){
+        $employee = EmployeeDetails::where('user_id', $user->id_kustomer)->first();
+        // dump($employee);
+        if ($employee) {
             $result['is_employee'] = true;
-            $result['position'] = $employee->position->name ;
-        }else{
+            $position = [
+                'id' => $employee->position->id,
+                'name' => $employee->position->name,
+            ];
+            $result['position'] = $position;
+        } else {
             $result['is_employee'] = false;
             $result['position'] = null;
         }
@@ -176,14 +184,13 @@ class CvProfileDetailController extends Controller
     public function createCandidate($user, $request)
     {
 
-        $candidate = CandidateEmployees::where('phone_number', substr($user->telpon,1))->first();
+        $candidate = CandidateEmployees::where('phone_number', substr($user->telpon, 1))->first();
         if (!$candidate) {
             $candidate = new CandidateEmployees();
         }
         $candidate->user_id = $user->id_kustomer;
         $candidate->name = $request->first_name . " " . $request->last_name;
-        $candidate->country_code = 62;
-        $candidate->phone_number =(integer) substr($user->telpon, 1);
+        $candidate->phone_number = (int) substr($user->telpon, 1);
         $candidate->register_date = date('Y-m-d H:i:s', time());
         $candidate->status = 3;
         $candidate->save();
