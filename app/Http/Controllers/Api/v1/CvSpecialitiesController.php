@@ -8,6 +8,7 @@ use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
 use App\Models\CvCertifications;
 use App\Models\CvSpecialityCertificates;
+use Nette\Utils\Json;
 
 class CvSpecialitiesController extends Controller
 {
@@ -21,10 +22,9 @@ class CvSpecialitiesController extends Controller
     {
         $user = auth()->user();
 
-        $specialities = CvSpecialities::where('user_id',$user->id_kustomer)->get();
+        $specialities = CvSpecialities::where('user_id', $user->id_kustomer)->get();
 
         return $this->showAll(collect($specialities->toArray()));
-
     }
 
     /**
@@ -52,33 +52,39 @@ class CvSpecialitiesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
+    public function updateDeleteCertificate(array $old , array $new,$speciality){
+        $deletes = array_diff($old,$new);
+        CvSpecialityCertificates::whereIn('certificate_id',$deletes)->where('speciality_id',$speciality->id)->delete();
+        $adds = array_diff($new,$old);
+        foreach($adds as $add){
+            $certificate = new CvSpecialityCertificates();
+            $certificate->certificate_id = $add;
+            $certificate->speciality_id =$speciality->id;
+            $certificate->save();
+        }
+    }
+
     public function store(Request $request)
     {
         $user = auth()->user();
         $request->validate([
-            'id' => 'required|integer',
-            'certificate_id' => 'required|integer',
+            'id' => 'required',
+            'list_certificate' => 'required',
         ]);
+        $certificates = json_decode($request->list_certificate);
+        // dd($request->input());
 
-        $validateCertificate = CvCertifications::where('id',$request->certificate_id)->where('user_id',$user->id_kustomer)->first();
-        if(!$validateCertificate){
-            return $this->errorResponse('certificate_id not indentify in database',404,40401);
-        }
-
-        $validateSpeciality = CvSpecialities::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
-        if(!$validateSpeciality){
-            return $this->errorResponse('Id not indentify in database',404,40402);
-        }
-        $specialityCertificate =CvSpecialityCertificates::where('certificate_id',$request->certificate_id)->where('speciality_id',$request->id)->first();
-        if($specialityCertificate){
-            return $this->errorResponse('Certificate already used',409,40901);
+        $validateSpeciality = CvSpecialities::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
+        if (!$validateSpeciality) {
+            return $this->errorResponse('Id not indentify in database', 404, 40402);
         }
 
 
-        $specialityCertificate = new CvSpecialityCertificates();
-        $specialityCertificate->certificate_id = $request->certificate_id;
-        $specialityCertificate->speciality_id = $request->id;
-        $specialityCertificate->save();
+        $havedCertificates = CvSpecialityCertificates::where('speciality_id',$request->id)->pluck('certificate_id')->toArray();
+        // dd(var_dump($havedCertificates));
+        $this->updateDeleteCertificate($havedCertificates,$certificates,$validateSpeciality);
+
         return $this->showOne($validateSpeciality);
     }
 
@@ -94,27 +100,26 @@ class CvSpecialitiesController extends Controller
         $request->validate([
             'filter_by' => 'string|nullable',
         ]);
-        $specialities = CvSpecialities::where('name','LIKE', '%'.$request->filter_by.'%')->withTrashed()->get();
+        $specialities = CvSpecialities::where('name', 'LIKE', '%' . $request->filter_by . '%')->withTrashed()->get();
         $specialities = collect($specialities)->pluck('name');
-        if($request->filter_by){
+        if ($request->filter_by) {
             $specialities->push($request->filter_by);
         }
         $specialities = $specialities->unique();
 
         return $this->showAll($specialities);
-
     }
 
-    public function showTopTenList(Request $request){
-       $user = auth()->user();
+    public function showTopTenList(Request $request)
+    {
+        $user = auth()->user();
 
-       $specialities = CvSpecialities::select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit(10)->get();
+        $specialities = CvSpecialities::select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit(10)->get();
 
-       $specialities = collect($specialities)->pluck('name');
-    //    dd($specialities);
+        $specialities = collect($specialities)->pluck('name');
+        //    dd($specialities);
 
-       return $this->showAll($specialities);
-
+        return $this->showAll($specialities);
     }
 
     /**
@@ -125,7 +130,6 @@ class CvSpecialitiesController extends Controller
      */
     public function edit(Request $request)
     {
-
     }
 
     /**
@@ -145,9 +149,9 @@ class CvSpecialitiesController extends Controller
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $specialities = CvSpecialities::where('user_id',$user->id_kustomer)->where('id',$request->id)->first();
-        if(!$specialities){
-            return $this->errorResponse('id not found',409,40901);
+        $specialities = CvSpecialities::where('user_id', $user->id_kustomer)->where('id', $request->id)->first();
+        if (!$specialities) {
+            return $this->errorResponse('id not found', 409, 40901);
         }
         $specialities->update($data);
 
@@ -168,37 +172,15 @@ class CvSpecialitiesController extends Controller
         ]);
 
         $specialities = CvSpecialities::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
-        if(!$specialities){
-            return $this->errorResponse('id not found',404,40401);
+        if (!$specialities) {
+            return $this->errorResponse('id not found', 404, 40401);
         }
         $specialities->delete();
 
         return $this->showOne(null);
     }
 
-    public function destroyIntergrity(Request $request){
-        $user = auth()->user();
-        $request->validate([
-            'id' => 'required|integer',
-            'certificate_id' => 'required|integer',
-        ]);
-
-
-        $validateCertificate = CvCertifications::where('id',$request->certificate_id)->where('user_id',$user->id_kustomer)->first();
-        if(!$validateCertificate){
-            return $this->errorResponse('certificate_id not indentify in database',404,40401);
-        }
-
-        $validateSpeciality = CvSpecialities::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
-        if(!$validateSpeciality){
-            return $this->errorResponse('Id not indentify in database',404,40402);
-        }
-        $specialityCertificate =CvSpecialityCertificates::where('certificate_id',$request->certificate_id)->where('speciality_id',$request->id)->first();
-        if(!$specialityCertificate){
-            return $this->errorResponse('Intergity not found',404,40403);
-        }
-        $specialityCertificate->delete();
-
-        return $this->showOne(null);
+    public function destroyIntergrity(Request $request)
+    {
     }
 }
