@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('candidate_positions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->boolean('is_validate')->default(false);
+            $table->timestamp('validated_at')->default(null)->nullable();
             $table->bigInteger('inserted_by')->unsigned();
             $table->timestamps();
         });

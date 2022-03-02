@@ -16,7 +16,7 @@ class CreateCvSayaLevelsTable extends Migration
         Schema::create('levels', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->bigInteger('company_id')->unsigned();
+            $table->string('company_id')->unique()->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

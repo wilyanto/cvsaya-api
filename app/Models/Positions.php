@@ -59,11 +59,6 @@ class Positions extends Model
         return $this->belongsTo(Level::class, 'level_id', 'id');
     }
 
-    public function Candidate()
-    {
-        return $this->hasManyThrough(CandidateEmployees::class, CvExpectedSalaries::class, 'expected_position', 'user_id', 'id', 'user_id');
-    }
-
     public function ExpectedPositions()
     {
         return $this->hasMany(CvExpectedSalaries::class, 'expected_position', 'id');
