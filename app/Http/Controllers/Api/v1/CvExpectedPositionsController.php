@@ -90,9 +90,24 @@ class CvExpectedPositionsController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'filter_by' => 'string|nullable',
+            'name' => 'string|nullable',
+            'is_verfied' => 'nullable|boolean'
         ]);
-        $specialities = CandidatePositions::where('name','LIKE', '%'.$request->filter_by.'%')->whereNotNull('validated_at')->get();
+        $name = $request->name;
+        $isVerfied = $request->is_verfied;
+
+        $specialities = CandidatePositions::where(function ($qurey) use ($name,$isVerfied){
+            if($name != null){
+                $qurey->where('name','LIKE', '%'.$name.'%');
+            }
+            if($isVerfied == false){
+                $qurey->whereNull('validated_at');
+            }elseif($isVerfied == true){
+                $qurey->whereNotNull('validated_at');
+            }
+        })->get();
+
+        // $specialities = CandidatePositions::where('name','LIKE', '%'.$request->filter_by.'%')->whereNotNull('validated_at')->get();
 
         return $this->showAll($specialities);
     }
@@ -103,9 +118,27 @@ class CvExpectedPositionsController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function edit(CvExpectedPositions $expectedSalaries)
+    public function updateVerfied(Request $request)
     {
-        //
+        $user = auth()->user();
+        $request->validate([
+            'id' => 'integer|required'
+        ]);
+
+        $validate = CandidatePositions::where('id',$request->id)->first();
+        if(!$validate){
+
+        }
+
+        if(!$validate->validated_at){
+            $validate->validated_at = date('Y-m-d h:i:s',time());
+        }else{
+            $validate->validated_at = null;
+        }
+        $validate->save();
+
+
+        return $this->showOne($validate);
     }
 
     /**

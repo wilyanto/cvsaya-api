@@ -85,7 +85,16 @@ class CompaniesController extends Controller
      */
     public function update(Request $request, Companies $companies)
     {
-        //
+        $user = auth()->user();
+
+        $request->validate([
+            'id' => 'string',
+            'name' => 'string',
+        ]);
+
+        $create = Companies::where('id',$request->id)->update($request->all());
+
+        return $this->showOne($create);
     }
 
     /**

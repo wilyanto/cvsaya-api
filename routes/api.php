@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\v1\PositionsController;
 use App\Http\Controllers\Api\v1\CandidateEmployeesController;
 use App\Http\Controllers\Api\v1\EmployeeDetailsController;
 use App\Http\Controllers\Api\v1\CandidateEmpolyeeScheduleController;
+use App\Http\Controllers\Api\v1\CompaniesController;
 use App\Models\Certifications;
 use App\Models\CvProfileDetail;
 
@@ -39,7 +40,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::prefix('candidate')->group(function () {
             Route::controller(CandidateEmployeesController::class)->group(function () {
-                Route::get('/', 'index');
+                Route::get('/{id}', 'index');
                 Route::get('/detail','indexDetail');
                 Route::get('/position','getPosition');
                 Route::post('create', 'addCandidateToBlast');
@@ -50,6 +51,14 @@ Route::prefix('v1')->group(function () {
                         Route::post('/update','update');
                     });
                 });
+            });
+        });
+
+        Route::prefix('companies')->group(function () {
+            Route::controller(CompaniesController::class)->group(function () {
+                Route::get('/','index');
+                Route::post('/create','store');
+                Route::post('/update','update');
             });
         });
 
@@ -94,6 +103,8 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', 'index');
                 Route::get('/list','show');
                 Route::post('/create', 'store');
+                Route::get('/positions','show');
+                Route::post('/update-verfied','updateVerfied');
             });
         });
 
@@ -163,13 +174,6 @@ Route::prefix('v1')->group(function () {
                 Route::post('/delete', 'destroy');
                 Route::post('/update', 'update');
             });
-        });
-
-        Route::prefix('sosmed')->group(function () {
-            Route::get('/', [SosmedsController::class, 'index']);
-            Route::post('/add', [SosmedsController::class, 'create']);
-            Route::post('/update', [SosmedsController::class, 'update']);
-            Route::post('/delete', [SosmedsController::class, 'destroy']);
         });
     });
 });

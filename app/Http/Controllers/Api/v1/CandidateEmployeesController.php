@@ -76,23 +76,23 @@ class CandidateEmployeesController extends Controller
                             $secondQuery->where('country_id', $country_id);
                         }
                         if ($province_id != null) {
-                            $secondQuery->where('country_id', $province_id);
+                            $secondQuery->where('province_id', $province_id);
                         }
                         if ($city_id != null) {
-                            $secondQuery->where('country_id', $city_id);
+                            $secondQuery->where('city_id', $city_id);
                         }
                         if ($district_id != null) {
-                            $secondQuery->where('country_id', $district_id);
+                            $secondQuery->where('district_id', $district_id);
                         }
                         if ($village_id != null) {
-                            $secondQuery->where('country_id', $village_id);
+                            $secondQuery->where('village_id', $village_id);
                         }
                     });
                 }
                 if ($status != null) {
                     if ($status == CandidateEmployees::ReadyToInterview) {
                         $query->where('status', 3);
-                    }else{
+                    } else {
                         $query->where('status', $status);
                     }
                 }
@@ -100,13 +100,13 @@ class CandidateEmployeesController extends Controller
             // dump($candidates);
             if ($status == CandidateEmployees::ReadyToInterview) {
                 $data = [];
-                foreach($candidates as $candidate){
+                foreach ($candidates as $candidate) {
                     $candidateController = new CvProfileDetailController;
 
                     $status = $candidateController->getStatus($candidate->user_id);
                     $status = $status->original;
                     $status = $status['data']['is_all_form_filled'];
-                    if($status != false){
+                    if ($status != false) {
                         $data[] = $candidate;
                     }
                 }
