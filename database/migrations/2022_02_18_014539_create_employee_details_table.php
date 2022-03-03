@@ -19,6 +19,7 @@ return new class extends Migration
             $table->bigInteger('position_id')->unsigned();
             $table->integer('salary')->unsigned();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::table('employee_details',function(Blueprint $table){

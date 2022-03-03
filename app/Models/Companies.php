@@ -9,7 +9,13 @@ class Companies extends Model
 {
     use HasFactory;
 
-    private $primaryKey = 'id';
+    protected $primaryKey = 'id';
 
-    private $table = 'companies';
+    protected $table = 'companies';
+
+    public $incrementing = false;
+
+    public $fillable = [
+        'id', 'name'
+    ];
 }

@@ -48,6 +48,6 @@ class CandidateEmployees extends Model
 
     public function address(){
         // dd($)
-        return $this->hasMany(CvAddress::class,'user_id','user_id');
+        return $this->hasOne(CvAddress::class,'user_id','user_id');
     }
 }

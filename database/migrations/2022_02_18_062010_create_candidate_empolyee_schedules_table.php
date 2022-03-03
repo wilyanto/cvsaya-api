@@ -21,6 +21,7 @@ return new class extends Migration
             $table->bigInteger('result')->unsigned()->nullable();
             $table->longText('note')->nullable();
             $table->timestamps();
+            
         });
 
         Schema::create('candidate_log_employee_schedules', function (Blueprint $table) {
