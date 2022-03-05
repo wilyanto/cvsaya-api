@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Models\CvSpecialities;
+use App\Models\CvSpeciality;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
 use App\Models\CvCertifications;
-use App\Models\CvSpecialityCertificates;
+use App\Models\CvSpecialityCertificate;
 use Nette\Utils\Json;
 
 class CvSpecialitiesController extends Controller
@@ -22,7 +22,7 @@ class CvSpecialitiesController extends Controller
     {
         $user = auth()->user();
 
-        $specialities = CvSpecialities::where('user_id', $user->id_kustomer)->get();
+        $specialities = CvSpeciality::where('user_id', $user->id_kustomer)->get();
 
         return $this->showAll(collect($specialities->toArray()));
     }
@@ -41,7 +41,7 @@ class CvSpecialitiesController extends Controller
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $specialities = CvSpecialities::create($data);
+        $specialities = CvSpeciality::create($data);
 
         return $this->showOne($specialities->toArray());
     }
@@ -55,33 +55,28 @@ class CvSpecialitiesController extends Controller
 
     public function updateDeleteCertificate(array $old , array $new,$speciality){
         $deletes = array_diff($old,$new);
-        CvSpecialityCertificates::whereIn('certificate_id',$deletes)->where('speciality_id',$speciality->id)->delete();
+        CvSpecialityCertificate::whereIn('certificate_id',$deletes)->where('speciality_id',$speciality->id)->delete();
         $adds = array_diff($new,$old);
         foreach($adds as $add){
-            $certificate = new CvSpecialityCertificates();
+            $certificate = new CvSpecialityCertificate();
             $certificate->certificate_id = $add;
             $certificate->speciality_id =$speciality->id;
             $certificate->save();
         }
     }
 
-    public function store(Request $request)
+    public function updateCertificate(Request $request,$id)
     {
         $user = auth()->user();
         $request->validate([
-            'id' => 'required',
             'list_certificate' => 'required',
         ]);
-        $certificates = json_decode($request->list_certificate);
+        $certificates = $request->list_certificate;
         // dd($request->input());
 
-        $validateSpeciality = CvSpecialities::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
-        if (!$validateSpeciality) {
-            return $this->errorResponse('Id not indentify in database', 404, 40402);
-        }
+        $validateSpeciality = CvSpeciality::where('id', $request->id)->where('user_id', $user->id_kustomer)->firstOrFail();
 
-
-        $havedCertificates = CvSpecialityCertificates::where('speciality_id',$request->id)->pluck('certificate_id')->toArray();
+        $havedCertificates = CvSpecialityCertificate::where('speciality_id',$request->id)->pluck('certificate_id')->toArray();
         // dd(var_dump($havedCertificates));
         $this->updateDeleteCertificate($havedCertificates,$certificates,$validateSpeciality);
 
@@ -100,7 +95,7 @@ class CvSpecialitiesController extends Controller
         $request->validate([
             'filter_by' => 'string|nullable',
         ]);
-        $specialities = CvSpecialities::where('name', 'LIKE', '%' . $request->filter_by . '%')->withTrashed()->get();
+        $specialities = CvSpeciality::where('name', 'LIKE', '%' . $request->filter_by . '%')->withTrashed()->get();
         $specialities = collect($specialities)->pluck('name');
         if ($request->filter_by) {
             $specialities->push($request->filter_by);
@@ -114,7 +109,7 @@ class CvSpecialitiesController extends Controller
     {
         $user = auth()->user();
 
-        $specialities = CvSpecialities::select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit(10)->get();
+        $specialities = CvSpeciality::select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit(10)->get();
 
         $specialities = collect($specialities)->pluck('name');
         //    dd($specialities);
@@ -139,20 +134,16 @@ class CvSpecialitiesController extends Controller
      * @param  \App\Models\Specialities  $specialities
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request,$id)
     {
         $user = auth()->user();
 
         $request->validate([
-            'id' => 'required|integer',
             'name' => 'required|string',
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $specialities = CvSpecialities::where('user_id', $user->id_kustomer)->where('id', $request->id)->first();
-        if (!$specialities) {
-            return $this->errorResponse('id not found', 409, 40901);
-        }
+        $specialities = CvSpeciality::where('user_id', $user->id_kustomer)->where('id', $id)->firstOrFail();
         $specialities->update($data);
 
         return $this->showOne($specialities);
@@ -164,14 +155,11 @@ class CvSpecialitiesController extends Controller
      * @param  \App\Models\Specialities  $specialities
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request,$id)
     {
         $user = auth()->user();
-        $request->validate([
-            'id' => 'required|integer',
-        ]);
 
-        $specialities = CvSpecialities::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
+        $specialities = CvSpeciality::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
         if (!$specialities) {
             return $this->errorResponse('id not found', 404, 40401);
         }
@@ -182,5 +170,6 @@ class CvSpecialitiesController extends Controller
 
     public function destroyIntergrity(Request $request)
     {
+
     }
 }

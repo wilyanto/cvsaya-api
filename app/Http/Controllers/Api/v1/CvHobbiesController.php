@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Models\CvHobbies;
+use App\Models\CvHobby;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use  App\Http\Controllers\Controller;
@@ -21,7 +21,7 @@ class CvHobbiesController extends Controller
     {
         $user = auth()->user();
 
-        $hobbies = CvHobbies::where('user_id', $user->id_kustomer)->get();
+        $hobbies = CvHobby::where('user_id', $user->id_kustomer)->get();
 
         return $this->showAll($hobbies);
     }
@@ -40,7 +40,7 @@ class CvHobbiesController extends Controller
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $hobbies = CvHobbies::create($data);
+        $hobbies = CvHobby::create($data);
 
         return $this->showOne($hobbies);
     }
@@ -68,7 +68,7 @@ class CvHobbiesController extends Controller
         $request->validate([
             'filter_by' => 'string|nullable',
         ]);
-        $specialities = CvHobbies::where('name','LIKE', '%'.$request->filter_by.'%')->withTrashed()->get();
+        $specialities = CvHobby::where('name','LIKE', '%'.$request->filter_by.'%')->withTrashed()->get();
         $specialities = collect($specialities)->pluck('name');
         if($request->filter_by){
             $specialities->push($request->filter_by);
@@ -82,7 +82,7 @@ class CvHobbiesController extends Controller
     public function showTopTenList(Request $request){
         $user = auth()->user();
 
-        $specialities = CvHobbies::select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit(10)->get();
+        $specialities = CvHobby::select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit(10)->get();
 
         $specialities = collect($specialities)->pluck('name');
      //    dd($specialities);
@@ -109,17 +109,16 @@ class CvHobbiesController extends Controller
      * @param  \App\Models\Hobbies  $hobbies
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request,$id)
     {
         $user = auth()->user();
 
         $request->validate([
-            'id' => 'required|integer',
             'name' => 'required|string'
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $hobbies = CvHobbies::where('user_id', $user->id_kustomer)->where('id', $request->id)->first();
+        $hobbies = CvHobby::where('user_id', $user->id_kustomer)->where('id', $id)->first();
         if (!$hobbies) {
             return $this->errorResponse('id not found', 409, 40901);
         }
@@ -134,13 +133,10 @@ class CvHobbiesController extends Controller
      * @param  \App\Models\Hobbies  $hobbies
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy($id)
     {
         $user = auth()->user();
-        $request->validate([
-            'id' => 'required|integer',
-        ]);
-        $hobbies = CvHobbies::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
+        $hobbies = CvHobby::where('id', $id)->where('user_id', $user->id_kustomer)->first();
         if(!$hobbies){
             return $this->errorResponse('id not found',404,40401);
         }

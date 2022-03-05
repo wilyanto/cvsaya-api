@@ -4,10 +4,11 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\CvExpectedPositions;
-use App\Models\CandidatePositions;
+use App\Models\CvExpectedPosition;
+use App\Models\CandidatePosition;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
+use Illuminate\Support\Facades\Redis;
 
 class CvExpectedPositionsController extends Controller
 {
@@ -21,12 +22,9 @@ class CvExpectedPositionsController extends Controller
     {
         $user = auth()->user();
 
-        $expectedSalaries = CvExpectedPositions::where('user_id',$user->id_kustomer)->first();
-        if(!$expectedSalaries){
-            return $this->errorResponse('Expected Positions Not found',404,40401);
-        }
-        return $this->showOne($expectedSalaries);
+        $expectedSalaries = CvExpectedPosition::where('user_id', $user->id_kustomer)->firstOrFail();
 
+        return $this->showOne($expectedSalaries);
     }
 
     /**
@@ -45,7 +43,7 @@ class CvExpectedPositionsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function storeOrUpdate(Request $request)
     {
         $user = auth()->user();
 
@@ -60,24 +58,23 @@ class CvExpectedPositionsController extends Controller
         // dd($data);
         $data['expected_position'] = json_decode($request->expected_position);
         // dump($data);
-        $position = CandidatePositions::where('id',$data['expected_position']->id)->orWhere('name',$data['expected_position']->name)->first();
-        if(!$position){
-            $position = new CandidatePositions();
+        $position = CandidatePosition::where('id', $data['expected_position']->id)->orWhere('name', $data['expected_position']->name)->first();
+        if (!$position) {
+            $position = new CandidatePosition();
             $position->name = $data['expected_position']->name;
             $position->inserted_by = $user->id_kustomer;
             $position->save();
         }
         $data['expected_position'] = $position->id;
-        $expectedSalaries = CvExpectedPositions::where('user_id',$user->id_kustomer)->first();
-        if(!$expectedSalaries){
-            $expectedSalaries = CvExpectedPositions::create($data);
+        $expectedSalaries = CvExpectedPosition::where('user_id', $user->id_kustomer)->first();
+        if (!$expectedSalaries) {
+            $expectedSalaries = CvExpectedPosition::create($data);
 
             return $this->showOne($expectedSalaries);
         }
         $expectedSalaries->update($data);
 
         return $this->showOne($expectedSalaries);
-
     }
 
     /**
@@ -86,7 +83,7 @@ class CvExpectedPositionsController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function getListCandidatePositions(Request $request)
     {
         $user = auth()->user();
         $request->validate([
@@ -95,15 +92,17 @@ class CvExpectedPositionsController extends Controller
         ]);
         $name = $request->name;
         $isVerfied = $request->is_verfied;
-
-        $specialities = CandidatePositions::where(function ($qurey) use ($name,$isVerfied){
-            if($name != null){
-                $qurey->where('name','LIKE', '%'.$name.'%');
+        // dd($request->all());
+        $specialities = CandidatePosition::where(function ($qurey) use ($name, $isVerfied) {
+            if ($name != null) {
+                $qurey->where('name', 'LIKE', '%' . $name . '%');
             }
-            if($isVerfied == false){
-                $qurey->whereNull('validated_at');
-            }elseif($isVerfied == true){
-                $qurey->whereNotNull('validated_at');
+            if (isset($isVerfied)) {
+                if ($isVerfied) {
+                    $qurey->whereNotNull('validated_at');
+                } else {
+                    $qurey->whereNull('validated_at');
+                }
             }
         })->get();
 
@@ -112,27 +111,36 @@ class CvExpectedPositionsController extends Controller
         return $this->showAll($specialities);
     }
 
+    public function createCandidatePositions(Request $request)
+    {
+
+        $user = auth()->user();
+
+        $request->validate([
+            'name' => 'string',
+        ]);
+
+        $data = $request->all();
+        $data['inserted_by'] = $user->id_kustomer;
+        $position = CandidatePosition::create($data);
+
+        return $this->showOne($position);
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function updateVerfied(Request $request)
+    public function updateVerfiedCandidatePositions(Request $request, $id)
     {
         $user = auth()->user();
-        $request->validate([
-            'id' => 'integer|required'
-        ]);
+        $validate = CandidatePosition::where('id', $request->id)->firstOrFail();
 
-        $validate = CandidatePositions::where('id',$request->id)->first();
-        if(!$validate){
-
-        }
-
-        if(!$validate->validated_at){
-            $validate->validated_at = date('Y-m-d h:i:s',time());
-        }else{
+        if (!$validate->validated_at) {
+            $validate->validated_at = date('Y-m-d h:i:s', time());
+        } else {
             $validate->validated_at = null;
         }
         $validate->save();
@@ -148,7 +156,7 @@ class CvExpectedPositionsController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, CvExpectedPositions $expectedSalaries)
+    public function update(Request $request, CvExpectedPosition $expectedSalaries)
     {
         //
     }
@@ -159,7 +167,7 @@ class CvExpectedPositionsController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CvExpectedPositions $expectedSalaries)
+    public function destroy(CvExpectedPosition $expectedSalaries)
     {
         //
     }

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\CvCertifications;
+use App\Models\CvCertification;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
+use Illuminate\Support\Facades\DB;
+
 
 class CvCertificationsController extends Controller
 {
@@ -20,7 +22,11 @@ class CvCertificationsController extends Controller
     {
         $user = Auth()->user();
 
-        $certifications = CvCertifications::where('user_id',$user->id_kustomer)->get();
+        $certifications = CvCertification::where('user_id', $user->id_kustomer)
+            ->orderBy('issued_at', 'DESC')
+            ->orderByRaw("CASE WHEN expired_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('expired_at', 'DESC')
+            ->get();
 
         return $this->showAll($certifications);
     }
@@ -44,11 +50,13 @@ class CvCertificationsController extends Controller
         // dump($user);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $data['issued_at'] = date('Y-m-d',strtotime($request->issued_at));
-        $data['expired_at'] = date('Y-m-d',strtotime($request->expired_at));
-        // dd($data);
-        // dd($data);
-        $certifications = CvCertifications::create($data);
+        $data['issued_at'] = date('Y-m-d', strtotime($request->issued_at));
+        if ($request->issued_at != null) {
+            $data['expired_at'] = date('Y-m-d', strtotime($request->expired_at));
+        } else {
+            $data['expired_at'] = null;
+        }
+        $certifications = CvCertification::create($data);
 
         return $this->showOne($certifications);
     }
@@ -93,14 +101,13 @@ class CvCertificationsController extends Controller
      * @param  \App\Models\Certifications  $certifications
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         $user = auth()->user();
         $request->validate([
-            'id'=>'required|integer',
             'name' => 'nullable|string',
             'organization' => 'nullable|string',
-            'issued_at' => 'nullable|date',
+            'issued_at' => 'required|date',
             'expired_at' => 'nullable|after:start_at',
             'credential_id' => 'nullable|nullable',
             'credential_url' => 'nullable|nullable',
@@ -108,14 +115,14 @@ class CvCertificationsController extends Controller
         // dump($user);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $data['issued_at'] = date('Y-m-d',strtotime($request->issued_at));
-        $data['expired_at'] = date('Y-m-d',strtotime($request->expired_at));
+        $data['issued_at'] = date('Y-m-d', strtotime($request->issued_at));
+        $data['expired_at'] = date('Y-m-d', strtotime($request->expired_at));
         // dd($data);
         // dd($data);
-        $certifications = CvCertifications::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
+        $certifications = CvCertification::where('id', $id)->where('user_id', $user->id_kustomer)->first();
 
-        if(!$certifications){
-            return $this->errorResponse('id not found',404,40401);
+        if (!$certifications) {
+            return $this->errorResponse('id not found', 404, 40401);
         }
         $certifications->update($data);
 
@@ -128,21 +135,16 @@ class CvCertificationsController extends Controller
      * @param  \App\Models\Certifications  $certifications
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
-    {
-        {
+    public function destroy($id)
+    { {
             $user = auth()->user();
-            $request->validate([
-                'id'=> 'required|integer',
-            ]);
-            $certifications = CvCertifications::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
-            if(!$certifications){
-                return $this->errorResponse('id not found',404,40401);
+            $certifications = CvCertification::where('id', $id)->where('user_id', $user->id_kustomer)->first();
+            if (!$certifications) {
+                return $this->errorResponse('id not found', 404, 40401);
             }
             $certifications->delete();
 
             return $this->showOne(null);
-
         }
     }
 }

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('position_id')->unsigned();
             $table->integer('salary')->unsigned();
+            $table->timestamp('joined_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

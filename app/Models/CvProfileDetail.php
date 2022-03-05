@@ -36,6 +36,6 @@ class CvProfileDetail extends Model
     }
 
     public function Sosmeds(){
-        return $this->hasOne(CvSosmeds::class,'user_id','user_id');
+        return $this->hasOne(CvSosmed::class,'user_id','user_id');
     }
 }

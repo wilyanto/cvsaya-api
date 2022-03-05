@@ -7,31 +7,31 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use App\Observers\CvProfileDetailObserver;
-use App\Observers\CvDocumentationsObserver;
-use App\Models\CvDocumentations;
-use App\Models\CvExperiences;
+use App\Observers\CvDocumentationObserver;
+use App\Models\CvDocumentation;
+use App\Models\CvExperience;
 use App\Models\CvProfileDetail;
-use App\Observers\CvExperiencesObserver;
-use App\Models\CvEducations;
+use App\Observers\CvExperienceObserver;
+use App\Models\CvEducation;
 use App\Observers\CvEducationObserver;
-use App\Models\CvCertifications;
-use App\Observers\CvCertificationsObserver;
-use App\Models\CvHobbies;
-use App\Observers\CvHobbiesObserver;
-use App\Models\CvSosmeds;
+use App\Models\CvCertification;
+use App\Observers\CvCertificationObserver;
+use App\Models\CvHobby;
+use App\Observers\CvHobbyObserver;
+use App\Models\CvSosmed;
 use App\Observers\CvSosmedObserver;
-use App\Models\CvSpecialities;
-use App\Observers\CvSpecialitiesObserver;
-use App\Models\CvSpecialityCertificates;
-use App\Models\CandidateEmployees;
-use App\Observers\CvSpecialityCertificatesObserver;
-use App\Observers\CandidateEmpolyessObserver;
+use App\Models\CvSpeciality;
+use App\Observers\CvSpecialityObserver;
+use App\Models\CvSpecialityCertificate;
+use App\Models\CandidateEmployee;
+use App\Observers\CvSpecialityCertificateObserver;
+use App\Observers\CandidateEmployeeObserver;
 use App\Observers\CvAddressObserver;
 use App\Models\CvAddress;
-use App\Models\CvExpectedPositions;
-use App\Observers\CvExpectedPositionsObserver;
-use App\Models\CandidateEmpolyeeSchedule;
-use App\Observers\CandidateEmpolyeeScheduleObserver;
+use App\Models\CvExpectedPosition;
+use App\Observers\CvExpectedPositionObserver;
+use App\Models\CandidateEmployeeSchedule;
+use App\Observers\CandidateEmployeeScheduleObserver;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -54,19 +54,19 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         CvProfileDetail::observe(CvProfileDetailObserver::class);
-        CvSosmeds::observe(CvSosmedObserver::class);
+        CvSosmed::observe(CvSosmedObserver::class);
         CvAddress::observe(CvAddressObserver::class);
-        CvDocumentations::observe(CvDocumentationsObserver::class);
-        CvExpectedPositions::observe(CvExpectedPositionsObserver::class);
-        CvExperiences::observe(CvExperiencesObserver::class);
-        CvEducations::observe(CvEducationObserver::class);
-        CvCertifications::observe(CvCertificationsObserver::class);
-        CvSpecialities::observe(CvSpecialitiesObserver::class);
-        CvSpecialityCertificates::observe(CvSpecialityCertificatesObserver::class);
-        CvHobbies::observe(CvHobbiesObserver::class);
+        CvDocumentation::observe(CvDocumentationObserver::class);
+        CvExpectedPosition::observe(CvExpectedPositionObserver::class);
+        CvExperience::observe(CvExperienceObserver::class);
+        CvEducation::observe(CvEducationObserver::class);
+        CvCertification::observe(CvCertificationObserver::class);
+        CvSpeciality::observe(CvSpecialityObserver::class);
+        CvSpecialityCertificate::observe(CvSpecialityCertificateObserver::class);
+        CvHobby::observe(CvHobbyObserver::class);
 
 
-        CandidateEmployees::observe(CandidateEmpolyessObserver::class);
-        CandidateEmpolyeeSchedule::observe(CandidateEmpolyeeScheduleObserver::class);
+        CandidateEmployee::observe(CandidateEmployeeObserver::class);
+        CandidateEmployeeSchedule::observe(CandidateEmployeeScheduleObserver::class);
     }
 }

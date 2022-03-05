@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\CvEducations;
-use App\Models\CvLogEducations;
+use App\Models\CvEducation;
+use App\Models\CvLogEducation;
 
 class CvEducationObserver
 {
@@ -13,9 +13,9 @@ class CvEducationObserver
      * @param  \App\Models\CvSayaEducations  $cvSayaEducations
      * @return void
      */
-    public function created(CvEducations $cvSayaEducations)
+    public function created(CvEducation $cvSayaEducations)
     {
-        $educations = new CvLogEducations();
+        $educations = new CvLogEducation();
         $educations->education_id = $cvSayaEducations->id;
         $educations->school = $cvSayaEducations->school;
         $educations->degree = $cvSayaEducations->degree;
@@ -34,9 +34,9 @@ class CvEducationObserver
      * @param  \App\Models\CvSayaEducations  $cvSayaEducations
      * @return void
      */
-    public function updated(CvEducations $cvSayaEducations)
+    public function updated(CvEducation $cvSayaEducations)
     {
-        $educations = new CvLogEducations();
+        $educations = new CvLogEducation();
         $educations->education_id = $cvSayaEducations->id;
         $educations->school = $cvSayaEducations->school;
         $educations->degree = $cvSayaEducations->degree;
@@ -55,7 +55,7 @@ class CvEducationObserver
      * @param  \App\Models\CvSayaEducations  $cvSayaEducations
      * @return void
      */
-    public function deleted(CvEducations $cvSayaEducations)
+    public function deleted(CvEducation $cvSayaEducations)
     {
         //
     }
@@ -66,7 +66,7 @@ class CvEducationObserver
      * @param  \App\Models\CvSayaEducations  $cvSayaEducations
      * @return void
      */
-    public function restored(CvEducations $cvSayaEducations)
+    public function restored(CvEducation $cvSayaEducations)
     {
         //
     }
@@ -77,7 +77,7 @@ class CvEducationObserver
      * @param  \App\Models\CvSayaEducations  $cvSayaEducations
      * @return void
      */
-    public function forceDeleted(CvEducations $cvSayaEducations)
+    public function forceDeleted(CvEducation $cvSayaEducations)
     {
         //
     }

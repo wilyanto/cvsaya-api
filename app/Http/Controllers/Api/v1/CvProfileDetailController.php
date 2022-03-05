@@ -4,18 +4,18 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Models\CvProfileDetail;
 use App\Models\CvAddress;
-use App\Models\CvSosmeds;
+use App\Models\CvSosmed;
 use App\Http\Controllers\Controller;
-use App\Models\CandidateEmployees;
-use App\Models\CvEducations;
-use App\Models\CvCertifications;
-use App\Models\CvSpecialities;
-use App\Models\CvHobbies;
-use App\Models\CvExperiences;
-use App\Models\CvDocumentations;
-use App\Models\CvExpectedPositions;
+use App\Models\CandidateEmployee;
+use App\Models\CvEducation;
+use App\Models\CvCertification;
+use App\Models\CvSpeciality;
+use App\Models\CvHobby;
+use App\Models\CvExperience;
+use App\Models\CvDocumentation;
+use App\Models\CvExpectedPosition;
 use Illuminate\Http\Request;
-use App\Models\EmployeeDetails;
+use App\Models\EmployeeDetail;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -34,13 +34,9 @@ class CvProfileDetailController extends Controller
         $user = auth()->user();
         // dump($userCollection);
         $array = [];
-        $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
-        $userAddress = CvAddress::where('user_id', $user->id_kustomer)->first();
-        $userSosmed = CvSosmeds::where('user_id', $user->id_kustomer)->first();
-
-        if (!$userProfileDetail || !$userAddress || !$userSosmed) {
-            return $this->errorResponse('profile or address or sosmed data not found', 404, 40401);
-        }
+        $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->firstOrFail();
+        $userAddress = CvAddress::where('user_id', $user->id_kustomer)->firstOrFail();
+        $userSosmed = CvSosmed::where('user_id', $user->id_kustomer)->firstOrFail();
 
         $array['profile_detail'] = $userProfileDetail;
         $array['address'] = $userAddress;
@@ -53,19 +49,31 @@ class CvProfileDetailController extends Controller
     {
         $user = auth()->user();
 
-        $education = CvEducations::where('user_id', $user->id_kustomer)->get();
+        $education = CvEducation::where('user_id', $user->id_kustomer)
+        ->orderBy('start_at', 'DESC')
+        ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
+        ->orderBy('until_at', 'DESC')
+        ->get();
         $data['education'] = $education;
 
-        $experience = CvExperiences::where('user_id', $user->id_kustomer)->get();
+        $experience = CvExperience::where('user_id', $user->id_kustomer)
+        ->orderBy('start_at', 'DESC')
+        ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
+        ->orderBy('until_at', 'DESC')
+        ->get();
         $data['experience'] = $experience;
 
-        $certifications = CvCertifications::where('user_id', $user->id_kustomer)->get();
+        $certifications = CvCertification::where('user_id', $user->id_kustomer)
+        ->orderBy('start_at', 'DESC')
+        ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
+        ->orderBy('until_at', 'DESC')
+        ->get();
         $data['certifications'] = $certifications;
 
-        $specialities = CvSpecialities::where('user_id', $user->id_kustomer)->get();
+        $specialities = CvSpeciality::where('user_id', $user->id_kustomer)->get();
         $data['specialities'] = $specialities;
 
-        $hobbies = CvHobbies::where('user_id', $user->id_kustomer)->get();
+        $hobbies = CvHobby::where('user_id', $user->id_kustomer)->get();
         $data['hobbies'] = $hobbies;
 
         $data = (object)$data;
@@ -73,7 +81,8 @@ class CvProfileDetailController extends Controller
         return $this->showOne(collect($data));
     }
 
-    public function status(){
+    public function status()
+    {
         $user = auth()->user();
 
         $status = $this->getStatus($user->id_kustomer);
@@ -87,23 +96,20 @@ class CvProfileDetailController extends Controller
 
 
         $userProfileDetail = CvProfileDetail::where('user_id', $id)->first();
-        $education = CvEducations::where('user_id', $id)->first();
-        $document = CvDocumentations::where('user_id', $id)->first();
-        $expectedSalaries = CvExpectedPositions::where('user_id', $id)->first();
+        $education = CvEducation::where('user_id', $id)->first();
+        $document = CvDocumentation::where('user_id', $id)->first();
+        $expectedSalaries = CvExpectedPosition::where('user_id', $id)->first();
 
         $data['is_profile_filled'] = true;
         $data['is_works_filled'] = true;
         $data['is_document_filled'] = true;
         $data['is_cv_filled'] = true;
-        // dump($userProfileDetail);
         if (!$userProfileDetail) {
             return $this->errorResponse('User not registerd yet', 418, 40901);
         }
-        // dump($experience);
         if (!$userProfileDetail || !$userProfileDetail->addresses || !$userProfileDetail->sosmeds) {
             $data['is_profile_filled'] = false;
         }
-        // dump($userProfileDetail);
 
         if (!$expectedSalaries) {
             $data['is_works_filled'] = false;
@@ -117,8 +123,7 @@ class CvProfileDetailController extends Controller
             $data['is_document_filled'] = false;
         }
 
-        $employee = EmployeeDetails::where('user_id', $id)->first();
-        // dump($employee);
+        $employee = EmployeeDetail::where('user_id', $id)->first();
         if ($employee) {
             $result['is_employee'] = true;
             $position = [
@@ -171,11 +176,6 @@ class CvProfileDetailController extends Controller
             'last_name' => 'string|required|min:3',
             'reference' => 'string|nullable',
         ]);
-
-        // $data = $request->all();
-        // dd($data);
-
-        // dd(CvProfileDetail::where('user_id', $user->id_kustomer)->first());
         if (CvProfileDetail::where('user_id', $user->id_kustomer)->first()) {
             return $this->errorResponse('User already created', 409, 40901);
         }
@@ -191,9 +191,9 @@ class CvProfileDetailController extends Controller
     public function createCandidate($user, $request)
     {
 
-        $candidate = CandidateEmployees::where('phone_number', substr($user->telpon, 1))->first();
+        $candidate = CandidateEmployee::where('phone_number', substr($user->telpon, 1))->first();
         if (!$candidate) {
-            $candidate = new CandidateEmployees();
+            $candidate = new CandidateEmployee();
         }
         $candidate->user_id = $user->id_kustomer;
         $candidate->name = $request->first_name . " " . $request->last_name;
@@ -235,16 +235,8 @@ class CvProfileDetailController extends Controller
     public function update(Request $request)
     {
         $user = auth()->user();
-        // return 'test';
-        // dd($user);
-        $userProfileDetails = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
-        if (!$userProfileDetails) {
-            return $this->errorResponse('id not found', 404, 40401);
-        }
-        // dd($userProfileDetails);
 
-        // dd($request->input('json'));
-        // dd(json_decode($request->input('json')));
+        CvProfileDetail::where('user_id',$user->id_kustomer)->firstOrFail();
 
         $request->validate([
             #Profile Detail
@@ -269,7 +261,6 @@ class CvProfileDetailController extends Controller
             'sosmed.facebook' => 'string',
             'sosmed.website_url' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
         ]);
-        // dd($request->input());
         $json = $request->input();
 
         $requestProfile = $json['profile_detail'];
@@ -277,12 +268,9 @@ class CvProfileDetailController extends Controller
         $requestAddress = $json['address'];
         $requestAddress['user_id'] = $user->id_kustomer;
         $requestAddress['country_id'] = 62;
-        // dd($requestAddress);
 
         $requestSosmeds = $json['sosmed'];
         $requestSosmeds['user_id'] = $user->id_kustomer;
-
-        // dd($requestProfile);
         try {
             DB::beginTransaction();
             $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
@@ -301,33 +289,25 @@ class CvProfileDetailController extends Controller
                 $userAddress = CvAddress::create($requestAddress);
             }
 
-            $userSosmed = CvSosmeds::where('user_id', $user->id_kustomer)->first();
+            $userSosmed = CvSosmed::where('user_id', $user->id_kustomer)->first();
             if ($userSosmed) {
                 $userSosmed->fill($requestSosmeds);
                 if ($userSosmed->isDirty()) {
                     $userSosmed->update($requestSosmeds);
                 }
             } else {
-                $userSosmed = CvSosmeds::create($requestSosmeds);
+                $userSosmed = CvSosmed::create($requestSosmeds);
             }
             $array['profile_detail'] = $userProfileDetail;
             $array['address'] = $userAddress;
             $array['sosmed'] = $userSosmed;
-            // dd($array);
             $object = (object)$array;
-            // dd($collection);
             DB::commit();
             return $this->showOne($object);
         } catch (\Exception $e) {
             DB::rollback();
             return $this->errorResponse($e->getMessage(), 500, 50001);
         }
-
-
-
-
-        // $data = $request->all();
-        // dd($data);
         return $this->showOne($userProfileDetail);
     }
 

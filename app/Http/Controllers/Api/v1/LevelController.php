@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Models\Level;
-use App\Models\Positions;
+use App\Models\Position;
 use  App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
@@ -19,7 +19,7 @@ class LevelController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'company_id'=>'integer|nullable'
+            'company_id'=>'string|nullable'
         ]);
 
         if(!$request->company_id){
@@ -39,7 +39,7 @@ class LevelController extends Controller
     {
         $request->validate([
             'name' => 'string|required',
-            'company_id' => 'integer|required',
+            'company_id' => 'string|required',
         ]);
 
         $create = Level::create($request->all());
@@ -87,18 +87,14 @@ class LevelController extends Controller
      * @param  \App\Models\CvSayaLevel  $cvSayaLevel
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,)
+    public function update(Request $request,$id)
     {
         $request->validate([
-            'id' => 'integer|required',
             'name' => 'string|nullable',
-            'company_id' => 'integer|nullable',
+            'company_id' => 'string|nullable',
         ]);
 
-        $find = Level::where('id',$request->id)->first();
-        if(!$find){
-            return $this->errorResponse('id not found',404,40401);
-        }
+        $find = Level::where('id',$id)->firstOrFail();
         $find->update($request->all());
 
         return $this->showOne($find);
@@ -111,17 +107,14 @@ class LevelController extends Controller
      * @param  \App\Models\CvSayaLevel  $cvSayaLevel
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request,$id)
     {
         $user = auth()->user();
-        $request->validate([
-            'id' => 'required|integer',
-        ]);
         $hobbies = Level::where('id', $request->id)->first();
         if(!$hobbies){
             return $this->errorResponse('id not found',404,40401);
         }else{
-            $usingLevel =  Positions::where('level_id',$request->id)->count();
+            $usingLevel =  Position::where('level_id',$request->id)->count();
             if($usingLevel){
                 return $this->errorResponse('Level still been use',409,40901);
             }

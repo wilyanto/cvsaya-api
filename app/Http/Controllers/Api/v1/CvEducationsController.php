@@ -4,7 +4,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\CvEducations;
+use App\Models\CvEducation;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 
@@ -21,7 +21,11 @@ class CvEducationsController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $educations = CvEducations::where('user_id',$user->id_kustomer)->get();
+        $educations = CvEducation::where('user_id', $user->id_kustomer)
+            ->orderBy('start_at', 'DESC')
+            ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('until_at', 'DESC')
+            ->get();
 
         return $this->showAll($educations);
     }
@@ -47,11 +51,14 @@ class CvEducationsController extends Controller
 
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $data['start_at'] = date('Y-m-d',strtotime($data['start_at']));
-        $data['until_at'] = date('Y-m-d',strtotime($data['until_at']));
-        $educations = CvEducations::create($data);
+        $data['start_at'] = date('Y-m-d', strtotime($data['start_at']));
+        if ($request->until_at == null) {
+            $data['until_at'] = date('Y-m-d', strtotime($data['until_at']));
+        } else {
+            $data['until_at'] = null;
+        }
+        $educations = CvEducation::create($data);
         return $this->showOne($educations);
-
     }
 
     /**
@@ -94,11 +101,11 @@ class CvEducationsController extends Controller
      * @param  \App\Models\Educations  $educations
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         $user = auth()->user();
+        // dump($request->input());
         $request->validate([
-            'id'=>'required|integer',
             'school' => 'nullable|string',
             'degree' => 'nullable|string',
             'field_of_study' => 'nullable|string',
@@ -110,17 +117,24 @@ class CvEducationsController extends Controller
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $data['start_at'] = date('Y-m-d',strtotime($data['start_at']));
-        $data['until_at'] = date('Y-m-d',strtotime($data['until_at']));
-        $educations = CvEducations::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
-        if(!$educations){
-            return $this->errorResponse('id not found',404,40401);
+        if ($request->start_at != null) {
+            $data['start_at'] = date('Y-m-d', strtotime($data['start_at']));
+        } else {
+            $data['start_at'] = null;
+        }
+        if ($request->until_at != null) {
+            $data['until_at'] = date('Y-m-d', strtotime($data['until_at']));
+        } else {
+            $data['until_at'] = null;
+        }
+        $educations = CvEducation::where('id', $id)->where('user_id', $user->id_kustomer)->first();
+        if (!$educations) {
+            return $this->errorResponse('id not found', 404, 40401);
         }
 
         $educations->update($data);
 
         return $this->showOne($educations);
-
     }
 
     /**
@@ -129,19 +143,15 @@ class CvEducationsController extends Controller
      * @param  \App\Models\Educations  $educations
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy($id)
     {
         $user = auth()->user();
-        $request->validate([
-            'id'=> 'required|integer',
-        ]);
-        $educations = CvEducations::where('id',$request->id)->where('user_id',$user->id_kustomer)->first();
-        if(!$educations){
-            return $this->errorResponse('id not found',404,40401);
+        $educations = CvEducation::where('id', $id)->where('user_id', $user->id_kustomer)->first();
+        if (!$educations) {
+            return $this->errorResponse('id not found', 404, 40401);
         }
         $educations->delete();
 
         return $this->showOne(null);
-
     }
 }

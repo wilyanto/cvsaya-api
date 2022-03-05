@@ -4,11 +4,11 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\CvExperiences;
+use App\Models\CvExperience;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 
-class CvExperiencesController extends Controller
+class CvExperienceController extends Controller
 {
     use ApiResponser;
     /**
@@ -21,7 +21,11 @@ class CvExperiencesController extends Controller
         $user = auth()->user();
         // dump($user);
         $data = [];
-        $experiences = CvExperiences::where('user_id', $user->id_kustomer)->get();
+        $experiences = CvExperience::where('user_id', $user->id_kustomer)
+            ->orderBy('start_at', 'DESC')
+            ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('until_at', 'DESC')
+            ->get();
         return $this->showAll($experiences);
     }
 
@@ -41,7 +45,7 @@ class CvExperiencesController extends Controller
             'until_at' => 'nullable|date|after:start_at',
             'description' => 'nullable|string',
         ]);
-        $experience = new CvExperiences();
+        $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
         $experience->position = $request->position;
         $experience->employment_type = $request->employment_type;
@@ -93,23 +97,19 @@ class CvExperiencesController extends Controller
      * @param  \App\Models\Experiences  $experiences
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         $user = auth()->user();
         $request->validate([
-            'id' => 'required|integer',
             'position' => 'nullable|string',
-            'employment_type' => 'nullable','in:full-time,part-time,self-employed,freelance,contract,internship,apprenticeship,seasonal',
+            'employment_type' => 'nullable', 'in:full-time,part-time,self-employed,freelance,contract,internship,apprenticeship,seasonal',
             'location' => 'nullable|string',
             'start_at' => 'nullable|date',
             'until_at' => 'nullable|date|after:start_at',
             'description' => 'nullable|string',
         ]);
 
-        $experience = CvExperiences::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
-        if (!$experience) {
-            return $this->errorResponse('Id not indentify in database', 422, 42200);
-        }
+        $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
         if ($request->position) {
             $experience->position = $request->position;
         }
@@ -140,16 +140,13 @@ class CvExperiencesController extends Controller
      * @param  \App\Models\Experiences  $experiences
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request, $id)
     {
         $user = auth()->user();
-        $request->validate([
-            'id' => 'required|integer',
-        ]);
 
-        $experience = CvExperiences::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
-        if(!$experience){
-            return $this->errorResponse('id not found',404,40401);
+        $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
+        if (!$experience) {
+            return $this->errorResponse('id not found', 404, 40401);
         }
         $experience->delete();
 

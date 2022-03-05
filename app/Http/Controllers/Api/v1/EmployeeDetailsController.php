@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Models\EmployeeDetails;
+use App\Models\EmployeeDetail;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
-use App\Models\Departments;
+use App\Models\Department;
 use App\Models\Level;
-use App\Models\Positions;
+use App\Models\Position;
 
 class EmployeeDetailsController extends Controller
 {
@@ -97,7 +97,7 @@ class EmployeeDetailsController extends Controller
      * @param  \App\Models\EmployeeDetails  $employeeDetails
      * @return \Illuminate\Http\Response
      */
-    public function show(EmployeeDetails $employeeDetails)
+    public function show(EmployeeDetail $employeeDetails)
     {
         //
     }
@@ -108,7 +108,7 @@ class EmployeeDetailsController extends Controller
      * @param  \App\Models\EmployeeDetails  $employeeDetails
      * @return \Illuminate\Http\Response
      */
-    public function edit(EmployeeDetails $employeeDetails)
+    public function edit(EmployeeDetail $employeeDetails)
     {
         //
     }
@@ -120,7 +120,7 @@ class EmployeeDetailsController extends Controller
      * @param  \App\Models\EmployeeDetails  $employeeDetails
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, EmployeeDetails $employeeDetails)
+    public function update(Request $request, EmployeeDetail $employeeDetails)
     {
         //
     }
@@ -131,7 +131,7 @@ class EmployeeDetailsController extends Controller
      * @param  \App\Models\EmployeeDetails  $employeeDetails
      * @return \Illuminate\Http\Response
      */
-    public function destroy(EmployeeDetails $employeeDetails)
+    public function destroy(EmployeeDetail $employeeDetails)
     {
         //
     }

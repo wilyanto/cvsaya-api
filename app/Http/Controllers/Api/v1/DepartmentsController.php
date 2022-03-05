@@ -3,8 +3,8 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Models\Departments;
-use App\Models\Positions;
+use App\Models\Department;
+use App\Models\Position;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Traits\ApiResponser;
@@ -20,13 +20,13 @@ class DepartmentsController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'company_id'=>'integer|nullable'
+            'company_id'=>'string|nullable'
         ]);
 
         if(!$request->company_id){
-            $data = Departments::all();
+            $data = Department::all();
         }else{
-            $data = Departments::where('company_id',$request->company_id)->get();
+            $data = Department::where('company_id',$request->company_id)->get();
         };
         return $this->showAll($data);
     }
@@ -40,10 +40,10 @@ class DepartmentsController extends Controller
     {
         $request->validate([
             'name' => 'string|required',
-            'company_id' => 'integer|required',
+            'company_id' => 'string|required',
         ]);
 
-        $create = Departments::create($request->all());
+        $create = Department::create($request->all());
 
         return $this->showOne($create);
     }
@@ -65,7 +65,7 @@ class DepartmentsController extends Controller
      * @param  \App\Models\CvSayaDepartments  $cvSayaDepartments
      * @return \Illuminate\Http\Response
      */
-    public function show(Departments $cvSayaDepartments)
+    public function show(Department $cvSayaDepartments)
     {
         //
     }
@@ -76,7 +76,7 @@ class DepartmentsController extends Controller
      * @param  \App\Models\CvSayaDepartments  $cvSayaDepartments
      * @return \Illuminate\Http\Response
      */
-    public function edit(Departments $cvSayaDepartments)
+    public function edit(Department $cvSayaDepartments)
     {
         //
     }
@@ -88,18 +88,13 @@ class DepartmentsController extends Controller
      * @param  \App\Models\CvSayaDepartments  $cvSayaDepartments
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request,$id)
     {
         $request->validate([
-            'id' => 'integer|required',
             'name' => 'string|nullable',
-            'company_id' => 'integer|nullable',
+            'company_id' => 'string|nullable',
         ]);
-
-        $find = Departments::where('id',$request->id)->first();
-        if(!$find){
-            return $this->errorResponse('id not found',404,40401);
-        }
+        $find = Department::where('id',$id)->firstOrFail();
         $find->update($request->all());
 
         return $this->showOne($find);
@@ -112,17 +107,14 @@ class DepartmentsController extends Controller
      * @param  \App\Models\CvSayaDepartments  $cvSayaDepartments
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request,$id)
     {
-        $request->validate([
-            'id' => 'integer|required',
-        ]);
 
-        $find = Departments::where('id',$request->id)->first();
+        $find = Department::where('id',$request->id)->first();
         if(!$find){
             return $this->errorResponse('id not found',404,40401);
         }else{
-            $usingLevel =  Positions::where('level_id',$request->id)->count();
+            $usingLevel =  Position::where('level_id',$request->id)->count();
             if($usingLevel){
                 return $this->errorResponse('Departement still been use',409,40901);
             }

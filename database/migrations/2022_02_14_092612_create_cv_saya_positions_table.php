@@ -18,6 +18,7 @@ class CreateCvSayaPositionsTable extends Migration
             $table->string('name');
             $table->bigInteger('department_id')->unsigned();
             $table->bigInteger('level_id')->unsigned();
+            $table->integer('priority')->unsigned()->nullable();
             $table->bigInteger('parent_id')->unsigned()->nullable();
             $table->integer('remaining_slot')->nullable();
             $table->integer('min_salary')->nullable();

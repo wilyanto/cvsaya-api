@@ -4,9 +4,9 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Positions;
+use App\Models\Position;
 use Illuminate\Http\Request;
-use App\Models\Departments;
+use App\Models\Department;
 use App\Models\Level;
 use App\Traits\ApiResponser;
 
@@ -20,7 +20,7 @@ class PositionsController extends Controller
      */
     public function index()
     {
-        $getListPosition = Positions::all();
+        $getListPosition = Position::all();
         return $this->showAll($getListPosition);
     }
 
@@ -47,11 +47,13 @@ class PositionsController extends Controller
             'name' => 'required|string',
             'department_id' => 'required|integer',
             'level_id' => 'required|integer',
+            'priority'=> 'nullable|string',
             'parent_id' => 'nullable|integer',
-            'company_id'=> 'nullable|integer',
+            'remaining_slot'=> 'nullable|string',
+            'company_id'=> 'nullable|string',
         ]);
 
-        $getDepartment = Departments::where('id',$request->department_id)->first();
+        $getDepartment = Department::where('id',$request->department_id)->first();
         if(!$getDepartment){
             return $this->errorResponse('department_id not found',404,40401);
         }
@@ -61,7 +63,7 @@ class PositionsController extends Controller
             return $this->errorResponse('level_id not found',404,40401);
         }
 
-        $create = Positions::create($request->all());
+        $create = Position::create($request->all());
 
 
         return $this->showOne($create);
@@ -78,7 +80,7 @@ class PositionsController extends Controller
     {
        $user =  auth()->user();
 
-       $list = Positions::where('parent_id',null)->get();
+       $list = Position::where('parent_id',null)->get();
     //    dd($list);
        $data = [];
        foreach($list as $item => $object){
@@ -102,7 +104,7 @@ class PositionsController extends Controller
      * @param  \App\Models\CvSayaPositions  $cvSayaPositions
      * @return \Illuminate\Http\Response
      */
-    public function edit(Positions $cvSayaPositions)
+    public function edit(Position $cvSayaPositions)
     {
         //
     }
@@ -114,7 +116,7 @@ class PositionsController extends Controller
      * @param  \App\Models\CvSayaPositions  $cvSayaPositions
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Positions $cvSayaPositions)
+    public function update(Request $request, Position $cvSayaPositions)
     {
         //
     }
@@ -125,7 +127,7 @@ class PositionsController extends Controller
      * @param  \App\Models\CvSayaPositions  $cvSayaPositions
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Positions $cvSayaPositions)
+    public function destroy(Position $cvSayaPositions)
     {
 
     }

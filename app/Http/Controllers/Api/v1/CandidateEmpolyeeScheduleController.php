@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Http\Controllers\api\v1\CandidateEmployeesController;
-use App\Models\CandidateEmployees;
-use App\Models\CandidateEmpolyeeSchedule;
+use App\Http\Controllers\api\v1\CandidateEmployeeController;
+use App\Models\CandidateEmployee;
+use App\Models\CandidateEmployeeSchedule;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
-use App\Models\CvExpectedSalaries;
-use App\Models\EmployeeDetails;
-use App\Models\Positions;
+use App\Models\CvExpectedSalary;
+use App\Models\EmployeeDetail;
+use App\Models\Position;
+use DateTime;
+use DateInterval;
+use DatePeriod;
 
 class CandidateEmpolyeeScheduleController extends Controller
 {
@@ -25,9 +28,55 @@ class CandidateEmpolyeeScheduleController extends Controller
     {
         $user = auth()->user();
 
-        $candidate = CandidateEmpolyeeSchedule::where('result', null)->get();
+        $candidate = CandidateEmployeeSchedule::where('result', null)->orderBy('status')->distinct('employee_candidate_id')->get();
 
         return $this->showALl($candidate);
+    }
+
+
+    public function indexByDate(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'start_at' => 'date|required',
+            'until_at' => 'date|nullable',
+        ]);
+
+            $begin = new DateTime(date('Y-m-d H:i:s', strtotime($request->start_at)));
+            $until = new DateTime(date('Y-m-d H:i:s', strtotime($request->until_at)));
+            $interval = DateInterval::createFromDateString('1 day');
+            $periods = new DatePeriod($begin, $interval, $until);
+
+        $data = [];
+        foreach($periods as $period){
+            $scheduleArray = [];
+            $schedules = CandidateEmployeeSchedule::whereDate('date_time','==',$period)
+            ->where('interview_by',$user->id_kustomer)
+            ->whereNull('result')
+            ->distinct('employee_candidate_id')
+            ->get();
+
+            foreach($schedules as $schedule){
+                $scheduleArray[] = [
+                    'date_time' => $schedule->date_time,
+                    'candidate' => $schedule->candidate,
+                ];
+            }
+            $data[] = [
+                'date' => $period,
+                'schedulues' => $scheduleArray,
+            ];
+        }
+
+        return $this->showAll(collect($data));
+
+
+        // $candidate = CandidateEmployeeSchedule::where('interview_by',$user->id_kustomer)->whereDate('date_time','>='.$request->start_at)->where(function($qurey) use ($untilAt){
+        //     if($untilAt != null){
+        //         $qurey->whereDate('date_time','<=',$untilAt);
+        //     }
+        // })->distinct('employee_candidate_id')->get();
     }
 
     /**
@@ -58,7 +107,7 @@ class CandidateEmpolyeeScheduleController extends Controller
             'interview_by' => 'integer|required',
             'note' => 'longtext|nullable',
         ]);
-        $candidate = CandidateEmployees::where('id', $request->employee_candidate_id)->first();
+        $candidate = CandidateEmployee::where('id', $request->employee_candidate_id)->first();
         if (!$candidate) {
             return $this->errorResponse('Candidate not found', 404, 40401);
         }
@@ -69,19 +118,19 @@ class CandidateEmpolyeeScheduleController extends Controller
         $status = $status->original;
         $status = $status['data']['is_all_form_filled'];
         if (
-            $candidate->status != CandidateEmployees::INTERVIEW &&
-            $candidate->status != CandidateEmployees::PASS &&
+            $candidate->status != CandidateEmployee::INTERVIEW &&
+            $candidate->status != CandidateEmployee::PASS &&
             $status == false
         ) {
             return $this->errorResponse('this Candidate cannot going interview', 401, 40101);
         }
 
-        if ($request->status < CandidateEmployees::ACCEPTED) {
-            $candidate->status = CandidateEmployees::INTERVIEW;
+        if ($request->status < CandidateEmployee::ACCEPTED) {
+            $candidate->status = CandidateEmployee::INTERVIEW;
             $candidate->save();
         }
         dump($request->all());
-        $candidateEmpolyeeSchedule = CandidateEmpolyeeSchedule::create($request->all());
+        $candidateEmpolyeeSchedule = CandidateEmployeeSchedule::create($request->all());
 
         return $this->showOne($candidateEmpolyeeSchedule);
     }
@@ -92,7 +141,7 @@ class CandidateEmpolyeeScheduleController extends Controller
      * @param  \App\Models\CandidateEmpolyeeSchedule  $candidateEmpolyeeSchedule
      * @return \Illuminate\Http\Response
      */
-    public function show(CandidateEmpolyeeSchedule $candidateEmpolyeeSchedule)
+    public function show(CandidateEmployeeSchedule $candidateEmpolyeeSchedule)
     {
         //
     }
@@ -103,7 +152,7 @@ class CandidateEmpolyeeScheduleController extends Controller
      * @param  \App\Models\CandidateEmpolyeeSchedule  $candidateEmpolyeeSchedule
      * @return \Illuminate\Http\Response
      */
-    public function edit(CandidateEmpolyeeSchedule $candidateEmpolyeeSchedule)
+    public function edit(CandidateEmployeeSchedule $candidateEmpolyeeSchedule)
     {
         //
     }
@@ -125,12 +174,12 @@ class CandidateEmpolyeeScheduleController extends Controller
 
         // dd($request->input());
 
-        $candidate = CandidateEmployees::where('id', $request->employee_candidate_id)->first();
+        $candidate = CandidateEmployee::where('id', $request->employee_candidate_id)->first();
         if (!$candidate) {
             return $this->errorResponse('Candidate Not Found', 404, 40401);
         }
 
-        $schedule = CandidateEmpolyeeSchedule::where('id', $request->schedule_id)->first();
+        $schedule = CandidateEmployeeSchedule::where('id', $request->schedule_id)->first();
         if (!$schedule) {
             return $this->errorResponse('Schedule not found', 404, 40402);
         }
@@ -158,8 +207,8 @@ class CandidateEmpolyeeScheduleController extends Controller
             $candidate->result = $request->result_interview;
             $schedule->save();
             $candidate->save();
-            if ($request->result_interview == CandidateEmployees::PASS) {
-                $newSchedule = new CandidateEmpolyeeSchedule();
+            if ($request->result_interview == CandidateEmployee::PASS) {
+                $newSchedule = new CandidateEmployeeSchedule();
                 $newSchedule->employee_candidate_id = $request->employee_candidate_id;
                 $newSchedule->interview_by = $request->next_interviewer;
                 $newSchedule->date_time =
@@ -167,20 +216,20 @@ class CandidateEmpolyeeScheduleController extends Controller
                     ? null :
                     date('Y-m-d H:i:s', strtotime($request->date . ' ' . $request->time));
                 $newSchedule->save();
-            } elseif ($request->result_interview == CandidateEmployees::ACCEPTED) {
+            } elseif ($request->result_interview == CandidateEmployee::ACCEPTED) {
 
                 $request->validate([
                     'position_id' => 'integer|required',
                     'salary_value' => 'integer|required',
                 ]);
 
-                $position = Positions::where('id', $request->user_id)->first();
+                $position = Position::where('id', $request->user_id)->first();
                 if (!$position) {
 
                     return $this->errorResponse('Schedule not found', 404, 40403);
                 }
 
-                $newEmpolyee = new EmployeeDetails();
+                $newEmpolyee = new EmployeeDetail();
                 $newEmpolyee->user_id = $candidate->user_id;
                 $newEmpolyee->position_id = $position->id;
                 $newEmpolyee->salary = $request->salary_value;
@@ -197,7 +246,7 @@ class CandidateEmpolyeeScheduleController extends Controller
      * @param  \App\Models\CandidateEmpolyeeSchedule  $candidateEmpolyeeSchedule
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CandidateEmpolyeeSchedule $candidateEmpolyeeSchedule)
+    public function destroy(CandidateEmployeeSchedule $candidateEmpolyeeSchedule)
     {
         //
     }

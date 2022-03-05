@@ -2,17 +2,14 @@
 
 namespace App\Observers;
 
-use App\Models\CandidateEmployees;
-use App\Models\CvLogProfileDetails;
+use App\Models\CvLogProfileDetail;
 use  App\Models\CvProfileDetail;
-use Carbon\Carbon;
-
 
 class CvProfileDetailObserver
 {
     public function created(CvProfileDetail $profileDetail)
     {
-        $newLog = new CvLogProfileDetails;
+        $newLog = new CvLogProfileDetail;
         $newLog->profile_detail_id = $profileDetail->id;
         $newLog->first_name = $profileDetail->first_name;
         $newLog->last_name= $profileDetail->last_name;
@@ -28,7 +25,7 @@ class CvProfileDetailObserver
 
     public function updated(CvProfileDetail $profileDetail)
     {
-        $newLog = new CvLogProfileDetails;
+        $newLog = new CvLogProfileDetail;
         $newLog->profile_detail_id = $profileDetail->id;
         $newLog->first_name = $profileDetail->first_name;
         $newLog->last_name= $profileDetail->last_name;
