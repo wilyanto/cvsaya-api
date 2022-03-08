@@ -38,4 +38,8 @@ class CvProfileDetail extends Model
     public function Sosmeds(){
         return $this->hasOne(CvSosmed::class,'user_id','user_id');
     }
+
+    public function EmployeeDetails(){
+        return $this->belongsToMany(EmployeeDetails::class,'user_id','user_id');
+    }
 }

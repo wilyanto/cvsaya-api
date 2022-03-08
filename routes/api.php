@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\v1\CandidateEmployeeController;
 use App\Http\Controllers\Api\v1\EmployeeDetailsController;
 use App\Http\Controllers\Api\v1\CandidateEmpolyeeScheduleController;
 use App\Http\Controllers\Api\v1\CompanyController;
+use App\Http\Controllers\PermissionController;
 use App\Models\Certifications;
 use App\Models\CvProfileDetail;
 
@@ -131,6 +132,12 @@ Route::prefix('v1')->group(function () {
                 Route::put('/intergration/{id}', 'updateCertificate');
                 Route::put('/{id}',  'update');
                 Route::delete('/{id}', 'destroy');
+            });
+        });
+
+        Route::prefix('permission')->group(function(){
+            Route::controller(PermissionController::class)->group(function(){
+                Route::get('/','getPermission');
             });
         });
 

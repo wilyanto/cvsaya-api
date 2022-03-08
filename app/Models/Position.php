@@ -64,6 +64,11 @@ class Position extends Model
         return $this->hasMany(CvExpectedSalary::class, 'expected_position', 'id');
     }
 
+    public function Companies()
+    {
+        return $this->hasMany(Company::class, 'id', 'company_id');
+    }
+
     public function toCandidate()
     {
         return [
@@ -86,6 +91,10 @@ class Position extends Model
             'max_salary' => $this->max_salary
         ];
     }
+
+    // public function getCompanyName(){
+    //     return 'test';
+    // }
 
     // public function toArray()
     // {
