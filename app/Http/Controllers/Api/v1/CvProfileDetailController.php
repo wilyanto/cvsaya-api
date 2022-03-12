@@ -20,6 +20,8 @@ use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 
 class CvProfileDetailController extends Controller
 {
@@ -232,8 +234,36 @@ class CvProfileDetailController extends Controller
      * @param  \App\Models\UserProfileDetail  $userProfileDetail
      * @return \Illuminate\Http\Response
      */
+
+    public function validateAddress($country,$province,$city,$subDistrict,$village,$token){
+        $url = env('KadaURl')."/v1/domicile/villages/validation";
+        // dump(env('KadaURl'));
+        // dump($url);
+        $data = [
+            'country_code' => $country,
+            'province_code' => $province,
+            'city_code' => $city,
+            'sub_district_code' => $subDistrict,
+            'village_code' => $village,
+        ];
+        // dump($token);
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer '.$token,
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])
+        ->get(
+            $url,
+            $data
+        );
+        // dump($response);
+        dump($response->throw());
+        return $response;
+    }
+
     public function update(Request $request)
     {
+        dump($request);
         $user = auth()->user();
 
         CvProfileDetail::where('user_id',$user->id_kustomer)->firstOrFail();
@@ -259,8 +289,9 @@ class CvProfileDetailController extends Controller
             'sosmed.tiktok' => 'string',
             'sosmed.youtube' => 'string',
             'sosmed.facebook' => 'string',
-            'sosmed.website_url' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            'sosmed.website_url' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]i',
         ]);
+
         $json = $request->input();
 
         $requestProfile = $json['profile_detail'];
@@ -271,6 +302,7 @@ class CvProfileDetailController extends Controller
 
         $requestSosmeds = $json['sosmed'];
         $requestSosmeds['user_id'] = $user->id_kustomer;
+
         try {
             DB::beginTransaction();
             $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
@@ -282,6 +314,16 @@ class CvProfileDetailController extends Controller
             $userAddress = CvAddress::where('user_id', $user->id_kustomer)->first();
             if ($userAddress) {
                 $userAddress->fill($requestAddress);
+                dump(explode(' ', $request->header('Authorization'))[1]);
+                dd(self::validateAddress(
+                    $requestAddress['country_id'],
+                    $requestAddress['province_id'],
+                    $requestAddress['city_id'],
+                    $requestAddress['district_id'],
+                    $requestAddress['village_id'],
+                    // explode(' ', $request->header('Authorization'))[1]
+                    "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiNjNmYzE2MmMwZjNmYTVkZTEyMGM1MmRlN2VmMjFlMWQ1YmJhZGNmYjhlYjgwMzY2MjdhMzA4ZjAxMGIxZmMwZThjZGU5NTczZWFjNjUyNGMiLCJpYXQiOjE2NDY4NzUzNTguMDIxNjc3LCJuYmYiOjE2NDY4NzUzNTguMDIxNjgyLCJleHAiOjE2Nzg0MTEzNTcuOTE0NCwic3ViIjoiMjgwMzEiLCJzY29wZXMiOltdfQ.xMXc-iUBbsDj_U2gDmG_-66wpDMp83rJa86BcDbpodoG0oL-uTuWWhtK3b76jknAa_ZV5_iAOi6U4Uhodj2pxttYO5ss4zo3vvvJT6ivOCJhU6FXhGFzF-C0y7579K_bfeSQg03uhm32r8zXhDIpLeMFm0KffB1cmy_Tgfy4mEmOZ9TgN_Kha3kn3LRiH9KkN63zw1XDj5sM39qJ6_mcIWFOFzCFj4xlvc8B4yw5SwEQdfs4P6y2ae6J4gahuCfDSVVle_vTn142ZElHJLrl0cvIH2b30hQicUKtEvPuC1GdadWWVo6Ldw5olYOv748wdV7EixuzCJayxqJUZ4PHyR_N3TGYAqBf2r26DZSXhO8XptqGBaCZeNcK9HsHaNfP0UmSRnzjgAYNHW3moZTIEMK7tQA8j3TKfoY4lTjvGdqFOwEJyZoDI54gKEXoYH_5X7t4c8BGJlfrt_2gGMV8gJmhJUR0sX4UAhhnlX6YjHOoSHVpfgkk3yTSUJrnV3ibxw8ERidl5A9A1I8Q0zzvnaq6FYBACx41wQR9B9-LZY53fcMLldQKMgrAICoMmn_LiI1IblzxV8IEy11EelPT44d1QYhaC5Q4suR9pDCBnku2SCbk0GvqGnh8Cfcep7ANxApckHyg3TCrvmbmm11aNl3Ig7s2k5uFPWVLDO9qOMA "
+                ));
                 if ($userAddress->isDirty()) {
                     $userAddress->update($requestAddress);
                 }

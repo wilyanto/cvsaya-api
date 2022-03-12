@@ -76,4 +76,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(BeautyTreatmentCart::class, 'user_id', 'id_kustomer');
     }
+
+    public function accessTokens(){
+        return $this->hasMany(OauthAccessToken::class);
+    }
 }
