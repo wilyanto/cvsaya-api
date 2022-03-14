@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class CvProfileDetail extends Model
 {
@@ -41,5 +42,28 @@ class CvProfileDetail extends Model
 
     public function EmployeeDetails(){
         return $this->belongsToMany(EmployeeDetails::class,'user_id','user_id');
+    }
+
+    public function Religion(){
+        return $this->hasOne(Religion::class,'id','religion_id');
+    }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'birth_location' => $this->birth_location,
+            'birth_date' => $this->birth_date,
+            'gender' => $this->gender,
+            'identity_number' => $this->identity_number,
+            'married' => $this->married,
+            'reference' => $this->reference,
+            'created_at' => $this->created_at,
+            'updated_at'=> $this->updated_at,
+            'religion_id' => $this->Religion,
+        ];
     }
 }

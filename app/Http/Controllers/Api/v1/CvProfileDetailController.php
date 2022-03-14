@@ -16,6 +16,7 @@ use App\Models\CvDocumentation;
 use App\Models\CvExpectedPosition;
 use Illuminate\Http\Request;
 use App\Models\EmployeeDetail;
+use App\Models\Religion;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -274,8 +275,8 @@ class CvProfileDetailController extends Controller
             'profile_detail.birth_date' => 'date|required',
             'profile_detail.gender' => 'required|string',
             'profile_detail.identity_number' => 'required|integer|min:5',
-            'profile_detail.religion' => 'in:Buddha,Islam,Kristen,Hindu,Kong Hu Cu|required',
             'profile_detail.married' => 'required|string',
+            'profile_detail.religion_id' => 'exists:Religions,id|required',
 
             #Address
             'address.province_id' => 'integer|required',
