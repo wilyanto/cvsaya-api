@@ -38,7 +38,7 @@ class CvExperiencesController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'position' => 'required|string',
+            'position_id' => 'required|exists:App\Models\CandidatePosition,id',
             'employment_type_id' => 'exists:App\Models\EmploymentType,id|required',
             'location' => 'required|string',
             'start_at' => 'required|date',
@@ -47,7 +47,7 @@ class CvExperiencesController extends Controller
         ]);
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
-        $experience->position = $request->position;
+        $experience->position_id = $request->position_id;
         $experience->employment_type_id = $request->employment_type_id;
         $experience->location = $request->location;
         $experience->start_at = date('Y-m-d', strtotime($request->start_at));

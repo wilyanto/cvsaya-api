@@ -26,12 +26,16 @@ class CvExperience extends Model
         return $this->hasOne(EmploymentType::class,'id','employment_type_id');
     }
 
+    public function CandidatePositions(){
+        return $this->hasOne(CandidatePosition::class,'id','employment_type_id');
+    }
+
     public function toArray()
     {
         return [
             'id' => $this->id,
             'user_id'=> $this->user_id,
-            'position' => $this->position,
+            'position' => $this->CandidatePositions,
             'employment_type_id' => $this->EmployeeType,
             'location' => $this->location,
             'start_at' => $this->start_at,
