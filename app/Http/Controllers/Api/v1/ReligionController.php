@@ -1,20 +1,40 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api\v1;
 
 use App\Models\Religion;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Traits\ApiResponser;
+
 
 class ReligionController extends Controller
 {
+    use ApiResponser;
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->input()) {
+            $request->validate([
+                'id' => 'nullable|integer',
+                'name' => 'nullable|string'
+            ]);
+        }
+        $id = $request->id;
+        $name = $request->name;
+        $religions = Religion::where(function ($query) use ($id, $name) {
+            if ($id != null) {
+                $query->where('id', $id);
+            }
+            if ($name != null) {
+                $query->where('name', 'like', '%' . $name . '%');
+            }
+        })->get();
+        return $this->showAll($religions);
     }
 
     /**
@@ -24,7 +44,6 @@ class ReligionController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
