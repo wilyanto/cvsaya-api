@@ -63,7 +63,7 @@ class CvProfileDetail extends Model
             'reference' => $this->reference,
             'created_at' => $this->created_at,
             'updated_at'=> $this->updated_at,
-            'religion_id' => $this->Religion,
+            'religion' => $this->Religion,
         ];
     }
 }
