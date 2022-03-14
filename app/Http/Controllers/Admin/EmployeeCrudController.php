@@ -21,7 +21,7 @@ class EmployeeCrudController extends CrudController
     public function setup()
     {
         $this->crud->setModel('App\Models\EmployeeDetail');
-        $this->crud->setEntityNameStrings('employee','employees');
+        $this->crud->setEntityNameStrings('employees','employes');
         $this->crud->setRoute('admin/employee');
     }
 
