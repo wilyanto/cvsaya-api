@@ -275,7 +275,7 @@ class CvProfileDetailController extends Controller
             'profile_detail.birth_date' => 'date|required',
             'profile_detail.gender' => 'required|string',
             'profile_detail.identity_number' => 'required|integer|min:5',
-            'profile_detail.married' => 'required|string',
+            'profile_detail.marriage_status_id' => 'exists:marriage_statuses,id|required',
             'profile_detail.religion_id' => 'exists:Religions,id|required',
 
             #Address
@@ -309,6 +309,7 @@ class CvProfileDetailController extends Controller
             $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
             $userProfileDetail->fill($requestProfile);
             $userProfileDetail->religion_id = $requestProfile['religion_id'];
+            $userProfileDetail->marriage_status_id = $requestProfile['marriage_status_id'];
             if ($userProfileDetail->isDirty()) {
                 $userProfileDetail->update($requestProfile);
             }

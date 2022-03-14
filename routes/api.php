@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\v1\CandidateEmpolyeeScheduleController;
 use App\Http\Controllers\Api\v1\CompanyController;
 use App\Http\Controllers\Api\v1\PermissionController;
 use App\Http\Controllers\Api\v1\ReligionController;
+use App\Http\Controllers\Api\v1\MarriageStatusController;
 use App\Models\Certifications;
 use App\Models\CvProfileDetail;
 
@@ -50,6 +51,12 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('religions')->group(function(){
             Route::controller(ReligionController::class)->group(function(){
+                Route::get('/','index');
+            });
+        });
+
+        Route::prefix('marriage/status')->group(function(){
+            Route::controller(MarriageStatusController::class)->group(function(){
                 Route::get('/','index');
             });
         });
