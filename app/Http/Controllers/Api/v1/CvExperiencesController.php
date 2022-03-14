@@ -8,7 +8,7 @@ use App\Models\CvExperience;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 
-class CvExperienceController extends Controller
+class CvExperiencesController extends Controller
 {
     use ApiResponser;
     /**
@@ -39,7 +39,7 @@ class CvExperienceController extends Controller
         $user = auth()->user();
         $request->validate([
             'position' => 'required|string',
-            'employment_type' => 'required|in:full-time,part-time,self-employed,freelance,contract,internship,apprenticeship,seasonal',
+            'employment_type_id' => 'exists:App\Models\EmploymentType,id|required',
             'location' => 'required|string',
             'start_at' => 'required|date',
             'until_at' => 'nullable|date|after:start_at',
@@ -48,7 +48,7 @@ class CvExperienceController extends Controller
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
         $experience->position = $request->position;
-        $experience->employment_type = $request->employment_type;
+        $experience->employment_type_id = $request->employment_type_id;
         $experience->location = $request->location;
         $experience->start_at = date('Y-m-d', strtotime($request->start_at));
         $experience->until_at = date('Y-m-d', strtotime($request->until_at));
