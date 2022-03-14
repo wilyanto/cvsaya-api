@@ -238,7 +238,7 @@ class CvProfileDetailController extends Controller
 
     public function validateAddress($country, $province, $city, $subDistrict, $village, $token)
     {
-        $url = env('KadaURl') . "/v1/domicile/villages/validation";
+        $url = env('KADA_URL') . "/v1/domicile/villages/validation";
         $data = [
             'country_code' => $country,
             'province_code' => $province,
