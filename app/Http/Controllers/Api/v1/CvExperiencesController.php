@@ -101,8 +101,8 @@ class CvExperiencesController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'position' => 'nullable|string',
-            'employment_type' => 'nullable', 'in:full-time,part-time,self-employed,freelance,contract,internship,apprenticeship,seasonal',
+            'position' => 'nullable|exists:App\Models\CandidatePosition,id',
+            'employment_type' => 'exists:App\Models\EmploymentType,id|nullable',
             'location' => 'nullable|string',
             'start_at' => 'nullable|date',
             'until_at' => 'nullable|date|after:start_at',
