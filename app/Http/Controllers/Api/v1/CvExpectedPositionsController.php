@@ -88,7 +88,7 @@ class CvExpectedPositionsController extends Controller
         $user = auth()->user();
         $request->validate([
             'name' => 'string|nullable',
-            'is_verfied' => 'nullable|boolean'
+            'is_verified' => 'nullable|boolean'
         ]);
         $name = $request->name;
         $isVerfied = $request->is_verfied;
