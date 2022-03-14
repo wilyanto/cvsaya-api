@@ -308,6 +308,7 @@ class CvProfileDetailController extends Controller
             DB::beginTransaction();
             $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
             $userProfileDetail->fill($requestProfile);
+            $userProfileDetail->religion_id = $requestProfile['religion_id'];
             if ($userProfileDetail->isDirty()) {
                 $userProfileDetail->update($requestProfile);
             }
