@@ -44,7 +44,7 @@ class CvExperiencesController extends Controller
             'start_at' => 'required|date',
             'until_at' => 'nullable|date|after:start_at',
             'description' => 'nullable|string',
-            'slip_salary_img' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            'payslip_img' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
         ]);
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
@@ -109,7 +109,7 @@ class CvExperiencesController extends Controller
             'start_at' => 'nullable|date',
             'until_at' => 'nullable|date|after:start_at',
             'description' => 'nullable|string',
-            'slip_salary_img' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            'payslip_img' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
         ]);
 
         $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();

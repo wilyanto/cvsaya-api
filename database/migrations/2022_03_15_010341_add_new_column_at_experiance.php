@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('cv_experiences',function(Blueprint $table){
-            $table->longText('slip_salary_img')->nullable();
+            $table->longText('payslip_img')->nullable();
         });
 
         Schema::table('cv_log_experiences',function(Blueprint $table){
-            $table->longText('slip_salary_img')->nullable();
+            $table->longText('payslip_img')->nullable();
         });
     }
 
