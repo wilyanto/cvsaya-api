@@ -17,9 +17,13 @@ use App\Http\Controllers\Api\v1\CandidateEmployeeController;
 use App\Http\Controllers\Api\v1\EmployeeDetailsController;
 use App\Http\Controllers\Api\v1\CandidateEmpolyeeScheduleController;
 use App\Http\Controllers\Api\v1\CompanyController;
-use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\api\v1\EmploymentTypeController;
+use App\Http\Controllers\Api\v1\PermissionController;
+use App\Http\Controllers\Api\v1\ReligionController;
+use App\Http\Controllers\Api\v1\MarriageStatusController;
 use App\Models\Certifications;
 use App\Models\CvProfileDetail;
+use App\Models\EmploymentType;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +48,18 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', 'index');
                 Route::post('/', 'store');
                 Route::put('/{id}', 'update');
+            });
+        });
+
+        Route::prefix('religions')->group(function(){
+            Route::controller(ReligionController::class)->group(function(){
+                Route::get('/','index');
+            });
+        });
+
+        Route::prefix('marriage/status')->group(function(){
+            Route::controller(MarriageStatusController::class)->group(function(){
+                Route::get('/','index');
             });
         });
 
@@ -188,10 +204,13 @@ Route::prefix('v1')->group(function () {
 
 
 
-        Route::prefix('empolyee')->group(function () {
+        Route::prefix('employee')->group(function () {
             Route::controller(EmployeeDetailsController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::post('/', 'create');
+            });
+            Route::controller(EmploymentTypeController::class)->group(function(){
+                Route::get('/type','index');
             });
         });
     });

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api\v1;
 
 use App\Models\EmployeeDetail;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
+use App\Http\Controllers\Controller;
 
 class PermissionController extends Controller
 {

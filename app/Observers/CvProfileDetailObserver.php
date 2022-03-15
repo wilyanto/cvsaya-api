@@ -17,8 +17,8 @@ class CvProfileDetailObserver
         $newLog->birth_date =  date('Y-m-d h:i:s',strtotime($profileDetail->birth_date));
         $newLog->gender = $profileDetail->gender;
         $newLog->identity_number = $profileDetail->gender;
-        $newLog->religion	 = $profileDetail->religion;
-        $newLog->married = $profileDetail->married;
+        $newLog->religion_id	 = $profileDetail->religion_id;
+        $newLog->marriage_status_id = $profileDetail->marriage_status_id;
         $newLog->created_at = date('Y-m-d h:i:s',time());
         $newLog->save();
     }
@@ -33,8 +33,8 @@ class CvProfileDetailObserver
         $newLog->birth_date =  date('Y-m-d h:i:s',strtotime($profileDetail->birth_date));
         $newLog->gender = $profileDetail->gender;
         $newLog->identity_number = $profileDetail->gender;
-        $newLog->religion	 = $profileDetail->religion;
-        $newLog->married = $profileDetail->married;
+        $newLog->religion_id	 = $profileDetail->religion_id;
+        $newLog->marriage_status_id = $profileDetail->marriage_status_id;
         $newLog->created_at = date('Y-m-d h:i:s',time());
         $newLog->save();
 

@@ -38,8 +38,8 @@ class CvExperiencesController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'position' => 'required|string',
-            'employment_type' => 'required|in:full-time,part-time,self-employed,freelance,contract,internship,apprenticeship,seasonal',
+            'position_id' => 'required|exists:App\Models\CandidatePosition,id',
+            'employment_type_id' => 'exists:App\Models\EmploymentType,id|required',
             'location' => 'required|string',
             'start_at' => 'required|date',
             'until_at' => 'nullable|date|after:start_at',
@@ -48,8 +48,8 @@ class CvExperiencesController extends Controller
         ]);
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
-        $experience->position = $request->position;
-        $experience->employment_type = $request->employment_type;
+        $experience->position_id = $request->position_id;
+        $experience->employment_type_id = $request->employment_type_id;
         $experience->location = $request->location;
         $experience->slip_salary_img = $request->slip_salary_img;
         $experience->start_at = date('Y-m-d', strtotime($request->start_at));
@@ -103,8 +103,8 @@ class CvExperiencesController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'position' => 'nullable|string',
-            'employment_type' => 'nullable', 'in:full-time,part-time,self-employed,freelance,contract,internship,apprenticeship,seasonal',
+            'position' => 'nullable|exists:App\Models\CandidatePosition,id',
+            'employment_type' => 'exists:App\Models\EmploymentType,id|nullable',
             'location' => 'nullable|string',
             'start_at' => 'nullable|date',
             'until_at' => 'nullable|date|after:start_at',

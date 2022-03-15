@@ -16,10 +16,13 @@ use App\Models\CvDocumentation;
 use App\Models\CvExpectedPosition;
 use Illuminate\Http\Request;
 use App\Models\EmployeeDetail;
+use App\Models\Religion;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 
 class CvProfileDetailController extends Controller
 {
@@ -50,24 +53,24 @@ class CvProfileDetailController extends Controller
         $user = auth()->user();
 
         $education = CvEducation::where('user_id', $user->id_kustomer)
-        ->orderBy('start_at', 'DESC')
-        ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
-        ->orderBy('until_at', 'DESC')
-        ->get();
+            ->orderBy('start_at', 'DESC')
+            ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('until_at', 'DESC')
+            ->get();
         $data['education'] = $education;
 
         $experience = CvExperience::where('user_id', $user->id_kustomer)
-        ->orderBy('start_at', 'DESC')
-        ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
-        ->orderBy('until_at', 'DESC')
-        ->get();
+            ->orderBy('start_at', 'DESC')
+            ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('until_at', 'DESC')
+            ->get();
         $data['experience'] = $experience;
 
         $certifications = CvCertification::where('user_id', $user->id_kustomer)
-        ->orderBy('start_at', 'DESC')
-        ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
-        ->orderBy('until_at', 'DESC')
-        ->get();
+            ->orderBy('start_at', 'DESC')
+            ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('until_at', 'DESC')
+            ->get();
         $data['certifications'] = $certifications;
 
         $specialities = CvSpeciality::where('user_id', $user->id_kustomer)->get();
@@ -232,11 +235,39 @@ class CvProfileDetailController extends Controller
      * @param  \App\Models\UserProfileDetail  $userProfileDetail
      * @return \Illuminate\Http\Response
      */
+
+    public function validateAddress($country, $province, $city, $subDistrict, $village, $token)
+    {
+        $url = env('KADA_URL') . "/v1/domicile/villages/validation";
+        $data = [
+            'country_code' => $country,
+            'province_code' => $province,
+            'city_code' => $city,
+            'sub_district_code' => $subDistrict,
+            'village_code' => $village,
+        ];
+        $response = Http::withtoken($token)->withHeaders([
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])
+            ->get(
+                $url,
+                $data
+            );
+        return [
+            'status' => $response->status(),
+            'message' => $response->json()['meta'],
+        ];
+
+        // return $response;
+    }
+
     public function update(Request $request)
     {
+        // dump($request);
         $user = auth()->user();
 
-        CvProfileDetail::where('user_id',$user->id_kustomer)->firstOrFail();
+        CvProfileDetail::where('user_id', $user->id_kustomer)->firstOrFail();
 
         $request->validate([
             #Profile Detail
@@ -244,8 +275,8 @@ class CvProfileDetailController extends Controller
             'profile_detail.birth_date' => 'date|required',
             'profile_detail.gender' => 'required|string',
             'profile_detail.identity_number' => 'required|integer|min:5',
-            'profile_detail.religion' => 'in:Buddha,Islam,Kristen,Hindu,Kong Hu Cu|required',
-            'profile_detail.married' => 'required|string',
+            'profile_detail.marriage_status_id' => 'exists:marriage_statuses,id|required',
+            'profile_detail.religion_id' => 'exists:Religions,id|required',
 
             #Address
             'address.province_id' => 'integer|required',
@@ -259,8 +290,9 @@ class CvProfileDetailController extends Controller
             'sosmed.tiktok' => 'string',
             'sosmed.youtube' => 'string',
             'sosmed.facebook' => 'string',
-            'sosmed.website_url' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            'sosmed.website_url' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]i',
         ]);
+
         $json = $request->input();
 
         $requestProfile = $json['profile_detail'];
@@ -271,10 +303,13 @@ class CvProfileDetailController extends Controller
 
         $requestSosmeds = $json['sosmed'];
         $requestSosmeds['user_id'] = $user->id_kustomer;
+
         try {
             DB::beginTransaction();
             $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
             $userProfileDetail->fill($requestProfile);
+            $userProfileDetail->religion_id = $requestProfile['religion_id'];
+            $userProfileDetail->marriage_status_id = $requestProfile['marriage_status_id'];
             if ($userProfileDetail->isDirty()) {
                 $userProfileDetail->update($requestProfile);
             }
@@ -282,8 +317,16 @@ class CvProfileDetailController extends Controller
             $userAddress = CvAddress::where('user_id', $user->id_kustomer)->first();
             if ($userAddress) {
                 $userAddress->fill($requestAddress);
-                if ($userAddress->isDirty()) {
-                    $userAddress->update($requestAddress);
+                $validation = self::validateAddress(
+                    $requestAddress['country_id'],
+                    $requestAddress['province_id'],
+                    $requestAddress['city_id'],
+                    $requestAddress['district_id'],
+                    $requestAddress['village_id'],
+                    explode(' ', $request->header('Authorization'))[1]
+                );
+                if ($validation['status'] != 200) {
+                    return $this->errorResponse(collect($validation['message']), $validation['status'], $validation['code']);
                 }
             } else {
                 $userAddress = CvAddress::create($requestAddress);
