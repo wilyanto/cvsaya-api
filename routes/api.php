@@ -161,14 +161,14 @@ Route::prefix('v1')->group(function () {
         Route::prefix('candidate')->group(function () {
             Route::controller(CandidateEmployeeController::class)->group(function () {
                 Route::get('/', 'index');
-                Route::get('/{id}', 'indexDetail');
                 Route::get('/positions', 'getPosition');
+                Route::get('/{id}', 'indexDetail');
                 Route::post('/', 'addCandidateToBlast');
                 // Route::post('update-status','updateStatus');
                 Route::prefix('schedulue')->group(function () {
                     Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
-                        Route::post('/', 'store');
-                        Route::put('/', 'update');
+                        Route::post('/interview', 'setInterview');
+                        Route::put('/hrd', 'updateByHrd');
                     });
                 });
             });

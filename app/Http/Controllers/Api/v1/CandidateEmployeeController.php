@@ -10,6 +10,7 @@ use App\Models\EmployeeDetail;
 use App\Http\Controllers\Controller;
 use App\Models\CandidateLogEmployee;
 use App\Models\CandidatePosition;
+use App\Models\CandidateEmployeeSchedule;
 
 class CandidateEmployeeController extends Controller
 {
@@ -50,10 +51,6 @@ class CandidateEmployeeController extends Controller
             $district_id = $request->district_id;
             $village_id = $request->village_id;
 
-            // $request->validate([
-            //     'filter_by' => 'string|required',
-            //     'filter_result' => 'required',
-            // ]);
             $candidates = CandidateEmployee::where(function ($query) use ($name, $status, $start_date, $end_date, $country_id, $province_id, $city_id, $district_id, $village_id) {
                 if ($name != null) {
                     $query->where('name', $name);
@@ -116,10 +113,8 @@ class CandidateEmployeeController extends Controller
 
     public function indexDetail(Request $request, $id)
     {
-        $user = auth()->user();
-
-        $candidate = CandidateLogEmployee::where('candidate_id', $id)->get();
-        return $this->showAll($candidate);
+        $candidate = CandidateEmployee::where('id', $id)->firstOrFail();
+        return $this->showOne($candidate);
     }
 
 
@@ -153,23 +148,6 @@ class CandidateEmployeeController extends Controller
         return $this->showOne($candidates);
     }
 
-    public function setDecline(Request $request)
-    {
-        $user = auth()->user();
-
-        $request->validate([
-            'user_id' => 'integer|required',
-        ]);
-
-        $candidate = CandidateEmployee::where('user_id', $request->user_id)->first();
-        if (!$candidate) {
-            return $this->errorResponse('Candidate Not Found', 404, 40401);
-        }
-
-        $candidate->delete();
-
-        return $this->showOne($candidate);
-    }
 
     public function getPosition(Request $request)
     {
@@ -183,7 +161,6 @@ class CandidateEmployeeController extends Controller
         // dump($user);
         $result = [];
         $positions = CandidatePosition::orderBy('name', 'ASC')
-            // ->get()
             ->paginate(
                 $perpage = $request->page_size,
                 $columns =  ['*'],
@@ -205,7 +182,6 @@ class CandidateEmployeeController extends Controller
 
     public function getCount($position)
     {
-        // dump($position);
         $data['before_interview'] = collect($position->candidate)->filter(function ($item) {
             return $item->status <= CandidateEmployee::INTERVIEW;
         })->count();
@@ -228,36 +204,52 @@ class CandidateEmployeeController extends Controller
         return $data;
     }
 
-    // public function updateStatus(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'string|required',
-    //         'country_code' => 'string|required',
-    //         'phone_number' => 'integer|required',
-    //     ]);
+    public function updateStatus(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'name' => 'string|required',
+            'status' => 'integer|required',
+        ]);
 
-    //     $candidateEmployees = CandidateEmployees::where('phone_number', $request->phone_number)->where('country_code', $request->country_code)->first();
-    //     if (!$candidateEmployees) {
-    //         return $this->errorResponse('Candidate Not Found', 404, 40401);
-    //     }
+        $candidateEmployee = CandidateEmployee::where('id', $request->id)->first();
+        if (!$candidateEmployee) {
+            return $this->errorResponse('Candidate Not Found', 422, 42201);
+        }
 
-    //     $candidateEmployees->phone_number = $request->phone_number;
-    //     $candidateEmployees->country_code = $request->country_code;
-    //     if (!$candidateEmployees->name) {
-    //         $candidateEmployees->name = $request->name;
-    //     }
-    //     $candidateEmployees->status = CandidateEmployees::REGISTEREDKADA;
-    //     $candidateEmployees->save();
-    // }
+        if ($request->status < CandidateEmployee::INTERVIEW) {
+            return $this->errorResponse('candidate cannot change with that status', 422, 42202);
+        }
+        if ($request->status == CandidateEmployee::INTERVIEW) {
+            $request->validate([
+                'date_time' => 'date|nullable',
+                'interview_by' => 'integer|required',
+                'note' => 'longtext|nullable',
+            ]);
+
+            $candidateController = new CvProfileDetailController;
+
+            $status = $candidateController->getStatus($candidateEmployee->user_id);
+            $status = $status->original;
+            $status = $status['data']['is_all_form_filled'];
+            if (
+                $candidateEmployee->status != CandidateEmployee::INTERVIEW &&
+                $status == false
+            ) {
+                return $this->errorResponse('this Candidate cannot going interview', 401, 40101);
+            }
+            $candidateEmpolyeeSchedule = CandidateEmployeeSchedule::create($request->all());
+        }
+
+        $candidateEmployee->status = $request->status;
+        $candidateEmployee->save();
+    }
 
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function createBy()
-    {
-    }
 
     /**
      * Store a newly created resource in storage.

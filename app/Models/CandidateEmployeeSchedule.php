@@ -29,8 +29,8 @@ class CandidateEmployeeSchedule extends Model
         return $this->hasMany(LogCandidateEmpolyeeSchedule::class,'employee_candidate_id');
     }
 
-    public function result(){
-        return $this->hasOne(Result::class,'result_id');
+    public function Result(){
+        return $this->hasOne(ResultInterview::class,'id','result_id');
     }
 
     public function candidate(){

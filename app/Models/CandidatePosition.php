@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\CandidateEmployee;
 use App\Models\CvExpectedPosition;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
