@@ -23,7 +23,7 @@ class CvExperienceObserver
         $newLog->start_at = $cvSayaExperiences->start_at;
         $newLog->until_at = $cvSayaExperiences->until_at;
         $newLog->description = $cvSayaExperiences->description;
-        $newLog->slip_salary_img = $cvSayaExperiences->slip_salary_img;
+        $newLog->payslip_img = $cvSayaExperiences->payslip_img;
         $newLog->created_at = date('Y-m-d h:i:s',time());
         $newLog->save();
 
@@ -46,6 +46,7 @@ class CvExperienceObserver
         $newLog->start_at = $cvSayaExperiences->start_at;
         $newLog->until_at = $cvSayaExperiences->until_at;
         $newLog->description = $cvSayaExperiences->description;
+        $newLog->payslip_img = $cvSayaExperiences->payslip_img;
         $newLog->created_at = date('Y-m-d h:i:s',time());
         $newLog->save();
     }
