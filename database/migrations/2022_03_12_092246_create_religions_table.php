@@ -26,6 +26,12 @@ return new class extends Migration
         Schema::table('cv_profile_details',function (Blueprint $table){
             $table->foreign('religion_id')->references('id')->on('religions');
         });
+
+        Schema::table('cv_log_profile_details',function (Blueprint $table){
+            $table->dropColumn('religion');
+            $table->bigInteger('religion_id')->unsigned()->nullable();
+        });
+
     }
 
     /**
@@ -35,6 +41,11 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::table('cv_log_profile_details',function (Blueprint $table){
+            $table->string('religion')->nullable();
+            $table->dropColumn('religion_id');
+        });
+
         Schema::table('cv_profile_details',function (Blueprint $table){
             $table->dropForeign(['religion_id']);
         });

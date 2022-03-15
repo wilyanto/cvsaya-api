@@ -15,10 +15,15 @@ return new class extends Migration
     {
         Schema::table('cv_experiences',function(Blueprint $table){
             $table->bigInteger('position_id')->unsigned()->nullable();
-            // $table->dropColumn('position');
+            $table->dropColumn('position');
         });
         Schema::table('cv_experiences',function(Blueprint $table){
             $table->foreign('position_id')->references('id')->on('candidate_positions');
+        });
+
+        Schema::table('cv_log_experiences',function(Blueprint $table){
+            $table->bigInteger('position_id')->unsigned()->nullable();
+            $table->dropColumn('position');
         });
     }
 
@@ -29,6 +34,11 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::table('cv_log_experiences',function(Blueprint $table){
+            $table->dropColumn('position_id');
+            $table->string('position');
+        });
+
         Schema::table('cv_experiences',function(Blueprint $table){
             $table->dropForeign(['position_id']);
         });

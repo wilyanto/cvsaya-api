@@ -17,8 +17,8 @@ class CvExperienceObserver
     {
         $newLog = new CvLogExperience();
         $newLog->experience_id = $cvSayaExperiences->id;
-        $newLog->position = $cvSayaExperiences->position;
-        $newLog->employment_type = $cvSayaExperiences->employment_type;
+        $newLog->position_id = $cvSayaExperiences->position_id;
+        $newLog->employment_type_id = $cvSayaExperiences->employment_type_id;
         $newLog->location = $cvSayaExperiences->location;
         $newLog->start_at = $cvSayaExperiences->start_at;
         $newLog->until_at = $cvSayaExperiences->until_at;
@@ -39,8 +39,8 @@ class CvExperienceObserver
 
         $newLog = new CvLogExperience();
         $newLog->experience_id = $cvSayaExperiences->id;
-        $newLog->position = $cvSayaExperiences->position;
-        $newLog->employment_type = $cvSayaExperiences->employment_type;
+        $newLog->position_id = $cvSayaExperiences->position_id;
+        $newLog->employment_type_id = $cvSayaExperiences->employment_type_id;
         $newLog->location = $cvSayaExperiences->location;
         $newLog->start_at = $cvSayaExperiences->start_at;
         $newLog->until_at = $cvSayaExperiences->until_at;

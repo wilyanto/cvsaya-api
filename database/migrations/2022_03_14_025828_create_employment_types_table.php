@@ -27,6 +27,11 @@ return new class extends Migration
         Schema::table('cv_experiences',function (Blueprint $table){
             $table->foreign('employment_type_id')->references('id')->on('employment_types');
         });
+
+        Schema::table('cv_log_experiences',function (Blueprint $table){
+            $table->dropColumn('employment_type');
+            $table->bigInteger('employment_type_id')->unsigned()->nullable();
+        });
     }
 
     /**
@@ -36,6 +41,11 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::table('cv_log_experiences',function (Blueprint $table){
+            $table->string('employment_type')->nullable();
+            $table->dropColumn('employment_type_id');
+        });
+
         Schema::table('cv_experiences',function (Blueprint $table){
             $table->dropForeign(['employment_type_id']);
         });
