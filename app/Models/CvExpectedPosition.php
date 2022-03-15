@@ -29,3 +29,4 @@ class CvExpectedPosition extends Model
         return $this->hasMany(CandidateEmployees::class,'user_id','user_id');
     }
 }
+

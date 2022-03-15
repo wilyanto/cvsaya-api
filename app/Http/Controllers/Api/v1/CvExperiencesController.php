@@ -8,7 +8,7 @@ use App\Models\CvExperience;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 
-class CvExperienceController extends Controller
+class CvExperiencesController extends Controller
 {
     use ApiResponser;
     /**
@@ -44,12 +44,14 @@ class CvExperienceController extends Controller
             'start_at' => 'required|date',
             'until_at' => 'nullable|date|after:start_at',
             'description' => 'nullable|string',
+            'slip_salary_img' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
         ]);
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
         $experience->position = $request->position;
         $experience->employment_type = $request->employment_type;
         $experience->location = $request->location;
+        $experience->slip_salary_img = $request->slip_salary_img;
         $experience->start_at = date('Y-m-d', strtotime($request->start_at));
         $experience->until_at = date('Y-m-d', strtotime($request->until_at));
         // dd($experience);
@@ -107,6 +109,7 @@ class CvExperienceController extends Controller
             'start_at' => 'nullable|date',
             'until_at' => 'nullable|date|after:start_at',
             'description' => 'nullable|string',
+            'slip_salary_img' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
         ]);
 
         $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
@@ -128,6 +131,9 @@ class CvExperienceController extends Controller
             $experience->until_at = date('Y-m-d', strtotime($request->until_at));
         } else {
             return $this->errorResponse('The until at must be a date after saved start at', 422, 42200);
+        }
+        if ($request->slip_salary_img) {
+            $experience->slip_salary_img = $request->slip_salary_img;
         }
         $experience->save();
 
