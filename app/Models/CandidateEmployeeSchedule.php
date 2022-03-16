@@ -38,6 +38,10 @@ class CandidateEmployeeSchedule extends Model
         return $this->hasOne(CandidateEmployee::class,'id','employee_candidate_id');
     }
 
+    public function interviewBy(){
+        return $this->hasOne(EmployeeDetail::class,'id','interview_by');
+    }
+
     public function toArrayCandidate(){
         $getCandidate = $this->candidate;
 
@@ -46,6 +50,18 @@ class CandidateEmployeeSchedule extends Model
             'name' => $getCandidate->name,
             'phone_number' => $getCandidate->phone_number,
             'register_date' => $getCandidate->register_date,
+        ];
+    }
+
+    public function toArray(){
+        return [
+            'id' => $this->id,
+            'employee_candidate_id' => $this->toArrayCandidate(),
+            'interview_by' => $this->interview_by,
+            'note' => $this->note,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'result_id' => $this->Result,
         ];
     }
 
