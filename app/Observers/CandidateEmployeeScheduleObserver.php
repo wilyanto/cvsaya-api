@@ -13,7 +13,7 @@ class CandidateEmployeeScheduleObserver
         $newlog->employee_candidate_id = $candidateEmployees->id;
         $newlog->date_time = $candidateEmployees->date_time;
         $newlog->interview_by = $candidateEmployees->interview_by;
-        $newlog->result = $candidateEmployees->result;
+        $newlog->result_id = $candidateEmployees->result_id;
         $newlog->note = $candidateEmployees->note;
         $newlog->save();
     }
@@ -24,7 +24,7 @@ class CandidateEmployeeScheduleObserver
         $newlog->employee_candidate_id = $candidateEmployees->id;
         $newlog->date_time = $candidateEmployees->date_time;
         $newlog->interview_by = $candidateEmployees->interview_by;
-        $newlog->result = $candidateEmployees->result;
+        $newlog->result_id = $candidateEmployees->result_id;
         $newlog->note = $candidateEmployees->note;
         $newlog->save();
     }

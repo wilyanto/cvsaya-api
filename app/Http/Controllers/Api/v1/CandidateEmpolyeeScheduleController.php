@@ -28,13 +28,14 @@ class CandidateEmpolyeeScheduleController extends Controller
     {
         $user = auth()->user();
 
-        $candidate = CandidateEmployeeSchedule::where('result_id', null)->orderBy('status')->distinct('employee_candidate_id')->get();
+        $candidate = CandidateEmployeeSchedule::where('result_id', null)->distinct('employee_candidate_id')->get();
 
         return $this->showALl($candidate);
     }
 
-    public function getDetail($id){
-        $schedules = CandidateEmployeeSchedule::where('id',$id)->get();
+    public function getDetail($id)
+    {
+        $schedules = CandidateEmployeeSchedule::where('employee_candidate_id', $id)->get();
 
         return $this->showAll($schedules);
     }
@@ -43,30 +44,38 @@ class CandidateEmpolyeeScheduleController extends Controller
     public function indexByDate(Request $request)
     {
         $user = auth()->user();
-
+        $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
+        // dump($request->input());
         $request->validate([
             'start_at' => 'date|required',
             'until_at' => 'date|nullable',
         ]);
 
+        if (!$request->until_at) {
+            $untilAt = $request->start_at . "+1day";
+        } else {
+            $untilAt = $request->until_at;
+        }
         $begin = new DateTime(date('Y-m-d H:i:s', strtotime($request->start_at)));
-        $until = new DateTime(date('Y-m-d H:i:s', strtotime($request->until_at)));
+        $until = new DateTime(date('Y-m-d H:i:s', strtotime($untilAt)));
         $interval = DateInterval::createFromDateString('1 day');
         $periods = new DatePeriod($begin, $interval, $until);
 
         $data = [];
         foreach ($periods as $period) {
             $scheduleArray = [];
-            $schedules = CandidateEmployeeSchedule::whereDate('date_time', '==', $period)
-                ->where('interview_by', $user->id_kustomer)
+            $date = $period->format('Y-m-d H:i:s');
+            $schedules = CandidateEmployeeSchedule::
+                // whereBettween('date_time',)
+                whereDate('date_time', $period->format('Y-m-d'))
+                ->where('interview_by', $employee->id)
                 ->whereNull('result_id')
                 ->distinct('employee_candidate_id')
                 ->get();
-
             foreach ($schedules as $schedule) {
                 $scheduleArray[] = [
                     'date_time' => $schedule->date_time,
-                    'candidate' => $schedule->candidate,
+                    'candidate' => $schedule->toArrayCandidate(),
                 ];
             }
             $data[] = [
@@ -76,13 +85,6 @@ class CandidateEmpolyeeScheduleController extends Controller
         }
 
         return $this->showAll(collect($data));
-
-
-        // $candidate = CandidateEmployeeSchedule::where('interview_by',$user->id_kustomer)->whereDate('date_time','>='.$request->start_at)->where(function($qurey) use ($untilAt){
-        //     if($untilAt != null){
-        //         $qurey->whereDate('date_time','<=',$untilAt);
-        //     }
-        // })->distinct('employee_candidate_id')->get();
     }
 
     /**
@@ -100,40 +102,6 @@ class CandidateEmpolyeeScheduleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-
-    public function setInterview(Request $request,$id)
-    {
-        // $posistion = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
-        // if(!$posistion){
-        //     return $this->errorResponse('user tidak di temukan',404,40401);
-        // }
-        $request->validate([
-            'date_time' => 'date|nullable',
-            'interview_by' => 'integer|required',
-            'note' => 'longtext|nullable',
-        ]);
-        $candidate = CandidateEmployee::where('id', $id)->first();
-        if (!$candidate) {
-            return $this->errorResponse('Candidate not found', 404, 40401);
-        }
-
-        $candidateController = new CvProfileDetailController;
-
-        $status = $candidateController->getStatus($candidate->user_id);
-        $status = $status->original;
-        $status = $status['data']['is_all_form_filled'];
-        if (
-            $candidate->status != CandidateEmployee::INTERVIEW &&
-            $status == false
-        ) {
-            return $this->errorResponse('this Candidate cannot going interview', 401, 40101);
-        }
-        $candidate->status = CandidateEmployee::INTERVIEW;
-        $candidate->save();
-        $candidateEmpolyeeSchedule = CandidateEmployeeSchedule::create($request->all());
-
-        return $this->showOne($candidateEmpolyeeSchedule);
-    }
 
     /**
      * Display the specified resource.
@@ -164,38 +132,52 @@ class CandidateEmpolyeeScheduleController extends Controller
      * @param  \App\Models\CandidateEmpolyeeSchedule  $candidateEmpolyeeSchedule
      * @return \Illuminate\Http\Response
      */
-    public function updateSchedulue(Request $request,$id)
+    public function isThereAnyOtherSchedulue($date, $time, $interviewer)
+    {
+        $schedule = CandidateEmployeeSchedule::where('interview_by', $interviewer)
+            ->where('date_time', date('Y-m-d H:i:s', strtotime($date . ' ' . $time)))->first();
+        if ($schedule) {
+            return true;
+        }
+        return false;
+    }
+
+    public function updateSchedulue(Request $request, $id)
     {
         //check role
 
         $request->validate([
-            'employee_candidate_id' => 'required|exists:candidate_employee_schedules,employee_candidate_id',
+            // 'employee_candidate_id' => 'required|exists:candidate_employee_schedules,employee_candidate_id',
             'date' => 'date|required',
             'time' => 'date_format:H:i:s|required',
         ]);
-
         $schedule = CandidateEmployeeSchedule::where('id', $id)->firstOrFail();
+
+        // if ($this->isThereAnyOtherSchedulue($request->date, $request->time, $schedule->interview_by)) {
+        //     return $this->errorResponse('You have another schedule execpt this schedule', 422, 42201);
+        // }
         $schedule->date_time = date('Y-m-d H:i:s', strtotime($request->date . ' ' . $request->time));
         $schedule->save();
         return $this->showOne($schedule);
     }
 
-    public function giveResult(Request $request,$id)
+    public function giveResult(Request $request, $id)
     {
         $request->validate([
             'employee_candidate_id' => 'required|exists:candidate_employee_schedules,employee_candidate_id',
             'note' => 'longtext|nullable',
-            'result' => 'exists:result_interviews,id|required',
+            'result_id' => 'exists:result_interviews,id|required',
         ]);
 
         $schedule = CandidateEmployeeSchedule::where('id', $id)->firstOrFail();
-        if ($request->reuslt < CandidateEmployee::INTERVIEW) {
+        if ($schedule->candidate->status < CandidateEmployee::INTERVIEW) {
             return $this->errorResponse('candidate cannot change to new result', 422, 42201);
         }
-        $schedule->result = $request->result;
+        $schedule->result_id = $request->result_id;
         if ($request->note) {
             $schedule->note = $request->note;
         }
+        // dump($schedule);
         $schedule->save();
         return $this->showOne($schedule);
     }

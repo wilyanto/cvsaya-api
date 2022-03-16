@@ -48,11 +48,13 @@ class CvDocumentationController extends Controller
     {
         $user = auth()->user();
 
+        $validateURL= 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i';
+
         $request->validate([
-            'identity_picture_card' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
-            'selfie_front' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
-            'selfie_left' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
-            'selfie_right' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            'identity_picture_card' => 'required',$validateURL,
+            'selfie_front' => 'required', $validateURL,
+            'selfie_left' => 'required',  $validateURL,
+            'selfie_right' => 'required',  $validateURL,
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;

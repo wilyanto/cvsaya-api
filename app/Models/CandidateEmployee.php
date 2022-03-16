@@ -30,6 +30,10 @@ class CandidateEmployee extends Model
 
     public const DECLINE = 10;
 
+    public const RESULT_RECOMMENDED = 1;
+    public const RESULT_HOLD = 2;
+    public const RESULT_BAD = 3;
+
     protected $table = 'candidate_employees';
 
     protected $guard = 'id';
@@ -52,27 +56,28 @@ class CandidateEmployee extends Model
         return $this->hasOne(CvAddress::class, 'user_id', 'user_id');
     }
 
-    public function SuggestBy()
+    public function suggestBy()
     {
         return $this->hasOne(EmployeeDetail::class, 'id', 'suggest_by');
     }
 
-    public function Schedule()
+    public function schedules()
     {
         return $this->hasMany(CandidateEmployeeSchedule::class, 'employee_candidate_id', 'id');
     }
 
     public function results()
     {
-        return $this->hasManyThrough(ResultInterview::class, CandidateEmployeeSchedule::class, 'employee_candidate_id', 'id', 'result_id', 'id');
+        return $this->hasManyThrough(ResultInterview::class, CandidateEmployeeSchedule::class,  'employee_candidate_id', 'id', 'id', 'result_id');
     }
 
-    public function label(){
-        $results = $this->results;
-        foreach($results as $result){
-            return $result->name;
+    public function label()
+    {
+        $result = CandidateEmployeeSchedule::where('employee_candidate_id',$this->id)->orderBy('created_at','DESC')->first();
+        if($result){
+            return $result->Result;
         }
-        return 'unlabel';
+        return null;
     }
 
     public function toArray()

@@ -19,8 +19,18 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::table('candidate_employee_schedules',function(Blueprint $table){
+            $table->bigInteger('result_id')->unsigned()->nullable();
+            $table->dropColumn('result');
+        });
+
         Schema::table('candidate_employee_schedules',function (Blueprint $table){
-            $table->foreign('result')->references('id')->on('result_interviews');
+            $table->foreign('result_id')->references('id')->on('result_interviews');
+        });
+
+        Schema::table('candidate_log_employee_schedules',function(Blueprint $table){
+            $table->bigInteger('result_id')->unsigned()->nullable();
+            $table->dropColumn('result');
         });
     }
 
@@ -31,8 +41,18 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::table('candidate_log_employee_schedules',function(Blueprint $table){
+            $table->bigInteger('result')->unsigned()->nullable();
+            $table->dropColumn('result_id');
+        });
+
         Schema::table('candidate_employee_schedules',function (Blueprint $table){
-            $table->dropForeign(['result']);
+            $table->dropForeign(['result_id']);
+        });
+
+        Schema::table('candidate_employee_schedules',function(Blueprint $table){
+            $table->bigInteger('result')->unsigned()->nullable();
+            $table->dropColumn('result_id');
         });
 
         Schema::dropIfExists('result_interviews');

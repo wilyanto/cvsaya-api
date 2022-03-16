@@ -33,8 +33,13 @@ class CandidateEmployeeSchedule extends Model
         return $this->hasOne(ResultInterview::class,'id','result_id');
     }
 
+
     public function candidate(){
-        $getCandidate = $this->hasOne(CandidateEmployee::class,'id','employee_candidate_id');
+        return $this->hasOne(CandidateEmployee::class,'id','employee_candidate_id');
+    }
+
+    public function toArrayCandidate(){
+        $getCandidate = $this->candidate;
 
         return [
             'id' => $getCandidate->id,
