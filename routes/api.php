@@ -51,15 +51,15 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('religions')->group(function(){
-            Route::controller(ReligionController::class)->group(function(){
-                Route::get('/','index');
+        Route::prefix('religions')->group(function () {
+            Route::controller(ReligionController::class)->group(function () {
+                Route::get('/', 'index');
             });
         });
 
-        Route::prefix('marriage/status')->group(function(){
-            Route::controller(MarriageStatusController::class)->group(function(){
-                Route::get('/','index');
+        Route::prefix('marriage/status')->group(function () {
+            Route::controller(MarriageStatusController::class)->group(function () {
+                Route::get('/', 'index');
             });
         });
 
@@ -151,28 +151,34 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('permission')->group(function(){
-            Route::controller(PermissionController::class)->group(function(){
-                Route::get('/','getPermission');
+        Route::prefix('permission')->group(function () {
+            Route::controller(PermissionController::class)->group(function () {
+                Route::get('/', 'getPermission');
             });
         });
 
 
         Route::prefix('candidate')->group(function () {
             Route::controller(CandidateEmployeeController::class)->group(function () {
-                Route::get('/', 'index');
-                Route::get('/{id}', 'indexDetail');
-                Route::get('/positions', 'getPosition');
-                Route::post('/', 'addCandidateToBlast');
-                // Route::post('update-status','updateStatus');
-                Route::prefix('schedulue')->group(function () {
+                Route::prefix('interview')->group(function () {
                     Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
-                        Route::post('/', 'store');
-                        Route::put('/', 'update');
+                        Route::get('/', 'index');
+                        Route::get('/date', 'indexByDate');
+                        Route::get('/{id}', 'getDetail');
+                        Route::put('/{id}/result', 'giveResult');
+                        Route::put('/{id}', 'updateSchedulue');
                     });
                 });
+                Route::get('/', 'index');
+                Route::get('/positions', 'getPosition');
+                Route::get('/{id}', 'indexDetail');
+                Route::post('/', 'addCandidateToBlast');
+                Route::put('/{id}', 'updateStatus');
+                // Route::post('update-status','updateStatus');
+
             });
         });
+
 
 
         Route::prefix('department')->group(function () {
@@ -209,8 +215,8 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', 'index');
                 Route::post('/', 'create');
             });
-            Route::controller(EmploymentTypeController::class)->group(function(){
-                Route::get('/type','index');
+            Route::controller(EmploymentTypeController::class)->group(function () {
+                Route::get('/type', 'index');
             });
         });
     });

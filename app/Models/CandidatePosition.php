@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\CandidateEmployee;
 use App\Models\CvExpectedPosition;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +21,7 @@ class CandidatePosition extends Model
         'inserted_by'
     ];
 
-    public function Candidate()
+    public function candidates()
     {
         return $this->hasManyThrough(CandidateEmployee::class, CvExpectedPosition::class, 'expected_position', 'user_id', 'id', 'user_id');
     }

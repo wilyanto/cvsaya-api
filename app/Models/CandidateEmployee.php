@@ -30,6 +30,10 @@ class CandidateEmployee extends Model
 
     public const DECLINE = 10;
 
+    public const RESULT_RECOMMENDED = 1;
+    public const RESULT_HOLD = 2;
+    public const RESULT_BAD = 3;
+
     protected $table = 'candidate_employees';
 
     protected $guard = 'id';
@@ -46,8 +50,52 @@ class CandidateEmployee extends Model
         'register_date',
     ];
 
-    public function address(){
+    public function address()
+    {
         // dd($)
-        return $this->hasOne(CvAddress::class,'user_id','user_id');
+        return $this->hasOne(CvAddress::class, 'user_id', 'user_id');
+    }
+
+    public function suggestBy()
+    {
+        return $this->hasOne(EmployeeDetail::class, 'id', 'suggest_by');
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(CandidateEmployeeSchedule::class, 'employee_candidate_id', 'id');
+    }
+
+    public function results()
+    {
+        return $this->hasManyThrough(ResultInterview::class, CandidateEmployeeSchedule::class,  'employee_candidate_id', 'id', 'id', 'result_id');
+    }
+
+    public function label()
+    {
+        $result = CandidateEmployeeSchedule::where('employee_candidate_id',$this->id)->orderBy('created_at','DESC')->first();
+        if($result){
+            return $result->Result;
+        }
+        return null;
+    }
+
+    public function toArray()
+    {
+        $value = $this->label();
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'name' => $this->name,
+            'phone_number' => $this->phone_number,
+            'register_date' => $this->register_date,
+            'status' => $this->status,
+            'suggest_by' => $this->SuggestBy,
+            'many_requst' => $this->many_request,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'schedule' => $this->schedule,
+            'label' => $this->label(),
+        ];
     }
 }

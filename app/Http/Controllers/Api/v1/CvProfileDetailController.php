@@ -67,9 +67,9 @@ class CvProfileDetailController extends Controller
         $data['experience'] = $experience;
 
         $certifications = CvCertification::where('user_id', $user->id_kustomer)
-            ->orderBy('start_at', 'DESC')
-            ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
-            ->orderBy('until_at', 'DESC')
+            ->orderBy('issued_at', 'DESC')
+            ->orderByRaw("CASE WHEN expired_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('expired_at', 'DESC')
             ->get();
         $data['certifications'] = $certifications;
 
