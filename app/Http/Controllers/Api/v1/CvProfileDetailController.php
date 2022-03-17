@@ -129,26 +129,21 @@ class CvProfileDetailController extends Controller
             $position = [
                 'id' => $employee->position->id,
                 'name' => $employee->position->name,
+                'company' => $employee->position->company
             ];
+            $result['profile'] = $employee;
             $result['position'] = $position;
         } else {
-            $result['is_employee'] = false;
             $result['position'] = null;
         }
 
-        $result['first_name'] = $userProfileDetail->first_name;
-        $result['last_name'] = $userProfileDetail->last_name;
+        $result['profile'] = [
+            'first_name' => $userProfileDetail->first_name,
+            'last_name' => $userProfileDetail->last_name,
+        ];
 
         $array = count(array_filter($data));;
-
-        switch ($array) {
-            case (4):
-                $result['is_all_form_filled'] = true;
-                break;
-            default:
-                $result['is_all_form_filled'] = false;
-        }
-        $result['forms'] = $data;
+        $result['completeness_status'] = $data;
 
         return $this->showOne($result);
     }

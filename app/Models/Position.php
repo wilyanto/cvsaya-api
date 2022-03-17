@@ -64,9 +64,9 @@ class Position extends Model
         return $this->hasMany(CvExpectedSalary::class, 'expected_position', 'id');
     }
 
-    public function Companies()
+    public function company()
     {
-        return $this->hasMany(Company::class, 'id', 'company_id');
+        return $this->hasOne(Company::class, 'id', 'company_id');
     }
 
     public function toCandidate()
@@ -88,7 +88,8 @@ class Position extends Model
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'min_salary' => $this->min_salary,
-            'max_salary' => $this->max_salary
+            'max_salary' => $this->max_salary,
+            'company' => $this->company,
         ];
     }
 
