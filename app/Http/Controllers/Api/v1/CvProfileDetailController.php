@@ -103,26 +103,26 @@ class CvProfileDetailController extends Controller
         $document = CvDocumentation::where('user_id', $id)->first();
         $expectedSalaries = CvExpectedPosition::where('user_id', $id)->first();
 
-        $data['is_profile_filled'] = true;
-        $data['is_works_filled'] = true;
-        $data['is_document_filled'] = true;
-        $data['is_cv_filled'] = true;
+        $data['is_profile_completed'] = true;
+        $data['is_job_completed'] = true;
+        $data['is_document_completed'] = true;
+        $data['is_cv_completed'] = true;
         if (!$userProfileDetail || !$userProfileDetail->addresses || !$userProfileDetail->sosmeds) {
-            $data['is_profile_filled'] = false;
+            $data['is_profile_completed'] = false;
         }
 
         if (!$expectedSalaries) {
-            $data['is_works_filled'] = false;
+            $data['is_work_completed'] = false;
         }
 
         if (!$education || !$education->experiences || !$education->certifications || !$education->specialities || !$education->hobbies) {
-            $data['is_cv_filled'] = false;
+            $data['is_cv_completed'] = false;
         }
 
         if (!$document) {
-            $data['is_document_filled'] = false;
+            $data['is_document_completed'] = false;
         }
-        $result['profile'] = [
+        $result['basic_profile'] = [
             'first_name' => $userProfileDetail->first_name,
             'last_name' => $userProfileDetail->last_name,
         ];
@@ -135,7 +135,6 @@ class CvProfileDetailController extends Controller
                 'name' => $employee->position->name,
                 'company' => $employee->position->company
             ];
-            $result['basic_profile'] = $employee;
             $result['position'] = $position;
         } else {
             $result['position'] = null;
