@@ -122,6 +122,10 @@ class CvProfileDetailController extends Controller
         if (!$document) {
             $data['is_document_filled'] = false;
         }
+        $result['profile'] = [
+            'first_name' => $userProfileDetail->first_name,
+            'last_name' => $userProfileDetail->last_name,
+        ];
 
         $employee = EmployeeDetail::where('user_id', $id)->first();
         if ($employee) {
@@ -136,11 +140,6 @@ class CvProfileDetailController extends Controller
         } else {
             $result['position'] = null;
         }
-
-        $result['profile'] = [
-            'first_name' => $userProfileDetail->first_name,
-            'last_name' => $userProfileDetail->last_name,
-        ];
 
         $array = count(array_filter($data));;
         $result['completeness_status'] = $data;
