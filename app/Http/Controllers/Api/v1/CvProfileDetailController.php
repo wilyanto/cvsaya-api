@@ -98,7 +98,7 @@ class CvProfileDetailController extends Controller
     {
 
 
-        $userProfileDetail = CvProfileDetail::where('user_id', $id)->first();
+        $userProfileDetail = CvProfileDetail::where('user_id', $id)->firstOrFail();
         $education = CvEducation::where('user_id', $id)->first();
         $document = CvDocumentation::where('user_id', $id)->first();
         $expectedSalaries = CvExpectedPosition::where('user_id', $id)->first();
@@ -107,9 +107,6 @@ class CvProfileDetailController extends Controller
         $data['is_works_filled'] = true;
         $data['is_document_filled'] = true;
         $data['is_cv_filled'] = true;
-        if (!$userProfileDetail) {
-            return $this->errorResponse('User not registerd yet', 418, 40901);
-        }
         if (!$userProfileDetail || !$userProfileDetail->addresses || !$userProfileDetail->sosmeds) {
             $data['is_profile_filled'] = false;
         }
