@@ -135,7 +135,7 @@ class CvProfileDetailController extends Controller
                 'name' => $employee->position->name,
                 'company' => $employee->position->company
             ];
-            $result['profile'] = $employee;
+            $result['basic_profile'] = $employee;
             $result['position'] = $position;
         } else {
             $result['position'] = null;
