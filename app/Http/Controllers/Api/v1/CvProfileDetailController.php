@@ -96,8 +96,6 @@ class CvProfileDetailController extends Controller
 
     public function getStatus($id)
     {
-
-
         $userProfileDetail = CvProfileDetail::where('user_id', $id)->firstOrFail();
         $education = CvEducation::where('user_id', $id)->first();
         $document = CvDocumentation::where('user_id', $id)->first();
@@ -112,7 +110,7 @@ class CvProfileDetailController extends Controller
         }
 
         if (!$expectedSalaries) {
-            $data['is_work_completed'] = false;
+            $data['is_job_completed'] = false;
         }
 
         if (!$education || !$education->experiences || !$education->certifications || !$education->specialities || !$education->hobbies) {
@@ -140,7 +138,6 @@ class CvProfileDetailController extends Controller
             $result['position'] = null;
         }
 
-        $array = count(array_filter($data));;
         $result['completeness_status'] = $data;
 
         return $this->showOne($result);
