@@ -91,7 +91,7 @@ class CvExpectedPositionsController extends Controller
             'is_verified' => 'nullable|boolean'
         ]);
         $name = $request->name;
-        $isVerfied = $request->is_verfied;
+        $isVerfied = $request->is_verified;
         // dd($request->all());
         $specialities = CandidatePosition::where(function ($qurey) use ($name, $isVerfied) {
             if ($name != null) {
