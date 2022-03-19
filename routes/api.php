@@ -17,7 +17,7 @@ use App\Http\Controllers\Api\v1\CandidateEmployeeController;
 use App\Http\Controllers\Api\v1\EmployeeDetailsController;
 use App\Http\Controllers\Api\v1\CandidateEmpolyeeScheduleController;
 use App\Http\Controllers\Api\v1\CompanyController;
-use App\Http\Controllers\api\v1\EmploymentTypeController;
+use App\Http\Controllers\Api\v1\EmploymentTypeController;
 use App\Http\Controllers\Api\v1\PermissionController;
 use App\Http\Controllers\Api\v1\ReligionController;
 use App\Http\Controllers\Api\v1\MarriageStatusController;
