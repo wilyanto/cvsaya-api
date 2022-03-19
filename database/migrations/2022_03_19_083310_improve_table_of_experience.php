@@ -17,12 +17,16 @@ return new class extends Migration
             $table->longText('reason_resign')->nullable();
             $table->string('reference')->nullable();
             $table->integer('previous_salary')->default(0);
+            $table->dropColumn('description');
+            $table->longText('jobdesc')->nullable();
         });
 
         Schema::table('cv_log_experiences',function(Blueprint $table){
             $table->longText('reason_resign')->nullable();
             $table->string('reference')->nullable();
             $table->integer('previous_salary')->default(0);
+            $table->dropColumn('description');
+            $table->longText('jobdesc')->nullable();
         });
     }
 
@@ -37,12 +41,16 @@ return new class extends Migration
             $table->dropColumn('reason_resign');
             $table->dropColumn('reference');
             $table->dropColumn('previous_salary');
+            $table->longText('description')->nullable();
+            $table->dropColumn('jobdesc');
         });
 
         Schema::table('cv_log_experiences',function(Blueprint $table){
             $table->dropColumn('reason_resign');
             $table->dropColumn('reference');
             $table->dropColumn('previous_salary');
+            $table->longText('description')->nullable();
+            $table->dropColumn('jobdesc');
         });
     }
 };

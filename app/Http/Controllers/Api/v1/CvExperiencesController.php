@@ -43,7 +43,7 @@ class CvExperiencesController extends Controller
             'location' => 'required|string',
             'start_at' => 'required|date',
             'until_at' => 'nullable|date|after:start_at',
-            'description' => 'nullable|string',
+            'jobdesc' => 'nullable|string',
             'reason_resign' => 'string|min:20',
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
@@ -57,6 +57,7 @@ class CvExperiencesController extends Controller
         $experience->slip_salary_img = $request->slip_salary_img;
         $experience->start_at = date('Y-m-d', strtotime($request->start_at));
         $experience->until_at = date('Y-m-d', strtotime($request->until_at));
+        $experience->jobdesc =  $request->jobdesc;
         $experience->reference = $request->reference;
         $experience->previous_salary = $request->previous_salary;
         $experience->reason_resign = $request->reason_resign;
@@ -115,7 +116,7 @@ class CvExperiencesController extends Controller
             'location' => 'nullable|string',
             'start_at' => 'nullable|date',
             'until_at' => 'nullable|date|after:start_at',
-            'description' => 'nullable|string',
+            'jobdesc' => 'nullable|string',
             'reason_resign' => 'string|min:50',
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
@@ -142,6 +143,9 @@ class CvExperiencesController extends Controller
             $experience->until_at = date('Y-m-d', strtotime($request->until_at));
         } else {
             return $this->errorResponse('The until at must be a date after saved start at', 422, 42200);
+        }
+        if ($request->jobdesc) {
+            $experience->jobdesc =  $request->jobdesc;
         }
         if ($request->slip_salary_img) {
             $experience->slip_salary_img = $request->slip_salary_img;

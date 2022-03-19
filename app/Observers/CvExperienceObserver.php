@@ -22,7 +22,7 @@ class CvExperienceObserver
         $newLog->location = $cvSayaExperiences->location;
         $newLog->start_at = $cvSayaExperiences->start_at;
         $newLog->until_at = $cvSayaExperiences->until_at;
-        $newLog->description = $cvSayaExperiences->description;
+        $newLog->jobdesc = $cvSayaExperiences->jobdesc;
         $newLog->reference = $cvSayaExperiences->reference;
         $newLog->previous_salary = $cvSayaExperiences->previous_salary;
         $newLog->reason_resign = $cvSayaExperiences->reason_resign;
@@ -48,7 +48,7 @@ class CvExperienceObserver
         $newLog->location = $cvSayaExperiences->location;
         $newLog->start_at = $cvSayaExperiences->start_at;
         $newLog->until_at = $cvSayaExperiences->until_at;
-        $newLog->description = $cvSayaExperiences->description;
+        $newLog->jobdesc = $cvSayaExperiences->jobdesc;
         $newLog->reference = $cvSayaExperiences->reference;
         $newLog->previous_salary = $cvSayaExperiences->previous_salary;
         $newLog->reason_resign = $cvSayaExperiences->reason_resign;
