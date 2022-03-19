@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CvEducation;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
+use App\Models\Degree;
 
 class CvEducationsController extends Controller
 {
@@ -30,6 +31,12 @@ class CvEducationsController extends Controller
         return $this->showAll($educations);
     }
 
+
+    public function degreeList(){
+        $degrees = Degree::all();
+
+        return $this->showAll($degrees);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -40,7 +47,7 @@ class CvEducationsController extends Controller
         $user = auth()->user();
         $request->validate([
             'school' => 'required|string',
-            'degree' => 'required|string',
+            'degree_id' => 'exists:degree,id|required',
             'field_of_study' => 'required|string',
             'grade' => 'required|string',
             'start_at' => 'required|date',
@@ -107,7 +114,7 @@ class CvEducationsController extends Controller
         // dump($request->input());
         $request->validate([
             'school' => 'nullable|string',
-            'degree' => 'nullable|string',
+            'degree_id' => 'exists:degree,id|required',
             'field_of_study' => 'nullable|string',
             'grade' => 'nullable|string',
             'start_at' => 'nullable|date',

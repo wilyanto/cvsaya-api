@@ -18,7 +18,7 @@ class CvEducationObserver
         $educations = new CvLogEducation();
         $educations->education_id = $cvSayaEducations->id;
         $educations->school = $cvSayaEducations->school;
-        $educations->degree = $cvSayaEducations->degree;
+        $educations->degree_id = $cvSayaEducations->degree_id;
         $educations->field_of_study = $cvSayaEducations->field_of_study;
         $educations->grade = $cvSayaEducations->grade;
         $educations->start_at = date('Y-m-d',strtotime($cvSayaEducations->start_at));
@@ -39,7 +39,7 @@ class CvEducationObserver
         $educations = new CvLogEducation();
         $educations->education_id = $cvSayaEducations->id;
         $educations->school = $cvSayaEducations->school;
-        $educations->degree = $cvSayaEducations->degree;
+        $educations->degree_id = $cvSayaEducations->degree_id;
         $educations->field_of_study = $cvSayaEducations->field_of_study;
         $educations->grade = $cvSayaEducations->grade;
         $educations->start_at = date('Y-m-d',strtotime($cvSayaEducations->start_at));

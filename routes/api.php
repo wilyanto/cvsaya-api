@@ -113,6 +113,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('educations')->group(function () {
             Route::controller(CvEducationsController::class)->group(function () {
                 Route::get('/', 'index');
+                Route::get('/degree', 'degreeList');
                 Route::post('/', 'add');
                 Route::delete('/{id}', 'destroy');
                 Route::put('/{id}',  'update');

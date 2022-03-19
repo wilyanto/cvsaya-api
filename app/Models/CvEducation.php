@@ -20,7 +20,7 @@ class CvEducation extends Model
         'id',
         'user_id',
         'school',
-        'degree',
+        'degree_id',
         'field_of_study',
         'grade',
         'start_at',
@@ -43,5 +43,26 @@ class CvEducation extends Model
 
     public function Hobbies(){
         return $this->hasOne(CvHobby::class,'user_id','user_id');
+    }
+
+    public function degree(){
+        return $this->hasOne(Degree::class,'id','degree_id');
+    }
+
+    public function toArray()
+    {
+        return [
+            'id'=> $this->id,
+            'user_id' => $this->user_id,
+            'school'=> $this->school,
+            'degree' => $this->degree,
+            'field_of_study' => $this->field_of_study,
+            'grade' => $this->grade,
+            'start_at' => $this->start_at,
+            'until_at' => $this->until_at,
+            'description' => $this->description,
+            'created_at' => $this->created_at,
+            'updated_at'=> $this->updated_at,
+        ];
     }
 }
