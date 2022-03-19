@@ -30,7 +30,7 @@ class CandidateEmployeeSchedule extends Model
     }
 
     public function Result(){
-        return $this->hasOne(ResultInterview::class,'id','result_id');
+        return $this->hasOne(InterviewResult::class,'id','result_id');
     }
 
 

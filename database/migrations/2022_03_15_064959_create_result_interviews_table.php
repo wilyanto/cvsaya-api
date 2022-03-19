@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('result_interviews', function (Blueprint $table) {
+        Schema::create('interview_results', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
@@ -25,7 +25,7 @@ return new class extends Migration
         });
 
         Schema::table('candidate_employee_schedules',function (Blueprint $table){
-            $table->foreign('result_id')->references('id')->on('result_interviews');
+            $table->foreign('result_id')->references('id')->on('interview_results');
         });
 
         Schema::table('candidate_log_employee_schedules',function(Blueprint $table){
@@ -55,6 +55,6 @@ return new class extends Migration
             $table->dropColumn('result_id');
         });
 
-        Schema::dropIfExists('result_interviews');
+        Schema::dropIfExists('interview_results');
     }
 };
