@@ -23,7 +23,6 @@ class CvEducationObserver
         $educations->grade = $cvSayaEducations->grade;
         $educations->start_at = date('Y-m-d',strtotime($cvSayaEducations->start_at));
         $educations->until_at = date('Y-m-d',strtotime($cvSayaEducations->until_at));
-        $educations->activity = $cvSayaEducations->activity;
         $educations->description = $cvSayaEducations->description;
         $educations->save();
     }
@@ -44,7 +43,6 @@ class CvEducationObserver
         $educations->grade = $cvSayaEducations->grade;
         $educations->start_at = date('Y-m-d',strtotime($cvSayaEducations->start_at));
         $educations->until_at = date('Y-m-d',strtotime($cvSayaEducations->until_at));
-        $educations->activity = $cvSayaEducations->activity;
         $educations->description = $cvSayaEducations->description;
         $educations->save();
     }

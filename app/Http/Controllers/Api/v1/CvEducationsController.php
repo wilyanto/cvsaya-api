@@ -52,7 +52,6 @@ class CvEducationsController extends Controller
             'grade' => 'required|string',
             'start_at' => 'required|date',
             'until_at' => 'nullable|date|after_or_equal:start_at',
-            'activity' => 'nullable|string',
             'description' => 'nullable|string',
         ]);
 
@@ -119,7 +118,6 @@ class CvEducationsController extends Controller
             'grade' => 'nullable|string',
             'start_at' => 'nullable|date',
             'until_at' => 'nullable|date|after_or_equal:start_at',
-            'activity' => 'nullable|string',
             'description' => 'nullable|string',
         ]);
         $data = $request->all();

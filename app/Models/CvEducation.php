@@ -25,7 +25,6 @@ class CvEducation extends Model
         'grade',
         'start_at',
         'until_at',
-        'activity',
         'description'
     ];
 
