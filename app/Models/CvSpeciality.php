@@ -36,7 +36,7 @@ class CvSpeciality extends Model
             'id' => $this->id,
             'user_id' => $this->user_id,
             'name' => $this->name,
-            'certificate' => $this->certifcates,
+            'certificates' => $this->certifcates,
             'created_at'=> $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,
