@@ -44,7 +44,10 @@ class CvExperiencesController extends Controller
             'start_at' => 'required|date',
             'until_at' => 'nullable|date|after:start_at',
             'description' => 'nullable|string',
-            'payslip_img' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            'reason_resign' => 'string|min:20',
+            'reference' => 'nullable|string',
+            'previous_salary' => 'integer|required',
+            'slip_salary_img' => 'nullable', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
         ]);
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
@@ -54,6 +57,10 @@ class CvExperiencesController extends Controller
         $experience->slip_salary_img = $request->slip_salary_img;
         $experience->start_at = date('Y-m-d', strtotime($request->start_at));
         $experience->until_at = date('Y-m-d', strtotime($request->until_at));
+        $experience->reference = $request->reference;
+        $experience->previous_salary = $request->previous_salary;
+        $experience->reason_resign = $request->reason_resign;
+        $experience->slip_salary_img = $request->slip_salary_img;
         // dd($experience);
         $experience->save();
 
@@ -103,18 +110,21 @@ class CvExperiencesController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'position' => 'nullable|exists:App\Models\CandidatePosition,id',
+            'position_id' => 'nullable|exists:App\Models\CandidatePosition,id',
             'employment_type' => 'exists:App\Models\EmploymentType,id|nullable',
             'location' => 'nullable|string',
             'start_at' => 'nullable|date',
             'until_at' => 'nullable|date|after:start_at',
             'description' => 'nullable|string',
-            'payslip_img' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            'reason_resign' => 'string|min:50',
+            'reference' => 'nullable|string',
+            'previous_salary' => 'integer|required',
+            'slip_salary_img' => 'nullable', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
         ]);
 
         $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
-        if ($request->position) {
-            $experience->position = $request->position;
+        if ($request->position_id) {
+            $experience->position_id = $request->position_id;
         }
         if ($request->employment_type) {
             $experience->employment_type = $request->employment_type;
@@ -122,6 +132,7 @@ class CvExperiencesController extends Controller
         if ($request->location) {
             $experience->location = $request->location;
         }
+
         if (strtotime($experience->until_at) > strtotime($request->start_at)) {
             $experience->start_at = date('Y-m-d', strtotime($request->start_at));
         } else {
@@ -131,6 +142,18 @@ class CvExperiencesController extends Controller
             $experience->until_at = date('Y-m-d', strtotime($request->until_at));
         } else {
             return $this->errorResponse('The until at must be a date after saved start at', 422, 42200);
+        }
+        if ($request->slip_salary_img) {
+            $experience->slip_salary_img = $request->slip_salary_img;
+        }
+        if ($request->reference) {
+            $experience->reference = $request->reference;
+        }
+        if ($request->previous_salary) {
+            $experience->previous_salary = $request->previous_salary;
+        }
+        if ($request->reason_resign) {
+            $experience->reason_resign = $request->reason_resign;
         }
         if ($request->slip_salary_img) {
             $experience->slip_salary_img = $request->slip_salary_img;

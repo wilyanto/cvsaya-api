@@ -40,6 +40,11 @@ class CvExperience extends Model
             'location' => $this->location,
             'start_at' => $this->start_at,
             'until_at' => $this->until_at,
+            'description' => $this->description,
+            'reference' => $this->reference,
+            'previous_salary' => $this->previous_salary,
+            'reason_resign' => $this->reason_resign,
+            'payslip_img' => $this->payslip_img,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
