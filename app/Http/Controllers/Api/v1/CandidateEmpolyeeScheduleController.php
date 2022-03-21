@@ -80,7 +80,7 @@ class CandidateEmpolyeeScheduleController extends Controller
             }
             $data[] = [
                 'date' => $period,
-                'schedulues' => $scheduleArray,
+                'schedules' => $scheduleArray,
             ];
         }
 
@@ -132,7 +132,7 @@ class CandidateEmpolyeeScheduleController extends Controller
      * @param  \App\Models\CandidateEmpolyeeSchedule  $candidateEmpolyeeSchedule
      * @return \Illuminate\Http\Response
      */
-    public function isThereAnyOtherSchedulue($date, $time, $interviewer)
+    public function isThereAnyOtherSchedule($date, $time, $interviewer)
     {
         $schedule = CandidateEmployeeSchedule::where('interview_by', $interviewer)
             ->where('date_time', date('Y-m-d H:i:s', strtotime($date . ' ' . $time)))->first();
@@ -142,7 +142,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         return false;
     }
 
-    public function updateSchedulue(Request $request, $id)
+    public function updateSchedule(Request $request, $id)
     {
         //check role
 
@@ -153,7 +153,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         ]);
         $schedule = CandidateEmployeeSchedule::where('id', $id)->firstOrFail();
 
-        // if ($this->isThereAnyOtherSchedulue($request->date, $request->time, $schedule->interview_by)) {
+        // if ($this->isThereAnyOtherSchedule($request->date, $request->time, $schedule->interview_by)) {
         //     return $this->errorResponse('You have another schedule execpt this schedule', 422, 42201);
         // }
         $schedule->date_time = date('Y-m-d H:i:s', strtotime($request->date . ' ' . $request->time));
