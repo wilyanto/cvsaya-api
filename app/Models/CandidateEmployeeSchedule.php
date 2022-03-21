@@ -29,7 +29,7 @@ class CandidateEmployeeSchedule extends Model
         return $this->hasMany(LogCandidateEmpolyeeSchedule::class,'employee_candidate_id');
     }
 
-    public function Result(){
+    public function result(){
         return $this->hasOne(InterviewResult::class,'id','result_id');
     }
 
@@ -40,6 +40,10 @@ class CandidateEmployeeSchedule extends Model
 
     public function interviewBy(){
         return $this->hasOne(EmployeeDetail::class,'id','interview_by');
+    }
+
+    public function characterTraits(){
+        return $this->hasManyThrough(CharacterTrait::class,CandidateSchedulueCharacterTrait::class,'id','candidate_employee_schedule_id','character_trait_id','id');
     }
 
     public function toArrayCandidate(){
@@ -59,9 +63,10 @@ class CandidateEmployeeSchedule extends Model
             'employee_candidate_id' => $this->toArrayCandidate(),
             'interview_by' => $this->interview_by,
             'note' => $this->note,
+            'character_trait' => $this->characterTraits,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'result_id' => $this->Result,
+            'result_id' => $this->result,
         ];
     }
 

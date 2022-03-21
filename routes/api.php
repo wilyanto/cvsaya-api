@@ -167,7 +167,7 @@ Route::prefix('v1')->group(function () {
                         Route::get('/date', 'indexByDate');
                         Route::get('/{id}', 'getDetail');
                         Route::put('/{id}/result', 'giveResult');
-                        Route::put('/{id}', 'updateSchedulue');
+                        Route::put('/{id}', 'updateSchedule');
                     });
                 });
                 Route::get('/', 'index');

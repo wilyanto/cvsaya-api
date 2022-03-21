@@ -75,7 +75,7 @@ class CandidateEmployee extends Model
     {
         $result = CandidateEmployeeSchedule::where('employee_candidate_id',$this->id)->orderBy('created_at','DESC')->first();
         if($result){
-            return $result->Result;
+            return $result->result;
         }
         return null;
     }

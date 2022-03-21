@@ -30,7 +30,7 @@ class CvAddress extends Model
         'note',
     ];
 
-    public function Result(){
+    public function result(){
         return $this->hasOne(Result::class,'id','result_id');
     }
 

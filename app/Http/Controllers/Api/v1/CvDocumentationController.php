@@ -20,11 +20,7 @@ class CvDocumentationController extends Controller
     {
         $user = auth()->user();
 
-        $getDocuments = CvDocumentation::where('user_id', $user->id_kustomer)->first();
-        if (!$getDocuments) {
-            return $this->errorResponse('Document not found', 404, 40401);
-        }
-
+        $getDocuments = CvDocumentation::where('user_id', $user->id_kustomer)->firstOrFail();
         return $this->showOne($getDocuments);
     }
 
