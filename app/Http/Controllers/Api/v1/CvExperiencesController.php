@@ -41,7 +41,7 @@ class CvExperiencesController extends Controller
             'position_id' => 'required|exists:App\Models\CandidatePosition,id',
             'employment_type_id' => 'exists:App\Models\EmploymentType,id|required',
             'company_name' => 'required|string',
-            'company_location' => 'required|string',
+            'company_location' => 'nullable|string',
             'start_at' => 'required|date',
             'until_at' => 'nullable|date|after:start_at',
             'jobdesc' => 'nullable|string',

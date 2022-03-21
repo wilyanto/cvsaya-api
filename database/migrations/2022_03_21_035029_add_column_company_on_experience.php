@@ -14,13 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::table('cv_experiences',function(Blueprint $table){
-            $table->string('company_location')->after('user_id');
+            $table->string('company_location')->nullable()->after('user_id');
             $table->string('company_name')->after('user_id');
             $table->dropColumn('location');
         });
 
         Schema::table('cv_log_experiences',function(Blueprint $table){
-            $table->string('company_location')->after('experience_id');
+            $table->string('company_location')->nullable()->after('experience_id');
             $table->string('company_name')->after('experience_id');
             $table->dropColumn('location');
         });
