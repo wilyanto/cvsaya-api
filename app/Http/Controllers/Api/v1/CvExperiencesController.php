@@ -47,21 +47,21 @@ class CvExperiencesController extends Controller
             'reason_resign' => 'string|min:20',
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
-            'slip_salary_img' => 'nullable', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            'payslip_img' => 'nullable', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
         ]);
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
         $experience->position_id = $request->position_id;
         $experience->employment_type_id = $request->employment_type_id;
         $experience->location = $request->location;
-        $experience->slip_salary_img = $request->slip_salary_img;
+        $experience->payslip_img = $request->payslip_img;
         $experience->start_at = date('Y-m-d', strtotime($request->start_at));
         $experience->until_at = date('Y-m-d', strtotime($request->until_at));
         $experience->jobdesc =  $request->jobdesc;
         $experience->reference = $request->reference;
         $experience->previous_salary = $request->previous_salary;
         $experience->reason_resign = $request->reason_resign;
-        $experience->slip_salary_img = $request->slip_salary_img;
+        $experience->payslip_img = $request->payslip_img;
         // dd($experience);
         $experience->save();
 
@@ -120,7 +120,7 @@ class CvExperiencesController extends Controller
             'reason_resign' => 'string|min:50',
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
-            'slip_salary_img' => 'nullable', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            'payslip_img' => 'nullable', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
         ]);
 
         $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
@@ -147,8 +147,8 @@ class CvExperiencesController extends Controller
         if ($request->jobdesc) {
             $experience->jobdesc =  $request->jobdesc;
         }
-        if ($request->slip_salary_img) {
-            $experience->slip_salary_img = $request->slip_salary_img;
+        if ($request->payslip_img) {
+            $experience->payslip_img = $request->payslip_img;
         }
         if ($request->reference) {
             $experience->reference = $request->reference;
@@ -158,9 +158,6 @@ class CvExperiencesController extends Controller
         }
         if ($request->reason_resign) {
             $experience->reason_resign = $request->reason_resign;
-        }
-        if ($request->slip_salary_img) {
-            $experience->slip_salary_img = $request->slip_salary_img;
         }
         $experience->save();
 

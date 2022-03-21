@@ -30,11 +30,11 @@ return new class extends Migration
     public function down()
     {
         Schema::table('cv_log_experiences',function(Blueprint $table){
-            $table->dropColumn('slip_salary_img');
+            $table->dropColumn('payslip_img');
         });
 
         Schema::table('cv_experiences',function(Blueprint $table){
-            $table->dropColumn('slip_salary_img');
+            $table->dropColumn('payslip_img');
         });
     }
 };
