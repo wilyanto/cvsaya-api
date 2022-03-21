@@ -40,7 +40,8 @@ class CvExperiencesController extends Controller
         $request->validate([
             'position_id' => 'required|exists:App\Models\CandidatePosition,id',
             'employment_type_id' => 'exists:App\Models\EmploymentType,id|required',
-            'location' => 'required|string',
+            'company_name' => 'required|string',
+            'company_location' => 'required|string',
             'start_at' => 'required|date',
             'until_at' => 'nullable|date|after:start_at',
             'jobdesc' => 'nullable|string',
@@ -52,8 +53,9 @@ class CvExperiencesController extends Controller
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
         $experience->position_id = $request->position_id;
+        $experience->company_name = $request->company_name;
         $experience->employment_type_id = $request->employment_type_id;
-        $experience->location = $request->location;
+        $experience->company_location = $request->company_location;
         $experience->payslip_img = $request->payslip_img;
         $experience->start_at = date('Y-m-d', strtotime($request->start_at));
         $experience->until_at = date('Y-m-d', strtotime($request->until_at));
@@ -113,7 +115,8 @@ class CvExperiencesController extends Controller
         $request->validate([
             'position_id' => 'nullable|exists:App\Models\CandidatePosition,id',
             'employment_type' => 'exists:App\Models\EmploymentType,id|nullable',
-            'location' => 'nullable|string',
+            'company_name' => 'nullable|string',
+            'company_location' => 'nullable|string',
             'start_at' => 'nullable|date',
             'until_at' => 'nullable|date|after:start_at',
             'jobdesc' => 'nullable|string',
@@ -130,8 +133,11 @@ class CvExperiencesController extends Controller
         if ($request->employment_type) {
             $experience->employment_type = $request->employment_type;
         }
-        if ($request->location) {
-            $experience->location = $request->location;
+        if ($request->company_name) {
+            $experience->company_name = $request->company_name;
+        }
+        if ($request->company_location) {
+            $experience->company_location = $request->company_location;
         }
 
         if (strtotime($experience->until_at) > strtotime($request->start_at)) {
