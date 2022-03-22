@@ -130,6 +130,7 @@ class CandidateEmployeeController extends Controller
         if (!$posistion) {
             return $this->errorResponse('Tidak bisa melanjutkan karena bukan Empolyee', 409, 40901);
         }
+
         $candidateHasSuggestOrNot = CandidateEmployee::where('phone_number', $request->phone_number)->first();
         if ($candidateHasSuggestOrNot) {
             $candidateHasSuggestOrNot->many_request += 1;
@@ -203,13 +204,15 @@ class CandidateEmployeeController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
+        $user = auth()->user();
         $request->validate([
             'status' => 'integer|required',
         ]);
 
-        $candidateEmployee = CandidateEmployee::where('id', $id)->first();
-        if (!$candidateEmployee) {
-            return $this->errorResponse('Candidate Not Found', 422, 42201);
+        $candidateEmployee = CandidateEmployee::where('id', $id)->firstOrFail();
+
+        if ($candidateEmployee->user_id == $user->id_kustomer) {
+            return $this->errorResponse('Candidate cannot update his own status', 422, 42204);
         }
 
         if ($request->status < CandidateEmployee::INTERVIEW) {
@@ -218,7 +221,6 @@ class CandidateEmployeeController extends Controller
         if (!$candidateEmployee->label() && !count($candidateEmployee->schedule)) {
             return $this->errorResponse('Candidate has not finish old schedule yet', 422, 42203);
         }
-
         if ($request->status == CandidateEmployee::INTERVIEW) {
             $request->validate([
                 'date_time' => 'date|nullable',

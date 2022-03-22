@@ -13,7 +13,6 @@ class CvEducationsController extends Controller
 {
     use ApiResponser;
 
-    protected $connection = 'mysql2';
     /**
      * Display a listing of the resource.
      *
@@ -32,7 +31,8 @@ class CvEducationsController extends Controller
     }
 
 
-    public function degreeList(){
+    public function degreeList()
+    {
         $degrees = Degree::all();
 
         return $this->showAll($degrees);
@@ -47,7 +47,7 @@ class CvEducationsController extends Controller
         $user = auth()->user();
         $request->validate([
             'school' => 'required|string',
-            'degree_id' => 'exists:degree,id|required',
+            'degree_id' => 'exists:degrees,id|required',
             'field_of_study' => 'required|string',
             'grade' => 'required|string',
             'start_at' => 'required|date',
@@ -113,7 +113,7 @@ class CvEducationsController extends Controller
         // dump($request->input());
         $request->validate([
             'school' => 'nullable|string',
-            'degree_id' => 'exists:degree,id|required',
+            'degree_id' => 'exists:degrees,id|required',
             'field_of_study' => 'nullable|string',
             'grade' => 'nullable|string',
             'start_at' => 'nullable|date',
