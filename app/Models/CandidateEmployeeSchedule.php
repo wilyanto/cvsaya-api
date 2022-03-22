@@ -67,6 +67,7 @@ class CandidateEmployeeSchedule extends Model
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'result_id' => $this->result,
+            'trait' => $this->characterTraits,
         ];
     }
 

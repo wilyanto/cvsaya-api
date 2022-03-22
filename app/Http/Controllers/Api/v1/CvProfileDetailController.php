@@ -246,7 +246,7 @@ class CvProfileDetailController extends Controller
 
     public function validateAddress($country, $province, $city, $subDistrict, $village, $token)
     {
-        $url = env('KADA_URL') . "/v1/domicile/villages/validation";
+        $url = env('KADA_URL') . "/v1/domicile/validation";
         $data = [
             'country_code' => $country,
             'province_code' => $province,
@@ -284,7 +284,7 @@ class CvProfileDetailController extends Controller
             'profile_detail.gender' => 'required|string',
             'profile_detail.identity_number' => 'required|integer|min:5',
             'profile_detail.marriage_status_id' => 'exists:marriage_statuses,id|required',
-            'profile_detail.religion_id' => 'exists:Religions,id|required',
+            'profile_detail.religion_id' => 'exists:religions,id|required',
 
             #Address
             'address.province_id' => 'integer|required',
@@ -334,7 +334,7 @@ class CvProfileDetailController extends Controller
                     explode(' ', $request->header('Authorization'))[1]
                 );
                 if ($validation['status'] != 200) {
-                    return $this->errorResponse(collect($validation['message']), $validation['status'], $validation['code']);
+                    return $this->errorResponse(collect($validation['message']), $validation['status'], $validation['message']['code']);
                 }
             } else {
                 $userAddress = CvAddress::create($requestAddress);

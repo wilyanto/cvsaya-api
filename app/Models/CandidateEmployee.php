@@ -96,6 +96,7 @@ class CandidateEmployee extends Model
             'updated_at' => $this->updated_at,
             'schedule' => $this->schedule,
             'label' => $this->label(),
+            'traits' => $this->trait(),
         ];
     }
 }
