@@ -66,7 +66,8 @@ Route::prefix('v1')->group(function () {
         Route::prefix('profiles')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
                 Route::get('/status', 'status');
-                Route::get('/',  'detail');
+                Route::get('/',  'getDetailByDefault');
+                Route::get('/{id}',  'getDetailByID');
                 Route::post('/', 'store');
                 Route::put('/', 'update');
             });
@@ -97,7 +98,8 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('cv')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
-                Route::get('/', 'cvDetail');
+                Route::get('/', 'cvDetailByDefault');
+                Route::get('/{id}', 'cvDetailByID');
             });
         });
 

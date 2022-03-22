@@ -32,14 +32,24 @@ class CvProfileDetailController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function detail(Request $request)
+
+    public function getDetailByDefault(Request $request){
+        return $this->getDetailByID($request,null);
+    }
+
+    public function getDetailByID(Request $request,$id)
     {
         $user = auth()->user();
-        // dump($userCollection);
+        if($id){
+           $candidate = CandidateEmployee::where('id',$id)->firstOrFail();
+            $id = $candidate->user_id;
+        }else{
+            $id = $user->id_kustomer;
+        }
         $array = [];
-        $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->firstOrFail();
-        $userAddress = CvAddress::where('user_id', $user->id_kustomer)->firstOrFail();
-        $userSosmed = CvSosmed::where('user_id', $user->id_kustomer)->firstOrFail();
+        $userProfileDetail = CvProfileDetail::where('user_id', $id)->firstOrFail();
+        $userAddress = CvAddress::where('user_id', $id)->firstOrFail();
+        $userSosmed = CvSosmed::where('user_id', $id)->firstOrFail();
 
         $array['profile_detail'] = $userProfileDetail;
         $array['address'] = $userAddress;
@@ -48,35 +58,46 @@ class CvProfileDetailController extends Controller
         return $this->showOne($collectionArray);
     }
 
-    public function cvDetail()
+
+    public function cvDetailByDefault(){
+        return $this->cvDetailByID(null);
+    }
+
+    public function cvDetailByID($id)
     {
         $user = auth()->user();
+        if($id){
+           $candidate = CandidateEmployee::where('id',$id)->firstOrFail();
+            $id = $candidate->user_id;
+        }else{
+            $id = $user->id_kustomer;
+        }
 
-        $education = CvEducation::where('user_id', $user->id_kustomer)
+        $education = CvEducation::where('user_id', $id)
             ->orderBy('start_at', 'DESC')
             ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('until_at', 'DESC')
             ->get();
         $data['education'] = $education;
 
-        $experience = CvExperience::where('user_id', $user->id_kustomer)
+        $experience = CvExperience::where('user_id', $id)
             ->orderBy('start_at', 'DESC')
             ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('until_at', 'DESC')
             ->get();
         $data['experience'] = $experience;
 
-        $certifications = CvCertification::where('user_id', $user->id_kustomer)
+        $certifications = CvCertification::where('user_id', $id)
             ->orderBy('issued_at', 'DESC')
             ->orderByRaw("CASE WHEN expired_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('expired_at', 'DESC')
             ->get();
         $data['certifications'] = $certifications;
 
-        $specialities = CvSpeciality::where('user_id', $user->id_kustomer)->get();
+        $specialities = CvSpeciality::where('user_id', $id)->get();
         $data['specialities'] = $specialities;
 
-        $hobbies = CvHobby::where('user_id', $user->id_kustomer)->get();
+        $hobbies = CvHobby::where('user_id', $id)->get();
         $data['hobbies'] = $hobbies;
 
         $data = (object)$data;
