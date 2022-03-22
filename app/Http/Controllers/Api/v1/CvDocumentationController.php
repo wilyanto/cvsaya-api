@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Models\CvDocumentation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\CandidateEmployee;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Storage;
 
@@ -16,12 +17,23 @@ class CvDocumentationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
         $user = auth()->user();
+        if($id){
+           $candidate = CandidateEmployee::where('id',$id)->firstOrFail();
+            $id = $candidate->user_id;
+        }else{
+            $id = $user->id_kustomer;
+        }
 
-        $getDocuments = CvDocumentation::where('user_id', $user->id_kustomer)->firstOrFail();
+        $getDocuments = CvDocumentation::where('user_id', $id)->firstOrFail();
         return $this->showOne($getDocuments);
+    }
+
+    public function getByDefault()
+    {
+        return $this->index(null);
     }
 
     /**

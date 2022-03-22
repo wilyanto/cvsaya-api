@@ -8,6 +8,7 @@ use App\Models\CvExpectedPosition;
 use App\Models\CandidatePosition;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
+use App\Models\CandidateEmployee;
 use Illuminate\Support\Facades\Redis;
 
 class CvExpectedPositionsController extends Controller
@@ -18,11 +19,22 @@ class CvExpectedPositionsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function getIndexByDefault()
+    {
+        return $this->getIndexByID(null);
+    }
+
+    public function getIndexByID($id)
     {
         $user = auth()->user();
+        if($id){
+            $candidate = CandidateEmployee::where('id',$id)->firstOrFail();
+             $id = $candidate->user_id;
+         }else{
+             $id = $user->id_kustomer;
+         }
 
-        $expectedSalaries = CvExpectedPosition::where('user_id', $user->id_kustomer)->firstOrFail();
+        $expectedSalaries = CvExpectedPosition::where('user_id', $id)->firstOrFail();
 
         return $this->showOne($expectedSalaries);
     }

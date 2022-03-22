@@ -76,6 +76,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('expected-job')->group(function () {
             Route::controller(CvExpectedPositionsController::class)->group(function () {
                 Route::get('/', 'index');
+                Route::get('/{id}', 'index');
                 Route::post('/', 'storeOrUpdate');
             });
         });
@@ -90,7 +91,8 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('documents')->group(function () {
             Route::controller(CvDocumentationController::class)->group(function () {
-                Route::get('/', 'index');
+                Route::get('/', 'getByDefault');
+                Route::get('/{id}', 'index');
                 Route::post('/upload', 'uploadStorage');
                 Route::post('/', 'store');
             });
