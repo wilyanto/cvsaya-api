@@ -11,7 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CvExpectedSalary;
 use App\Models\EmployeeDetail;
-use App\Models\CandidateScheduleCharacterTrait;
+use App\Models\CandidateEmployeeScheduleCharacterTrait;
 use App\Models\CharacterTrait;
 use App\Models\Position;
 use DateTime;
@@ -183,7 +183,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         if(count($request->character_traits)){
             foreach($request->character_traits as $characterTrait){
                 $characterTrait = CharacterTrait::where('id',$characterTrait)->firstOrFail();
-                CandidateScheduleCharacterTrait::create([
+                CandidateEmployeeScheduleCharacterTrait::create([
                     'candidate_employee_schedule_id' => $schedule->id,
                     'character_trait_id' => $characterTrait->id,
                 ]);
