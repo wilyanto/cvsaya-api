@@ -42,7 +42,7 @@ class CandidateEmployeeSchedule extends Model
     }
 
     public function characterTraits(){
-        return $this->hasManyThrough(CharacterTrait::class,CandidateSchedulueCharacterTrait::class,'id','candidate_employee_schedule_id','character_trait_id','id');
+        return $this->hasManyThrough(CharacterTrait::class,CandidateScheduleCharacterTrait::class,'id','candidate_employee_schedule_id','character_trait_id','id');
     }
 
     public function toArrayCandidate(){
