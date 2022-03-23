@@ -186,7 +186,7 @@ class CvProfileDetailController extends Controller
         $user = auth()->user();
         $request->validate([
             'first_name' => 'string|required|min:3',
-            'last_name' => 'string|required|min:3',
+            'last_name' => 'string|nullable|min:3',
             'reference' => 'string|nullable',
         ]);
         if (CvProfileDetail::where('user_id', $user->id_kustomer)->first()) {
@@ -207,7 +207,7 @@ class CvProfileDetailController extends Controller
         $candidate = CandidateEmployee::where('phone_number', substr($user->telpon, 1))->first();
         if (!$candidate) {
             $candidate = new CandidateEmployee();
-        }   
+        }
         $candidate->user_id = $user->id_kustomer;
         $candidate->name = $request->first_name . " " . $request->last_name;
         $candidate->phone_number = (int) substr($user->telpon, 1);
