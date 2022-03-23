@@ -266,7 +266,7 @@ class CandidateEmployeeController extends Controller
                 $status['is_document_completed']  == false &&
                 $status['is_cv_completed'] == false
             ) {
-                return $this->errorResponse('this Candidate cannot going interview', 401, 40101);
+                return $this->errorResponse('this Candidate cannot going interview', 422, 42201);
             }
 
             $data = $request->all();
