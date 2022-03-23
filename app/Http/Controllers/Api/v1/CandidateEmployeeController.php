@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\EmployeeDetail;
 use App\Http\Controllers\Controller;
 use App\Models\CandidateLogEmployee;
-use App\Http\Controllers\api\v1\CvProfileDetailController;
+use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CandidatePosition;
 use App\Models\CandidateEmployeeSchedule;
 
