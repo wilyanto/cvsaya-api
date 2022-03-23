@@ -73,7 +73,6 @@ class CvExperiencesController extends Controller
         $experience->previous_salary = $request->previous_salary;
         $experience->reason_resign = $request->reason_resign;
         $experience->payslip_img = $request->payslip_img;
-        dd($experience);
         $experience->save();
         return $this->showOne($experience);
     }
