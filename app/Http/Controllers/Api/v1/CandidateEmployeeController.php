@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\EmployeeDetail;
 use App\Http\Controllers\Controller;
 use App\Models\CandidateLogEmployee;
+use App\Http\Controllers\api\v1\CvProfileDetailController;
 use App\Models\CandidatePosition;
 use App\Models\CandidateEmployeeSchedule;
 
@@ -218,9 +219,10 @@ class CandidateEmployeeController extends Controller
         if ($request->status < CandidateEmployee::INTERVIEW) {
             return $this->errorResponse('candidate cannot change with that status', 422, 42202);
         }
-        if (!$candidateEmployee->label() && !count($candidateEmployee->schedule)) {
+        if (!$candidateEmployee->label() && count($candidateEmployee->schedules)) {
             return $this->errorResponse('Candidate has not finish old schedule yet', 422, 42203);
         }
+
         if ($request->status == CandidateEmployee::INTERVIEW) {
             $request->validate([
                 'date_time' => 'date|nullable',
