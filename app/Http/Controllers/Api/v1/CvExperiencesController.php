@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CvExperience;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
+use App\Models\CandidatePosition;
 
 class CvExperiencesController extends Controller
 {
@@ -38,7 +39,7 @@ class CvExperiencesController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'position_id' => 'required|exists:App\Models\CandidatePosition,id',
+            'position_id' => 'required',
             'employment_type_id' => 'exists:App\Models\EmploymentType,id|required',
             'company_name' => 'required|string',
             'company_location' => 'nullable|string',
@@ -52,7 +53,15 @@ class CvExperiencesController extends Controller
         ]);
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
-        $experience->position_id = $request->position_id;
+        $positionCollection = json_decode($request->position_id);
+        $position = CandidatePosition::where('id', $positionCollection->id)->orWhere('name', $positionCollection->name)->first();
+        if (!$position) {
+            $position = new CandidatePosition();
+            $position->name = $positionCollection->name;
+            $position->inserted_by = $user->id_kustomer;
+            $position->save();
+        }
+        $experience->position_id = $position->id;
         $experience->company_name = $request->company_name;
         $experience->employment_type_id = $request->employment_type_id;
         $experience->company_location = $request->company_location;
@@ -64,9 +73,8 @@ class CvExperiencesController extends Controller
         $experience->previous_salary = $request->previous_salary;
         $experience->reason_resign = $request->reason_resign;
         $experience->payslip_img = $request->payslip_img;
-        // dd($experience);
+        dd($experience);
         $experience->save();
-
         return $this->showOne($experience);
     }
 
@@ -113,7 +121,7 @@ class CvExperiencesController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'position_id' => 'nullable|exists:App\Models\CandidatePosition,id',
+            'position_id' => 'required',
             'employment_type' => 'exists:App\Models\EmploymentType,id|nullable',
             'company_name' => 'nullable|string',
             'company_location' => 'nullable|string',
@@ -128,7 +136,16 @@ class CvExperiencesController extends Controller
 
         $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
         if ($request->position_id) {
-            $experience->position_id = $request->position_id;
+            $position = json_decode($request->position_id);
+            // dump($data);
+            $position = CandidatePosition::where('id', $position->id)->orWhere('name', $position->name)->first();
+            if (!$position) {
+                $position = new CandidatePosition();
+                $position->name = $position->name;
+                $position->inserted_by = $user->id_kustomer;
+                $position->save();
+            }
+            $experience->position_id = $position->id;
         }
         if ($request->employment_type) {
             $experience->employment_type = $request->employment_type;

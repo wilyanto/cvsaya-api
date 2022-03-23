@@ -27,7 +27,7 @@ class CvExperience extends Model
     }
 
     public function CandidatePositions(){
-        return $this->hasOne(CandidatePosition::class,'id','employment_type_id');
+        return $this->hasOne(CandidatePosition::class,'id','position_id');
     }
 
     public function toArray()
