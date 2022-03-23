@@ -32,6 +32,8 @@ class CandidateEmployeeController extends Controller
         // };
         if ($request->input()) {
             $request->validate([
+                'page' => 'required|numeric|gt:0',
+                'page_size' => 'required|numeric|gt:0',
                 'name' => 'nullable|string',
                 'status' => 'nullable|integer',
                 'start_date' => 'nullable|date',
@@ -90,8 +92,12 @@ class CandidateEmployeeController extends Controller
                         $query->where('status', $status);
                     }
                 }
-            })->get();
-            // dump($candidates);
+            })->paginate(
+                $perpage = $request->page_size,
+                $columns =  ['*'],
+                $pageName = 'page',
+                $pageBody = $request->page
+            );
             if ($status == CandidateEmployee::ReadyToInterview) {
                 $data = [];
                 foreach ($candidates as $candidate) {
@@ -99,17 +105,28 @@ class CandidateEmployeeController extends Controller
 
                     $status = $candidateController->getStatus($candidate->user_id);
                     $status = $status->original;
-                    $status = $status['data']['is_all_form_filled'];
-                    if ($status != false) {
+                    $status = $status['data']['completeness_status'];
+                    if (
+                        $status['is_profile_completed'] = true &&
+                        $status['is_job_completed'] = true &&
+                        $status['is_document_completed']  = true &&
+                        $status['is_cv_completed'] = true
+                    ) {
                         $data[] = $candidate;
                     }
                 }
-                return $this->showAll(collect($data));
+
+                return $this->showPaginate('Candidate', collect($data), collect($candidates));
             }
         } else {
-            $candidates = CandidateEmployee::all();
+            $candidates = CandidateEmployee::all()->paginate(
+                $perpage = $request->page_size,
+                $columns =  ['*'],
+                $pageName = 'page',
+                $pageBody = $request->page
+            );;
         }
-        return $this->showAll($candidates);
+        return $this->showPaginate('Candidate', collect($candidates->values()), collect($candidates));
     }
 
     public function indexDetail(Request $request, $id)
@@ -169,6 +186,7 @@ class CandidateEmployeeController extends Controller
             );
         // dump($positions);
         foreach ($positions as $position) {
+            // dump($position);
             $result[] = [
                 'id' => $position->id,
                 'name' => $position->name,
@@ -187,13 +205,19 @@ class CandidateEmployeeController extends Controller
             return $item->label() == null;
         })->count();
         $data['bad'] = collect($position->candidates)->filter(function ($item) {
-            return $item->label()->id == CandidateEmployee::RESULT_BAD;
+            if ($item->label()) {
+                return $item->label()->id == CandidateEmployee::RESULT_BAD;
+            }
         })->count();
         $data['hold'] = collect($position->candidates)->filter(function ($item) {
-            return $item->label()->id  == CandidateEmployee::RESULT_HOLD;
+            if ($item->label()) {
+                return $item->label()->id == CandidateEmployee::RESULT_HOLD;
+            }
         })->count();
         $data['recommended'] = collect($position->candidates)->filter(function ($item) {
-            return $item->label()->id  == CandidateEmployee::RESULT_RECOMMENDED;
+            if ($item->label()) {
+                return $item->label()->id == CandidateEmployee::RESULT_RECOMMENDED;
+            }
         })->count();
         $data['accepted'] = collect($position->candidates)->filter(function ($item) {
             return $item->status == CandidateEmployee::ACCEPTED;
@@ -236,10 +260,10 @@ class CandidateEmployeeController extends Controller
             $status = $status['data']['completeness_status'];
             if (
                 $candidateEmployee->status != CandidateEmployee::INTERVIEW &&
-                $status = $status['is_profile_completed'] &&
-                $status = $status['is_job_completed'] &&
-                $status = $status['is_document_completed'] &&
-                $status = $status['is_cv_completed']
+                $status['is_profile_completed'] = false &&
+                $status['is_job_completed'] = false &&
+                $status['is_document_completed']  = false &&
+                $status['is_cv_completed'] = false
             ) {
                 return $this->errorResponse('this Candidate cannot going interview', 401, 40101);
             }
