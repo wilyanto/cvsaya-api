@@ -33,17 +33,18 @@ class CvProfileDetailController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function getDetailByDefault(Request $request){
-        return $this->getDetailByID($request,null);
+    public function getDetailByDefault(Request $request)
+    {
+        return $this->getDetailByID($request, null);
     }
 
-    public function getDetailByID(Request $request,$id)
+    public function getDetailByID(Request $request, $id)
     {
         $user = auth()->user();
-        if($id){
-           $candidate = CandidateEmployee::where('id',$id)->firstOrFail();
+        if ($id) {
+            $candidate = CandidateEmployee::where('id', $id)->firstOrFail();
             $id = $candidate->user_id;
-        }else{
+        } else {
             $id = $user->id_kustomer;
         }
         $array = [];
@@ -59,17 +60,18 @@ class CvProfileDetailController extends Controller
     }
 
 
-    public function cvDetailByDefault(){
+    public function cvDetailByDefault()
+    {
         return $this->cvDetailByID(null);
     }
 
     public function cvDetailByID($id)
     {
         $user = auth()->user();
-        if($id){
-           $candidate = CandidateEmployee::where('id',$id)->firstOrFail();
+        if ($id) {
+            $candidate = CandidateEmployee::where('id', $id)->firstOrFail();
             $id = $candidate->user_id;
-        }else{
+        } else {
             $id = $user->id_kustomer;
         }
 
@@ -205,7 +207,7 @@ class CvProfileDetailController extends Controller
         $candidate = CandidateEmployee::where('phone_number', substr($user->telpon, 1))->first();
         if (!$candidate) {
             $candidate = new CandidateEmployee();
-        }
+        }   
         $candidate->user_id = $user->id_kustomer;
         $candidate->name = $request->first_name . " " . $request->last_name;
         $candidate->phone_number = (int) substr($user->telpon, 1);

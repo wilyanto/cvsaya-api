@@ -243,6 +243,7 @@ class CandidateEmployeeController extends Controller
         if ($request->status < CandidateEmployee::INTERVIEW) {
             return $this->errorResponse('candidate cannot change with that status', 422, 42202);
         }
+
         if (!$candidateEmployee->label() && count($candidateEmployee->schedules)) {
             return $this->errorResponse('Candidate has not finish old schedule yet', 422, 42203);
         }
@@ -260,13 +261,14 @@ class CandidateEmployeeController extends Controller
             $status = $status['data']['completeness_status'];
             if (
                 $candidateEmployee->status != CandidateEmployee::INTERVIEW &&
-                $status['is_profile_completed'] = false &&
-                $status['is_job_completed'] = false &&
-                $status['is_document_completed']  = false &&
-                $status['is_cv_completed'] = false
+                $status['is_profile_completed'] == false &&
+                $status['is_job_completed'] == false &&
+                $status['is_document_completed']  == false &&
+                $status['is_cv_completed'] == false
             ) {
                 return $this->errorResponse('this Candidate cannot going interview', 401, 40101);
             }
+
             $data = $request->all();
             $data['employee_candidate_id'] = $id;
 
