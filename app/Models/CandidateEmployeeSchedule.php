@@ -24,28 +24,34 @@ class CandidateEmployeeSchedule extends Model
         'note',
     ];
 
-    public function log(){
-        return $this->hasMany(LogCandidateEmpolyeeSchedule::class,'employee_candidate_id');
+    public function log()
+    {
+        return $this->hasMany(LogCandidateEmpolyeeSchedule::class, 'employee_candidate_id');
     }
 
-    public function result(){
-        return $this->hasOne(ResultInterview::class,'id','result_id');
+    public function result()
+    {
+        return $this->hasOne(ResultInterview::class, 'id', 'result_id');
     }
 
 
-    public function candidate(){
-        return $this->hasOne(CandidateEmployee::class,'id','employee_candidate_id');
+    public function candidate()
+    {
+        return $this->hasOne(CandidateEmployee::class, 'id', 'employee_candidate_id');
     }
 
-    public function interviewBy(){
-        return $this->hasOne(EmployeeDetail::class,'id','interview_by');
+    public function interviewBy()
+    {
+        return $this->hasOne(EmployeeDetail::class, 'id', 'interview_by');
     }
 
-    public function characterTraits(){
-        return $this->hasManyThrough(CharacterTrait::class,CandidateScheduleCharacterTrait::class,'id','candidate_employee_schedule_id','character_trait_id','id');
+    public function characterTraits()
+    {
+        return $this->hasManyThrough(CharacterTrait::class, CandidateScheduleCharacterTrait::class, 'id', 'candidate_employee_schedule_id', 'character_trait_id', 'id');
     }
 
-    public function toArrayCandidate(){
+    public function toArrayCandidate()
+    {
         $getCandidate = $this->candidate;
 
         return [
@@ -56,11 +62,12 @@ class CandidateEmployeeSchedule extends Model
         ];
     }
 
-    public function toArray(){
+    public function toArray()
+    {
         return [
             'id' => $this->id,
             'employee_candidate_id' => $this->toArrayCandidate(),
-            'interview_by' => $this->interview_by,
+            'interview_by' => $this->interviewBy->CvProfileDetail->first_name . $this->interviewBy->CvProfileDetail->first_name,
             'note' => $this->note,
             'character_trait' => $this->characterTraits,
             'created_at' => $this->created_at,
@@ -69,5 +76,4 @@ class CandidateEmployeeSchedule extends Model
             'trait' => $this->characterTraits,
         ];
     }
-
 }
