@@ -233,13 +233,13 @@ class CandidateEmployeeController extends Controller
 
             $status = $candidateController->getStatus($candidateEmployee->user_id);
             $status = $status->original;
-
+            $status = $status['data']['completeness_status'];
             if (
                 $candidateEmployee->status != CandidateEmployee::INTERVIEW &&
-                $status = $status['data']['is_profile_completed'] &&
-                $status = $status['data']['is_job_completed'] &&
-                $status = $status['data']['is_document_completed'] &&
-                $status = $status['data']['is_cv_completed']
+                $status = $status['is_profile_completed'] &&
+                $status = $status['is_job_completed'] &&
+                $status = $status['is_document_completed'] &&
+                $status = $status['is_cv_completed']
             ) {
                 return $this->errorResponse('this Candidate cannot going interview', 401, 40101);
             }
