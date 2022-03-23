@@ -11,6 +11,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CvExpectedSalary;
 use App\Models\EmployeeDetail;
+use App\Models\CandidateScheduleCharacterTrait;
+use App\Models\CharacterTrait;
 use App\Models\Position;
 use DateTime;
 use DateInterval;
@@ -166,7 +168,8 @@ class CandidateEmpolyeeScheduleController extends Controller
         $request->validate([
             'employee_candidate_id' => 'required|exists:candidate_employee_schedules,employee_candidate_id',
             'note' => 'longtext|nullable',
-            'result_id' => 'exists:result_interviews,id|required',
+            'result_id' => 'exists:interview_results,id|required',
+            'character_traits' => 'array|nullable'
         ]);
 
         $schedule = CandidateEmployeeSchedule::where('id', $id)->firstOrFail();
@@ -176,6 +179,15 @@ class CandidateEmpolyeeScheduleController extends Controller
         $schedule->result_id = $request->result_id;
         if ($request->note) {
             $schedule->note = $request->note;
+        }
+        if(count($request->character_traits)){
+            foreach($request->character_traits as $characterTrait){
+                $characterTrait = CharacterTrait::where('id',$characterTrait)->firstOrFail();
+                CandidateScheduleCharacterTrait::create([
+                    'candidate_employee_schedule_id' => $schedule->id,
+                    'character_trait_id' => $characterTrait->id,
+                ]);
+            }
         }
         // dump($schedule);
         $schedule->save();

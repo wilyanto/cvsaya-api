@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class CharacterTrait extends Model
 {
     use HasFactory;
+
+    public $fillable = [
+        'name'
+    ];
 }
