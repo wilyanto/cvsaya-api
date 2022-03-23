@@ -68,7 +68,7 @@ class CandidateEmployee extends Model
 
     public function results()
     {
-        return $this->hasManyThrough(InterviewResult::class, CandidateEmployeeSchedule::class,  'employee_candidate_id', 'id', 'id', 'result_id');
+        return $this->hasManyThrough(ResultInterview::class, CandidateEmployeeSchedule::class,  'employee_candidate_id', 'id', 'id', 'result_id');
     }
 
     public function label()

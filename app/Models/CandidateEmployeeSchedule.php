@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Result;
 
 class CandidateEmployeeSchedule extends Model
 {
@@ -30,7 +29,7 @@ class CandidateEmployeeSchedule extends Model
     }
 
     public function result(){
-        return $this->hasOne(InterviewResult::class,'id','result_id');
+        return $this->hasOne(ResultInterview::class,'id','result_id');
     }
 
 
