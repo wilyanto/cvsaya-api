@@ -52,6 +52,10 @@ class CvProfileDetail extends Model
         return $this->hasOne(MarriageStatus::class,'id','marriage_status_id');
     }
 
+    public function candidate(){
+        return $this->hasOne(CandidateEmployee::class,'user_id','user_id');
+    }
+
     public function toArray()
     {
         return [
@@ -59,6 +63,7 @@ class CvProfileDetail extends Model
             'user_id' => $this->user_id,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
+            'phone_number' => $this->candidate->phone_number,
             'birth_location' => $this->birth_location,
             'birth_date' => $this->birth_date,
             'gender' => $this->gender,
