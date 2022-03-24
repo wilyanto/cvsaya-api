@@ -27,12 +27,9 @@ class CvExpectedPositionsController extends Controller
     public function getIndexByID($id)
     {
         $user = auth()->user();
-        if($id){
-            $candidate = CandidateEmployee::where('id',$id)->firstOrFail();
-             $id = $candidate->user_id;
-         }else{
-             $id = $user->id_kustomer;
-         }
+        if (!$id) {
+            $id = $user->id_kustomer;
+        }
 
         $expectedSalaries = CvExpectedPosition::where('user_id', $id)->firstOrFail();
 

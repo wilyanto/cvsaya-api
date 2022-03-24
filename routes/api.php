@@ -41,7 +41,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->group(function () {
-
     Route::middleware('auth:api')->group(function () {
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {
@@ -54,13 +53,30 @@ Route::prefix('v1')->group(function () {
         Route::prefix('profiles')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
                 Route::get('/',  'getDetailByDefault');
-                Route::get('/{id}',  'getDetailByID');
                 Route::post('/', 'store');
                 Route::put('/', 'update');
             });
         });
 
-        Route::prefix('completeness')->group(function () {
+        Route::prefix('users')->group(function () {
+            Route::controller(CvProfileDetailController::class)->group(function () {
+                Route::get('/{id}/profiles',  'getDetailByID');
+            });
+
+            Route::controller(CvExpectedPositionsController::class)->group(function () {
+                Route::get('/{id}/expected-jobs', 'getIndexByID'); // path user/id/expected-jobs
+            });
+
+            Route::controller(CvDocumentationController::class)->group(function () {
+                Route::get('/{id}/documents', 'index'); // path user/id/document
+            });
+
+            Route::controller(CvProfileDetailController::class)->group(function () {
+                Route::get('/{id}/curriculum-vitaes', 'cvDetailByID'); // path user/id/cv
+            });
+        });
+
+        Route::prefix('completeness-status')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
                 Route::get('/', 'status');
             });
@@ -69,7 +85,6 @@ Route::prefix('v1')->group(function () {
         Route::prefix('expected-jobs')->group(function () {
             Route::controller(CvExpectedPositionsController::class)->group(function () {
                 Route::get('/', 'getIndexByDefault');
-                Route::get('/{id}', 'getIndexByID');
                 Route::post('/', 'storeOrUpdate');
             });
         });
@@ -77,7 +92,6 @@ Route::prefix('v1')->group(function () {
         Route::prefix('documents')->group(function () {
             Route::controller(CvDocumentationController::class)->group(function () {
                 Route::get('/', 'getByDefault');
-                Route::get('/{id}', 'index');
                 Route::post('/upload', 'uploadStorage');
                 Route::post('/', 'store');
             });
@@ -86,7 +100,6 @@ Route::prefix('v1')->group(function () {
         Route::prefix('curriculum-vitaes')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
                 Route::get('/', 'cvDetailByDefault');
-                Route::get('/{id}', 'cvDetailByID');
             });
         });
 
@@ -149,8 +162,8 @@ Route::prefix('v1')->group(function () {
         Route::prefix('candidates')->group(function () {
             Route::controller(CandidateEmployeeController::class)->group(function () {
                 Route::get('/', 'index');
-                Route::get('/positions', 'getPosition');
                 Route::get('/{id}', 'indexDetail');
+                Route::get('/positions', 'getPosition');
                 Route::post('/', 'addCandidateToBlast');
                 Route::put('/{id}', 'updateStatus');
                 // Route::post('update-status','updateStatus');
@@ -166,8 +179,6 @@ Route::prefix('v1')->group(function () {
                 Route::put('/{id}', 'updateSchedule');
             });
         });
-
-
 
         Route::prefix('departments')->group(function () {
             Route::controller(DepartmentsController::class)->group(function () {
@@ -197,9 +208,9 @@ Route::prefix('v1')->group(function () {
         });
 
 
-        Route::prefix('degree')->group(function () {
+        Route::prefix('degrees')->group(function () {
             Route::controller(CvEducationsController::class)->group(function () {
-                Route::get('/degrees', 'degreeList');
+                Route::get('/', 'degreeList');
             });
         });
 

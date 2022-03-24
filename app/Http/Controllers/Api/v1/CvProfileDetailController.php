@@ -41,10 +41,7 @@ class CvProfileDetailController extends Controller
     public function getDetailByID(Request $request, $id)
     {
         $user = auth()->user();
-        if ($id) {
-            $candidate = CandidateEmployee::where('id', $id)->firstOrFail();
-            $id = $candidate->user_id;
-        } else {
+        if (!$id) {
             $id = $user->id_kustomer;
         }
         $array = [];
@@ -68,10 +65,7 @@ class CvProfileDetailController extends Controller
     public function cvDetailByID($id)
     {
         $user = auth()->user();
-        if ($id) {
-            $candidate = CandidateEmployee::where('id', $id)->firstOrFail();
-            $id = $candidate->user_id;
-        } else {
+        if (!$id) {
             $id = $user->id_kustomer;
         }
 

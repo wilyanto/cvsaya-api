@@ -56,6 +56,7 @@ class CandidateEmployeeSchedule extends Model
 
         return [
             'id' => $getCandidate->id,
+            'user_id' => $getCandidate->user_id,
             'name' => $getCandidate->name,
             'phone_number' => $getCandidate->phone_number,
             'register_date' => $getCandidate->register_date,
