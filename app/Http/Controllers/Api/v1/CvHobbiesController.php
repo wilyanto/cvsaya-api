@@ -62,34 +62,26 @@ class CvHobbiesController extends Controller
      * @param  \App\Models\Hobbies  $hobbies
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function suggestion(Request $request)
     {
         $user = auth()->user();
         $request->validate([
             'filter_by' => 'string|nullable',
+            'total_suggestions' => 'integer|nullable'
         ]);
-        $specialities = CvHobby::where('name','LIKE', '%'.$request->filter_by.'%')->withTrashed()->get();
+        $total = $request->total_suggestions;
+        $filterBy = $request->filterBy;
+        $specialities = CvHobby::where(function ($query) use ($filterBy) {
+            if($filterBy){
+                $query->where('name', 'LIKE', '%' . $filterBy . '%');
+            }
+        })->select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit($total)->get();
+
         $specialities = collect($specialities)->pluck('name');
-        if($request->filter_by){
-            $specialities->push($request->filter_by);
-        }
-        $specialities = $specialities->unique();
+        //    dd($specialities);
 
         return $this->showAll($specialities);
-
     }
-
-    public function showTopTenList(Request $request){
-        $user = auth()->user();
-
-        $specialities = CvHobby::select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit(10)->get();
-
-        $specialities = collect($specialities)->pluck('name');
-     //    dd($specialities);
-
-        return $this->showAll($specialities);
-
-     }
 
     /**
      * Show the form for editing the specified resource.
@@ -109,7 +101,7 @@ class CvHobbiesController extends Controller
      * @param  \App\Models\Hobbies  $hobbies
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
         $user = auth()->user();
 
@@ -137,8 +129,8 @@ class CvHobbiesController extends Controller
     {
         $user = auth()->user();
         $hobbies = CvHobby::where('id', $id)->where('user_id', $user->id_kustomer)->first();
-        if(!$hobbies){
-            return $this->errorResponse('id not found',404,40401);
+        if (!$hobbies) {
+            return $this->errorResponse('id not found', 404, 40401);
         }
         $hobbies->delete();
 

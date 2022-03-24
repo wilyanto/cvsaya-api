@@ -20,10 +20,7 @@ class CvDocumentationController extends Controller
     public function index($id)
     {
         $user = auth()->user();
-        if($id){
-           $candidate = CandidateEmployee::where('id',$id)->firstOrFail();
-            $id = $candidate->user_id;
-        }else{
+        if(!$id){
             $id = $user->id_kustomer;
         }
 
