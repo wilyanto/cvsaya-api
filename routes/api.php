@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Http\Controllers\Api\v1\CvDocumentationController;
-use App\Http\Controllers\Api\v1\CvExpectedPositionsController;
+use App\Http\Controllers\Api\v1\CvExpectedJobsController;
 use App\Http\Controllers\Api\v1\CvCertificationsController;
 use App\Http\Controllers\Api\v1\CvExperiencesController;
 use App\Http\Controllers\Api\v1\CvEducationsController;
@@ -74,7 +74,7 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('expected-job')->group(function () {
-            Route::controller(CvExpectedPositionsController::class)->group(function () {
+            Route::controller(CvExpectedJobsController::class)->group(function () {
                 Route::get('/', 'getIndexByDefault');
                 Route::get('/{id}', 'getIndexByID');
                 Route::post('/', 'storeOrUpdate');
@@ -82,7 +82,7 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('candidate-positions')->group(function () {
-            Route::controller(CvExpectedPositionsController::class)->group(function () {
+            Route::controller(CvExpectedJobsController::class)->group(function () {
                 Route::get('/', 'getListCandidatePositions');
                 Route::post('/', 'createCandidatePositions');
                 Route::put('/{id}', 'updateVerfiedCandidatePositions');

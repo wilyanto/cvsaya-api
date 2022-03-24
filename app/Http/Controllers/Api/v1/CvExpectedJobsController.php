@@ -4,14 +4,14 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\CvExpectedPosition;
+use App\Models\CvExpectedJob;
 use App\Models\CandidatePosition;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Models\CandidateEmployee;
 use Illuminate\Support\Facades\Redis;
 
-class CvExpectedPositionsController extends Controller
+class CvExpectedJobsController extends Controller
 {
     use ApiResponser;
     /**
@@ -34,7 +34,7 @@ class CvExpectedPositionsController extends Controller
              $id = $user->id_kustomer;
          }
 
-        $expectedSalaries = CvExpectedPosition::where('user_id', $id)->firstOrFail();
+        $expectedSalaries = CvExpectedJob::where('user_id', $id)->firstOrFail();
 
         return $this->showOne($expectedSalaries);
     }
@@ -78,9 +78,9 @@ class CvExpectedPositionsController extends Controller
             $position->save();
         }
         $data['expected_position'] = $position->id;
-        $expectedSalaries = CvExpectedPosition::where('user_id', $user->id_kustomer)->first();
+        $expectedSalaries = CvExpectedJob::where('user_id', $user->id_kustomer)->first();
         if (!$expectedSalaries) {
-            $expectedSalaries = CvExpectedPosition::create($data);
+            $expectedSalaries = CvExpectedJob::create($data);
 
             return $this->showOne($expectedSalaries);
         }
@@ -168,7 +168,7 @@ class CvExpectedPositionsController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, CvExpectedPosition $expectedSalaries)
+    public function update(Request $request, CvExpectedJob $expectedSalaries)
     {
         //
     }
@@ -179,7 +179,7 @@ class CvExpectedPositionsController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CvExpectedPosition $expectedSalaries)
+    public function destroy(CvExpectedJob $expectedSalaries)
     {
         //
     }
