@@ -58,7 +58,7 @@ class CandidateEmployeeSchedule extends Model
             'id' => $getCandidate->id,
             'user_id' => $getCandidate->user_id,
             'name' => $getCandidate->name,
-            'interview_date' => $getCandidate->date_time,
+            'interview_date' => $this->date_time,
             'phone_number' => $getCandidate->phone_number,
             'register_date' => $getCandidate->register_date,
         ];
