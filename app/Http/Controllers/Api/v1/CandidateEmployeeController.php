@@ -107,10 +107,10 @@ class CandidateEmployeeController extends Controller
                     $status = $status->original;
                     $status = $status['data']['completeness_status'];
                     if (
-                        $status['is_profile_completed'] = true &&
-                        $status['is_job_completed'] = true &&
-                        $status['is_document_completed']  = true &&
-                        $status['is_cv_completed'] = true
+                        $status['is_profile_completed'] == true &&
+                        $status['is_job_completed'] == true &&
+                        $status['is_document_completed']  == true &&
+                        $status['is_cv_completed'] == true
                     ) {
                         $data[] = $candidate;
                     }
