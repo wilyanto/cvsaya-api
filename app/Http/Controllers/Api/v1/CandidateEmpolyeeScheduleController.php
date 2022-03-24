@@ -26,10 +26,13 @@ class CandidateEmpolyeeScheduleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
 
+        if($request->start_at){
+            return $this->indexByDate($request);
+        }
         $candidate = CandidateEmployeeSchedule::where('result_id', null)->distinct('employee_candidate_id')->get();
 
         return $this->showALl($candidate);
