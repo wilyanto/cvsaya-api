@@ -36,7 +36,7 @@ class CvExperience extends Model
             'id' => $this->id,
             'user_id'=> $this->user_id,
             'position' => $this->CandidatePositions,
-            'employment_type_id' => $this->EmployeeType,
+            'employment_type' => $this->EmployeeType,
             'company_name' => $this->company_name,
             'company_location' => $this->company_location,
             'start_at' => $this->start_at,
