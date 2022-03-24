@@ -32,5 +32,23 @@ class CvExpectedJob extends Model
     public function candidates(){
         return $this->hasMany(CandidateEmployees::class,'user_id','user_id');
     }
+
+    public function position(){
+        return $this->hasOne(CandidatePosition::class,'id','expected_position');
+    }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'expected_amount' => $this->expected_amount,
+            'expected_position' => $this->position,
+            'reason_position' => $this->reason_position,
+            'reason_salary' => $this->reason_salary,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
 }
 
