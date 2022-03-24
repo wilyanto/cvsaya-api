@@ -57,7 +57,7 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('marriage/status')->group(function () {
+        Route::prefix('marriage-statuses')->group(function () {
             Route::controller(MarriageStatusController::class)->group(function () {
                 Route::get('/', 'index');
             });
@@ -65,7 +65,6 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('profiles')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
-                Route::get('/status', 'status');
                 Route::get('/',  'getDetailByDefault');
                 Route::get('/{id}',  'getDetailByID');
                 Route::post('/', 'store');
@@ -73,7 +72,13 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('expected-job')->group(function () {
+        Route::prefix('user')->group(function(){
+            Route::controller(CvProfileDetailController::class)->group(function () {
+                Route::get('/completeness', 'status');
+            });
+        });
+
+        Route::prefix('expected-jobs')->group(function () {
             Route::controller(CvExpectedPositionsController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::get('/{id}', 'index');
@@ -93,12 +98,12 @@ Route::prefix('v1')->group(function () {
             Route::controller(CvDocumentationController::class)->group(function () {
                 Route::get('/', 'getByDefault');
                 Route::get('/{id}', 'index');
-                Route::post('/upload', 'uploadStorage');
+                Route::post('/uploads', 'uploadStorage');
                 Route::post('/', 'store');
             });
         });
 
-        Route::prefix('cv')->group(function () {
+        Route::prefix('curriculum-vitaes')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
                 Route::get('/', 'cvDetailByDefault');
                 Route::get('/{id}', 'cvDetailByID');
@@ -117,10 +122,15 @@ Route::prefix('v1')->group(function () {
         Route::prefix('educations')->group(function () {
             Route::controller(CvEducationsController::class)->group(function () {
                 Route::get('/', 'index');
-                Route::get('/degree', 'degreeList');
                 Route::post('/', 'add');
                 Route::delete('/{id}', 'destroy');
                 Route::put('/{id}',  'update');
+            });
+        });
+
+        Route::prefix('degree')->group(function(){
+            Route::controller(CvEducationsController::class)->group(function () {
+                Route::get('/degrees', 'degreeList');
             });
         });
 
@@ -136,8 +146,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('hobbies')->group(function () {
             Route::controller(CvHobbiesController::class)->group(function () {
                 Route::get('/', 'index');
-                Route::get('/list', 'show');
-                Route::get('/top-ten-list', 'showTopTenList');
+                Route::get('/suggestions', 'suggestion');
                 Route::post('/', 'create');
                 Route::delete('/{id}', 'destroy');
                 Route::put('/{id}', 'update');
@@ -147,28 +156,27 @@ Route::prefix('v1')->group(function () {
         Route::prefix('specialities')->group(function () {
             Route::controller(CvSpecialitiesController::class)->group(function () {
                 Route::get('/',  'index');
-                Route::get('/list', 'show');
-                Route::get('/top-ten-list', 'showTopTenList');
+                Route::get('/suggestions', 'suggestion');
                 Route::post('/', 'create');
-                Route::put('/intergration/{id}', 'updateCertificate');
+                Route::put('/{id}/certificates', 'updateCertificate');
                 Route::put('/{id}',  'update');
                 Route::delete('/{id}', 'destroy');
             });
         });
 
-        Route::prefix('permission')->group(function () {
+        Route::prefix('permissions')->group(function () {
             Route::controller(PermissionController::class)->group(function () {
                 Route::get('/', 'getPermission');
             });
         });
 
 
-        Route::prefix('candidate')->group(function () {
+        Route::prefix('candidates')->group(function () {
             Route::controller(CandidateEmployeeController::class)->group(function () {
-                Route::prefix('interview')->group(function () {
+                Route::prefix('interviews')->group(function () {
                     Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
                         Route::get('/', 'index');
-                        Route::get('/date', 'indexByDate');
+                        Route::get('/dates', 'indexByDate');
                         Route::get('/{id}', 'getDetail');
                         Route::put('/{id}/result', 'giveResult');
                         Route::put('/{id}', 'updateSchedule');
@@ -186,7 +194,7 @@ Route::prefix('v1')->group(function () {
 
 
 
-        Route::prefix('department')->group(function () {
+        Route::prefix('departments')->group(function () {
             Route::controller(DepartmentsController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::post('/', 'create');
@@ -215,13 +223,13 @@ Route::prefix('v1')->group(function () {
 
 
 
-        Route::prefix('employee')->group(function () {
+        Route::prefix('employees')->group(function () {
             Route::controller(EmployeeDetailsController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::post('/', 'create');
             });
             Route::controller(EmploymentTypeController::class)->group(function () {
-                Route::get('/type', 'index');
+                Route::get('/types', 'index');
             });
         });
     });

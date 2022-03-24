@@ -32,24 +32,29 @@ class CvProfileDetail extends Model
 
     protected $primaryKey = 'id';
 
-    public function Addresses(){
-        return $this->hasOne(CvAddress::class,'user_id','user_id');
+    public function Addresses()
+    {
+        return $this->hasOne(CvAddress::class, 'user_id', 'user_id');
     }
 
-    public function Sosmeds(){
-        return $this->hasOne(CvSosmed::class,'user_id','user_id');
+    public function Sosmeds()
+    {
+        return $this->hasOne(CvSosmed::class, 'user_id', 'user_id');
     }
 
-    public function EmployeeDetails(){
-        return $this->belongsToMany(EmployeeDetails::class,'user_id','user_id');
+    public function EmployeeDetails()
+    {
+        return $this->belongsToMany(EmployeeDetails::class, 'user_id', 'user_id');
     }
 
-    public function Religion(){
-        return $this->hasOne(Religion::class,'id','religion_id');
+    public function Religion()
+    {
+        return $this->hasOne(Religion::class, 'id', 'religion_id');
     }
 
-    public function MarriageStatus(){
-        return $this->hasOne(MarriageStatus::class,'id','marriage_status_id');
+    public function MarriageStatus()
+    {
+        return $this->hasOne(MarriageStatus::class, 'id', 'marriage_status_id');
     }
 
     public function toArray()
@@ -66,8 +71,10 @@ class CvProfileDetail extends Model
             'marriage_status' => $this->MarriageStatus,
             'reference' => $this->reference,
             'created_at' => $this->created_at,
-            'updated_at'=> $this->updated_at,
+            'updated_at' => $this->updated_at,
             'religion' => $this->Religion,
         ];
     }
+
+   
 }

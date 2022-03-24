@@ -89,27 +89,18 @@ class CvSpecialitiesController extends Controller
      * @param  \App\Models\Specialities  $specialities
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+
+    public function suggestion(Request $request)
     {
-        $user = auth()->user();
         $request->validate([
             'filter_by' => 'string|nullable',
+            'total_suggestions' => 'integer|nullable'
         ]);
-        $specialities = CvSpeciality::where('name', 'LIKE', '%' . $request->filter_by . '%')->withTrashed()->get();
-        $specialities = collect($specialities)->pluck('name');
-        if ($request->filter_by) {
-            $specialities->push($request->filter_by);
-        }
-        $specialities = $specialities->unique();
-
-        return $this->showAll($specialities);
-    }
-
-    public function showTopTenList(Request $request)
-    {
-        $user = auth()->user();
-
-        $specialities = CvSpeciality::select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit(10)->get();
+        $total = $request->total_suggestions;
+        $filterBy = $request->filterBy;
+        $specialities = CvSpeciality::where(function ($query) use ($filterBy){
+            $query->where('name', 'LIKE', '%' . $filterBy . '%');
+        })->select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit($total)->get();
 
         $specialities = collect($specialities)->pluck('name');
         //    dd($specialities);
