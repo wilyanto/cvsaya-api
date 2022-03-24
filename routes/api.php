@@ -75,8 +75,8 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('expected-job')->group(function () {
             Route::controller(CvExpectedPositionsController::class)->group(function () {
-                Route::get('/', 'index');
-                Route::get('/{id}', 'index');
+                Route::get('/', 'getIndexByDefault');
+                Route::get('/{id}', 'getIndexByID');
                 Route::post('/', 'storeOrUpdate');
             });
         });
