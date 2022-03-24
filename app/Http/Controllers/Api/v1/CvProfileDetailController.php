@@ -80,14 +80,14 @@ class CvProfileDetailController extends Controller
             ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('until_at', 'DESC')
             ->get();
-        $data['education'] = $education;
+        $data['educations'] = $education;
 
         $experience = CvExperience::where('user_id', $id)
             ->orderBy('start_at', 'DESC')
             ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('until_at', 'DESC')
             ->get();
-        $data['experience'] = $experience;
+        $data['experiences'] = $experience;
 
         $certifications = CvCertification::where('user_id', $id)
             ->orderBy('issued_at', 'DESC')
