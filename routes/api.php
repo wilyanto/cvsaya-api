@@ -174,6 +174,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('interviews')->group(function () {
             Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
                 Route::get('/', 'index');
+                Route::get('/without-schedule','indexWithoutInterviewDate');
                 Route::get('/{id}', 'getDetail');
                 Route::put('/{id}/result', 'giveResult');
                 Route::put('/{id}', 'updateSchedule');

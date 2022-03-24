@@ -45,6 +45,20 @@ class CandidateEmpolyeeScheduleController extends Controller
         return $this->showAll($schedules);
     }
 
+    public function indexWithoutInterviewDate(Request $request){
+        $user = auth()->user();
+        $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
+
+        $schedules = CandidateEmployeeSchedule::
+                // whereBettween('date_time',)
+                whereNull('date_time')
+                ->where('interview_by', $employee->id)
+                ->whereNull('result_id')
+                ->distinct('employee_candidate_id')
+                ->get();
+        return $this->showAll($schedules);
+    }
+
 
     public function indexByDate(Request $request)
     {
