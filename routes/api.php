@@ -63,7 +63,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{id}/profiles',  'getDetailByID');
             });
 
-            Route::controller(CvExpectedPositionsController::class)->group(function () {
+            Route::controller(CvExpectedJobsController::class)->group(function () {
                 Route::get('/{id}/expected-jobs', 'getIndexByID'); // path user/id/expected-jobs
             });
 
@@ -83,7 +83,7 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('expected-jobs')->group(function () {
-            Route::controller(CvExpectedPositionsController::class)->group(function () {
+            Route::controller(CvExpectedJobsController::class)->group(function () {
                 Route::get('/', 'getIndexByDefault');
                 Route::post('/', 'storeOrUpdate');
             });
@@ -227,7 +227,7 @@ Route::prefix('v1')->group(function () {
 
     //master
     Route::prefix('candidate-positions')->group(function () {
-        Route::controller(CvExpectedPositionsController::class)->group(function () {
+        Route::controller(CvExpectedJobsController::class)->group(function () {
             Route::get('/', 'getListCandidatePositions');
             Route::post('/', 'createCandidatePositions');
             Route::put('/{id}', 'updateVerfiedCandidatePositions');
