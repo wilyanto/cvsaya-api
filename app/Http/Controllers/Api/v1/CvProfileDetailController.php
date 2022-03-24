@@ -256,7 +256,7 @@ class CvProfileDetailController extends Controller
             'sub_district_code' => $subDistrict,
             'village_code' => $village,
         ];
-        $response = Http::withtoken($token)->withHeaders([
+        $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ])
