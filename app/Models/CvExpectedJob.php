@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class CvExpectedPosition extends Model
+class CvExpectedJob extends Model
 {
     use HasFactory;
 
@@ -22,7 +22,7 @@ class CvExpectedPosition extends Model
         'expected_position',
         'expected_amount',
         'reason_position',
-        'reasons',
+        'reason_salary',
     ];
 
     protected $casts = [
