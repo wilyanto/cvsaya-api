@@ -53,7 +53,7 @@ class CandidateEmployeeSchedule extends Model
     public function toArrayCandidate()
     {
         $getCandidate = $this->candidate;
-
+        $education = $this->candidate->educations;
         return [
             'id' => $getCandidate->id,
             'user_id' => $getCandidate->user_id,
@@ -61,6 +61,9 @@ class CandidateEmployeeSchedule extends Model
             'interview_date' => $this->date_time,
             'phone_number' => $getCandidate->phone_number,
             'register_date' => $getCandidate->register_date,
+            'education' => $education->first(),
+            'position' => $getCandidate->job,
+
         ];
     }
 

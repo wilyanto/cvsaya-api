@@ -66,6 +66,19 @@ class CandidateEmployee extends Model
         return $this->hasMany(CandidateEmployeeSchedule::class, 'employee_candidate_id', 'id');
     }
 
+    public function educations()
+    {
+        return $this->hasMany(CvEducation::class, 'user_id', 'user_id')
+            ->orderBy('start_at', 'DESC')
+            ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('until_at', 'DESC');
+    }
+
+    public function job(){
+        return $this->hasOne(CvExpectedJob::class,'user_id','user_id');
+    }
+
+
     public function results()
     {
         return $this->hasManyThrough(InterviewResult::class, CandidateEmployeeSchedule::class,  'employee_candidate_id', 'id', 'id', 'result_id');
@@ -73,8 +86,8 @@ class CandidateEmployee extends Model
 
     public function label()
     {
-        $result = CandidateEmployeeSchedule::where('employee_candidate_id',$this->id)->orderBy('created_at','DESC')->first();
-        if($result){
+        $result = CandidateEmployeeSchedule::where('employee_candidate_id', $this->id)->orderBy('created_at', 'DESC')->first();
+        if ($result) {
             return $result->result;
         }
         return null;
