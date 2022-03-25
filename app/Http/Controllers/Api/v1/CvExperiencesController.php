@@ -135,6 +135,7 @@ class CvExperiencesController extends Controller
 
         $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
         if ($request->position) {
+            $position = $request->position;
             $position = CandidatePosition::where('id', $position['id'])->orWhere('name', $position['name'])->first();
             if (!$position) {
                 $position = new CandidatePosition();
