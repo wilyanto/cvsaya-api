@@ -46,7 +46,7 @@ class CvEducationsController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'school' => 'required|string',
+            'instance' => 'required|string',
             'degree_id' => 'exists:degrees,id|required',
             'field_of_study' => 'required|string',
             'grade' => 'required|string',
@@ -112,7 +112,7 @@ class CvEducationsController extends Controller
         $user = auth()->user();
         // dump($request->input());
         $request->validate([
-            'school' => 'nullable|string',
+            'instance' => 'nullable|string',
             'degree_id' => 'exists:degrees,id|required',
             'field_of_study' => 'nullable|string',
             'grade' => 'nullable|string',
