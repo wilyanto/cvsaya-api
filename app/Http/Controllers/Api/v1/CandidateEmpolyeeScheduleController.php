@@ -46,17 +46,17 @@ class CandidateEmpolyeeScheduleController extends Controller
     }
 
     public function indexWithoutInterviewDate(Request $request){
-        $user = auth()->user();
-        $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
+            $user = auth()->user();
+            $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
 
-        $schedules = CandidateEmployeeSchedule::
-                // whereBettween('date_time',)
-                whereNull('date_time')
-                ->where('interview_by', $employee->id)
-                ->whereNull('result_id')
-                ->distinct('employee_candidate_id')
-                ->get();
-        return $this->showAll($schedules);
+            $schedules = CandidateEmployeeSchedule::
+                    // whereBettween('date_time',)
+                    whereNull('interview_at')
+                    ->where('interview_by', $employee->id)
+                    ->whereNull('result_id')
+                    ->distinct('employee_candidate_id')
+                    ->get();
+            return $this->showAll($schedules);
     }
 
 
@@ -86,14 +86,14 @@ class CandidateEmpolyeeScheduleController extends Controller
             $date = $period->format('Y-m-d H:i:s');
             $schedules = CandidateEmployeeSchedule::
                 // whereBettween('date_time',)
-                whereDate('date_time', $period->format('Y-m-d'))
+                whereDate('interview_at', $period->format('Y-m-d'))
                 ->where('interview_by', $employee->id)
                 ->whereNull('result_id')
                 ->distinct('employee_candidate_id')
                 ->get();
             foreach ($schedules as $schedule) {
                 $scheduleArray[] = [
-                    'date_time' => $schedule->date_time,
+                    'interivew_at' => $schedule->interivew_at,
                     'candidate' => $schedule->toArrayCandidate(),
                 ];
             }
@@ -154,7 +154,7 @@ class CandidateEmpolyeeScheduleController extends Controller
     public function isThereAnyOtherSchedule($date, $time, $interviewer)
     {
         $schedule = CandidateEmployeeSchedule::where('interview_by', $interviewer)
-            ->where('date_time', date('Y-m-d H:i:s', strtotime($date . ' ' . $time)))->first();
+            ->where('interivew_at', date('Y-m-d H:i:s', strtotime($date . ' ' . $time)))->first();
         if ($schedule) {
             return true;
         }
@@ -175,7 +175,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         // if ($this->isThereAnyOtherSchedule($request->date, $request->time, $schedule->interview_by)) {
         //     return $this->errorResponse('You have another schedule execpt this schedule', 422, 42201);
         // }
-        $schedule->date_time = date('Y-m-d H:i:s', strtotime($request->date . ' ' . $request->time));
+        $schedule->date_tinterivew_atime = date('Y-m-d H:i:s', strtotime($request->date . ' ' . $request->time));
         $schedule->save();
         return $this->showOne($schedule);
     }

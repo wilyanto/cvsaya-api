@@ -18,7 +18,7 @@ class CandidateEmployeeSchedule extends Model
     public $fillable = [
         'id',
         'employee_candidate_id',
-        'date_time',
+        'interivew_at',
         'interview_by',
         'result_id',
         'note',
@@ -58,7 +58,7 @@ class CandidateEmployeeSchedule extends Model
             'id' => $getCandidate->id,
             'user_id' => $getCandidate->user_id,
             'name' => $getCandidate->name,
-            'interview_date' => $this->date_time,
+            'interivew_at' => $this->interivew_at,
             'phone_number' => $getCandidate->phone_number,
             'register_date' => $getCandidate->register_date,
             'education' => $education->first(),

@@ -20,7 +20,7 @@ class CvAddress extends Model
         'id',
         'user_id',
         'empolyee_candidate_id',
-        'date_time',
+        'interivew_at',
         'interview_by',
         'country_id',
         'province_id',
