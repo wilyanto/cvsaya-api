@@ -11,7 +11,7 @@ class CandidateEmployeeScheduleObserver
     {
         $newlog= new CandidateLogEmployeeSchedule();
         $newlog->employee_candidate_id = $candidateEmployees->id;
-        $newlog->interivew_at = $candidateEmployees->interivew_at;
+        $newlog->interview_at = $candidateEmployees->interview_at;
         $newlog->interview_by = $candidateEmployees->interview_by;
         $newlog->result_id = $candidateEmployees->result_id;
         $newlog->note = $candidateEmployees->note;
@@ -22,7 +22,7 @@ class CandidateEmployeeScheduleObserver
     {
         $newlog= new CandidateLogEmployeeSchedule();
         $newlog->employee_candidate_id = $candidateEmployees->id;
-        $newlog->interivew_at = $candidateEmployees->interivew_at;
+        $newlog->interview_at = $candidateEmployees->interview_at;
         $newlog->interview_by = $candidateEmployees->interview_by;
         $newlog->result_id = $candidateEmployees->result_id;
         $newlog->note = $candidateEmployees->note;

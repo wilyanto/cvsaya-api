@@ -93,7 +93,7 @@ class CandidateEmpolyeeScheduleController extends Controller
                 ->get();
             foreach ($schedules as $schedule) {
                 $scheduleArray[] = [
-                    'interivew_at' => $schedule->interivew_at,
+                    'interview_at' => $schedule->interview_at,
                     'candidate' => $schedule->toArrayCandidate(),
                 ];
             }
@@ -154,7 +154,7 @@ class CandidateEmpolyeeScheduleController extends Controller
     public function isThereAnyOtherSchedule($date, $time, $interviewer)
     {
         $schedule = CandidateEmployeeSchedule::where('interview_by', $interviewer)
-            ->where('interivew_at', date('Y-m-d H:i:s', strtotime($date . ' ' . $time)))->first();
+            ->where('interview_at', date('Y-m-d H:i:s', strtotime($date . ' ' . $time)))->first();
         if ($schedule) {
             return true;
         }
@@ -175,7 +175,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         // if ($this->isThereAnyOtherSchedule($request->date, $request->time, $schedule->interview_by)) {
         //     return $this->errorResponse('You have another schedule execpt this schedule', 422, 42201);
         // }
-        $schedule->date_tinterivew_atime = date('Y-m-d H:i:s', strtotime($request->date . ' ' . $request->time));
+        $schedule->interview_at = date('Y-m-d H:i:s', strtotime($request->date . ' ' . $request->time));
         $schedule->save();
         return $this->showOne($schedule);
     }
