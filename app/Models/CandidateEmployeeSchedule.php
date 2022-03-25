@@ -70,7 +70,7 @@ class CandidateEmployeeSchedule extends Model
         return [
             'id' => $this->id,
             'candidate' => $this->toArrayCandidate(),
-            'interviewer' => $this->interviewBy->interviewerDetail,
+            'interviewer' => $this->interviewBy->interviewerDetail(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
@@ -81,7 +81,7 @@ class CandidateEmployeeSchedule extends Model
         return [
             'id' => $this->id,
             'candidate' => $this->toArrayCandidate(),
-            'interviewer' => $this->interviewBy->interviewerDetail,
+            'interviewer' => $this->interviewBy->interviewerDetail(),
             'note' => $this->note,
             'character_traits' => $this->characterTraits,
             'created_at' => $this->created_at,
