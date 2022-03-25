@@ -50,7 +50,7 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::group(['middleware' => ['permission:Schedule|Candidate']], function () {
+        Route::group(['middleware' => ['role:hrd|interviewer']], function () {
             Route::prefix('users')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
                     Route::get('/{id}/profiles',  'getDetailByID');
