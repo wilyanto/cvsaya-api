@@ -167,15 +167,14 @@ class CandidateEmpolyeeScheduleController extends Controller
 
         $request->validate([
             // 'employee_candidate_id' => 'required|exists:candidate_employee_schedules,employee_candidate_id',
-            'date' => 'date|required',
-            'time' => 'date_format:H:i:s|required',
+            'interview_at' => 'date_format:Y-m-d H:i:s|required',
         ]);
         $schedule = CandidateEmployeeSchedule::where('id', $id)->firstOrFail();
 
         // if ($this->isThereAnyOtherSchedule($request->date, $request->time, $schedule->interview_by)) {
         //     return $this->errorResponse('You have another schedule execpt this schedule', 422, 42201);
         // }
-        $schedule->interview_at = date('Y-m-d H:i:s', strtotime($request->date . ' ' . $request->time));
+        $schedule->interview_at = date('Y-m-d H:i:s', strtotime($request->interview_at ));
         $schedule->save();
         return $this->showOne($schedule);
     }
