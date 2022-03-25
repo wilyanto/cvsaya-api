@@ -50,29 +50,55 @@ Route::prefix('v1')->group(function () {
             });
         });
 
+        Route::group(['middleware' => ['permission:Schedule|Candidate']], function () {
+            Route::prefix('users')->group(function () {
+                Route::controller(CvProfileDetailController::class)->group(function () {
+                    Route::get('/{id}/profiles',  'getDetailByID');
+                });
+
+                Route::controller(CvExpectedJobsController::class)->group(function () {
+                    Route::get('/{id}/expected-jobs', 'getIndexByID'); // path user/id/expected-jobs
+                });
+
+                Route::controller(CvDocumentationController::class)->group(function () {
+                    Route::get('/{id}/documents', 'index'); // path user/id/document
+                });
+
+                Route::controller(CvProfileDetailController::class)->group(function () {
+                    Route::get('/{id}/curriculum-vitaes', 'cvDetailByID'); // path user/id/cv
+                });
+            });
+
+            Route::prefix('interviews')->group(function () {
+                Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
+                    Route::get('/', 'index');
+                    Route::get('/without-schedule', 'indexWithoutInterviewDate');
+                    Route::get('/{id}', 'getDetail');
+                    Route::put('/{id}/result', 'giveResult');
+                    Route::put('/{id}', 'updateSchedule');
+                });
+            });
+
+            Route::group(['middleware' => ['permission:Schedule|Candidate']], function () {
+                Route::prefix('candidates')->group(function () {
+                    Route::controller(CandidateEmployeeController::class)->group(function () {
+                        Route::get('/', 'index');
+                        Route::get('/{id}', 'indexDetail');
+                        Route::get('/positions', 'getPosition');
+                        Route::post('/', 'addCandidateToBlast');
+                        Route::put('/{id}', 'updateStatus');
+                        // Route::post('update-status','updateStatus');
+
+                    });
+                });
+            });
+        });
+
         Route::prefix('profiles')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
                 Route::get('/',  'getDetailByDefault');
                 Route::post('/', 'store');
                 Route::put('/', 'update');
-            });
-        });
-
-        Route::prefix('users')->group(function () {
-            Route::controller(CvProfileDetailController::class)->group(function () {
-                Route::get('/{id}/profiles',  'getDetailByID');
-            });
-
-            Route::controller(CvExpectedJobsController::class)->group(function () {
-                Route::get('/{id}/expected-jobs', 'getIndexByID'); // path user/id/expected-jobs
-            });
-
-            Route::controller(CvDocumentationController::class)->group(function () {
-                Route::get('/{id}/documents', 'index'); // path user/id/document
-            });
-
-            Route::controller(CvProfileDetailController::class)->group(function () {
-                Route::get('/{id}/curriculum-vitaes', 'cvDetailByID'); // path user/id/cv
             });
         });
 
@@ -159,27 +185,6 @@ Route::prefix('v1')->group(function () {
 
 
 
-        Route::prefix('candidates')->group(function () {
-            Route::controller(CandidateEmployeeController::class)->group(function () {
-                Route::get('/', 'index');
-                Route::get('/{id}', 'indexDetail');
-                Route::get('/positions', 'getPosition');
-                Route::post('/', 'addCandidateToBlast');
-                Route::put('/{id}', 'updateStatus');
-                // Route::post('update-status','updateStatus');
-
-            });
-        });
-
-        Route::prefix('interviews')->group(function () {
-            Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
-                Route::get('/', 'index');
-                Route::get('/without-schedule','indexWithoutInterviewDate');
-                Route::get('/{id}', 'getDetail');
-                Route::put('/{id}/result', 'giveResult');
-                Route::put('/{id}', 'updateSchedule');
-            });
-        });
 
         Route::prefix('departments')->group(function () {
             Route::controller(DepartmentsController::class)->group(function () {
