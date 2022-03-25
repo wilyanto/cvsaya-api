@@ -62,8 +62,17 @@ class CandidateEmployeeSchedule extends Model
             'phone_number' => $getCandidate->phone_number,
             'register_date' => $getCandidate->register_date,
             'education' => $education->first(),
-            'position' => $getCandidate->job,
+            'job' => $getCandidate->job->expected_position,
+        ];
+    }
 
+    public function toArraySchedule(){
+        return [
+            'id' => $this->id,
+            'candidate' => $this->toArrayCandidate(),
+            'interviewer' => $this->interviewBy->interviewerDetail,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 
@@ -71,8 +80,8 @@ class CandidateEmployeeSchedule extends Model
     {
         return [
             'id' => $this->id,
-            'employee_candidate' => $this->toArrayCandidate(),
-            'interview_by' => $this->interviewBy->CvProfileDetail->first_name .' '. $this->interviewBy->CvProfileDetail->last_name,
+            'candidate' => $this->toArrayCandidate(),
+            'interviewer' => $this->interviewBy->interviewerDetail,
             'note' => $this->note,
             'character_traits' => $this->characterTraits,
             'created_at' => $this->created_at,

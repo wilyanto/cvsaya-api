@@ -55,7 +55,7 @@ class CandidateEmpolyeeScheduleController extends Controller
                 ->where('interview_by', $employee->id)
                 ->whereNull('result_id')
                 ->distinct('employee_candidate_id')
-                ->get();
+                ->get()->toArraySchedule();
         return $this->showAll($schedules);
     }
 

@@ -11,10 +11,10 @@ class CvExpectedJobObserver
     {
         $newLog = new CvLogExpectedJob();
         $newLog->expected_salary_id = $cvExpectedSalaries->id;
-        $newLog->expected_amount = $cvExpectedSalaries->expected_amount;
+        $newLog->expected_salary = $cvExpectedSalaries->expected_salary;
         $newLog->expected_position = $cvExpectedSalaries->expected_position;
-        $newLog->reason_position = $cvExpectedSalaries->reason_position;
-        $newLog->reason_salary = $cvExpectedSalaries->reason_salary;
+        $newLog->position_reason = $cvExpectedSalaries->position_reason;
+        $newLog->salary_position = $cvExpectedSalaries->salary_position;
         $newLog->created_at = date('Y-m-d h:i:s',time());
         $newLog->save();
     }
@@ -23,10 +23,10 @@ class CvExpectedJobObserver
     {
         $newLog = new CvLogExpectedJob();
         $newLog->expected_salary_id = $cvExpectedSalaries->id;
-        $newLog->expected_amount = $cvExpectedSalaries->expected_amount;
+        $newLog->expected_salary = $cvExpectedSalaries->expected_salary;
         $newLog->expected_position = $cvExpectedSalaries->expected_position;
-        $newLog->reason_position = $cvExpectedSalaries->reason_position;
-        $newLog->reason_salary = $cvExpectedSalaries->reason_salary;
+        $newLog->position_reason = $cvExpectedSalaries->position_reason;
+        $newLog->salary_position = $cvExpectedSalaries->salary_position;
         $newLog->created_at = date('Y-m-d h:i:s',time());
         $newLog->save();
     }

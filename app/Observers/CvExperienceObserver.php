@@ -26,7 +26,7 @@ class CvExperienceObserver
         $newLog->jobdesc = $cvSayaExperiences->jobdesc;
         $newLog->reference = $cvSayaExperiences->reference;
         $newLog->previous_salary = $cvSayaExperiences->previous_salary;
-        $newLog->reason_resign = $cvSayaExperiences->reason_resign;
+        $newLog->resign_reason = $cvSayaExperiences->resign_reason;
         $newLog->payslip_img = $cvSayaExperiences->payslip_img;
         $newLog->created_at = date('Y-m-d h:i:s',time());
         $newLog->save();
@@ -53,7 +53,7 @@ class CvExperienceObserver
         $newLog->jobdesc = $cvSayaExperiences->jobdesc;
         $newLog->reference = $cvSayaExperiences->reference;
         $newLog->previous_salary = $cvSayaExperiences->previous_salary;
-        $newLog->reason_resign = $cvSayaExperiences->reason_resign;
+        $newLog->resign_reason = $cvSayaExperiences->resign_reason;
         $newLog->payslip_img = $cvSayaExperiences->payslip_img;
         $newLog->created_at = date('Y-m-d h:i:s',time());
         $newLog->save();

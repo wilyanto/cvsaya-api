@@ -20,13 +20,13 @@ class CvExpectedJob extends Model
         'id',
         'user_id',
         'expected_position',
-        'expected_amount',
-        'reason_position',
-        'reason_salary',
+        'expected_salary',
+        'position_reason',
+        'salary_position',
     ];
 
     protected $casts = [
-        'expected_amount' => 'integer',
+        'expected_salary' => 'integer',
     ];
 
     public function candidates(){
@@ -42,10 +42,10 @@ class CvExpectedJob extends Model
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'expected_amount' => $this->expected_amount,
+            'expected_salary' => $this->expected_salary,
             'expected_position' => $this->position,
-            'reason_position' => $this->reason_position,
-            'reason_salary' => $this->reason_salary,
+            'position_reason' => $this->position_reason,
+            'salary_position' => $this->salary_position,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

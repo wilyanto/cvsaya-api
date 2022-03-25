@@ -44,7 +44,7 @@ class CvExperience extends Model
             'jobdesc' => $this->jobdesc,
             'reference' => $this->reference,
             'previous_salary' => $this->previous_salary,
-            'reason_resign' => $this->reason_resign,
+            'resign_reason' => $this->resign_reason,
             'payslip_img' => $this->payslip_img,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

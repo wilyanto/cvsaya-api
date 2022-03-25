@@ -58,9 +58,9 @@ class CvExpectedJobsController extends Controller
 
         $request->validate([
             'expected_position' => 'required',
-            'expected_amount' => 'integer|required',
-            'reason_position' => 'string|required|min:50',
-            'reason_salary' => 'string|required|min:50',
+            'expected_salary' => 'integer|required',
+            'position_reason' => 'string|required|min:50',
+            'position_salary' => 'string|required|min:50',
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;

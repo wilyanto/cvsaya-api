@@ -74,8 +74,9 @@ class CandidateEmployee extends Model
             ->orderBy('until_at', 'DESC');
     }
 
-    public function job(){
-        return $this->hasOne(CvExpectedJob::class,'user_id','user_id');
+    public function job()
+    {
+        return $this->hasOne(CvExpectedJob::class, 'user_id', 'user_id');
     }
 
 
@@ -101,7 +102,8 @@ class CandidateEmployee extends Model
             'user_id' => $this->user_id,
             'name' => $this->name,
             'phone_number' => $this->phone_number,
-            'register_date' => $this->register_date,
+            'country_code' => $this->country_code,
+            'register_at' => $this->register_at,
             'status' => $this->status,
             'suggest_by' => $this->SuggestBy,
             'many_requst' => $this->many_request,

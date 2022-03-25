@@ -46,7 +46,7 @@ class CvExperiencesController extends Controller
             'start_at' => 'required|date',
             'until_at' => 'nullable|date|after:start_at',
             'jobdesc' => 'nullable|string',
-            'reason_resign' => 'string|min:20',
+            'resign_reason' => 'string|min:20',
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
             'payslip_img' => 'nullable', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
@@ -71,7 +71,7 @@ class CvExperiencesController extends Controller
         $experience->jobdesc =  $request->jobdesc;
         $experience->reference = $request->reference;
         $experience->previous_salary = $request->previous_salary;
-        $experience->reason_resign = $request->reason_resign;
+        $experience->resign_reason = $request->resign_reason;
         $experience->payslip_img = $request->payslip_img;
         $experience->save();
         return $this->showOne($experience);
@@ -120,21 +120,21 @@ class CvExperiencesController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'position_id' => 'required',
+            'position' => 'required',
             'employment_type' => 'exists:App\Models\EmploymentType,id|nullable',
             'company_name' => 'nullable|string',
             'company_location' => 'nullable|string',
             'start_at' => 'nullable|date',
             'until_at' => 'nullable|date|after:start_at',
             'jobdesc' => 'nullable|string',
-            'reason_resign' => 'string|min:50',
+            'resign_reason' => 'string|min:50',
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
             'payslip_img' => 'nullable', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
         ]);
 
         $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
-        if ($request->position_id) {
+        if ($request->position) {
             $position = json_decode($request->position_id);
             // dump($data);
             $position = CandidatePosition::where('id', $position->id)->orWhere('name', $position->name)->first();
@@ -178,8 +178,8 @@ class CvExperiencesController extends Controller
         if ($request->previous_salary) {
             $experience->previous_salary = $request->previous_salary;
         }
-        if ($request->reason_resign) {
-            $experience->reason_resign = $request->reason_resign;
+        if ($request->resign_reason) {
+            $experience->resign_reason = $request->resign_reason;
         }
         $experience->save();
 
