@@ -19,7 +19,7 @@ class CvEducation extends Model
     public $fillable = [
         'id',
         'user_id',
-        'school',
+        'instance',
         'degree_id',
         'field_of_study',
         'grade',
@@ -53,7 +53,7 @@ class CvEducation extends Model
         return [
             'id'=> $this->id,
             'user_id' => $this->user_id,
-            'school'=> $this->school,
+            'instance'=> $this->instance,
             'degree' => $this->degree,
             'field_of_study' => $this->field_of_study,
             'grade' => $this->grade,
