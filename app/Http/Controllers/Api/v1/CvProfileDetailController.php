@@ -68,7 +68,6 @@ class CvProfileDetailController extends Controller
         if (!$id) {
             $id = $user->id_kustomer;
         }
-
         $education = CvEducation::where('user_id', $id)
             ->orderBy('start_at', 'DESC')
             ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")

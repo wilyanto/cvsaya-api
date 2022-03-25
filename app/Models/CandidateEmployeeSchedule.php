@@ -68,7 +68,7 @@ class CandidateEmployeeSchedule extends Model
     {
         return [
             'id' => $this->id,
-            'employee_candidate_id' => $this->toArrayCandidate(),
+            'employee_candidate' => $this->toArrayCandidate(),
             'interview_by' => $this->interviewBy->CvProfileDetail->first_name .' '. $this->interviewBy->CvProfileDetail->last_name,
             'note' => $this->note,
             'character_trait' => $this->characterTraits,
