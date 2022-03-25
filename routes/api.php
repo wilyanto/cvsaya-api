@@ -50,7 +50,7 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        // Route::group(['middleware' => ['role:hrd|interviewer']], function () {
+        // Route::group(['middleware' => ['role:hrd|Interviewer']], function () {
             Route::prefix('users')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
                     Route::get('/{id}/profiles',  'getDetailByID');
@@ -79,7 +79,7 @@ Route::prefix('v1')->group(function () {
                 });
             });
 
-            Route::group(['middleware' => ['permission:Schedule|Candidate']], function () {
+            // Route::group(['middleware' => ['permission:Schedule|Candidate']], function () {
                 Route::prefix('candidates')->group(function () {
                     Route::controller(CandidateEmployeeController::class)->group(function () {
                         Route::get('/', 'index');
@@ -91,7 +91,7 @@ Route::prefix('v1')->group(function () {
 
                     });
                 });
-            });
+            // });
         // });
 
         Route::prefix('profiles')->group(function () {
