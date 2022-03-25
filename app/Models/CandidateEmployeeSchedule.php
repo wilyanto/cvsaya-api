@@ -74,7 +74,7 @@ class CandidateEmployeeSchedule extends Model
             'employee_candidate' => $this->toArrayCandidate(),
             'interview_by' => $this->interviewBy->CvProfileDetail->first_name .' '. $this->interviewBy->CvProfileDetail->last_name,
             'note' => $this->note,
-            'character_trait' => $this->characterTraits,
+            'character_traits' => $this->characterTraits,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'result_id' => $this->result,
