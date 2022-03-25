@@ -97,7 +97,7 @@ class CvDocumentationController extends Controller
 
         $filename = date('Y-m-d_H-i-s',time()).'_'.$user->id_kustomer.'_'.$this->random4Digits().'.'.$extension;
 
-        $path = 'http://'.env('APP_URL').'/storage/'.$request->type.'/'.$filename;
+        $path = env('APP_URL').'/storage/'.$request->type.'/'.$filename;
         // dd(env('APP_URL'));
         $pathFormStorage = $request->file('file')->storeAs('public/'.$request->type,$filename);
 
