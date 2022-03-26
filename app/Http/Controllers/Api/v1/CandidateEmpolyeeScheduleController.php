@@ -167,7 +167,7 @@ class CandidateEmpolyeeScheduleController extends Controller
 
         $request->validate([
             // 'employee_candidate_id' => 'required|exists:candidate_employee_schedules,employee_candidate_id',
-            'interview_at' => 'date_format:Y-m-d H:i:s|required',
+            'interview_at' => 'required|date_format:Y-m-d\TH:i:s.u\Z',
         ]);
         $schedule = CandidateEmployeeSchedule::where('id', $id)->firstOrFail();
 
