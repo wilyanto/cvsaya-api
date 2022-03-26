@@ -53,7 +53,7 @@ class CvExperiencesController extends Controller
         ]);
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
-        $positionCollection = json_decode($request->position_id);
+        $positionCollection = json_decode($request->position);
         $position = CandidatePosition::where('id', $positionCollection->id)->orWhere('name', $positionCollection->name)->first();
         if (!$position) {
             $position = new CandidatePosition();
