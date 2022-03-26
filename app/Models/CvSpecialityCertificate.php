@@ -29,7 +29,7 @@ class CvSpecialityCertificate extends Model
     }
 
     public function certifcate(){
-        return $this->belongsTo(CvCertification::class,'certificate_id','id');
+        return $this->hasOne(CvCertification::class,'certificate_id','id');
     }
 
     // public function toArray()

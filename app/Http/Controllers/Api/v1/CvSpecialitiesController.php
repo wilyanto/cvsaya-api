@@ -53,19 +53,21 @@ class CvSpecialitiesController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function updateDeleteCertificate(array $old , array $new,$speciality){
-        $deletes = array_diff($old,$new);
-        CvSpecialityCertificate::whereIn('certificate_id',$deletes)->where('speciality_id',$speciality->id)->delete();
-        $adds = array_diff($new,$old);
-        foreach($adds as $add){
+    public function updateDeleteCertificate(array $old, array $new, $speciality)
+    {
+        $deletes = array_diff($old, $new);
+        $value = CvSpecialityCertificate::whereIn('certificate_id', $deletes)->where('speciality_id', $speciality->id)->delete();
+        $adds = array_diff($new, $old);
+        foreach ($adds as $add) {
             $certificate = new CvSpecialityCertificate();
             $certificate->certificate_id = $add;
-            $certificate->speciality_id =$speciality->id;
+            $certificate->speciality_id = $speciality->id;
             $certificate->save();
         }
+        return $value;
     }
 
-    public function updateCertificate(Request $request,$id)
+    public function updateCertificate(Request $request, $id)
     {
         $user = auth()->user();
         $request->validate([
@@ -76,10 +78,10 @@ class CvSpecialitiesController extends Controller
 
         $validateSpeciality = CvSpeciality::where('id', $request->id)->where('user_id', $user->id_kustomer)->firstOrFail();
 
-        $havedCertificates = CvSpecialityCertificate::where('speciality_id',$request->id)->pluck('certificate_id')->toArray();
+        $havedCertificates = CvSpecialityCertificate::where('speciality_id', $request->id)->pluck('certificate_id')->toArray();
         // dd(var_dump($havedCertificates));
-        $this->updateDeleteCertificate($havedCertificates,$certificates,$validateSpeciality);
-
+        $this->updateDeleteCertificate($havedCertificates, $certificates, $validateSpeciality);
+        $validateSpeciality = $validateSpeciality->fresh();
         return $this->showOne($validateSpeciality);
     }
 
@@ -98,7 +100,7 @@ class CvSpecialitiesController extends Controller
         ]);
         $total = $request->total_suggestions;
         $filterBy = $request->filterBy;
-        $specialities = CvSpeciality::where(function ($query) use ($filterBy){
+        $specialities = CvSpeciality::where(function ($query) use ($filterBy) {
             $query->where('name', 'LIKE', '%' . $filterBy . '%');
         })->select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit($total)->get();
 
@@ -125,7 +127,7 @@ class CvSpecialitiesController extends Controller
      * @param  \App\Models\Specialities  $specialities
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
         $user = auth()->user();
 
@@ -146,7 +148,7 @@ class CvSpecialitiesController extends Controller
      * @param  \App\Models\Specialities  $specialities
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request,$id)
+    public function destroy(Request $request, $id)
     {
         $user = auth()->user();
 
@@ -161,6 +163,5 @@ class CvSpecialitiesController extends Controller
 
     public function destroyIntergrity(Request $request)
     {
-
     }
 }

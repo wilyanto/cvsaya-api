@@ -25,13 +25,15 @@ class CvSpeciality extends Model
     ];
 
     public function certifcates(){
-        return $this->hasManyThrough(CvCertification::class,CvSpecialityCertificate::class,'certificate_id','id','id','speciality_id');
+        return $this->hasManyThrough(CvCertification::class,CvSpecialityCertificate::class,'speciality_id','id','id','certificate_id');
     }
 
+    // public function certifcates(){
+    //     // return $this->hasMany(CvSpecialityCertificate::class,'speciality_id','id');
+    // }
 
     public function toArray()
     {
-        // dump($this->certifcates);
         $data = [
             'id' => $this->id,
             'user_id' => $this->user_id,
