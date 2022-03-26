@@ -10,7 +10,7 @@ class CvExpectedJob extends Model
 {
     use HasFactory;
 
-    protected $table = 'cv_expected_positions';
+    protected $table = 'cv_expected_jobs';
 
     protected $guard = 'id';
 
