@@ -21,7 +21,7 @@ class EmployeeCrudController extends CrudController
     public function setup()
     {
         $this->crud->setModel('App\Models\EmployeeDetail');
-        $this->crud->setEntityNameStrings('employees','employes');
+        $this->crud->setEntityNameStrings('employees','employees');
         $this->crud->setRoute('admin/employee');
     }
 
@@ -29,12 +29,6 @@ class EmployeeCrudController extends CrudController
     {
         // dump($this);
         $this->crud->addColumns([
-            [
-                'label' => 'Company',
-                'type'  => 'model_function',
-                'name' => 'position_id',
-                'function_name' => 'getCompanyName',
-            ],
             [
                 'label' => 'Name',
                 'type'  => 'model_function',
@@ -47,6 +41,12 @@ class EmployeeCrudController extends CrudController
                 'entity' => 'Position',
                 'attribute' => 'name',
                 'model' => 'App\Models\Position',
+            ],
+            [
+                'label' => 'Company',
+                'type'  => 'model_function',
+                'name' => 'position_id',
+                'function_name' => 'getCompanyName',
             ],
             [ // n-n relationship (with pivot table)
                 'label'     => trans('backpack::permissionmanager.roles'), // Table column heading

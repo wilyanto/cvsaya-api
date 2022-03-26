@@ -60,6 +60,17 @@ class CompanyCrudController extends CrudController
         CRUD::setValidation(CompanyRequest::class);
 
         CRUD::field('id');
+        // CRUD::addField(
+        //     [
+        //         'label' => 'id',
+        //         'name' => 'id',
+        //         'type' => 'text',
+        //         'attributes' => [
+        //             'readonly'    => 'readonly',
+        //             'disabled'    => 'disabled',
+        //         ]
+        //     ]
+        // );
         CRUD::field('name');
 
         /**
@@ -77,6 +88,12 @@ class CompanyCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
-        $this->setupCreateOperation();
+        // $this->setupCreateOperation();
+
+        CRUD::setValidation(CompanyRequest::class);
+        CRUD::field('id')->attributes([
+            'readonly'    => 'readonly',
+        ]);
+        CRUD::field('name');
     }
 }
