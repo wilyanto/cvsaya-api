@@ -116,7 +116,7 @@ class CandidateEmployeeController extends Controller
                     }
                 }
 
-                return $this->showPaginate('Candidate', collect($data), collect($candidates));
+                return $this->showPaginate('candidates', collect($data), collect($candidates));
             }
         } else {
             $candidates = CandidateEmployee::all()->paginate(
