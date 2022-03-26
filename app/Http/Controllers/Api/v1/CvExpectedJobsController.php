@@ -60,7 +60,7 @@ class CvExpectedJobsController extends Controller
             'expected_position' => 'required',
             'expected_salary' => 'integer|required',
             'position_reason' => 'string|required|min:50',
-            'position_salary' => 'string|required|min:50',
+            'salary_reason' => 'string|required|min:50',
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
