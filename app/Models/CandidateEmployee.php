@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\CvAddress;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class CandidateEmployee extends Model
 {
@@ -74,6 +75,10 @@ class CandidateEmployee extends Model
             ->orderBy('until_at', 'DESC');
     }
 
+    public function profile(){
+        return $this->hasOne(CvProfileDetail::class,'user_id','user_id');
+    }
+
     public function job()
     {
         return $this->hasOne(CvExpectedJob::class, 'user_id', 'user_id');
@@ -92,6 +97,26 @@ class CandidateEmployee extends Model
             return $result->result;
         }
         return null;
+    }
+
+
+    public function listDefaultCandidate()
+    {
+        $value = $this->label();
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'name' => $this->name,
+            'phone_number' => $this->phone_number,
+            'country_code' => $this->country_code,
+            'register_at' => $this->register_at,
+            'status' => $this->status,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'label' => $this->label(),
+            'religion' => $this->profile->religion,
+            'educations' => $this->educations->first(),
+        ];
     }
 
     public function toArray()

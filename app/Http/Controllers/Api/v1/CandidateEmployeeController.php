@@ -37,103 +37,94 @@ class CandidateEmployeeController extends Controller
         // if(!$posistion){
         //     return $this->errorResponse('user tidak di temukan',404,40401);
         // };
-        if ($request->input()) {
-            $request->validate([
-                'page' => 'required|numeric|gt:0',
-                'page_size' => 'required|numeric|gt:0',
-                'name' => 'nullable|string',
-                'status' => 'nullable|integer',
-                'start_date' => 'nullable|date',
-                'end_date' => 'nullable|date',
-                'country_id' => 'nullable',
-                'province_id' => 'nullable|string',
-                'city_id' => 'nullable|string',
-                'district_id' => 'nullable|string',
-                'village_id' => 'nullable|string',
-            ]);
-            $name = $request->name;
-            $status = $request->status;
-            $start_date = $request->start_date;
-            $end_date = $request->end_date;
-            $country_id = $request->country_id;
-            $province_id = $request->province_id;
-            $city_id = $request->city_id;
-            $district_id = $request->district_id;
-            $village_id = $request->village_id;
+        $request->validate([
+            'page' => 'required|numeric|gt:0',
+            'page_size' => 'required|numeric|gt:0',
+            'name' => 'nullable|string',
+            'status' => 'nullable|integer',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
+            'country_id' => 'nullable',
+            'province_id' => 'nullable|string',
+            'city_id' => 'nullable|string',
+            'district_id' => 'nullable|string',
+            'village_id' => 'nullable|string',
+        ]);
+        $name = $request->name;
+        $status = $request->status;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+        $country_id = $request->country_id;
+        $province_id = $request->province_id;
+        $city_id = $request->city_id;
+        $district_id = $request->district_id;
+        $village_id = $request->village_id;
 
-            $candidates = CandidateEmployee::where(function ($query) use ($name, $status, $start_date, $end_date, $country_id, $province_id, $city_id, $district_id, $village_id) {
-                if ($name != null) {
-                    $query->where('name', $name);
-                }
-
-                if ($start_date != null) {
-                    $query->where('start_date', $start_date);
-                }
-
-                if ($end_date != null) {
-                    $query->where('end_date', $end_date);
-                }
-                if (($country_id != null) || ($province_id != null) || ($city_id != null) || ($district_id != null) || ($village_id != null)) {
-                    $query->whereHas('address', function ($secondQuery) use ($country_id, $province_id, $city_id, $district_id, $village_id) {
-                        if ($country_id != null) {
-                            $secondQuery->where('country_id', $country_id);
-                        }
-                        if ($province_id != null) {
-                            $secondQuery->where('province_id', $province_id);
-                        }
-                        if ($city_id != null) {
-                            $secondQuery->where('city_id', $city_id);
-                        }
-                        if ($district_id != null) {
-                            $secondQuery->where('district_id', $district_id);
-                        }
-                        if ($village_id != null) {
-                            $secondQuery->where('village_id', $village_id);
-                        }
-                    });
-                }
-                if ($status != null) {
-                    if ($status == CandidateEmployee::ReadyToInterview) {
-                        $query->where('status', 3);
-                    } else {
-                        $query->where('status', $status);
-                    }
-                }
-            })->paginate(
-                $perpage = $request->page_size,
-                $columns =  ['*'],
-                $pageName = 'page',
-                $pageBody = $request->page
-            );
-            if ($status == CandidateEmployee::ReadyToInterview) {
-                $data = [];
-                foreach ($candidates as $candidate) {
-                    $candidateController = new CvProfileDetailController;
-
-                    $status = $candidateController->getStatus($candidate->user_id);
-                    $status = $status->original;
-                    $status = $status['data']['completeness_status'];
-                    if (
-                        $status['is_profile_completed'] == true &&
-                        $status['is_job_completed'] == true &&
-                        $status['is_document_completed']  == true &&
-                        $status['is_cv_completed'] == true
-                    ) {
-                        $data[] = $candidate;
-                    }
-                }
-
-                return $this->showPaginate('candidates', collect($data), collect($candidates));
+        $candidates = CandidateEmployee::where(function ($query) use ($name, $status, $start_date, $end_date, $country_id, $province_id, $city_id, $district_id, $village_id) {
+            if ($name != null) {
+                $query->where('name', $name);
             }
-        } else {
-            $candidates = CandidateEmployee::all()->paginate(
-                $perpage = $request->page_size,
-                $columns =  ['*'],
-                $pageName = 'page',
-                $pageBody = $request->page
-            );
+
+            if ($start_date != null) {
+                $query->where('start_date', $start_date);
+            }
+
+            if ($end_date != null) {
+                $query->where('end_date', $end_date);
+            }
+            if (($country_id != null) || ($province_id != null) || ($city_id != null) || ($district_id != null) || ($village_id != null)) {
+                $query->whereHas('address', function ($secondQuery) use ($country_id, $province_id, $city_id, $district_id, $village_id) {
+                    if ($country_id != null) {
+                        $secondQuery->where('country_id', $country_id);
+                    }
+                    if ($province_id != null) {
+                        $secondQuery->where('province_id', $province_id);
+                    }
+                    if ($city_id != null) {
+                        $secondQuery->where('city_id', $city_id);
+                    }
+                    if ($district_id != null) {
+                        $secondQuery->where('district_id', $district_id);
+                    }
+                    if ($village_id != null) {
+                        $secondQuery->where('village_id', $village_id);
+                    }
+                });
+            }
+            if ($status != null) {
+                if ($status == CandidateEmployee::ReadyToInterview) {
+                    $query->where('status', 3);
+                } else {
+                    $query->where('status', $status);
+                }
+            }
+        })->paginate(
+            $perpage = $request->page_size,
+            $columns =  ['*'],
+            $pageName = 'page',
+            $pageBody = $request->page
+        );
+        $data = [];
+        foreach ($candidates as $candidate) {
+            if ($status == CandidateEmployee::ReadyToInterview) {
+                $candidateController = new CvProfileDetailController;
+
+                $status = $candidateController->getStatus($candidate->user_id);
+                $status = $status->original;
+                $status = $status['data']['completeness_status'];
+                if (
+                    $status['is_profile_completed'] == true &&
+                    $status['is_job_completed'] == true &&
+                    $status['is_document_completed']  == true &&
+                    $status['is_cv_completed'] == true
+                ) {
+                    $data[] = $candidate->listDefaultCandidate();
+                }
+            } else {
+                $data[] = $candidate->listDefaultCandidate();
+            }
         }
-        return $this->showPaginate('candidates', collect($candidates->values()), collect($candidates));
+        return $this->showPaginate('candidates', collect($data), collect($candidates));
     }
 
     public function indexDetail(Request $request, $id)

@@ -60,17 +60,6 @@ class CompanyCrudController extends CrudController
         CRUD::setValidation(CompanyRequest::class);
 
         CRUD::field('id');
-        // CRUD::addField(
-        //     [
-        //         'label' => 'id',
-        //         'name' => 'id',
-        //         'type' => 'text',
-        //         'attributes' => [
-        //             'readonly'    => 'readonly',
-        //             'disabled'    => 'disabled',
-        //         ]
-        //     ]
-        // );
         CRUD::field('name');
 
         /**
