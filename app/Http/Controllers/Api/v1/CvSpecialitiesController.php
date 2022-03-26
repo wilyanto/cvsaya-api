@@ -69,9 +69,9 @@ class CvSpecialitiesController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'list_certificate' => 'required',
+            'certificates' => 'required',
         ]);
-        $certificates = $request->list_certificate;
+        $certificates = $request->certificates;
         // dd($request->input());
 
         $validateSpeciality = CvSpeciality::where('id', $request->id)->where('user_id', $user->id_kustomer)->firstOrFail();
