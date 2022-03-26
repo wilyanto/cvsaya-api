@@ -27,9 +27,9 @@ class CandidateEmployeeController extends Controller
     public function index(Request $request)
     {
 
-        Collection::macro('test',function(){
-            return 'test';
-        });
+        // Collection::macro('test',function(){
+        //     return 'test';
+        // });
 
         $user = auth()->user();
 
@@ -105,7 +105,6 @@ class CandidateEmployeeController extends Controller
                 $pageName = 'page',
                 $pageBody = $request->page
             );
-            $candidates  = collect($candidates)->test();
             if ($status == CandidateEmployee::ReadyToInterview) {
                 $data = [];
                 foreach ($candidates as $candidate) {
@@ -127,7 +126,7 @@ class CandidateEmployeeController extends Controller
                 return $this->showPaginate('candidates', collect($data), collect($candidates));
             }
         } else {
-            $candidates = CandidateEmployee::all()->listDefaultCandidate()->paginate(
+            $candidates = CandidateEmployee::all()->paginate(
                 $perpage = $request->page_size,
                 $columns =  ['*'],
                 $pageName = 'page',
