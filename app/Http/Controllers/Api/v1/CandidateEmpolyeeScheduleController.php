@@ -33,7 +33,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         if($request->start_at){
             return $this->indexByDate($request);
         }
-        $candidate = CandidateEmployeeSchedule::where('result_id', null)->distinct('employee_candidate_id')->get();
+        $candidate = CandidateEmployeeSchedule::where('result_id', null)->whereNotNull('interview_at')->distinct('employee_candidate_id')->get();
 
         return $this->showALl($candidate);
     }
