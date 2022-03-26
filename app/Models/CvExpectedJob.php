@@ -22,7 +22,7 @@ class CvExpectedJob extends Model
         'expected_position',
         'expected_salary',
         'position_reason',
-        'salary_position',
+        'position_salary',
     ];
 
     protected $casts = [
@@ -44,8 +44,8 @@ class CvExpectedJob extends Model
             'user_id' => $this->user_id,
             'expected_salary' => $this->expected_salary,
             'expected_position' => $this->position,
-            'position_reason' => $this->position_reason,
-            'salary_position' => $this->salary_position,
+            'position_reason' => $this->position_salary,
+            'position_salary' => $this->salary_position,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

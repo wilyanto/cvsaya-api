@@ -45,7 +45,7 @@ return new class extends Migration
 
         Schema::table('cv_expected_positions', function (Blueprint $table) {
             $table->renameColumn('reason_position','position_reason');
-            $table->renameColumn('reason_salary','salary_position');
+            $table->renameColumn('reason_salary','position_salary');
             $table->renameColumn('expected_amount','expected_salary');
         });
 
@@ -55,7 +55,7 @@ return new class extends Migration
 
         Schema::table('cv_log_expected_positions', function (Blueprint $table) {
             $table->renameColumn('reason_position','position_reason');
-            $table->renameColumn('reason_salary','salary_position');
+            $table->renameColumn('reason_salary','position_salary');
             $table->renameColumn('expected_amount','expected_salary');
         });
 
@@ -96,7 +96,7 @@ return new class extends Migration
 
         Schema::table('cv_expected_positions', function (Blueprint $table) {
             $table->renameColumn('position_reason','reason_position');
-            $table->renameColumn('salary_position','reason_salary');
+            $table->renameColumn('position_salary','reason_salary');
             $table->renameColumn('expected_salary','expected_amount');
         });
 
@@ -106,7 +106,7 @@ return new class extends Migration
 
         Schema::table('cv_log_expected_positions', function (Blueprint $table) {
             $table->renameColumn('position_reason','reason_position');
-            $table->renameColumn('salary_position','reason_salary');
+            $table->renameColumn('position_salary','reason_salary');
             $table->renameColumn('expected_salary','expected_amount');
         });
 
