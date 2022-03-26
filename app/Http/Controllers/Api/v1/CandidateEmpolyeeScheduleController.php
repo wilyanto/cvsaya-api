@@ -164,10 +164,9 @@ class CandidateEmpolyeeScheduleController extends Controller
     public function updateSchedule(Request $request, $id)
     {
         //check role
-
         $request->validate([
             // 'employee_candidate_id' => 'required|exists:candidate_employee_schedules,employee_candidate_id',
-            'interview_at' => 'required|date_format:Y-m-d\TH:i:s.u\Z',
+            'interview_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
         ]);
         $schedule = CandidateEmployeeSchedule::where('id', $id)->firstOrFail();
 

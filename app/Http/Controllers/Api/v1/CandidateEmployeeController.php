@@ -248,7 +248,7 @@ class CandidateEmployeeController extends Controller
 
         if ($request->status == CandidateEmployee::INTERVIEW) {
             $request->validate([
-                'interview_at' => 'date|nullable',
+                'interview_at' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
                 'interview_by' => 'integer|exists:employee_details,id',
             ]);
 

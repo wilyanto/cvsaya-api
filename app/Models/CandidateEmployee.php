@@ -117,7 +117,7 @@ class CandidateEmployee extends Model
             'religion' => $this->profile->religion,
             'educations' => $this->educations->first(),
             'gender' => $this->profile->gender,
-            'address' => $this->address->province(),
+            'address' => $this->address != null ? $this->address->province() : null,
         ];
     }
 
