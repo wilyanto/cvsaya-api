@@ -12,6 +12,8 @@ use App\Models\CandidateLogEmployee;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CandidatePosition;
 use App\Models\CandidateEmployeeSchedule;
+use Illuminate\Support\Collection;
+
 
 class CandidateEmployeeController extends Controller
 {
@@ -24,6 +26,11 @@ class CandidateEmployeeController extends Controller
 
     public function index(Request $request)
     {
+
+        Collection::macro('test',function(){
+            return 'test';
+        });
+
         $user = auth()->user();
 
         // $posistion = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
@@ -98,6 +105,7 @@ class CandidateEmployeeController extends Controller
                 $pageName = 'page',
                 $pageBody = $request->page
             );
+            $candidates  = collect($candidates)->test();
             if ($status == CandidateEmployee::ReadyToInterview) {
                 $data = [];
                 foreach ($candidates as $candidate) {
@@ -119,12 +127,12 @@ class CandidateEmployeeController extends Controller
                 return $this->showPaginate('candidates', collect($data), collect($candidates));
             }
         } else {
-            $candidates = CandidateEmployee::all()->paginate(
+            $candidates = CandidateEmployee::all()->listDefaultCandidate()->paginate(
                 $perpage = $request->page_size,
                 $columns =  ['*'],
                 $pageName = 'page',
                 $pageBody = $request->page
-            );;
+            );
         }
         return $this->showPaginate('candidates', collect($candidates->values()), collect($candidates));
     }
