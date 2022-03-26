@@ -30,7 +30,7 @@ class CandidateEmpolyeeScheduleController extends Controller
     {
         $user = auth()->user();
 
-        if($request->start_at){
+        if ($request->start_at) {
             return $this->indexByDate($request);
         }
         $candidate = CandidateEmployeeSchedule::where('result_id', null)->whereNotNull('interview_at')->distinct('employee_candidate_id')->get();
@@ -45,18 +45,19 @@ class CandidateEmpolyeeScheduleController extends Controller
         return $this->showAll($schedules);
     }
 
-    public function indexWithoutInterviewDate(Request $request){
-            $user = auth()->user();
-            $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
+    public function indexWithoutInterviewDate(Request $request)
+    {
+        $user = auth()->user();
+        $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
 
-            $schedules = CandidateEmployeeSchedule::
-                    // whereBettween('date_time',)
-                    whereNull('interview_at')
-                    ->where('interview_by', $employee->id)
-                    ->whereNull('result_id')
-                    ->distinct('employee_candidate_id')
-                    ->get();
-            return $this->showAll($schedules);
+        $schedules = CandidateEmployeeSchedule::
+            // whereBettween('date_time',)
+            whereNull('interview_at')
+            ->where('interview_by', $employee->id)
+            ->whereNull('result_id')
+            ->distinct('employee_candidate_id')
+            ->get();
+        return $this->showAll($schedules);
     }
 
 
@@ -73,7 +74,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         if (!$request->until_at) {
             $untilAt = $request->start_at . "+1day";
         } else {
-            $untilAt = $request->until_at;
+            $untilAt = $request->until_at . "+1day";
         }
         $begin = new DateTime(date('Y-m-d H:i:s', strtotime($request->start_at)));
         $until = new DateTime(date('Y-m-d H:i:s', strtotime($untilAt)));
@@ -195,9 +196,9 @@ class CandidateEmpolyeeScheduleController extends Controller
         if ($request->note) {
             $schedule->note = $request->note;
         }
-        if(count($request->character_traits)){
-            foreach($request->character_traits as $characterTrait){
-                $characterTrait = CharacterTrait::where('id',$characterTrait)->firstOrFail();
+        if (count($request->character_traits)) {
+            foreach ($request->character_traits as $characterTrait) {
+                $characterTrait = CharacterTrait::where('id', $characterTrait)->firstOrFail();
                 CandidateEmployeeScheduleCharacterTrait::create([
                     'candidate_employee_schedule_id' => $schedule->id,
                     'character_trait_id' => $characterTrait->id,
