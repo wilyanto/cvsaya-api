@@ -23,7 +23,7 @@ return new class extends Migration
         Schema::rename('cv_log_expected_positions', 'cv_log_expected_jobs');
 
         Schema::table('cv_log_expected_jobs', function (Blueprint $table) {
-            $table->foreign('expected_jobs_id')->references('id')->on('cv_log_expected_jobs');
+            $table->foreign('expected_jobs_id')->references('id')->on('cv_expected_jobs');
         });
     }
 
