@@ -20,6 +20,10 @@ return new class extends Migration
             $table->renameColumn('date_time', 'interview_at');
         });
 
+        Schema::table('candidate_log_employee_schedules', function (Blueprint $table) {
+            $table->renameColumn('date_time', 'interview_at');
+        });
+
         Schema::table('candidate_employees', function (Blueprint $table) {
             $table->integer('country_code')->default(62);
             $table->timestamp('register_at')->nullable();
@@ -68,6 +72,10 @@ return new class extends Migration
     public function down()
     {
         Schema::table('candidate_employee_schedules', function (Blueprint $table) {
+            $table->renameColumn('interview_at', 'date_time');
+        });
+
+        Schema::table('candidate_log_employee_schedules', function (Blueprint $table) {
             $table->renameColumn('interview_at', 'date_time');
         });
 
