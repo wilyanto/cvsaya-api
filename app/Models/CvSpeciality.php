@@ -25,7 +25,7 @@ class CvSpeciality extends Model
     ];
 
     public function certifcates(){
-        return $this->hasMany(CvSpecialityCertificate::class,'speciality_id','id');
+        return $this->hasManyThrough(CvCertification::class,CvSpecialityCertificate::class,'certificate_id','id','id','speciality_id');
     }
 
 
