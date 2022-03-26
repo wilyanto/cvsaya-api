@@ -50,22 +50,22 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        // Route::group(['middleware' => ['role:hrd|Interviewer']], function () {
+        // Route::group(['middleware' => ['permission:manage-cadidate|manage-schedule']], function () {
             Route::prefix('users')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
-                    Route::get('/{id}/profiles',  'getDetailByID');
+                    Route::get('/{id}/profile',  'getDetailByID');
                 });
 
                 Route::controller(CvExpectedJobsController::class)->group(function () {
-                    Route::get('/{id}/expected-jobs', 'getIndexByID'); // path user/id/expected-jobs
+                    Route::get('/{id}/expected-job', 'getIndexByID'); // path user/id/expected-jobs
                 });
 
                 Route::controller(CvDocumentationController::class)->group(function () {
-                    Route::get('/{id}/documents', 'index'); // path user/id/document
+                    Route::get('/{id}/document', 'index'); // path user/id/document
                 });
 
                 Route::controller(CvProfileDetailController::class)->group(function () {
-                    Route::get('/{id}/curriculum-vitaes', 'cvDetailByID'); // path user/id/cv
+                    Route::get('/{id}/curriculum-vitae', 'cvDetailByID'); // path user/id/cv
                 });
             });
 
@@ -94,7 +94,7 @@ Route::prefix('v1')->group(function () {
             // });
         // });
 
-        Route::prefix('profiles')->group(function () {
+        Route::prefix('profile')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
                 Route::get('/',  'getDetailByDefault');
                 Route::post('/', 'store');
@@ -108,14 +108,14 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('expected-jobs')->group(function () {
+        Route::prefix('expected-job')->group(function () {
             Route::controller(CvExpectedJobsController::class)->group(function () {
                 Route::get('/', 'getIndexByDefault');
                 Route::post('/', 'storeOrUpdate');
             });
         });
 
-        Route::prefix('documents')->group(function () {
+        Route::prefix('document')->group(function () {
             Route::controller(CvDocumentationController::class)->group(function () {
                 Route::get('/', 'getByDefault');
                 Route::post('/upload', 'uploadStorage');
@@ -123,7 +123,7 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('curriculum-vitaes')->group(function () {
+        Route::prefix('curriculum-vitae')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {
                 Route::get('/', 'cvDetailByDefault');
             });

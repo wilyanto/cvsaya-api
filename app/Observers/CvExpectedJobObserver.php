@@ -10,7 +10,7 @@ class CvExpectedJobObserver
     public function created(CvExpectedJob $cvExpectedSalaries)
     {
         $newLog = new CvLogExpectedJob();
-        $newLog->expected_salary_id = $cvExpectedSalaries->id;
+        $newLog->expected_jobs_id = $cvExpectedSalaries->id;
         $newLog->expected_salary = $cvExpectedSalaries->expected_salary;
         $newLog->expected_position = $cvExpectedSalaries->expected_position;
         $newLog->position_reason = $cvExpectedSalaries->position_reason;
@@ -22,7 +22,7 @@ class CvExpectedJobObserver
     public function updated(CvExpectedJob $cvExpectedSalaries)
     {
         $newLog = new CvLogExpectedJob();
-        $newLog->expected_salary_id = $cvExpectedSalaries->id;
+        $newLog->expected_jobs_id = $cvExpectedSalaries->id;
         $newLog->expected_salary = $cvExpectedSalaries->expected_salary;
         $newLog->expected_position = $cvExpectedSalaries->expected_position;
         $newLog->position_reason = $cvExpectedSalaries->position_reason;

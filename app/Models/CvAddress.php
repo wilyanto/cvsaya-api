@@ -10,7 +10,7 @@ class CvAddress extends Model
 {
     use HasFactory;
 
-    protected $table = 'cv_addresses';
+    protected $table = 'cv_domiciles';
 
     protected $guard = 'id';
 
@@ -104,7 +104,7 @@ class CvAddress extends Model
             'city' => $this->city(),
             'sub_district' => $this->subDistrict(),
             'village' => $this->village(),
-            'detail' => $this->detail,
+            'address' => $this->address,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
