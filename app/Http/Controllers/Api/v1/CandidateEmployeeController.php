@@ -126,7 +126,7 @@ class CandidateEmployeeController extends Controller
                 $pageBody = $request->page
             );;
         }
-        return $this->showPaginate('Candidate', collect($candidates->values()), collect($candidates));
+        return $this->showPaginate('candidates', collect($candidates->values()), collect($candidates));
     }
 
     public function indexDetail(Request $request, $id)
