@@ -95,11 +95,11 @@ class CandidateEmpolyeeScheduleController extends Controller
             foreach ($schedules as $schedule) {
                 $scheduleArray[] = [
                     'interview_at' => $schedule->interview_at,
-                    'candidate' => $schedule->toArrayCandidate(),
+                    'candidate' => $schedule->toArraySchedule(),
                 ];
             }
             $data[] = [
-                'date' => $period,
+                'period' => $period,
                 'schedules' => $scheduleArray,
             ];
         }
