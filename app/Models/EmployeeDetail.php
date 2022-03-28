@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Position;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Backpack\CRUD\app\Models\Traits\CrudTrait; // <------------------------------- this one
-use Spatie\Permission\Traits\HasRoles; // <---------------------- and this one
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 

@@ -162,6 +162,14 @@ class CandidateEmpolyeeScheduleController extends Controller
         return false;
     }
 
+    public function showNote($id){
+        $candidate = CandidateEmployee::where('user_id',$id)->firstOrFail();
+
+        $schedules = CandidateEmployeeSchedule::where('employee_candidate_id',$candidate->id)->get();
+
+        return $this->showAll($schedules);
+    }
+
     public function updateSchedule(Request $request, $id)
     {
         //check role

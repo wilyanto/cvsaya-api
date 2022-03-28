@@ -50,9 +50,9 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::group(['middleware' => ['permission:manage-candidate|manage-schedule']], function () {
+        Route::group(['middleware' => ['permission:manage-candidat|manage-schedul']], function () {
             Route::prefix('users')->group(function () {
-                Route::controller(CvProfileDetailController::class)->group(function () {
+                Route::controller(CvProfileDetailController::class)->group(function                                                                     () {
                     Route::get('/{id}/profile',  'getDetailByID');
                 });
 
@@ -66,6 +66,10 @@ Route::prefix('v1')->group(function () {
 
                 Route::controller(CvProfileDetailController::class)->group(function () {
                     Route::get('/{id}/curriculum-vitae', 'cvDetailByID'); // path user/id/cv
+                });
+
+                Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
+                    Route::get('/{id}/interview-notes', 'showNote'); // path user/id/cv
                 });
             });
 
