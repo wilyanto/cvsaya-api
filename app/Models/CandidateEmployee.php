@@ -122,7 +122,7 @@ class CandidateEmployee extends Model
     }
 
     public function toArrayByNote(){
-        $schedule = collect($this->schedules)->select('interviewer','note','character_traits','created_at','update_at','result');
+        $schedule = collect($this->schedules)->forget('id','user_id','candidate');
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
