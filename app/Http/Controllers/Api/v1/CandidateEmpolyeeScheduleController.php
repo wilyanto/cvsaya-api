@@ -165,9 +165,7 @@ class CandidateEmpolyeeScheduleController extends Controller
     public function showNote($id){
         $candidate = CandidateEmployee::where('user_id',$id)->firstOrFail();
 
-        $schedules = CandidateEmployeeSchedule::where('employee_candidate_id',$candidate->id)->get();
-
-        return $this->showAll($schedules);
+        return $this->showOne($candidate->toArrayByNote());
     }
 
     public function updateSchedule(Request $request, $id)

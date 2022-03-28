@@ -121,6 +121,16 @@ class CandidateEmployee extends Model
         ];
     }
 
+    public function toArrayByNote(){
+        $schedule = collect($this->schedules)->select('interviewer','note','character_traits','created_at','update_at','result');
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'name' => $this->name,
+            'schedules' => $schedule,
+        ];
+    }
+
     public function toArray()
     {
         $value = $this->label();

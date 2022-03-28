@@ -97,7 +97,18 @@ class CandidateEmployeeSchedule extends Model
             'character_traits' => $this->characterTraits,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'result_id' => $this->result,
+            'result' => $this->result,
+        ];
+    }
+
+    public function interviewResult(){
+        return [
+            'interviewer' => $this->interviewer(),
+            'note' => $this->note,
+            'character_traits' => $this->characterTraits,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'result' => $this->result,
         ];
     }
 }
