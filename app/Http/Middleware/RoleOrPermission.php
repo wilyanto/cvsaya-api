@@ -28,7 +28,7 @@ class RoleOrPermission
             ? $roleOrPermission
             : explode('|', $roleOrPermission);
 
-        $employee = EmployeeDetail::where('user_id', $authGuard->user()->id_kustomer)->first();
+        $employee = EmployeeDetail::where('user_id', $authGuard->user()->id_kustomer)->firstOrFail();
         if (!$employee->hasAnyRole($rolesOrPermissions) && !$employee->hasAnyPermission($rolesOrPermissions)) {
             throw UnauthorizedException::forRolesOrPermissions($rolesOrPermissions);
         }

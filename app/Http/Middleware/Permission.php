@@ -28,7 +28,7 @@ class Permission
             ? $permission
             : explode('|', $permission);
 
-        $employee = EmployeeDetail::where('user_id',$authGuard->user()->id_kustomer)->first();
+        $employee = EmployeeDetail::where('user_id',$authGuard->user()->id_kustomer)->firstOrFail();
         $permissionsUser = collect($employee->getAllPermissions()->pluck('name'))->toArray();
         $intersectPermission = array_intersect($permissionsUser,$permissions);
         if(count($intersectPermission)){

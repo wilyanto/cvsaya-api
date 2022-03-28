@@ -29,7 +29,7 @@ class Role
             ? $role
             : explode('|', $role);
 
-        $employee = EmployeeDetail::where('user_id',$authGuard->user()->id_kustomer)->first();
+        $employee = EmployeeDetail::where('user_id',$authGuard->user()->id_kustomer)->firstOrFail();
         if (! $employee->hasAnyRole($roles)) {
             throw UnauthorizedException::forRoles($roles);
         }
