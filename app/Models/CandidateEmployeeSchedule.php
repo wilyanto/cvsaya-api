@@ -70,25 +70,29 @@ class CandidateEmployeeSchedule extends Model
             'id' => $this->id,
             'user_id' => $this->candidate->user_id,
             'candidate' => $this->toArrayCandidate(),
-            'interviewer' => $this->interviewBy->interviewerDetail(),
+            'interviewer' => $this->interviewer(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
     }
 
-    public function toArray()
-    {
-        $interview = [
+    public function interviewer(){
+        return [
             'id' => $this->interviewBy->id,
             'first_name' => $this->interviewBy->profileDetail->first_name,
             'last_name' => $this->interviewBy->profileDetail->last_name,
         ];
 
+    }
+
+    public function toArray()
+    {
+
         return [
             'id' => $this->id,
             'user_id' => $this->candidate->user_id,
             'candidate' => $this->toArrayCandidate(),
-            'interviewer' => $interview,
+            'interviewer' => $this->interviewer(),
             'note' => $this->note,
             'character_traits' => $this->characterTraits,
             'created_at' => $this->created_at,
