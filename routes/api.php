@@ -50,7 +50,7 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::group(['middleware' => ['permission:manage-candidat|manage-schedul']], function () {
+        Route::group(['middleware' => ['permission:manage-candidate|manage-schedule']], function () {
             Route::prefix('users')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function                                                                     () {
                     Route::get('/{id}/profile',  'getDetailByID');
