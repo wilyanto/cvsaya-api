@@ -50,7 +50,7 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        // Route::group(['middleware' => ['permission:manage-cadidate|manage-schedule']], function () {
+        Route::group(['middleware' => ['permission:manage-candidate|manage-schedule']], function () {
             Route::prefix('users')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
                     Route::get('/{id}/profile',  'getDetailByID');
@@ -78,8 +78,7 @@ Route::prefix('v1')->group(function () {
                     Route::put('/{id}', 'updateSchedule');
                 });
             });
-
-            // Route::group(['middleware' => ['permission:Schedule|Candidate']], function () {
+            Route::group(['middleware' => ['permission:manage-candidate']], function () {
                 Route::prefix('candidates')->group(function () {
                     Route::controller(CandidateEmployeeController::class)->group(function () {
                         Route::get('/', 'index');
@@ -91,8 +90,8 @@ Route::prefix('v1')->group(function () {
 
                     });
                 });
-            // });
-        // });
+            });
+        });
 
         Route::prefix('profile')->group(function () {
             Route::controller(CvProfileDetailController::class)->group(function () {

@@ -61,7 +61,7 @@ class Position extends Model
 
     public function ExpectedPositions()
     {
-        return $this->hasMany(CvExpectedSalary::class, 'expected_position', 'id');
+        return $this->hasMany(CvExpectedJob::class, 'expected_position', 'id');
     }
 
     public function company()

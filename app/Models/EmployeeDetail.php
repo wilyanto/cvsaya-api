@@ -14,7 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class EmployeeDetail extends Authenticatable
 {
     use HasFactory, SoftDeletes;
-    use CrudTrait; // <----- this
+    use CrudTrait;
     use HasRoles;
 
     protected $table = 'employee_details';
@@ -22,6 +22,8 @@ class EmployeeDetail extends Authenticatable
     protected $guard = 'id';
 
     protected $primaryKey = 'id';
+
+    public $connection = 'mysql';
 
     public $fillable = [
         'position_id',
