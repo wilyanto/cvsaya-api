@@ -2,12 +2,12 @@
 
 namespace App\Observers;
 
-use App\Models\CvAddress;
+use App\Models\CvDomicile;
 use App\Models\CvLogAddress;
 
-class CvAddressObserver
+class CvDomicileObserver
 {
-    public function created(CvAddress $cvAddress)
+    public function created(CvDomicile $cvAddress)
     {
         $newLog = new CvLogAddress();
         $newLog->cv_address_id = $cvAddress->id;
@@ -21,7 +21,7 @@ class CvAddressObserver
         $newLog->save();
     }
 
-    public function updated(CvAddress $cvAddress)
+    public function updated(CvDomicile $cvAddress)
     {
         $newLog = new CvLogAddress();
         $newLog->cv_address_id = $cvAddress->id;

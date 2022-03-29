@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Models\CvProfileDetail;
-use App\Models\CvAddress;
+use App\Models\CvDomicile;
 use App\Models\CvSosmed;
 use App\Http\Controllers\Controller;
 use App\Models\CandidateEmployee;
@@ -46,11 +46,11 @@ class CvProfileDetailController extends Controller
         }
         $array = [];
         $userProfileDetail = CvProfileDetail::where('user_id', $id)->firstOrFail();
-        $userAddress = CvAddress::where('user_id', $id)->firstOrFail();
+        $userAddress = CvDomicile::where('user_id', $id)->firstOrFail();
         $userSosmed = CvSosmed::where('user_id', $id)->firstOrFail();
 
         $array['profile_detail'] = $userProfileDetail;
-        $array['address'] = $userAddress;
+        $array['domicile'] = $userAddress;
         $array['sosmed'] = $userSosmed;
         $collectionArray = collect($array);
         return $this->showOne($collectionArray);
@@ -283,11 +283,11 @@ class CvProfileDetailController extends Controller
             'profile_detail.religion_id' => 'exists:religions,id|required',
 
             #Address
-            'address.province_id' => 'integer|required',
-            'address.city_id' => 'integer|required',
-            'address.district_id' => 'integer|required',
-            'address.village_id' => 'integer|required',
-            'address.detail' => 'string|required',
+            'domicile.province_id' => 'integer|required',
+            'domicile.city_id' => 'integer|required',
+            'domicile.district_id' => 'integer|required',
+            'domicile.village_id' => 'integer|required',
+            'domicile.detail' => 'string|required',
 
             #Sosmed
             'sosmed.instagram' => 'string',
@@ -301,7 +301,7 @@ class CvProfileDetailController extends Controller
 
         $requestProfile = $json['profile_detail'];
 
-        $requestAddress = $json['address'];
+        $requestAddress = $json['domicile'];
         $requestAddress['user_id'] = $user->id_kustomer;
         $requestAddress['country_id'] = 62;
 
@@ -318,7 +318,7 @@ class CvProfileDetailController extends Controller
                 $userProfileDetail->update($requestProfile);
             }
 
-            $userAddress = CvAddress::where('user_id', $user->id_kustomer)->first();
+            $userAddress = CvDomicile::where('user_id', $user->id_kustomer)->first();
             if ($userAddress) {
                 $userAddress->fill($requestAddress);
                 $validation = self::validateAddress(
@@ -333,7 +333,7 @@ class CvProfileDetailController extends Controller
                     return $this->errorResponse(collect($validation['message']), $validation['status'], $validation['message']['code']);
                 }
             } else {
-                $userAddress = CvAddress::create($requestAddress);
+                $userAddress = CvDomicile::create($requestAddress);
             }
 
             $userSosmed = CvSosmed::where('user_id', $user->id_kustomer)->first();
@@ -346,7 +346,7 @@ class CvProfileDetailController extends Controller
                 $userSosmed = CvSosmed::create($requestSosmeds);
             }
             $array['profile_detail'] = $userProfileDetail;
-            $array['address'] = $userAddress;
+            $array['domicile'] = $userAddress;
             $array['sosmed'] = $userSosmed;
             $object = (object)$array;
             DB::commit();

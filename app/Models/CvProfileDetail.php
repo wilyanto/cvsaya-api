@@ -34,7 +34,7 @@ class CvProfileDetail extends Model
 
     public function Addresses()
     {
-        return $this->hasOne(CvAddress::class, 'user_id', 'user_id');
+        return $this->hasOne(CvDomicile::class, 'user_id', 'user_id');
     }
 
     public function Sosmeds()
@@ -81,5 +81,5 @@ class CvProfileDetail extends Model
         ];
     }
 
-   
+
 }

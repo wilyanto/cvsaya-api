@@ -26,8 +26,8 @@ use App\Models\CvSpecialityCertificate;
 use App\Models\CandidateEmployee;
 use App\Observers\CvSpecialityCertificateObserver;
 use App\Observers\CandidateEmployeeObserver;
-use App\Observers\CvAddressObserver;
-use App\Models\CvAddress;
+use App\Observers\CvDomicileObserver;
+use App\Models\CvDomicile;
 use App\Models\CvExpectedJob;
 use App\Observers\CvExpectedJobObserver;
 use App\Models\CandidateEmployeeSchedule;
@@ -55,7 +55,7 @@ class EventServiceProvider extends ServiceProvider
     {
         CvProfileDetail::observe(CvProfileDetailObserver::class);
         CvSosmed::observe(CvSosmedObserver::class);
-        CvAddress::observe(CvAddressObserver::class);
+        CvDomicile::observe(CvDomicileObserver::class);
         CvDocumentation::observe(CvDocumentationObserver::class);
         CvExpectedJob::observe(CvExpectedJobObserver::class);
         CvExperience::observe(CvExperienceObserver::class);

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\CvAddress;
+use App\Models\CvDomicile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -56,7 +56,7 @@ class CandidateEmployee extends Model
     public function address()
     {
         // dd($)
-        return $this->hasOne(CvAddress::class, 'user_id', 'user_id');
+        return $this->hasOne(CvDomicile::class, 'user_id', 'user_id');
     }
 
     public function suggestBy()
