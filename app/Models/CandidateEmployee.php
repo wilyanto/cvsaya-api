@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Http\Controllers\Api\v1\CvProfileDetailController;
 
 class CandidateEmployee extends Model
 {
@@ -103,6 +104,22 @@ class CandidateEmployee extends Model
 
     public function listDefaultCandidate()
     {
+        $status = $this->status;
+        if($this->status == 3){
+            $candidateController = new CvProfileDetailController;
+
+            $status = $candidateController->getStatus($this->user_id);
+            $status = $status->original;
+            $status = $status['data']['completeness_status'];
+            if (
+                $status['is_profile_completed'] == true &&
+                $status['is_job_completed'] == true &&
+                $status['is_document_completed']  == true &&
+                $status['is_cv_completed'] == true
+            ){
+                $status = 4;
+            }
+        }
         $value = $this->label();
         return [
             'id' => $this->id,
@@ -111,7 +128,7 @@ class CandidateEmployee extends Model
             'phone_number' => $this->phone_number,
             'country_code' => $this->country_code,
             'register_at' => $this->register_at,
-            'status' => $this->status,
+            'status' => $status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'label' => $this->label(),
