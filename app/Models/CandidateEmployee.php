@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\CvAddress;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class CandidateEmployee extends Model
@@ -121,8 +122,23 @@ class CandidateEmployee extends Model
         ];
     }
 
+
     public function toArrayByNote(){
-        $schedules = collect($this->schedules);
+
+        Collection::macro('schedule',function(){
+            return $this->map(function ($value){
+                return [
+                    'interviewer' => $value->interviewer(),
+                    'note' => $value->note,
+                    'character_traits' => $value->characterTraits,
+                    'created_at' => $value->created_at,
+                    'updated_at' => $value->updated_at,
+                    'result' => $value->result,
+                ];
+            });
+        });
+
+        $schedules = collect($this->schedules)->schedule();
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
