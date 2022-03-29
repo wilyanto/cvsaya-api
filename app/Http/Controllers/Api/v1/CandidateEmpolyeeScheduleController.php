@@ -168,6 +168,12 @@ class CandidateEmpolyeeScheduleController extends Controller
         return $this->showOne($candidate->toArrayByNote());
     }
 
+    public function indexCharacterTraits(){
+        $traits = CharacterTrait::all();
+
+        return $this->showAll($traits);
+    }
+
     public function updateSchedule(Request $request, $id)
     {
         //check role
