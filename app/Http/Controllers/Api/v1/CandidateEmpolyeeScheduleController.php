@@ -195,11 +195,10 @@ class CandidateEmpolyeeScheduleController extends Controller
     {
         $request->validate([
             'employee_candidate_id' => 'required|exists:candidate_employee_schedules,employee_candidate_id',
-            'note' => 'longtext|nullable',
+            'note' => 'string|min:50|nullable',
             'result_id' => 'exists:interview_results,id|required',
-            'character_traits' => 'array|nullable'
+            'character_traits' => 'array|nullable',
         ]);
-
         $schedule = CandidateEmployeeSchedule::where('id', $id)->firstOrFail();
         if ($schedule->candidate->status < CandidateEmployee::INTERVIEW) {
             return $this->errorResponse('candidate cannot change to new result', 422, 42201);
