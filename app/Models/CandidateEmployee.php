@@ -109,8 +109,8 @@ class CandidateEmployee extends Model
             $candidateController = new CvProfileDetailController;
 
             $profileStatus = $candidateController->getStatus($this->user_id);
-            $profileStatus = $status->original;
-            $profileStatus = $status['data']['completeness_status'];
+            $profileStatus = $profileStatus->original;
+            $profileStatus = $profileStatus['data']['completeness_status'];
             if (
                 $profileStatus['is_profile_completed'] == true &&
                 $profileStatus['is_job_completed'] == true &&
