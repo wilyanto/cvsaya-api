@@ -27,6 +27,7 @@ class CvDomicile extends Model
         'city_id',
         'district_id',
         'village_id',
+        'address',
         'result',
         'note',
     ];

@@ -10,7 +10,7 @@ class CvDomicileObserver
     public function created(CvDomicile $cvAddress)
     {
         $newLog = new CvLogAddress();
-        $newLog->cv_address_id = $cvAddress->id;
+        $newLog->cv_domicile_id = $cvAddress->id;
         $newLog->country_id = $cvAddress->country_id;
         $newLog->province_id = $cvAddress->province_id;
         $newLog->city_id = $cvAddress->city_id;
@@ -24,7 +24,7 @@ class CvDomicileObserver
     public function updated(CvDomicile $cvAddress)
     {
         $newLog = new CvLogAddress();
-        $newLog->cv_address_id = $cvAddress->id;
+        $newLog->cv_domicile_id = $cvAddress->id;
         $newLog->country_id = $cvAddress->country_id;
         $newLog->province_id = $cvAddress->province_id;
         $newLog->city_id = $cvAddress->city_id;

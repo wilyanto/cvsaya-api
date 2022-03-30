@@ -15,6 +15,7 @@ use App\Models\CandidateEmployeeScheduleCharacterTrait;
 use App\Models\CharacterTrait;
 use App\Models\Position;
 use Spatie\Permission\Models\Role;
+use App\Models\InterviewResult;
 use DateTime;
 use DateInterval;
 use DatePeriod;
@@ -61,6 +62,11 @@ class CandidateEmpolyeeScheduleController extends Controller
         return $this->showAll($schedules);
     }
 
+    public function assessmentInterview(Request $request){
+        $results = InterviewResult::all();
+
+        return $this->showAll($results);
+    }
 
     public function indexByDate(Request $request)
     {
@@ -109,8 +115,6 @@ class CandidateEmpolyeeScheduleController extends Controller
     }
 
     public function indexInterviewer(){
-        // dump(
-        //     Role::findByParam(['name' => 'interviewer', 'guard_name' => 'backpack']));
 
         $employee = EmployeeDetail::with('roles')->get();
 

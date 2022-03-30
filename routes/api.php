@@ -78,6 +78,10 @@ Route::prefix('v1')->group(function () {
                 Route::get('/character-traits', 'indexCharacterTraits');
             });
 
+            Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
+                Route::get('/results', 'assessmentInterview');
+            });
+
             Route::prefix('interviews')->group(function () {
                 Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
                     Route::get('/', 'index');

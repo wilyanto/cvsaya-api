@@ -321,6 +321,7 @@ class CvProfileDetailController extends Controller
             $userAddress = CvDomicile::where('user_id', $user->id_kustomer)->first();
             if ($userAddress) {
                 $userAddress->fill($requestAddress);
+
                 $validation = self::validateAddress(
                     $requestAddress['country_id'],
                     $requestAddress['province_id'],
@@ -332,6 +333,7 @@ class CvProfileDetailController extends Controller
                 if ($validation['status'] != 200) {
                     return $this->errorResponse(collect($validation['message']), $validation['status'], $validation['message']['code']);
                 }
+                $userAddress->save();
             } else {
                 $userAddress = CvDomicile::create($requestAddress);
             }

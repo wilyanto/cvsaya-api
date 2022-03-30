@@ -224,7 +224,6 @@ class CandidateEmployeeController extends Controller
         return $data;
     }
 
-
     public function updateStatus(Request $request, $id)
     {
         $user = auth()->user();
