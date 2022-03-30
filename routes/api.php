@@ -77,7 +77,7 @@ Route::prefix('v1')->group(function () {
             Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
                 Route::get('/character-traits', 'indexCharacterTraits');
             });
-            
+
             Route::prefix('interviews')->group(function () {
                 Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
                     Route::get('/', 'index');
@@ -87,6 +87,11 @@ Route::prefix('v1')->group(function () {
                     Route::put('/{id}', 'updateSchedule');
                 });
             });
+
+            Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
+                Route::get('/interviewers', 'indexInterviewer');
+            });
+
             Route::group(['middleware' => ['permission:manage-candidate']], function () {
                 Route::prefix('candidates')->group(function () {
                     Route::controller(CandidateEmployeeController::class)->group(function () {

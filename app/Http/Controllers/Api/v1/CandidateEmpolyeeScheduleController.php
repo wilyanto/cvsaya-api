@@ -14,6 +14,7 @@ use App\Models\EmployeeDetail;
 use App\Models\CandidateEmployeeScheduleCharacterTrait;
 use App\Models\CharacterTrait;
 use App\Models\Position;
+use Spatie\Permission\Models\Role;
 use DateTime;
 use DateInterval;
 use DatePeriod;
@@ -105,6 +106,19 @@ class CandidateEmpolyeeScheduleController extends Controller
         }
 
         return $this->showAll(collect($data));
+    }
+
+    public function indexInterviewer(){
+        // dump(
+        //     Role::findByParam(['name' => 'interviewer', 'guard_name' => 'backpack']));
+
+        $employee = EmployeeDetail::with('roles')->get();
+
+        $interviewers = $employee->filter(function ($employee, $key) {
+            return $employee->hasRole('interviewer');
+        });
+
+        return $this->showAll($interviewers);
     }
 
     /**
