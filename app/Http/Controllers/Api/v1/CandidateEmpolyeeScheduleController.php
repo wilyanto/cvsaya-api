@@ -104,7 +104,7 @@ class CandidateEmpolyeeScheduleController extends Controller
             foreach ($schedules as $schedule) {
                 $scheduleArray[] = [
                     'interview_at' => $schedule->interview_at,
-                    'candidate' => $schedule->toArraySchedule(),
+                    'schedule_detail' => $schedule->toArraySchedule(),
                 ];
             }
             $data[] = [
