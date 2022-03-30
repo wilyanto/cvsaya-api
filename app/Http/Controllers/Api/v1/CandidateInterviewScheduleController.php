@@ -43,9 +43,9 @@ class CandidateEmpolyeeScheduleController extends Controller
 
     public function getDetail($id)
     {
-        $candidate = CandidateEmployee::where('user_id',$id)->firstOrFail();
+        $candidate = Candidate::where('user_id',$id)->firstOrFail();
 
-        $schedules = CandidateEmployeeSchedule::where('employee_candidate_id', $candidate->id)->get();
+        $schedules = CandidateInterviewSchedule::where('employee_candidate_id', $candidate->id)->get();
 
         return $this->showAll($schedules);
     }
