@@ -131,7 +131,7 @@ class CandidateEmployee extends Model
             'status' => $status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'label' => $this->label(),
+            'last_assessment' => $this->label(),
             'religion' => $this->profile->religion,
             'educations' => $this->educations->first(),
             'gender' => $this->profile->gender,
@@ -180,7 +180,7 @@ class CandidateEmployee extends Model
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'schedule' => $this->schedule,
-            'label' => $this->label(),
+            'last_assessment' => $this->label(),
         ];
     }
 }
