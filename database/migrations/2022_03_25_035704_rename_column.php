@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\CandidateEmployee;
+use App\Models\Candidate;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -33,7 +33,7 @@ return new class extends Migration
             $table->integer('country_code')->default(null)->change();
         });
 
-        $candidates =  CandidateEmployee::all();
+        $candidates =  Candidate::all();
         foreach ($candidates as $candidate) {
             $candidate->register_at = date('Y-m-d H:i:s', strtotime($candidate->register_date));
             $candidate->save();
@@ -83,7 +83,7 @@ return new class extends Migration
             $table->date('register_date')->nullable();
         });
 
-        $candidates =  CandidateEmployee::all();
+        $candidates =  Candidate::all();
         foreach ($candidates as $candidate) {
             $candidate->register_date = date('Y-m-d', strtotime($candidate->register_at));
             $candidate->save();

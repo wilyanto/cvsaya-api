@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\v1\CvSpecialitiesController;
 use App\Http\Controllers\Api\v1\DepartmentsController;
 use App\Http\Controllers\Api\v1\LevelController;
 use App\Http\Controllers\Api\v1\PositionsController;
-use App\Http\Controllers\Api\v1\CandidateEmployeeController;
+use App\Http\Controllers\Api\v1\CandidateController;
 use App\Http\Controllers\Api\v1\EmployeeDetailsController;
 use App\Http\Controllers\Api\v1\CandidateEmpolyeeScheduleController;
 use App\Http\Controllers\Api\v1\CompanyController;
@@ -98,7 +98,7 @@ Route::prefix('v1')->group(function () {
 
             Route::group(['middleware' => ['permission:manage-candidate']], function () {
                 Route::prefix('candidates')->group(function () {
-                    Route::controller(CandidateEmployeeController::class)->group(function () {
+                    Route::controller(CandidateController::class)->group(function () {
                         Route::get('/', 'index');
                         Route::get('/{id}', 'indexDetail');
                         Route::get('/positions', 'getPosition');

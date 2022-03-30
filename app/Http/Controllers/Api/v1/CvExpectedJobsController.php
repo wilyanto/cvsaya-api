@@ -8,7 +8,7 @@ use App\Models\CvExpectedJob;
 use App\Models\CandidatePosition;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
-use App\Models\CandidateEmployee;
+use App\Models\Candidate;
 use Illuminate\Support\Facades\Redis;
 
 class CvExpectedJobsController extends Controller

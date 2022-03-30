@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 
-class CandidateEmployee extends Model
+class Candidate extends Model
 {
     use HasFactory;
 
@@ -66,7 +66,7 @@ class CandidateEmployee extends Model
 
     public function schedules()
     {
-        return $this->hasMany(CandidateEmployeeSchedule::class, 'employee_candidate_id', 'id');
+        return $this->hasMany(CandidateInterviewSchedule::class, 'employee_candidate_id', 'id');
     }
 
     public function educations()
@@ -89,12 +89,12 @@ class CandidateEmployee extends Model
 
     public function results()
     {
-        return $this->hasManyThrough(InterviewResult::class, CandidateEmployeeSchedule::class,  'employee_candidate_id', 'id', 'id', 'result_id');
+        return $this->hasManyThrough(InterviewResult::class, CandidateInterviewSchedule::class,  'employee_candidate_id', 'id', 'id', 'result_id');
     }
 
     public function label()
     {
-        $result = CandidateEmployeeSchedule::where('employee_candidate_id', $this->id)->orderBy('created_at', 'DESC')->first();
+        $result = CandidateInterviewSchedule::where('employee_candidate_id', $this->id)->orderBy('created_at', 'DESC')->first();
         if ($result) {
             return $result->result;
         }

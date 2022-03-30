@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\api\v1;
 
-use App\Models\CandidateEmployee;
+use App\Models\Candidate;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,11 +11,11 @@ use App\Http\Controllers\Controller;
 use App\Models\CandidateLogEmployee;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CandidatePosition;
-use App\Models\CandidateEmployeeSchedule;
+use App\Models\CandidateInterviewSchedule;
 use Illuminate\Support\Collection;
 
 
-class CandidateEmployeeController extends Controller
+class CandidateController extends Controller
 {
     use ApiResponser;
     /**
@@ -60,7 +60,7 @@ class CandidateEmployeeController extends Controller
         $district_id = $request->district_id;
         $village_id = $request->village_id;
 
-        $candidates = CandidateEmployee::where(function ($query) use ($name, $status, $start_date, $end_date, $country_id, $province_id, $city_id, $district_id, $village_id) {
+        $candidates = Candidate::where(function ($query) use ($name, $status, $start_date, $end_date, $country_id, $province_id, $city_id, $district_id, $village_id) {
             if ($name != null) {
                 $query->where('name', $name);
             }
@@ -92,7 +92,7 @@ class CandidateEmployeeController extends Controller
                 });
             }
             if ($status != null) {
-                if ($status == CandidateEmployee::ReadyToInterview) {
+                if ($status == Candidate::ReadyToInterview) {
                     $query->where('status', 3);
                 } else {
                     $query->where('status', $status);
@@ -106,7 +106,7 @@ class CandidateEmployeeController extends Controller
         );
         $data = [];
         foreach ($candidates as $candidate) {
-            if ($status == CandidateEmployee::ReadyToInterview) {
+            if ($status == Candidate::ReadyToInterview) {
                 $candidateController = new CvProfileDetailController;
 
                 $status = $candidateController->getStatus($candidate->user_id);
@@ -129,7 +129,7 @@ class CandidateEmployeeController extends Controller
 
     public function indexDetail(Request $request, $id)
     {
-        $candidate = CandidateEmployee::where('id', $id)->firstOrFail();
+        $candidate = Candidate::where('id', $id)->firstOrFail();
         return $this->showOne($candidate);
     }
 
@@ -147,7 +147,7 @@ class CandidateEmployeeController extends Controller
             return $this->errorResponse('Tidak bisa melanjutkan karena bukan Empolyee', 409, 40901);
         }
 
-        $candidateHasSuggestOrNot = CandidateEmployee::where('phone_number', $request->phone_number)->first();
+        $candidateHasSuggestOrNot = Candidate::where('phone_number', $request->phone_number)->first();
         if ($candidateHasSuggestOrNot) {
             $candidateHasSuggestOrNot->many_request += 1;
             $candidateHasSuggestOrNot->save();
@@ -155,10 +155,10 @@ class CandidateEmployeeController extends Controller
         }
 
         $data = $request->all();
-        $data['status'] = CandidateEmployee::BLASTING;
+        $data['status'] = Candidate::BLASTING;
         $data['suggest_by'] = $posistion->id;
 
-        $candidates = CandidateEmployee::create($data);
+        $candidates = Candidate::create($data);
 
         return $this->showOne($candidates);
     }
@@ -204,21 +204,21 @@ class CandidateEmployeeController extends Controller
         })->count();
         $data['bad'] = collect($position->candidates)->filter(function ($item) {
             if ($item->label()) {
-                return $item->label()->id == CandidateEmployee::RESULT_BAD;
+                return $item->label()->id == Candidate::RESULT_BAD;
             }
         })->count();
         $data['hold'] = collect($position->candidates)->filter(function ($item) {
             if ($item->label()) {
-                return $item->label()->id == CandidateEmployee::RESULT_HOLD;
+                return $item->label()->id == Candidate::RESULT_HOLD;
             }
         })->count();
         $data['recommended'] = collect($position->candidates)->filter(function ($item) {
             if ($item->label()) {
-                return $item->label()->id == CandidateEmployee::RESULT_RECOMMENDED;
+                return $item->label()->id == Candidate::RESULT_RECOMMENDED;
             }
         })->count();
         $data['accepted'] = collect($position->candidates)->filter(function ($item) {
-            return $item->status == CandidateEmployee::ACCEPTED;
+            return $item->status == Candidate::ACCEPTED;
         })->count();
 
         return $data;
@@ -231,21 +231,21 @@ class CandidateEmployeeController extends Controller
             'status' => 'integer|required',
         ]);
 
-        $candidateEmployee = CandidateEmployee::where('id', $id)->firstOrFail();
+        $candidate = Candidate::where('id', $id)->firstOrFail();
 
-        if ($candidateEmployee->user_id == $user->id_kustomer) {
+        if ($candidate->user_id == $user->id_kustomer) {
             return $this->errorResponse('Candidate cannot update his own status', 422, 42204);
         }
 
-        if ($request->status < CandidateEmployee::INTERVIEW) {
+        if ($request->status < Candidate::INTERVIEW) {
             return $this->errorResponse('candidate cannot change with that status', 422, 42202);
         }
 
-        if (!$candidateEmployee->label() && count($candidateEmployee->schedules)) {
+        if (!$candidate->label() && count($candidate->schedules)) {
             return $this->errorResponse('Candidate has not finish old schedule yet', 422, 42203);
         }
 
-        if ($request->status == CandidateEmployee::INTERVIEW) {
+        if ($request->status == Candidate::INTERVIEW) {
             $request->validate([
                 'interview_at' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
                 'interview_by' => 'integer|exists:employee_details,id',
@@ -253,11 +253,11 @@ class CandidateEmployeeController extends Controller
 
             $candidateController = new CvProfileDetailController;
 
-            $status = $candidateController->getStatus($candidateEmployee->user_id);
+            $status = $candidateController->getStatus($candidate->user_id);
             $status = $status->original;
             $status = $status['data']['completeness_status'];
             if (
-                $candidateEmployee->status != CandidateEmployee::INTERVIEW &&
+                $candidate->status != Candidate::INTERVIEW &&
                 $status['is_profile_completed'] == false &&
                 $status['is_job_completed'] == false &&
                 $status['is_document_completed']  == false &&
@@ -269,12 +269,12 @@ class CandidateEmployeeController extends Controller
             $data = $request->all();
             $data['employee_candidate_id'] = $id;
 
-            $candidateEmpolyeeSchedule = CandidateEmployeeSchedule::create($data);
+            $candidateEmpolyeeSchedule = CandidateInterviewSchedule::create($data);
         }
 
-        $candidateEmployee->status = $request->status;
-        $candidateEmployee->save();
-        return $this->showOne($candidateEmployee);
+        $candidate->status = $request->status;
+        $candidate->save();
+        return $this->showOne($candidate);
     }
 
     /**
@@ -296,10 +296,10 @@ class CandidateEmployeeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\CandidateEmployees  $candidateEmployees
+     * @param  \App\Models\Candidate  $candidate
      * @return \Illuminate\Http\Response
      */
-    public function show(CandidateEmployee $candidateEmployees)
+    public function show(Candidate $candidate)
     {
         //
     }
@@ -307,10 +307,10 @@ class CandidateEmployeeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\CandidateEmployees  $candidateEmployees
+     * @param  \App\Models\Candidate  $candidate
      * @return \Illuminate\Http\Response
      */
-    public function edit(CandidateEmployee $candidateEmployees)
+    public function edit(Candidate $candidate)
     {
         //
     }
@@ -319,10 +319,10 @@ class CandidateEmployeeController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\CandidateEmployees  $candidateEmployees
+     * @param  \App\Models\Candidate  $Candidate
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, CandidateEmployee $candidateEmployees)
+    public function update(Request $request, Candidate $candidate)
     {
         //
     }
@@ -330,10 +330,10 @@ class CandidateEmployeeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\CandidateEmployees  $candidateEmployees
+     * @param  \App\Models\Candidate  $candidate
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CandidateEmployee $candidateEmployees)
+    public function destroy(Candidate $candidate)
     {
         //
     }

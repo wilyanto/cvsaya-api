@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Models\CvDocumentation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\CandidateEmployee;
+use App\Models\Candidate;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Storage;
 

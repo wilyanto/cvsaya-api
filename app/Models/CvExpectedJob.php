@@ -30,7 +30,7 @@ class CvExpectedJob extends Model
     ];
 
     public function candidates(){
-        return $this->hasMany(CandidateEmployees::class,'user_id','user_id');
+        return $this->hasMany(Candidate::class,'user_id','user_id');
     }
 
     public function position(){

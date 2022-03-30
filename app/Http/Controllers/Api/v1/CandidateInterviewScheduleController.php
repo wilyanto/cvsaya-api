@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Http\Controllers\api\v1\CandidateEmployeeController;
-use App\Models\CandidateEmployee;
-use App\Models\CandidateEmployeeSchedule;
+use App\Http\Controllers\api\v1\CandidateController;
+use App\Models\Candidate;
+use App\Models\CandidateInterviewSchedule;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Collection;
@@ -12,7 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CvExpectedSalary;
 use App\Models\EmployeeDetail;
-use App\Models\CandidateEmployeeScheduleCharacterTrait;
+use App\Models\CandidateInterviewSchedulesCharacterTrait;
 use App\Models\CharacterTrait;
 use App\Models\Position;
 use Spatie\Permission\Models\Role;
@@ -36,14 +36,14 @@ class CandidateEmpolyeeScheduleController extends Controller
         if ($request->start_at) {
             return $this->indexByDate($request);
         }
-        $candidate = CandidateEmployeeSchedule::where('result_id', null)->whereNotNull('interview_at')->distinct('employee_candidate_id')->get();
+        $candidate = CandidateInterviewSchedule::where('result_id', null)->whereNotNull('interview_at')->distinct('employee_candidate_id')->get();
 
         return $this->showALl($candidate);
     }
 
     public function getDetail($id)
     {
-        $schedules = CandidateEmployeeSchedule::where('employee_candidate_id', $id)->get();
+        $schedules = CandidateInterviewSchedule::where('employee_candidate_id', $id)->get();
 
         return $this->showAll($schedules);
     }
@@ -53,7 +53,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         $user = auth()->user();
         $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
 
-        $schedules = CandidateEmployeeSchedule::
+        $schedules = CandidateInterviewSchedule::
             // whereBettween('date_time',)
             whereNull('interview_at')
             ->where('interview_by', $employee->id)
@@ -94,7 +94,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         foreach ($periods as $period) {
             $scheduleArray = [];
             $date = $period->format('Y-m-d H:i:s');
-            $schedules = CandidateEmployeeSchedule::
+            $schedules = CandidateInterviewSchedule::
                 // whereBettween('date_time',)
                 whereDate('interview_at', $period->format('Y-m-d'))
                 ->where('interview_by', $employee->id)
@@ -165,7 +165,7 @@ class CandidateEmpolyeeScheduleController extends Controller
      * @param  \App\Models\CandidateEmpolyeeSchedule  $candidateEmpolyeeSchedule
      * @return \Illuminate\Http\Response
      */
-    public function show(CandidateEmployeeSchedule $candidateEmpolyeeSchedule)
+    public function show(CandidateInterviewSchedule $candidateEmpolyeeSchedule)
     {
         //
     }
@@ -176,7 +176,7 @@ class CandidateEmpolyeeScheduleController extends Controller
      * @param  \App\Models\CandidateEmpolyeeSchedule  $candidateEmpolyeeSchedule
      * @return \Illuminate\Http\Response
      */
-    public function edit(CandidateEmployeeSchedule $candidateEmpolyeeSchedule)
+    public function edit(CandidateInterviewSchedule $candidateEmpolyeeSchedule)
     {
         //
     }
@@ -190,7 +190,7 @@ class CandidateEmpolyeeScheduleController extends Controller
      */
     public function isThereAnyOtherSchedule($date, $time, $interviewer)
     {
-        $schedule = CandidateEmployeeSchedule::where('interview_by', $interviewer)
+        $schedule = CandidateInterviewSchedule::where('interview_by', $interviewer)
             ->where('interview_at', date('Y-m-d H:i:s', strtotime($date . ' ' . $time)))->first();
         if ($schedule) {
             return true;
@@ -200,7 +200,7 @@ class CandidateEmpolyeeScheduleController extends Controller
 
     public function showNote($id)
     {
-        $candidate = CandidateEmployee::where('user_id', $id)->firstOrFail();
+        $candidate = Candidate::where('user_id', $id)->firstOrFail();
 
         return $this->showOne($candidate->toArrayByNote());
     }
@@ -219,7 +219,7 @@ class CandidateEmpolyeeScheduleController extends Controller
             // 'employee_candidate_id' => 'required|exists:candidate_employee_schedules,employee_candidate_id',
             'interview_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
         ]);
-        $schedule = CandidateEmployeeSchedule::where('id', $id)->firstOrFail();
+        $schedule = CandidateInterviewSchedule::where('id', $id)->firstOrFail();
 
         // if ($this->isThereAnyOtherSchedule($request->date, $request->time, $schedule->interview_by)) {
         //     return $this->errorResponse('You have another schedule execpt this schedule', 422, 42201);
@@ -236,8 +236,8 @@ class CandidateEmpolyeeScheduleController extends Controller
             'result_id' => 'exists:interview_results,id|required',
             'character_traits' => 'array|nullable',
         ]);
-        $schedule = CandidateEmployeeSchedule::where('id', $id)->firstOrFail();
-        if ($schedule->candidate->status < CandidateEmployee::INTERVIEW) {
+        $schedule = CandidateInterviewSchedule::where('id', $id)->firstOrFail();
+        if ($schedule->candidate->status < Candidate::INTERVIEW) {
             return $this->errorResponse('candidate cannot change to new result', 422, 42201);
         }
         $schedule->result_id = $request->result_id;
@@ -247,7 +247,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         if (count($request->character_traits)) {
             foreach ($request->character_traits as $characterTrait) {
                 $characterTrait = CharacterTrait::where('id', $characterTrait)->firstOrFail();
-                CandidateEmployeeScheduleCharacterTrait::create([
+                CandidateInterviewSchedulesCharacterTrait::create([
                     'candidate_employee_schedule_id' => $schedule->id,
                     'character_trait_id' => $characterTrait->id,
                 ]);
@@ -263,7 +263,7 @@ class CandidateEmpolyeeScheduleController extends Controller
      * @param  \App\Models\CandidateEmpolyeeSchedule  $candidateEmpolyeeSchedule
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CandidateEmployeeSchedule $candidateEmpolyeeSchedule)
+    public function destroy(CandidateInterviewSchedule $candidateEmpolyeeSchedule)
     {
         //
     }

@@ -6,7 +6,7 @@ use App\Models\CvProfileDetail;
 use App\Models\CvDomicile;
 use App\Models\CvSosmed;
 use App\Http\Controllers\Controller;
-use App\Models\CandidateEmployee;
+use App\Models\Candidate;
 use App\Models\CvEducation;
 use App\Models\CvCertification;
 use App\Models\CvSpeciality;
@@ -197,9 +197,9 @@ class CvProfileDetailController extends Controller
     public function createCandidate($user, $request)
     {
 
-        $candidate = CandidateEmployee::where('phone_number', substr($user->telpon, 1))->first();
+        $candidate = Candidate::where('phone_number', substr($user->telpon, 1))->first();
         if (!$candidate) {
-            $candidate = new CandidateEmployee();
+            $candidate = new Candidate();
         }
         $candidate->user_id = $user->id_kustomer;
         $candidate->name = $request->first_name . " " . $request->last_name;

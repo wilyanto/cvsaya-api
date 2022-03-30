@@ -58,7 +58,7 @@ class CvProfileDetail extends Model
     }
 
     public function candidate(){
-        return $this->hasOne(CandidateEmployee::class,'user_id','user_id');
+        return $this->hasOne(Candidate::class,'user_id','user_id');
     }
 
     public function toArray()

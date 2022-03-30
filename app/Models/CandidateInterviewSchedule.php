@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CandidateEmployeeSchedule extends Model
+class CandidateInterviewSchedule extends Model
 {
     use HasFactory;
 
@@ -36,7 +36,7 @@ class CandidateEmployeeSchedule extends Model
 
     public function candidate()
     {
-        return $this->hasOne(CandidateEmployee::class, 'id', 'employee_candidate_id');
+        return $this->hasOne(Candidate::class, 'id', 'employee_candidate_id');
     }
 
     public function interviewBy()
@@ -46,7 +46,7 @@ class CandidateEmployeeSchedule extends Model
 
     public function characterTraits()
     {
-        return $this->hasManyThrough(CharacterTrait::class, CandidateEmployeeScheduleCharacterTrait::class, 'candidate_employee_schedule_id', 'id',  'id','character_trait_id');
+        return $this->hasManyThrough(CharacterTrait::class, CandidateInterviewSchedulesCharacterTrait::class, 'candidate_employee_schedule_id', 'id',  'id','character_trait_id');
     }
 
     public function toArrayCandidate()

@@ -13,7 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        
+        Schema::rename('candidate_employees', 'candidate');
+        Schema::rename('candidate_employee_schedules', 'candidate_interview_schedules');
+        Schema::rename('candidate_employee_schedule_character_traits', 'candidate_interview_schedules_character_traits');
+
     }
 
     /**
@@ -23,6 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::rename('candidate','candidate_employees');
+        Schema::rename('candidate_interview_schedules','candidate_employee_schedules');
+        Schema::rename('candidate_interview_schedules_character_traits','candidate_employee_schedule_character_traits');
     }
 };
