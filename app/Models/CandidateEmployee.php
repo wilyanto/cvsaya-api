@@ -180,7 +180,7 @@ class CandidateEmployee extends Model
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'schedule' => $this->schedule,
-            'last_assessment' => $this->label(),
+            'latest_result' => $this->label(),
         ];
     }
 }

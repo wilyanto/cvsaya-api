@@ -63,7 +63,8 @@ class CandidateEmpolyeeScheduleController extends Controller
         return $this->showAll($schedules);
     }
 
-    public function assessmentInterview(Request $request){
+    public function assessmentInterview(Request $request)
+    {
         $results = InterviewResult::all();
 
         return $this->showAll($results);
@@ -115,12 +116,13 @@ class CandidateEmpolyeeScheduleController extends Controller
         return $this->showAll(collect($data));
     }
 
-    public function indexInterviewer(){
+    public function indexInterviewer()
+    {
 
         $employee = EmployeeDetail::with('roles')->get();
 
-        Collection::macro('interviewer',function(){
-            return $this->map(function ($value){
+        Collection::macro('interviewer', function () {
+            return $this->map(function ($value) {
                 // dump($value);
                 return [
                     'id' => $value->id,
@@ -132,7 +134,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         });
 
         $interviewers = $employee->filter(function ($employee, $key) {
-            if($employee->hasRole('interviewer')){
+            if ($employee->hasRole('interviewer')) {
                 return $employee;
             }
         });
@@ -196,13 +198,15 @@ class CandidateEmpolyeeScheduleController extends Controller
         return false;
     }
 
-    public function showNote($id){
-        $candidate = CandidateEmployee::where('user_id',$id)->firstOrFail();
+    public function showNote($id)
+    {
+        $candidate = CandidateEmployee::where('user_id', $id)->firstOrFail();
 
         return $this->showOne($candidate->toArrayByNote());
     }
 
-    public function indexCharacterTraits(){
+    public function indexCharacterTraits()
+    {
         $traits = CharacterTrait::all();
 
         return $this->showAll($traits);
@@ -228,7 +232,6 @@ class CandidateEmpolyeeScheduleController extends Controller
     public function giveResult(Request $request, $id)
     {
         $request->validate([
-            'employee_candidate_id' => 'required|exists:candidate_employee_schedules,employee_candidate_id',
             'note' => 'string|min:50|nullable',
             'result_id' => 'exists:interview_results,id|required',
             'character_traits' => 'array|nullable',
