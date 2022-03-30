@@ -287,7 +287,7 @@ class CvProfileDetailController extends Controller
             'domicile.city_id' => 'integer|required',
             'domicile.district_id' => 'integer|required',
             'domicile.village_id' => 'integer|required',
-            'domicile.detail' => 'string|required',
+            'domicile.address' => 'string|required',
 
             #Sosmed
             'sosmed.instagram' => 'string',
