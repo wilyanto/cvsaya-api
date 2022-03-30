@@ -7,6 +7,7 @@ use App\Models\CandidateEmployee;
 use App\Models\CandidateEmployeeSchedule;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
+use Illuminate\Support\Collection;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CvExpectedSalary;
@@ -118,9 +119,24 @@ class CandidateEmpolyeeScheduleController extends Controller
 
         $employee = EmployeeDetail::with('roles')->get();
 
-        $interviewers = $employee->filter(function ($employee, $key) {
-            return $employee->hasRole('interviewer');
+        Collection::macro('interviewer',function(){
+            return $this->map(function ($value){
+                // dump($value);
+                return [
+                    'id' => $value->id,
+                    'user_id' => $value->user_id,
+                    'first_name' => $value->profileDetail->first_name,
+                    'last_name' => $value->profileDetail->last_name
+                ];
+            });
         });
+
+        $interviewers = $employee->filter(function ($employee, $key) {
+            if($employee->hasRole('interviewer')){
+                return $employee;
+            }
+        });
+        $interviewers = collect($interviewers)->interviewer();
 
         return $this->showAll($interviewers);
     }
