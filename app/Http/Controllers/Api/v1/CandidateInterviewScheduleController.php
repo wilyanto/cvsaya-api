@@ -43,7 +43,9 @@ class CandidateEmpolyeeScheduleController extends Controller
 
     public function getDetail($id)
     {
-        $schedules = CandidateInterviewSchedule::where('employee_candidate_id', $id)->get();
+        $candidate = CandidateEmployee::where('user_id',$id)->firstOrFail();
+
+        $schedules = CandidateEmployeeSchedule::where('employee_candidate_id', $candidate->id)->get();
 
         return $this->showAll($schedules);
     }
@@ -104,7 +106,7 @@ class CandidateEmpolyeeScheduleController extends Controller
             foreach ($schedules as $schedule) {
                 $scheduleArray[] = [
                     'interview_at' => $schedule->interview_at,
-                    'candidate' => $schedule->toArraySchedule(),
+                    'schedule_detail' => $schedule->toArraySchedule(),
                 ];
             }
             $data[] = [
