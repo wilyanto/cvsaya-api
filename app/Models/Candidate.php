@@ -96,6 +96,9 @@ class Candidate extends Model
     {
         $result = CandidateInterviewSchedule::where('candidate_id', $this->id)->orderBy('created_at', 'DESC')->first();
         if ($result) {
+            if($result->rejected_at){
+                return 'Rejected';
+            }
             return $result->result;
         }
         return null;
