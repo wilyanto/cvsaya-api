@@ -61,7 +61,7 @@ Route::prefix('v1')->group(function () {
                 });
 
                 Route::controller(CvDocumentationController::class)->group(function () {
-                    Route::get('/{id}/document', 'index'); // path user/id/document
+                    Route::get('/{id}/documents/file', 'showById'); // path user/id/document
                 });
 
                 Route::controller(CvProfileDetailController::class)->group(function () {

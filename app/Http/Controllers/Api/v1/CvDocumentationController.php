@@ -177,6 +177,41 @@ class CvDocumentationController extends Controller
         }
     }
 
+
+    public function showById(Request $request,$id){
+        $request->validate([
+            'type' => [
+                'required',
+                Rule::in(['identity_card', 'front_selfie', 'left_selfie', 'right_selfie'])
+            ]
+        ]);
+        $document = CvDocumentation::where('user_id', $id)->firstOrFail();
+        $filename = null;
+        switch ($request->type) {
+            case 'identity_card':
+                $filename = $document->identity_card;
+                break;
+            case 'front_selfie':
+                $filename = $document->front_selfie;
+                break;
+            case 'left_selfie':
+                $filename = $document->left_selfie;
+                break;
+            case 'right_selfie':
+                $filename = $document->right_selfie;
+                break;
+            default:
+                null;
+        }
+        try {
+            $path = public_path() . '/storage/' . $request->type . '/' . $filename;
+            if (!$path) {
+            }
+            return Response::download($path);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 404, 40400);
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      *
