@@ -51,10 +51,10 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::group(['middleware' => ['permission:manage-candidate|manage-schedule']], function () {
-            Route::prefix('admin')->group(function(){
+            Route::prefix('admin')->group(function () {
 
                 Route::controller(CvProfileDetailController::class)->group(function () {
-                    Route::get('/profile','show');
+                    Route::get('/profile', 'show');
                 });
             });
 
@@ -66,9 +66,10 @@ Route::prefix('v1')->group(function () {
                 Route::controller(CvExpectedJobsController::class)->group(function () {
                     Route::get('/{id}/expected-job', 'getIndexByID'); // path user/id/expected-jobs
                 });
-
-                Route::controller(CvDocumentationController::class)->group(function () {
-                    Route::get('/{id}/documents/file', 'showById'); // path user/id/document
+                Route::group(['middleware' => 'throttle:1000,60'], function () {
+                    Route::controller(CvDocumentationController::class)->group(function () {
+                        Route::get('/{id}/documents/file', 'showById')->middleware(['throttle:1000']); // path user/id/document
+                    });
                 });
 
                 Route::controller(CvProfileDetailController::class)->group(function () {
@@ -144,7 +145,9 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', 'getByDefault');
                 Route::post('/upload', 'uploadStorage');
                 Route::post('/', 'store');
-                Route::get('/file','show');
+                Route::group(['middleware' => 'throttle:1000,60'], function () {
+                    Route::get('/file', 'show');
+                });
             });
         });
 
