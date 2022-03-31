@@ -10,7 +10,7 @@ class CandidateInterviewSchedulesCharacterTrait extends Model
     use HasFactory;
 
     public $fillable = [
-        'candidate_employee_schedule_id',
+        'candidate_interview_schedule_id',
         'character_trait_id'
     ];
 }

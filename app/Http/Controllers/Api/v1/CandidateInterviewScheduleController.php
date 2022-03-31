@@ -253,7 +253,7 @@ class CandidateInterviewScheduleController extends Controller
             foreach ($request->character_traits as $characterTrait) {
                 $characterTrait = CharacterTrait::where('id', $characterTrait)->firstOrFail();
                 CandidateInterviewSchedulesCharacterTrait::create([
-                    'candidate_employee_schedule_id' => $schedule->id,
+                    'candidate_interview_schedule_id' => $schedule->id,
                     'character_trait_id' => $characterTrait->id,
                 ]);
             }

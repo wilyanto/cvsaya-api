@@ -46,7 +46,7 @@ class CandidateInterviewSchedule extends Model
 
     public function characterTraits()
     {
-        return $this->hasManyThrough(CharacterTrait::class, CandidateInterviewSchedulesCharacterTrait::class, 'candidate_employee_schedule_id', 'id',  'id','character_trait_id');
+        return $this->hasManyThrough(CharacterTrait::class, CandidateInterviewSchedulesCharacterTrait::class, 'candidate_interview_schedule_id', 'id',  'id','character_trait_id');
     }
 
     public function toArrayCandidate()
