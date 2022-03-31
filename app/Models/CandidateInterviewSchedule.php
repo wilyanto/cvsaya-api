@@ -26,7 +26,7 @@ class CandidateInterviewSchedule extends Model
 
     public function log()
     {
-        return $this->hasMany(LogCandidateEmpolyeeSchedule::class, 'employee_candidate_id');
+        return $this->hasMany(LogCandidateEmpolyeeSchedule::class, 'candidate_id');
     }
 
     public function result()
@@ -36,7 +36,7 @@ class CandidateInterviewSchedule extends Model
 
     public function candidate()
     {
-        return $this->hasOne(Candidate::class, 'id', 'employee_candidate_id');
+        return $this->hasOne(Candidate::class, 'id', 'candidate_id');
     }
 
     public function interviewBy()

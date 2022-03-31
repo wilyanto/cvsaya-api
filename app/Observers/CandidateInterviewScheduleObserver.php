@@ -10,7 +10,7 @@ class CandidateInterviewScheduleObserver
     public function created(CandidateInterviewSchedule $interviewSchedule)
     {
         $newlog= new CandidateLogEmployeeSchedule();
-        $newlog->employee_candidate_id = $interviewSchedule->id;
+        $newlog->candidate_id = $interviewSchedule->id;
         $newlog->interview_at = $interviewSchedule->interview_at;
         $newlog->interview_by = $interviewSchedule->interview_by;
         $newlog->result_id = $interviewSchedule->result_id;
@@ -21,7 +21,7 @@ class CandidateInterviewScheduleObserver
     public function updated(CandidateInterviewSchedule $interviewSchedule)
     {
         $newlog= new CandidateLogEmployeeSchedule();
-        $newlog->employee_candidate_id = $interviewSchedule->id;
+        $newlog->candidate_id = $interviewSchedule->id;
         $newlog->interview_at = $interviewSchedule->interview_at;
         $newlog->interview_by = $interviewSchedule->interview_by;
         $newlog->result_id = $interviewSchedule->result_id;

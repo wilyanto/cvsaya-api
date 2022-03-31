@@ -36,7 +36,7 @@ class CandidateEmpolyeeScheduleController extends Controller
         if ($request->start_at) {
             return $this->indexByDate($request);
         }
-        $candidate = CandidateInterviewSchedule::where('result_id', null)->whereNotNull('interview_at')->distinct('employee_candidate_id')->get();
+        $candidate = CandidateInterviewSchedule::where('result_id', null)->whereNotNull('interview_at')->distinct('candidate_id')->get();
 
         return $this->showALl($candidate);
     }
@@ -45,7 +45,7 @@ class CandidateEmpolyeeScheduleController extends Controller
     {
         $candidate = Candidate::where('user_id',$id)->firstOrFail();
 
-        $schedules = CandidateInterviewSchedule::where('employee_candidate_id', $candidate->id)->get();
+        $schedules = CandidateInterviewSchedule::where('candidate_id', $candidate->id)->get();
 
         return $this->showAll($schedules);
     }
@@ -61,7 +61,7 @@ class CandidateEmpolyeeScheduleController extends Controller
             ->where('interview_by', $employee->id)
             ->whereNull('result_id')
             ->whereNull('rejected_at')
-            ->distinct('employee_candidate_id')
+            ->distinct('candidate_id')
             ->get();
         return $this->showAll($schedules);
     }
@@ -102,7 +102,7 @@ class CandidateEmpolyeeScheduleController extends Controller
                 whereDate('interview_at', $period->format('Y-m-d'))
                 ->where('interview_by', $employee->id)
                 ->whereNull('result_id')
-                ->distinct('employee_candidate_id')
+                ->distinct('candidate_id')
                 ->get();
             foreach ($schedules as $schedule) {
                 $scheduleArray[] = [

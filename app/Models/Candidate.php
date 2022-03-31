@@ -66,7 +66,7 @@ class Candidate extends Model
 
     public function schedules()
     {
-        return $this->hasMany(CandidateInterviewSchedule::class, 'employee_candidate_id', 'id');
+        return $this->hasMany(CandidateInterviewSchedule::class, 'candidate_id', 'id');
     }
 
     public function educations()
@@ -89,12 +89,12 @@ class Candidate extends Model
 
     public function results()
     {
-        return $this->hasManyThrough(InterviewResult::class, CandidateInterviewSchedule::class,  'employee_candidate_id', 'id', 'id', 'result_id');
+        return $this->hasManyThrough(InterviewResult::class, CandidateInterviewSchedule::class,  'candidate_id', 'id', 'id', 'result_id');
     }
 
     public function label()
     {
-        $result = CandidateInterviewSchedule::where('employee_candidate_id', $this->id)->orderBy('created_at', 'DESC')->first();
+        $result = CandidateInterviewSchedule::where('candidate_id', $this->id)->orderBy('created_at', 'DESC')->first();
         if ($result) {
             return $result->result;
         }
