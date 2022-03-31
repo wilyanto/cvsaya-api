@@ -94,11 +94,8 @@ class Candidate extends Model
 
     public function label()
     {
-        $result = CandidateInterviewSchedule::where('candidate_id', $this->id)->orderBy('created_at', 'DESC')->first();
+        $result = CandidateInterviewSchedule::where('candidate_id', $this->id)->whereNull('rejected')->orderBy('created_at', 'DESC')->first();
         if ($result) {
-            if($result->rejected_at){
-                return 'Rejected';
-            }
             return $result->result;
         }
         return null;
