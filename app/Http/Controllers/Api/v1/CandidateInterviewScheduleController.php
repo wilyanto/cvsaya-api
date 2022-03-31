@@ -16,6 +16,7 @@ use App\Models\CandidateInterviewSchedulesCharacterTrait;
 use App\Models\CharacterTrait;
 use App\Models\Position;
 use Spatie\Permission\Models\Role;
+use Carbon\Carbon;
 use App\Models\InterviewResult;
 use DateTime;
 use DateInterval;
@@ -36,7 +37,7 @@ class CandidateInterviewScheduleController extends Controller
         if ($request->start_at) {
             return $this->indexByDate($request);
         }
-        $candidate = CandidateInterviewSchedule::where('result_id', null)->whereNotNull('interview_at')->distinct('candidate_id')->get();
+        $candidate = CandidateInterviewSchedule::whereNull('result_id')->whereNull('rejected_at')->whereNotNull('interview_at')->distinct('candidate_id')->get();
 
         return $this->showALl($candidate);
     }
@@ -232,7 +233,26 @@ class CandidateInterviewScheduleController extends Controller
         return $this->showOne($schedule);
     }
 
-    // public function
+    public function rejectInterview(Request $request,$id){
+        $request->validate([
+            'note' => 'string|min:50|nullable',
+        ]);
+        $schedule = CandidateInterviewSchedule::where('id', $id)->firstOrFail();
+
+        if ($schedule->candidate->status < Candidate::INTERVIEW) {
+            return $this->errorResponse('candidate cannot change to new result', 422, 42201);
+        }
+
+        if ($request->note) {
+            $schedule->note = $request->note;
+        }
+
+        $schedule->rejected_at = Carbon::now();
+        $schedule->save();
+
+        return $this->showOne($schedule);
+
+    }
 
     public function giveResult(Request $request, $id)
     {

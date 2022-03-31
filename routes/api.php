@@ -77,13 +77,10 @@ Route::prefix('v1')->group(function () {
                 });
             });
 
-
             Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                 Route::get('/character-traits', 'indexCharacterTraits');
-            });
-
-            Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                 Route::get('/results', 'assessmentInterview');
+                Route::get('/reject', 'rejectInterview');
             });
 
             Route::prefix('interviews')->group(function () {
