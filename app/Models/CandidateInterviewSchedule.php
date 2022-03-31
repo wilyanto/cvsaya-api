@@ -17,7 +17,7 @@ class CandidateInterviewSchedule extends Model
 
     public $fillable = [
         'id',
-        'employee_candidate_id',
+        'candidate_id',
         'interview_at',
         'interview_by',
         'result_id',
