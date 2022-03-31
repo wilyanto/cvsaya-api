@@ -112,6 +112,7 @@ class CvDocumentationController extends Controller
 
         if (!$document) {
             $document = new CvDocumentation;
+            $document->user_id = $user->id_kustomer;
         }
 
         switch ($request->type) {
