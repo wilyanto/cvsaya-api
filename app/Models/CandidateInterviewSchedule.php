@@ -73,6 +73,7 @@ class CandidateInterviewSchedule extends Model
             'interviewer' => $this->interviewer(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'rejected_at' => $this->rejected_at,
         ];
     }
 
@@ -98,6 +99,7 @@ class CandidateInterviewSchedule extends Model
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'result' => $this->result,
+            'rejected_at' => $this->rejected_at,
         ];
     }
 
@@ -109,6 +111,7 @@ class CandidateInterviewSchedule extends Model
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'result' => $this->result,
+            'rejected_at' => $this->rejected_at,
         ];
     }
 }

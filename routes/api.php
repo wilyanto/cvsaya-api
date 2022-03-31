@@ -80,7 +80,6 @@ Route::prefix('v1')->group(function () {
             Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                 Route::get('/character-traits', 'indexCharacterTraits');
                 Route::get('/results', 'assessmentInterview');
-                Route::get('/reject', 'rejectInterview');
             });
 
             Route::prefix('interviews')->group(function () {
@@ -89,6 +88,7 @@ Route::prefix('v1')->group(function () {
                     Route::get('/without-schedule', 'indexWithoutInterviewDate');
                     Route::put('/{id}/result', 'giveResult');
                     Route::put('/{id}', 'updateSchedule');
+                    Route::get('/{id}/reject', 'rejectInterview');
                 });
             });
 

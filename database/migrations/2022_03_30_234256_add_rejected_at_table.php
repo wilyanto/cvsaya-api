@@ -14,7 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('candidate_interview_schedules',function(Blueprint $table){
-            $table->timestamp('rejected_at')->nullable();
+            $table->timestamp('rejected_at')->nullable()->after('note');
+        });
+
+        Schema::table('candidate_log_interview_schedules',function(Blueprint $table){
+            $table->timestamp('rejected_at')->nullable()->after('note');
         });
     }
 
@@ -25,6 +29,10 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::table('candidate_log_interview_schedules',function(Blueprint $table){
+            $table->dropColumn('rejected_at');
+        });
+
         Schema::table('candidate_interview_schedules',function(Blueprint $table){
             $table->dropColumn('rejected_at');
         });

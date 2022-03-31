@@ -9,14 +9,23 @@ class CandidateLogEmployeeSchedule extends Model
 {
     use HasFactory;
 
-    protected $table = 'candidate_log_employee_schedules';
+    protected $table = 'candidate_log_interview_schedules';
 
     protected $guard = 'id';
 
     protected $primaryKey = 'id';
 
-    public function log(){
-        return $this->belongsTo(CandidateEmpolyeeSchedule::class,'empolyee_candidate_id');
-    }
+    public $fillable = [
+        'candidate_id',
+        'interview_at',
+        'interview_by',
+        'note',
+        'rejected_at',
+        'result_id',
+    ];
 
+    public function log()
+    {
+        return $this->belongsTo(CandidateEmpolyeeSchedule::class, 'empolyee_candidate_id');
+    }
 }

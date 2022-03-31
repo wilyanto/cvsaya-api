@@ -237,10 +237,10 @@ class CandidateInterviewScheduleController extends Controller
         $request->validate([
             'note' => 'string|min:50|nullable',
         ]);
-        $schedule = CandidateInterviewSchedule::where('id', $id)->firstOrFail();
+        $schedule = CandidateInterviewSchedule::where('id', $id)->whereNull('rejected_at')->firstOrFail();
 
         if ($schedule->candidate->status < Candidate::INTERVIEW) {
-            return $this->errorResponse('candidate cannot change to new result', 422, 42201);
+            return $this->errorResponse('candidate rejected because status not on interview', 422, 42201);
         }
 
         if ($request->note) {
