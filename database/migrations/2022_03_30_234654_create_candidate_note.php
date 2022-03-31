@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('candidate_note', function (Blueprint $table) {
+        Schema::create('candidate_notes', function (Blueprint $table) {
             $table->id();
             $table->longText('note');
             $table->bigInteger('employee_id')->unsigned();
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::table('candidate_note', function (Blueprint $table) {
+        Schema::table('candidate_notes', function (Blueprint $table) {
             $table->foreign('employee_id')->references('id')->on('employee_details');
             $table->foreign('candidate_id')->references('id')->on('candidates');
         });
@@ -34,11 +34,11 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('candidate_note', function (Blueprint $table) {
+        Schema::table('candidate_notes', function (Blueprint $table) {
             $table->dropForeign(['employee_id']);
             $table->dropForeign(['candidate_id']);
         });
 
-        Schema::dropIfExists('candidate_note');
+        Schema::dropIfExists('candidate_notes');
     }
 };
