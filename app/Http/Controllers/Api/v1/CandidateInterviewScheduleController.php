@@ -60,6 +60,7 @@ class CandidateEmpolyeeScheduleController extends Controller
             whereNull('interview_at')
             ->where('interview_by', $employee->id)
             ->whereNull('result_id')
+            ->whereNull('rejected_at')
             ->distinct('employee_candidate_id')
             ->get();
         return $this->showAll($schedules);

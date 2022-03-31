@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::table('candidate_employees', function (Blueprint $table) {
             $table->dropForeign(['suggest_by']);
         });
-        Schema::rename('candidate_employees', 'candidate');
+        Schema::rename('candidate_employees', 'candidates');
 
-        Schema::table('candidate', function (Blueprint $table) {
+        Schema::table('candidates', function (Blueprint $table) {
             $table->foreign('suggest_by')->references('id')->on('employee_details');
         });
 
@@ -32,7 +32,7 @@ return new class extends Migration
         Schema::rename('candidate_employee_schedules', 'candidate_interview_schedules');
 
         Schema::table('candidate_interview_schedules', function (Blueprint $table) {
-            $table->foreign('candidate_id')->references('id')->on('candidate');
+            $table->foreign('candidate_id')->references('id')->on('candidates');
             $table->foreign('interview_by')->references('id')->on('employee_details');
             $table->foreign('result_id')->references('id')->on('interview_results');
         });
@@ -77,15 +77,15 @@ return new class extends Migration
 
         Schema::table('candidate_employee_schedules', function (Blueprint $table) {
             $table->renameColumn('candidate_id', 'employee_candidate_id');
-            $table->foreign('employee_candidate_id')->references('id')->on('candidate');
+            $table->foreign('employee_candidate_id')->references('id')->on('candidates');
             $table->foreign('interview_by')->references('id')->on('employee_details');
             $table->foreign('result_id')->references('id')->on('interview_results');
         });
 
-        Schema::table('candidate', function (Blueprint $table) {
+        Schema::table('candidates', function (Blueprint $table) {
             $table->dropForeign(['suggest_by']);
         });
-        Schema::rename('candidate', 'candidate_employees');
+        Schema::rename('candidates', 'candidate_employees');
 
         Schema::table('candidate_employees', function (Blueprint $table) {
             $table->foreign('suggest_by')->references('id')->on('employee_details');
