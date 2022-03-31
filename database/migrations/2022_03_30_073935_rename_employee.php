@@ -66,7 +66,7 @@ return new class extends Migration
         Schema::rename('candidate_log_employee_schedules', 'candidate_log_interview_schedules');
 
         Schema::table('candidate_log_interview_schedules', function (Blueprint $table) {
-            $table->foreign('candidate_id')->references('id')->on('candidates');
+            $table->foreign('candidate_id')->references('id')->on('candidate_interview_schedules');
         });
     }
 
