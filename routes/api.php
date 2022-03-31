@@ -15,7 +15,7 @@ use App\Http\Controllers\Api\v1\LevelController;
 use App\Http\Controllers\Api\v1\PositionsController;
 use App\Http\Controllers\Api\v1\CandidateController;
 use App\Http\Controllers\Api\v1\EmployeeDetailsController;
-use App\Http\Controllers\Api\v1\CandidateEmpolyeeScheduleController;
+use App\Http\Controllers\Api\v1\CandidateInterviewScheduleController;
 use App\Http\Controllers\Api\v1\CompanyController;
 use App\Http\Controllers\Api\v1\EmploymentTypeController;
 use App\Http\Controllers\Api\v1\PermissionController;
@@ -68,26 +68,26 @@ Route::prefix('v1')->group(function () {
                     Route::get('/{id}/curriculum-vitae', 'cvDetailByID'); // path user/id/cv
                 });
 
-                Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
+                Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                     Route::get('/{id}/interview-notes', 'showNote'); // path user/id/cv
                 });
 
-                Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
+                Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                     Route::get('/{id}/interviews', 'getDetail'); // path user/id/cv
                 });
             });
 
 
-            Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
+            Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                 Route::get('/character-traits', 'indexCharacterTraits');
             });
 
-            Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
+            Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                 Route::get('/results', 'assessmentInterview');
             });
 
             Route::prefix('interviews')->group(function () {
-                Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
+                Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                     Route::get('/', 'index');
                     Route::get('/without-schedule', 'indexWithoutInterviewDate');
                     Route::put('/{id}/result', 'giveResult');
@@ -95,7 +95,7 @@ Route::prefix('v1')->group(function () {
                 });
             });
 
-            Route::controller(CandidateEmpolyeeScheduleController::class)->group(function () {
+            Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                 Route::get('/interviewers', 'indexInterviewer');
             });
 
