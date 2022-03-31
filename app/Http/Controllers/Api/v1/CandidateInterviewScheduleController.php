@@ -242,7 +242,7 @@ class CandidateInterviewScheduleController extends Controller
         if ($schedule->candidate->status < Candidate::INTERVIEW) {
             return $this->errorResponse('candidate rejected because status not on interview', 422, 42201);
         }
-
+        // dd($request->note);
         if ($request->note) {
             $schedule->note = $request->note;
         }

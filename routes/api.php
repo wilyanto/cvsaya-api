@@ -88,7 +88,7 @@ Route::prefix('v1')->group(function () {
                     Route::get('/without-schedule', 'indexWithoutInterviewDate');
                     Route::put('/{id}/result', 'giveResult');
                     Route::put('/{id}', 'updateSchedule');
-                    Route::get('/{id}/reject', 'rejectInterview');
+                    Route::put('/{id}/reject', 'rejectInterview');
                 });
             });
 
