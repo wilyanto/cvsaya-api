@@ -21,7 +21,7 @@ use DateTime;
 use DateInterval;
 use DatePeriod;
 
-class CandidateEmpolyeeScheduleController extends Controller
+class CandidateInterviewScheduleController extends Controller
 {
     use ApiResponser;
     /**
@@ -224,13 +224,15 @@ class CandidateEmpolyeeScheduleController extends Controller
         ]);
         $schedule = CandidateInterviewSchedule::where('id', $id)->firstOrFail();
 
-        // if ($this->isThereAnyOtherSchedule($request->date, $request->time, $schedule->interview_by)) {
+        // if ($this->isThereAnyOtherSchedule($request->date, $request->ti me, $schedule->interview_by)) {
         //     return $this->errorResponse('You have another schedule execpt this schedule', 422, 42201);
         // }
         $schedule->interview_at = date('Y-m-d H:i:s', strtotime($request->interview_at));
         $schedule->save();
         return $this->showOne($schedule);
     }
+
+    // public function
 
     public function giveResult(Request $request, $id)
     {
