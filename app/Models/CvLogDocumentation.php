@@ -9,7 +9,7 @@ class CvLogDocumentation extends Model
 {
     use HasFactory;
 
-    protected $table = 'cv_log_documentations';
+    protected $table = 'cv_log_documents';
 
     protected $guard = 'id';
 

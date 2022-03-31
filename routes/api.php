@@ -132,11 +132,12 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('document')->group(function () {
+        Route::prefix('documents')->group(function () {
             Route::controller(CvDocumentationController::class)->group(function () {
                 Route::get('/', 'getByDefault');
                 Route::post('/upload', 'uploadStorage');
                 Route::post('/', 'store');
+                Route::get('/file','show');
             });
         });
 

@@ -11,10 +11,10 @@ class CvDocumentationObserver
     {
         $newLog = new CvLogDocumentation();
         $newLog->document_id = $cvDocumentations->id;
-        $newLog->identity_picture_card = $cvDocumentations->identity_picture_card;
-        $newLog->selfie_front = $cvDocumentations->selfie_front;
-        $newLog->selfie_left = $cvDocumentations->selfie_left;
-        $newLog->selfie_right = $cvDocumentations->selfie_right;
+        $newLog->identity_card = $cvDocumentations->identity_card;
+        $newLog->front_selfie = $cvDocumentations->front_selfie;
+        $newLog->left_selfie = $cvDocumentations->left_selfie;
+        $newLog->right_selfie = $cvDocumentations->right_selfie;
         $newLog->created_at = date('Y-m-d h:i:s',time());
         $newLog->save();
     }
@@ -23,10 +23,10 @@ class CvDocumentationObserver
     {
         $newLog = new CvLogDocumentation();
         $newLog->document_id = $cvDocumentations->id;
-        $newLog->identity_picture_card = $cvDocumentations->identity_picture_card;
-        $newLog->selfie_front = $cvDocumentations->selfie_front;
-        $newLog->selfie_left = $cvDocumentations->selfie_left;
-        $newLog->selfie_right = $cvDocumentations->selfie_right;
+        $newLog->identity_card = $cvDocumentations->identity_card;
+        $newLog->front_selfie = $cvDocumentations->front_selfie;
+        $newLog->left_selfie = $cvDocumentations->left_selfie;
+        $newLog->right_selfie = $cvDocumentations->right_selfie;
         $newLog->created_at = date('Y-m-d h:i:s',time());
         $newLog->save();
     }
