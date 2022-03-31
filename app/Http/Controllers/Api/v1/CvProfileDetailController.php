@@ -218,7 +218,16 @@ class CvProfileDetailController extends Controller
      */
     public function show()
     {
-        //
+        $user = auth()->user();
+
+        $employee = EmployeeDetail::where('user_id',$user->id_kustomer)->firstOrFail();
+
+        $data = [
+            'profile' => $employee->profileDetail,
+            'roles' => $employee->getRoleNames(),
+            'permissions' => $employee->getAllPermissions()->pluck('name')
+        ];
+        return $this->showOne(collect($data));
     }
 
     /**
