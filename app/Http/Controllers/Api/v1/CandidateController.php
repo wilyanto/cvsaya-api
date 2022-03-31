@@ -267,7 +267,7 @@ class CandidateController extends Controller
             }
 
             $data = $request->all();
-            $data['interview_at'] = date('Y-m-d H:i:s',strtotime($data['interview_by']));
+            $data['interview_at'] = date('Y-m-d H:i:s',strtotime($data['interview_at']));
             $data['candidate_id'] = $id;
 
             $candidateEmpolyeeSchedule = CandidateInterviewSchedule::create($data);
