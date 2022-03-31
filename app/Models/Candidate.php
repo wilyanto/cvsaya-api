@@ -37,7 +37,7 @@ class Candidate extends Model
     public const RESULT_HOLD = 2;
     public const RESULT_BAD = 3;
 
-    protected $table = 'candidate_employees';
+    protected $table = 'candidates';
 
     protected $guard = 'id';
 
