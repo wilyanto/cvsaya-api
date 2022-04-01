@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Models\CvDocumentation;
+use App\Models\CvDocument;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Candidate;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
 use Return\Exception;
 
-class CvDocumentationController extends Controller
+class CvDocumentController extends Controller
 {
     use ApiResponser;
     /**
@@ -27,7 +27,7 @@ class CvDocumentationController extends Controller
             $id = $user->id_kustomer;
         }
 
-        $getDocuments = CvDocumentation::where('user_id', $id)->firstOrFail();
+        $getDocuments = CvDocument::where('user_id', $id)->firstOrFail();
         return $this->showOne($getDocuments);
     }
 
@@ -72,9 +72,9 @@ class CvDocumentationController extends Controller
         $data['selfie_left'] = explode("/", $data['selfie_left'])[5];
         $data['selfie_right'] = explode("/", $data['selfie_right'])[5];
         // dd($data);
-        $document = CvDocumentation::where('user_id', $data['user_id'])->first();
+        $document = CvDocument::where('user_id', $data['user_id'])->first();
         if (!$document) {
-            $document = CvDocumentation::create($data);
+            $document = CvDocument::create($data);
         }
         $document->update($data);
         // dd($document);
@@ -108,10 +108,10 @@ class CvDocumentationController extends Controller
         $path = env('APP_URL') . '/storage/' . $request->type . '/' . $filename;
         $pathFormStorage = $request->file('file')->storeAs('public/' . $request->type, $filename);
 
-        $document = CvDocumentation::where('user_id', $user->id_kustomer)->first();
+        $document = CvDocument::where('user_id', $user->id_kustomer)->first();
 
         if (!$document) {
-            $document = new CvDocumentation;
+            $document = new CvDocument;
             $document->user_id = $user->id_kustomer;
         }
 
@@ -150,7 +150,7 @@ class CvDocumentationController extends Controller
                 Rule::in(['identity_card', 'front_selfie', 'left_selfie', 'right_selfie'])
             ]
         ]);
-        $document = CvDocumentation::where('user_id', $user->id_kustomer)->firstOrFail();
+        $document = CvDocument::where('user_id', $user->id_kustomer)->firstOrFail();
         $filename = null;
         switch ($request->type) {
             case 'identity_card':
@@ -186,7 +186,7 @@ class CvDocumentationController extends Controller
                 Rule::in(['identity_card', 'front_selfie', 'left_selfie', 'right_selfie'])
             ]
         ]);
-        $document = CvDocumentation::where('user_id', $id)->firstOrFail();
+        $document = CvDocument::where('user_id', $id)->firstOrFail();
         $filename = null;
         switch ($request->type) {
             case 'identity_card':
@@ -219,7 +219,7 @@ class CvDocumentationController extends Controller
      * @param  \App\Models\Documentations  $documentations
      * @return \Illuminate\Http\Response
      */
-    public function edit(CvDocumentation $documentations)
+    public function edit(CvDocument $documentations)
     {
         //
     }
@@ -231,7 +231,7 @@ class CvDocumentationController extends Controller
      * @param  \App\Models\Documentations  $documentations
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, CvDocumentation $documentations)
+    public function update(Request $request, CvDocument $documentations)
     {
         //
     }
@@ -242,7 +242,7 @@ class CvDocumentationController extends Controller
      * @param  \App\Models\Documentations  $documentations
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CvDocumentation $documentations)
+    public function destroy(CvDocument $documentations)
     {
         //
     }

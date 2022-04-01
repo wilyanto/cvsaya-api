@@ -12,7 +12,7 @@ use App\Models\CvCertification;
 use App\Models\CvSpeciality;
 use App\Models\CvHobby;
 use App\Models\CvExperience;
-use App\Models\CvDocumentation;
+use App\Models\CvDocument;
 use App\Models\CvExpectedJob;
 use Illuminate\Http\Request;
 use App\Models\EmployeeDetail;
@@ -114,7 +114,7 @@ class CvProfileDetailController extends Controller
     {
         $userProfileDetail = CvProfileDetail::where('user_id', $id)->firstOrFail();
         $education = CvEducation::where('user_id', $id)->first();
-        $document = CvDocumentation::where('user_id', $id)->first();
+        $document = CvDocument::where('user_id', $id)->first();
         $expectedSalaries = CvExpectedJob::where('user_id', $id)->first();
 
         $data['is_profile_completed'] = true;

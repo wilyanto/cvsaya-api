@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
-use App\Http\Controllers\Api\v1\CvDocumentationController;
+use App\Http\Controllers\Api\v1\CvDocumentController;
 use App\Http\Controllers\Api\v1\CvExpectedJobsController;
 use App\Http\Controllers\Api\v1\CvCertificationsController;
 use App\Http\Controllers\Api\v1\CvExperiencesController;
@@ -67,7 +67,7 @@ Route::prefix('v1')->group(function () {
                     Route::get('/{id}/expected-job', 'getIndexByID'); // path user/id/expected-jobs
                 });
                 Route::group(['middleware' => 'throttle:1000,60'], function () {
-                    Route::controller(CvDocumentationController::class)->group(function () {
+                    Route::controller(CvDocumentController::class)->group(function () {
                         Route::get('/{id}/documents/file', 'showById')->middleware(['throttle:1000']); // path user/id/document
                     });
                 });
@@ -141,7 +141,7 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('documents')->group(function () {
-            Route::controller(CvDocumentationController::class)->group(function () {
+            Route::controller(CvDocumentController::class)->group(function () {
                 Route::get('/', 'getByDefault');
                 Route::post('/upload', 'uploadStorage');
                 Route::post('/', 'store');
