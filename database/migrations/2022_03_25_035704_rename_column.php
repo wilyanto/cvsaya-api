@@ -33,11 +33,11 @@ return new class extends Migration
             $table->integer('country_code')->default(null)->change();
         });
 
-        $candidates =  Candidate::all();
-        foreach ($candidates as $candidate) {
-            $candidate->register_at = date('Y-m-d H:i:s', strtotime($candidate->register_date));
-            $candidate->save();
-        }
+        // $candidates =  Candidate::all();
+        // foreach ($candidates as $candidate) {
+        //     $candidate->register_at = date('Y-m-d H:i:s', strtotime($candidate->register_date));
+        //     $candidate->save();
+        // }
 
         Schema::table('candidate_employees', function (Blueprint $table) {
             $table->dropColumn('register_date');

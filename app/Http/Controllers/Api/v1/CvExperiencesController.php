@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CvExperience;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
+use App\Models\Document;
 use App\Models\CandidatePosition;
 
 class CvExperiencesController extends Controller
@@ -49,8 +50,9 @@ class CvExperiencesController extends Controller
             'resign_reason' => 'string|min:20|required',
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
-            'payslip_img' => 'nullable', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            'payslip_img' => 'nullable','exists:App\Models\DocumentType,file_name',
         ]);
+        $documents = Document::where('file_name',$request->payslip_img)->firstOrFail();
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
         $positionCollection = json_decode($request->position);
@@ -72,7 +74,7 @@ class CvExperiencesController extends Controller
         $experience->reference = $request->reference;
         $experience->previous_salary = $request->previous_salary;
         $experience->resign_reason = $request->resign_reason;
-        $experience->payslip_img = $request->payslip_img;
+        $experience->payslip_img = $documents->id;
         $experience->save();
         return $this->showOne($experience);
     }
@@ -130,9 +132,9 @@ class CvExperiencesController extends Controller
             'resign_reason' => 'string|min:50|nullable',
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
-            'payslip_img' => 'nullable', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i',
+            'payslip_img' => 'nullable','exists:App\Models\DocumentType,file_name',
         ]);
-
+        $documents = Document::where('file_name',$request->payslip_img)->firstOrFail();
         $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
         if ($request->position) {
             $position = $request->position;
@@ -169,7 +171,7 @@ class CvExperiencesController extends Controller
             $experience->jobdesc =  $request->jobdesc;
         }
         if ($request->payslip_img) {
-            $experience->payslip_img = $request->payslip_img;
+            $experience->payslip_img = $documents->id;
         }
         if ($request->reference) {
             $experience->reference = $request->reference;
