@@ -95,14 +95,14 @@ class CvSpecialitiesController extends Controller
     public function suggestion(Request $request)
     {
         $request->validate([
-            'filter_by' => 'string|nullable',
-            'total_suggestions' => 'integer|nullable'
+            'keyword' => 'string|nullable',
+            'limit' => 'integer|nullable'
         ]);
-        $total = $request->total_suggestions;
-        $filterBy = $request->filterBy;
-        $specialities = CvSpeciality::where(function ($query) use ($filterBy) {
-            $query->where('name', 'LIKE', '%' . $filterBy . '%');
-        })->select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit($total)->get();
+        $limit = $request->limit;
+        $keyword = $request->keyword;
+        $specialities = CvSpeciality::where(function ($query) use ($keyword) {
+            $query->where('name', 'LIKE', '%' . $keyword . '%');
+        })->select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit($limit)->get();
 
         $specialities = collect($specialities)->pluck('name');
         //    dd($specialities);
