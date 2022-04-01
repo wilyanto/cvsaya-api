@@ -133,7 +133,7 @@ class CvProfileDetailController extends Controller
             $data['is_cv_completed'] = false;
         }
 
-        if (!$document) {
+        if (!$document || !$document->identityCard || !$document->frontSelfie ||!$document->rightSelfie ||!$document->leftSelfie ) {
             $data['is_document_completed'] = false;
         }
         $result['basic_profile'] = [
