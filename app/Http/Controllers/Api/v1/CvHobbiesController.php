@@ -64,21 +64,19 @@ class CvHobbiesController extends Controller
      */
     public function suggestion(Request $request)
     {
-        $user = auth()->user();
         $request->validate([
-            'filter_by' => 'string|nullable',
-            'total_suggestions' => 'integer|nullable'
+            'keyword' => 'nullable|string',
+            'limit' => 'nullable|integer'
         ]);
-        $total = $request->total_suggestions;
-        $filterBy = $request->filterBy;
-        $specialities = CvHobby::where(function ($query) use ($filterBy) {
-            if($filterBy){
-                $query->where('name', 'LIKE', '%' . $filterBy . '%');
+        $limit = $request->limit;
+        $keyword = $request->keyword;
+        $specialities = CvHobby::where(function ($query) use ($keyword) {
+            if ($keyword) {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
             }
-        })->select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit($total)->get();
+        })->select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit($limit)->get();
 
         $specialities = collect($specialities)->pluck('name');
-        //    dd($specialities);
 
         return $this->showAll($specialities);
     }
