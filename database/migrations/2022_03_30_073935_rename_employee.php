@@ -59,14 +59,14 @@ return new class extends Migration
         });
 
         Schema::table('candidate_log_employee_schedules', function (Blueprint $table) {
-            $table->dropForeign(['employee_candidate_id']);
+            // $table->dropForeign(['employee_candidate_id']);
             $table->renameColumn('employee_candidate_id','candidate_id');
         });
 
         Schema::rename('candidate_log_employee_schedules', 'candidate_log_interview_schedules');
 
         Schema::table('candidate_log_interview_schedules', function (Blueprint $table) {
-            $table->foreign('candidate_id')->references('id')->on('candidate_interview_schedules');
+            // $table->foreign('candidate_id')->references('id')->on('candidate_interview_schedules');
         });
     }
 
@@ -88,14 +88,14 @@ return new class extends Migration
         });
 
         Schema::table('candidate_log_interview_schedules', function (Blueprint $table) {
-            $table->dropForeign(['candidate_id']);
+            // $table->dropForeign(['candidate_id']);
             $table->renameColumn('candidate_id','employee_candidate_id');
         });
 
         Schema::rename( 'candidate_log_interview_schedules','candidate_log_employee_schedules');
 
         Schema::table('candidate_log_employee_schedules', function (Blueprint $table) {
-            $table->foreign('employee_candidate_id')->references('id')->on('candidates');
+            // $table->foreign('employee_candidate_id')->references('id')->on('candidates');
         });
 
         Schema::table('candidate_interview_schedules_character_traits', function (Blueprint $table) {
