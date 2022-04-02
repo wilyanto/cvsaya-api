@@ -40,7 +40,7 @@ class EmployeeDetail extends Authenticatable
         return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id');
     }
 
-    public function Company()
+    public function company()
     {
         return $this->hasOneThrough(Company::class, Position::class, 'id', 'id', 'position_id', 'company_id');
     }

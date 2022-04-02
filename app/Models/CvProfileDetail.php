@@ -32,33 +32,34 @@ class CvProfileDetail extends Model
 
     protected $primaryKey = 'id';
 
-    public function Addresses()
+    public function addresses()
     {
         return $this->hasOne(CvDomicile::class, 'user_id', 'user_id');
     }
 
-    public function Sosmeds()
+    public function sosmeds()
     {
         return $this->hasOne(CvSosmed::class, 'user_id', 'user_id');
     }
 
-    public function EmployeeDetails()
+    public function employeeDetails()
     {
         return $this->belongsToMany(EmployeeDetails::class, 'user_id', 'user_id');
     }
 
-    public function Religion()
+    public function religion()
     {
         return $this->hasOne(Religion::class, 'id', 'religion_id');
     }
 
-    public function MarriageStatus()
+    public function marriageStatus()
     {
         return $this->hasOne(MarriageStatus::class, 'id', 'marriage_status_id');
     }
 
-    public function candidate(){
-        return $this->hasOne(Candidate::class,'user_id','user_id');
+    public function candidate()
+    {
+        return $this->hasOne(Candidate::class, 'user_id', 'user_id');
     }
 
     public function toArray()
@@ -80,6 +81,4 @@ class CvProfileDetail extends Model
             'religion' => $this->Religion,
         ];
     }
-
-
 }
