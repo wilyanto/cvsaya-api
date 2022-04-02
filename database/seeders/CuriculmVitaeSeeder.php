@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 use Faker\Factory as Faker;
 use Carbon\Carbon;
 
-class CuriculmVitae extends Seeder
+class CuriculmVitaeSeeder extends Seeder
 {
     /**
      * Run the database seeds.

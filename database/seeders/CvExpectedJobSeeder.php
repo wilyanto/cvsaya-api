@@ -9,7 +9,7 @@ use App\Models\CandidatePosition;
 use Illuminate\Support\Str;
 use Faker\Factory as Faker;
 
-class CvExpectedJobs extends Seeder
+class CvExpectedJobSeeder extends Seeder
 {
     /**
      * Run the database seeds.
