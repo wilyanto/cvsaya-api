@@ -96,15 +96,15 @@ class CvExpectedJobsController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'name' => 'string|nullable',
+            'keyword' => 'string|nullable',
             'is_verified' => 'nullable|boolean'
         ]);
-        $name = $request->name;
+        $keyword = $request->keyword;
         $isVerfied = $request->is_verified;
         // dd($request->all());
-        $specialities = CandidatePosition::where(function ($qurey) use ($name, $isVerfied) {
-            if ($name != null) {
-                $qurey->where('name', 'LIKE', '%' . $name . '%');
+        $specialities = CandidatePosition::where(function ($qurey) use ($keyword, $isVerfied) {
+            if ($keyword != null) {
+                $qurey->where('name', 'LIKE', '%' . $keyword . '%');
             }
             if (isset($isVerfied)) {
                 if ($isVerfied) {

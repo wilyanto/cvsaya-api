@@ -142,7 +142,7 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('documents')->group(function () {
             Route::controller(CvDocumentController::class)->group(function () {
-                Route::get('/type','getDocumentByID');
+                Route::get('/type', 'getDocumentByID');
                 Route::get('/', 'getByDefault');
                 Route::post('/upload', 'uploadStorage');
                 Route::post('/', 'store');
@@ -258,26 +258,25 @@ Route::prefix('v1')->group(function () {
                 Route::get('/types', 'index');
             });
         });
-    });
+        Route::prefix('candidate-positions')->group(function () {
+            Route::controller(CvExpectedJobsController::class)->group(function () {
+                Route::get('/', 'getListCandidatePositions');
+                Route::post('/', 'createCandidatePositions');
+                Route::put('/{id}', 'updateVerfiedCandidatePositions');
+            });
+        });
 
+        Route::prefix('religions')->group(function () {
+            Route::controller(ReligionController::class)->group(function () {
+                Route::get('/', 'index');
+            });
+        });
+
+        Route::prefix('marriage-statuses')->group(function () {
+            Route::controller(MarriageStatusController::class)->group(function () {
+                Route::get('/', 'index');
+            });
+        });
+    });
     //master
-    Route::prefix('candidate-positions')->group(function () {
-        Route::controller(CvExpectedJobsController::class)->group(function () {
-            Route::get('/', 'getListCandidatePositions');
-            Route::post('/', 'createCandidatePositions');
-            Route::put('/{id}', 'updateVerfiedCandidatePositions');
-        });
-    });
-
-    Route::prefix('religions')->group(function () {
-        Route::controller(ReligionController::class)->group(function () {
-            Route::get('/', 'index');
-        });
-    });
-
-    Route::prefix('marriage-statuses')->group(function () {
-        Route::controller(MarriageStatusController::class)->group(function () {
-            Route::get('/', 'index');
-        });
-    });
 });
