@@ -290,17 +290,21 @@ class CvDocumentController extends Controller
         ]);
         $documentType = DocumentType::where('id', $request->type)->firstOrFail();
         // dump($this->getExtension($request->file->getClientMimeType()));
-        // dd($request->file->getClientOriginalName());
-        $extension = $request->file('file')->getClientOriginalExtension();
+        // dd($request->file->getClientMimeType());
+        // $extension = $request->file('file')->getClientOriginalExtension();
         $time = date('Y-m-d_H-i-s', time());
         $randomNumber = $this->random4Digits();
+
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mineType = $finfo->file($request->file('file'));
+        $extension = $this->getExtension($mineType);
 
         $filename = $time . '_' . $user->id_kustomer . '_' . $randomNumber . '.' . $extension;
         $filenameWithoutExtenstion = $time . '_' . $user->id_kustomer . '_' . $randomNumber;
 
         $path = env('APP_URL') . '/storage/' . $documentType->name . '/' . $filename;
         $pathFormStorage = $request->file('file')->storeAs('public/' . $documentType->name, $filename);
-        if($documentType->id == DocumentType::PAYSLIP){
+        if ($documentType->id == DocumentType::PAYSLIP) {
             return $this->showOne($filenameWithoutExtenstion);
         }
         $cvDocument = CvDocument::where('user_id', $user->id_kustomer)->first();
