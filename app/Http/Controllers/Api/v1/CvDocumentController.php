@@ -6,6 +6,7 @@ use App\Models\CvDocument;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Candidate;
+use App\Models\CvExperience;
 use App\Models\DocumentType;
 use App\Models\Document;
 use App\Traits\ApiResponser;
@@ -345,8 +346,15 @@ class CvDocumentController extends Controller
             'type' => 'integer|exists:App\Models\DocumentType,id',
         ]);
         $documentType = DocumentType::where('id', $request->type)->firstOrFail();
-        $cvDocument = CvDocument::where('user_id', $user->id_kustomer)->firstOrFail();
-        // dump($this->getExtension($request->file->getClientMimeType()));
+        if($documentType->id == DocumentType::PAYSLIP){
+            $request->validate([
+                'experience_id' => 'integer|exists:App\Models\CvExperience,id|required',
+            ]);
+            // dump( CvExperience::where('id',$request->experience_id)->where('user_id',$user->id_kustomer)->first());
+            $cvDocument = CvExperience::where('user_id', $user->id_kustomer)->where('id',$request->experience_id)->firstOrFail();
+        }else{
+            $cvDocument = CvDocument::where('user_id', $user->id_kustomer)->firstOrFail();
+        }
         $typeOfDocument = $documentType->name;
         $document = Document::where('id', $cvDocument->$typeOfDocument)->firstOrFail();
         try {
@@ -364,8 +372,15 @@ class CvDocumentController extends Controller
             'type' => 'integer|exists:App\Models\DocumentType,id',
         ]);
         $documentType = DocumentType::where('id', $request->type)->firstOrFail();
-        $cvDocument = CvDocument::where('user_id', $id)->firstOrFail();
-        // dump($this->getExtension($request->file->getClientMimeType()));
+        if($documentType->id == DocumentType::PAYSLIP){
+            $request->validate([
+                'experience_id' => 'integer|exists:App\Models\CvExperience,id|required',
+            ]);
+            // dump( CvExperience::where('id',$request->experience_id)->where('user_id',$user->id_kustomer)->first());
+            $cvDocument = CvExperience::where('user_id', $id)->where('id',$request->experience_id)->firstOrFail();
+        }else{
+            $cvDocument = CvDocument::where('user_id', $id)->firstOrFail();
+        }
         $typeOfDocument = $documentType->name;
         $document = Document::where('id', $cvDocument->$typeOfDocument)->firstOrFail();
         try {

@@ -97,15 +97,15 @@ return new class extends Migration
         DB::statement("ALTER TABLE cv_log_experiences MODIFY employment_type_id bigint(20) UNSIGNED AFTER media");
 
         Schema::table('cv_experiences',function(Blueprint $table){
-            $table->bigInteger('payslip_img')->unsigned()->nullable()->after('position_id');
+            $table->bigInteger('payslip')->unsigned()->nullable()->after('position_id');
         });
 
         Schema::table('cv_log_experiences',function(Blueprint $table){
-            $table->bigInteger('payslip_img')->unsigned()->nullable()->after('position_id');
+            $table->bigInteger('payslip')->unsigned()->nullable()->after('position_id');
         });
 
         Schema::table('cv_experiences',function(Blueprint $table){
-            $table->foreign('payslip_img')->references('id')->on('documents');
+            $table->foreign('payslip')->references('id')->on('documents');
         });
     }
 
@@ -117,15 +117,15 @@ return new class extends Migration
     public function down()
     {
         Schema::table('cv_experiences',function(Blueprint $table){
-            $table->dropForeign(['payslip_img']);
+            $table->dropForeign(['payslip']);
         });
 
         Schema::table('cv_experiences',function(Blueprint $table){
-            $table->dropColumn('payslip_img');
+            $table->dropColumn('payslip');
         });
 
         Schema::table('cv_log_experiences',function(Blueprint $table){
-            $table->dropColumn('payslip_img');
+            $table->dropColumn('payslip');
         });
 
         DB::statement("ALTER TABLE cv_experiences MODIFY jobdesc longText AFTER deleted_at");
