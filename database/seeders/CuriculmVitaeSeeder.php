@@ -39,7 +39,7 @@ class CuriculmVitaeSeeder extends Seeder
                     'company_name' => 'S1',
                     'company_location' => 'Testing',
                     'start_at' => Carbon::now(),
-                    'employment_type_id' => array_rand($employee->toArray()),
+                    'employment_type_id' => array_rand($employee->toArray())+1,
                     'position_id' => array_rand($candidate->toArray())+1,
                 ]);
 
