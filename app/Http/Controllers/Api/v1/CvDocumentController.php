@@ -304,9 +304,6 @@ class CvDocumentController extends Controller
 
         $path = env('APP_URL') . '/storage/' . $documentType->name . '/' . $filename;
         $pathFormStorage = $request->file('file')->storeAs('public/' . $documentType->name, $filename);
-        if ($documentType->id == DocumentType::PAYSLIP) {
-            return $this->showOne($filenameWithoutExtenstion);
-        }
         $cvDocument = CvDocument::where('user_id', $user->id_kustomer)->first();
         $document = Document::create([
             'file_name' => $filenameWithoutExtenstion,
@@ -314,6 +311,9 @@ class CvDocumentController extends Controller
             'type_id' => $documentType->id,
             'original_file_name' => $request->file->getClientOriginalName(),
         ]);
+        if ($documentType->id == DocumentType::PAYSLIP) {
+            return $this->showOne($filenameWithoutExtenstion);
+        }
         if (!$cvDocument) {
             $cvDocument = new CvDocument;
             $cvDocument->user_id = $user->id_kustomer;
