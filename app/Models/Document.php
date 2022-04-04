@@ -13,7 +13,7 @@ class Document extends Model
     protected $database = 'documents';
 
     public $fillable = [
-        'file_name', 'mine_type', 'type_id', 'original_file_name'
+        'file_name', 'mime_type', 'type_id', 'original_file_name'
     ];
 
 }
