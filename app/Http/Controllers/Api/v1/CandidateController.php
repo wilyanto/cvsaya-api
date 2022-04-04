@@ -52,42 +52,42 @@ class CandidateController extends Controller
         ]);
         $name = $request->name;
         $status = $request->status;
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
-        $country_id = $request->country_id;
-        $province_id = $request->province_id;
-        $city_id = $request->city_id;
-        $district_id = $request->district_id;
-        $village_id = $request->village_id;
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $countryId = $request->country_id;
+        $provinceId = $request->province_id;
+        $cityId = $request->city_id;
+        $districtId = $request->district_id;
+        $villageId = $request->village_id;
 
-        $candidates = Candidate::where(function ($query) use ($name, $status, $start_date, $end_date, $country_id, $province_id, $city_id, $district_id, $village_id) {
+        $candidates = Candidate::where(function ($query) use ($name, $status, $startDate, $endDate, $countryId, $provinceId, $cityId, $districtId, $villageId) {
             if ($name != null) {
-                $query->where('name', $name);
+                $query->where('name','LIKE' ,'%'.$name.'%');
             }
 
-            if ($start_date != null) {
-                $query->where('start_date', $start_date);
+            if ($startDate != null) {
+                $query->whereDate('start_date',$startDate);
             }
 
-            if ($end_date != null) {
-                $query->where('end_date', $end_date);
+            if ($endDate != null) {
+                $query->whereDate('end_date',$endDate);
             }
-            if (($country_id != null) || ($province_id != null) || ($city_id != null) || ($district_id != null) || ($village_id != null)) {
-                $query->whereHas('address', function ($secondQuery) use ($country_id, $province_id, $city_id, $district_id, $village_id) {
-                    if ($country_id != null) {
-                        $secondQuery->where('country_id', $country_id);
+            if (($countryId != null) || ($provinceId != null) || ($cityId != null) || ($districtId != null) || ($villageId != null)) {
+                $query->whereHas('address', function ($secondQuery) use ($countryId, $provinceId, $cityId, $districtId, $villageId) {
+                    if ($countryId != null) {
+                        $secondQuery->where('country_id', $countryId);
                     }
-                    if ($province_id != null) {
-                        $secondQuery->where('province_id', $province_id);
+                    if ($provinceId != null) {
+                        $secondQuery->where('province_id', $provinceId);
                     }
-                    if ($city_id != null) {
-                        $secondQuery->where('city_id', $city_id);
+                    if ($cityId != null) {
+                        $secondQuery->where('city_id', $cityId);
                     }
-                    if ($district_id != null) {
-                        $secondQuery->where('district_id', $district_id);
+                    if ($districtId != null) {
+                        $secondQuery->where('district_id', $districtId);
                     }
-                    if ($village_id != null) {
-                        $secondQuery->where('village_id', $village_id);
+                    if ($villageId != null) {
+                        $secondQuery->where('village_id', $villageId);
                     }
                 });
             }
