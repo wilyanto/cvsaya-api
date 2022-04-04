@@ -281,39 +281,35 @@ class CvDocumentController extends Controller
         return $extensions[$mime_type];
     }
 
-    public function uploadStorage(Request $request)
+    public function uploadDocuments(Request $request)
     {
         $user = auth()->user();
 
         $request->validate([
             'file' => 'file|required',
-            'type' => 'integer|exists:App\Models\DocumentType,id',
+            'type' => [
+                'integer',
+                Rule::in([1, 2, 3, 4]),
+            ],
         ]);
         $documentType = DocumentType::where('id', $request->type)->firstOrFail();
-        // dump($this->getExtension($request->file->getClientMimeType()));
-        // dd($request->file->getClientMimeType());
-        // $extension = $request->file('file')->getClientOriginalExtension();
         $time = date('Y-m-d_H-i-s', time());
         $randomNumber = $this->random4Digits();
 
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mineType = $finfo->file($request->file('file')); // variable
-        $extension = $this->getExtension($mineType);
+        $mimeType = $finfo->file($request->file('file')); // variable
+        $extension = $this->getExtension($mimeType);
 
-        $filename = $time . '_' . $user->id_kustomer . '_' . $randomNumber . '.' . $extension;
         $filenameWithoutExtenstion = $time . '_' . $user->id_kustomer . '_' . $randomNumber;
+        $filename = $filenameWithoutExtenstion . '.' . $extension;
 
-        $path = env('APP_URL') . '/storage/' . $documentType->name . '/' . $filename;
-        $pathFormStorage = $request->file('file')->storeAs('public/' . $documentType->name, $filename);
+        $request->file('file')->storeAs('public/' . $documentType->name, $filename);
         $document = Document::create([
             'file_name' => $filenameWithoutExtenstion,
-            'mine_type' => $mineType,
+            'mine_type' => $mimeType,
             'type_id' => $documentType->id,
             'original_file_name' => $request->file->getClientOriginalName(),
         ]);
-        if ($documentType->id === DocumentType::PAYSLIP) {
-            return $this->showOne($document->id);
-        }
         $cvDocument = CvDocument::where('user_id', $user->id_kustomer)->first();
         if (!$cvDocument) {
             $cvDocument = new CvDocument;
@@ -324,6 +320,39 @@ class CvDocumentController extends Controller
         $cvDocument->$typeOfDocument = $document->id;
         $cvDocument->save();
         return $this->showOne($cvDocument);
+    }
+
+    public function upload(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'file' => 'file|required',
+            'type' => [
+                'integer',
+                'exists:App\Models\DocumentType,id',
+            ],
+        ]);
+        $documentType = DocumentType::where('id', $request->type)->firstOrFail();
+        $time = date('Y-m-d_H-i-s', time());
+        $randomNumber = $this->random4Digits();
+
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->file($request->file('file')); // variable
+        $extension = $this->getExtension($mimeType);
+
+        $filenameWithoutExtenstion = $time . '_' . $user->id_kustomer . '_' . $randomNumber;
+        $filename = $filenameWithoutExtenstion . '.' . $extension;
+
+        $request->file('file')->storeAs('public/' . $documentType->name, $filename);
+        $document = Document::create([
+            'file_name' => $filenameWithoutExtenstion,
+            'mine_type' => $mimeType,
+            'type_id' => $documentType->id,
+            'original_file_name' => $request->file->getClientOriginalName(),
+        ]);
+
+        return $this->showOne($document->id);
     }
 
     /**
@@ -346,13 +375,13 @@ class CvDocumentController extends Controller
             'type' => 'integer|exists:App\Models\DocumentType,id',
         ]);
         $documentType = DocumentType::where('id', $request->type)->firstOrFail();
-        if($documentType->id == DocumentType::PAYSLIP){
+        if ($documentType->id == DocumentType::PAYSLIP) {
             $request->validate([
                 'experience_id' => 'integer|exists:App\Models\CvExperience,id|required',
             ]);
             // dump( CvExperience::where('id',$request->experience_id)->where('user_id',$user->id_kustomer)->first());
-            $cvDocument = CvExperience::where('user_id', $user->id_kustomer)->where('id',$request->experience_id)->firstOrFail();
-        }else{
+            $cvDocument = CvExperience::where('user_id', $user->id_kustomer)->where('id', $request->experience_id)->firstOrFail();
+        } else {
             $cvDocument = CvDocument::where('user_id', $user->id_kustomer)->firstOrFail();
         }
         $typeOfDocument = $documentType->name;
@@ -372,13 +401,13 @@ class CvDocumentController extends Controller
             'type' => 'integer|exists:App\Models\DocumentType,id',
         ]);
         $documentType = DocumentType::where('id', $request->type)->firstOrFail();
-        if($documentType->id == DocumentType::PAYSLIP){
+        if ($documentType->id == DocumentType::PAYSLIP) {
             $request->validate([
                 'experience_id' => 'integer|exists:App\Models\CvExperience,id|required',
             ]);
             // dump( CvExperience::where('id',$request->experience_id)->where('user_id',$user->id_kustomer)->first());
-            $cvDocument = CvExperience::where('user_id', $id)->where('id',$request->experience_id)->firstOrFail();
-        }else{
+            $cvDocument = CvExperience::where('user_id', $id)->where('id', $request->experience_id)->firstOrFail();
+        } else {
             $cvDocument = CvDocument::where('user_id', $id)->firstOrFail();
         }
         $typeOfDocument = $documentType->name;
