@@ -52,6 +52,7 @@ class CvExperiencesController extends Controller
             'previous_salary' => 'integer|required',
             'payslip' => 'nullable','exists:App\Models\Document,id',
         ]);
+        $documents = null;
         if($request->payslip){
             $documents = Document::where('id',$request->payslip)->firstOrFail();
         }
