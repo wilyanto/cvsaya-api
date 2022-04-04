@@ -53,7 +53,7 @@ class Candidate extends Model
         'register_date',
     ];
 
-    public function address()
+    public function domicile()
     {
         // dd($)
         return $this->hasOne(CvDomicile::class, 'user_id', 'user_id');

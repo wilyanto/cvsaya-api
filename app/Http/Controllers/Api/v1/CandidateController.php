@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CandidatePosition;
 use App\Models\CandidateInterviewSchedule;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\Rule;
 
 
 class CandidateController extends Controller
@@ -42,38 +43,30 @@ class CandidateController extends Controller
             'page_size' => 'required|numeric|gt:0',
             'name' => 'nullable|string',
             'status' => 'nullable|integer',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date',
             'country_id' => 'nullable',
             'province_id' => 'nullable|string',
             'city_id' => 'nullable|string',
-            'district_id' => 'nullable|string',
-            'village_id' => 'nullable|string',
+            'order_by' => [
+                'nullable',
+                Rule::in(['DESC', 'ASC']),
+            ],
         ]);
         $name = $request->name;
         $status = $request->status;
-        $startDate = $request->start_date;
-        $endDate = $request->end_date;
         $countryId = $request->country_id;
         $provinceId = $request->province_id;
         $cityId = $request->city_id;
-        $districtId = $request->district_id;
-        $villageId = $request->village_id;
+        $orderBy = $request->order_by == null
+            ? 'DESC'
+            : $request->order_by;
 
-        $candidates = Candidate::where(function ($query) use ($name, $status, $startDate, $endDate, $countryId, $provinceId, $cityId, $districtId, $villageId) {
+        $candidates = Candidate::where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId) {
             if ($name != null) {
-                $query->where('name','LIKE' ,'%'.$name.'%');
+                $query->where('name', 'LIKE', '%' . $name . '%');
             }
 
-            if ($startDate != null) {
-                $query->whereDate('start_date',$startDate);
-            }
-
-            if ($endDate != null) {
-                $query->whereDate('end_date',$endDate);
-            }
-            if (($countryId != null) || ($provinceId != null) || ($cityId != null) || ($districtId != null) || ($villageId != null)) {
-                $query->whereHas('address', function ($secondQuery) use ($countryId, $provinceId, $cityId, $districtId, $villageId) {
+            if (($countryId != null) || ($provinceId != null) || ($cityId != null)) {
+                $query->whereHas('domicile', function ($secondQuery) use ($countryId, $provinceId, $cityId) {
                     if ($countryId != null) {
                         $secondQuery->where('country_id', $countryId);
                     }
@@ -82,12 +75,6 @@ class CandidateController extends Controller
                     }
                     if ($cityId != null) {
                         $secondQuery->where('city_id', $cityId);
-                    }
-                    if ($districtId != null) {
-                        $secondQuery->where('district_id', $districtId);
-                    }
-                    if ($villageId != null) {
-                        $secondQuery->where('village_id', $villageId);
                     }
                 });
             }
@@ -98,12 +85,13 @@ class CandidateController extends Controller
                     $query->where('status', $status);
                 }
             }
-        })->paginate(
-            $perpage = $request->page_size,
-            $columns =  ['*'],
-            $pageName = 'page',
-            $pageBody = $request->page
-        );
+        })->orderBy('updated_at', $orderBy)
+            ->paginate(
+                $perpage = $request->page_size,
+                $columns =  ['*'],
+                $pageName = 'page',
+                $pageBody = $request->page
+            );
         $data = [];
         foreach ($candidates as $candidate) {
             if ($status == Candidate::ReadyToInterview) {
@@ -267,7 +255,7 @@ class CandidateController extends Controller
             }
 
             $data = $request->all();
-            $data['interview_at'] = date('Y-m-d H:i:s',strtotime($data['interview_at']));
+            $data['interview_at'] = date('Y-m-d H:i:s', strtotime($data['interview_at']));
             $data['candidate_id'] = $id;
 
             $candidateEmpolyeeSchedule = CandidateInterviewSchedule::create($data);
