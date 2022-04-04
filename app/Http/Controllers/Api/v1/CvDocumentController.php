@@ -352,7 +352,7 @@ class CvDocumentController extends Controller
             'original_file_name' => $request->file->getClientOriginalName(),
         ]);
 
-        return $this->showOne((string)$document->id);
+        return $this->showOne($document);
     }
 
     /**
