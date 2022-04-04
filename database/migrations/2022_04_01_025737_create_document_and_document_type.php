@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->longText('file_name');
-            $table->string('mine_type');
+            $table->string('mime_type');
             $table->bigInteger('type_id')->unsigned();
             $table->longText('original_file_name');
             $table->timestamps();

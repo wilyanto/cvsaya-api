@@ -306,7 +306,7 @@ class CvDocumentController extends Controller
         $request->file('file')->storeAs('public/' . $documentType->name, $filename);
         $document = Document::create([
             'file_name' => $filenameWithoutExtenstion,
-            'mine_type' => $mimeType,
+            'mime_type' => $mimeType,
             'type_id' => $documentType->id,
             'original_file_name' => $request->file->getClientOriginalName(),
         ]);
@@ -347,7 +347,7 @@ class CvDocumentController extends Controller
         $request->file('file')->storeAs('public/' . $documentType->name, $filename);
         $document = Document::create([
             'file_name' => $filenameWithoutExtenstion,
-            'mine_type' => $mimeType,
+            'mime_type' => $mimeType,
             'type_id' => $documentType->id,
             'original_file_name' => $request->file->getClientOriginalName(),
         ]);
