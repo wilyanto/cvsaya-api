@@ -77,8 +77,9 @@ class Candidate extends Model
             ->orderBy('until_at', 'DESC');
     }
 
-    public function profile(){
-        return $this->hasOne(CvProfileDetail::class,'user_id','user_id');
+    public function profile()
+    {
+        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id');
     }
 
     public function job()
@@ -105,7 +106,7 @@ class Candidate extends Model
     public function listDefaultCandidate()
     {
         $status = $this->status;
-        if($this->status == 3){
+        if ($this->status == 3) {
             $candidateController = new CvProfileDetailController;
 
             $profileStatus = $candidateController->getStatus($this->user_id);
@@ -116,7 +117,7 @@ class Candidate extends Model
                 $profileStatus['is_job_completed'] == true &&
                 $profileStatus['is_document_completed']  == true &&
                 $profileStatus['is_cv_completed'] == true
-            ){
+            ) {
                 $status = 4;
             }
         }
@@ -133,17 +134,19 @@ class Candidate extends Model
             'updated_at' => $this->updated_at,
             'last_assessment' => $this->label(),
             'religion' => $this->profile->religion,
-            'educations' => $this->educations->first(),
+            'education' => $this->educations->first(),
             'gender' => $this->profile->gender,
-            'address' => $this->address != null ? $this->address->province() : null,
+            'position' => $this->job == null ? null : $this->job->position,
+            'domicile' => $this->domicile != null ? $this->domicile->province() : null,
         ];
     }
 
 
-    public function toArrayByNote(){
+    public function toArrayByNote()
+    {
 
-        Collection::macro('schedule',function(){
-            return $this->map(function ($value){
+        Collection::macro('schedule', function () {
+            return $this->map(function ($value) {
                 return [
                     'interviewer' => $value->interviewer(),
                     'note' => $value->note,

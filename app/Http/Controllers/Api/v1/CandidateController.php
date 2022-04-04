@@ -44,8 +44,9 @@ class CandidateController extends Controller
             'name' => 'nullable|string',
             'status' => 'nullable|integer',
             'country_id' => 'nullable',
-            'province_id' => 'nullable|string',
-            'city_id' => 'nullable|string',
+            'province_id' => 'nullable',
+            'city_id' => 'nullable',
+            'position_id' => 'nullable|exists:App\Models\CandidatePosition,id',
             'order_by' => [
                 'nullable',
                 Rule::in(['DESC', 'ASC']),
@@ -56,11 +57,12 @@ class CandidateController extends Controller
         $countryId = $request->country_id;
         $provinceId = $request->province_id;
         $cityId = $request->city_id;
+        $position = $request->position_id;
         $orderBy = $request->order_by == null
             ? 'DESC'
             : $request->order_by;
 
-        $candidates = Candidate::where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId) {
+        $candidates = Candidate::where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position) {
             if ($name != null) {
                 $query->where('name', 'LIKE', '%' . $name . '%');
             }
@@ -76,6 +78,12 @@ class CandidateController extends Controller
                     if ($cityId != null) {
                         $secondQuery->where('city_id', $cityId);
                     }
+                });
+            }
+
+            if ($position != null) {
+                $query->whereHas('job', function ($secondQuery) use ($position) {
+                    $secondQuery->where('expected_position', $position);
                 });
             }
             if ($status != null) {
