@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('documents', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->longText('file_name');
             $table->string('mine_type');
             $table->bigInteger('type_id')->unsigned();
@@ -36,10 +36,10 @@ return new class extends Migration
         });
 
         Schema::table('cv_documents', function (Blueprint $table) {
-            $table->bigInteger('right_selfie')->unsigned()->nullable()->after('user_id');
-            $table->bigInteger('left_selfie')->unsigned()->nullable()->after('user_id');
-            $table->bigInteger('front_selfie')->unsigned()->nullable()->after('user_id');
-            $table->bigInteger('identity_card')->unsigned()->nullable()->after('user_id');
+            $table->uuid('right_selfie')->nullable()->after('user_id');
+            $table->uuid('left_selfie')->nullable()->after('user_id');
+            $table->uuid('front_selfie')->nullable()->after('user_id');
+            $table->uuid('identity_card')->nullable()->after('user_id');
         });
 
         Schema::table('documents', function (Blueprint $table) {
@@ -61,10 +61,10 @@ return new class extends Migration
         });
 
         Schema::table('cv_log_documents', function (Blueprint $table) {
-            $table->bigInteger('right_selfie')->unsigned()->nullable()->after('document_id');
-            $table->bigInteger('left_selfie')->unsigned()->nullable()->after('document_id');
-            $table->bigInteger('front_selfie')->unsigned()->nullable()->after('document_id');
-            $table->bigInteger('identity_card')->unsigned()->nullable()->after('document_id');
+            $table->uuid('right_selfie')->nullable()->after('document_id');
+            $table->uuid('left_selfie')->nullable()->after('document_id');
+            $table->uuid('front_selfie')->nullable()->after('document_id');
+            $table->uuid('identity_card')->nullable()->after('document_id');
         });
 
         Schema::table('cv_log_documents', function (Blueprint $table) {
@@ -74,11 +74,11 @@ return new class extends Migration
             $table->foreign('identity_card')->references('id')->on('documents');
         });
 
-        Schema::table('cv_experiences',function(Blueprint $table){
+        Schema::table('cv_experiences', function (Blueprint $table) {
             $table->dropColumn('payslip_img');
         });
 
-        Schema::table('cv_log_experiences',function(Blueprint $table){
+        Schema::table('cv_log_experiences', function (Blueprint $table) {
             $table->dropColumn('payslip_img');
         });
 
@@ -96,15 +96,15 @@ return new class extends Migration
         DB::statement("ALTER TABLE cv_log_experiences MODIFY position_id bigint(20) UNSIGNED AFTER media");
         DB::statement("ALTER TABLE cv_log_experiences MODIFY employment_type_id bigint(20) UNSIGNED AFTER media");
 
-        Schema::table('cv_experiences',function(Blueprint $table){
-            $table->bigInteger('payslip')->unsigned()->nullable()->after('position_id');
+        Schema::table('cv_experiences', function (Blueprint $table) {
+            $table->uuid('payslip')->nullable()->after('position_id');
         });
 
-        Schema::table('cv_log_experiences',function(Blueprint $table){
-            $table->bigInteger('payslip')->unsigned()->nullable()->after('position_id');
+        Schema::table('cv_log_experiences', function (Blueprint $table) {
+            $table->uuid('payslip')->nullable()->after('position_id');
         });
 
-        Schema::table('cv_experiences',function(Blueprint $table){
+        Schema::table('cv_experiences', function (Blueprint $table) {
             $table->foreign('payslip')->references('id')->on('documents');
         });
     }
@@ -116,15 +116,15 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('cv_experiences',function(Blueprint $table){
+        Schema::table('cv_experiences', function (Blueprint $table) {
             $table->dropForeign(['payslip']);
         });
 
-        Schema::table('cv_experiences',function(Blueprint $table){
+        Schema::table('cv_experiences', function (Blueprint $table) {
             $table->dropColumn('payslip');
         });
 
-        Schema::table('cv_log_experiences',function(Blueprint $table){
+        Schema::table('cv_log_experiences', function (Blueprint $table) {
             $table->dropColumn('payslip');
         });
 
@@ -144,11 +144,11 @@ return new class extends Migration
         DB::statement("ALTER TABLE cv_experiences MODIFY position_id bigint(20) UNSIGNED AFTER deleted_at");
         DB::statement("ALTER TABLE cv_experiences MODIFY employment_type_id bigint(20) UNSIGNED AFTER deleted_at");
 
-        Schema::table('cv_log_experiences',function(Blueprint $table){
+        Schema::table('cv_log_experiences', function (Blueprint $table) {
             $table->longtext('payslip_img')->nullable()->after('position_id');
         });
 
-        Schema::table('cv_experiences',function(Blueprint $table){
+        Schema::table('cv_experiences', function (Blueprint $table) {
             $table->longtext('payslip_img')->nullable()->after('position_id');
         });
 
@@ -197,7 +197,6 @@ return new class extends Migration
             $table->longtext('front_selfie')->nullable()->after('document_id');
             $table->longtext('identity_card')->nullable()->after('document_id');
         });
-
 
         Schema::drop('document_types');
 

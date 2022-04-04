@@ -313,7 +313,7 @@ class CvDocumentController extends Controller
             'original_file_name' => $request->file->getClientOriginalName(),
         ]);
         if ($documentType->id == DocumentType::PAYSLIP) {
-            return $this->showOne($filenameWithoutExtenstion);
+            return $document->id;
         }
         if (!$cvDocument) {
             $cvDocument = new CvDocument;
