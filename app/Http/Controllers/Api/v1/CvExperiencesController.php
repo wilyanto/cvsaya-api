@@ -50,7 +50,7 @@ class CvExperiencesController extends Controller
             'resign_reason' => 'string|min:20|required',
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
-            'payslip' => 'nullable','exists:App\Models\DocumentType,id',
+            'payslip' => 'nullable','exists:App\Models\Document,id',
         ]);
         $documents = Document::where('id',$request->payslip)->firstOrFail();
         $experience = new CvExperience();
@@ -131,9 +131,9 @@ class CvExperiencesController extends Controller
             'resign_reason' => 'string|min:50|nullable',
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
-            'payslip' => 'nullable','exists:App\Models\DocumentType,file_name',
+            'payslip' => 'nullable','exists:App\Models\Document,id',
         ]);
-        $documents = Document::where('file_name',$request->payslip)->firstOrFail();
+        $documents = Document::where('id',$request->payslip)->firstOrFail();
         $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
         if ($request->position) {
             $position = $request->position;
