@@ -52,7 +52,9 @@ class CvExperiencesController extends Controller
             'previous_salary' => 'integer|required',
             'payslip' => 'nullable','exists:App\Models\Document,id',
         ]);
-        $documents = Document::where('id',$request->payslip)->firstOrFail();
+        if($request->payslip){
+            $documents = Document::where('id',$request->payslip)->firstOrFail();
+        }
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
         $positionCollection = json_decode($request->position);
@@ -73,7 +75,7 @@ class CvExperiencesController extends Controller
         $experience->reference = $request->reference;
         $experience->previous_salary = $request->previous_salary;
         $experience->resign_reason = $request->resign_reason;
-        $experience->payslip = $documents->id;
+        $experience->payslip = $documents == null ? null : $documents->id;
         $experience->save();
         return $this->showOne($experience);
     }
@@ -133,7 +135,6 @@ class CvExperiencesController extends Controller
             'previous_salary' => 'integer|required',
             'payslip' => 'nullable','exists:App\Models\Document,id',
         ]);
-        $documents = Document::where('id',$request->payslip)->firstOrFail();
         $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
         if ($request->position) {
             $position = $request->position;
@@ -170,6 +171,7 @@ class CvExperiencesController extends Controller
             $experience->jobdesc =  $request->jobdesc;
         }
         if ($request->payslip) {
+            $documents = Document::where('id',$request->payslip)->firstOrFail();
             $experience->payslip = $documents->id;
         }
         if ($request->reference) {
