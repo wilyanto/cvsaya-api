@@ -345,7 +345,7 @@ class CvDocumentController extends Controller
         $typeOfDocument = $documentType->name;
         $document = Document::where('id', $cvDocument->$typeOfDocument)->firstOrFail();
         try {
-            $path = public_path() . '/storage/' . $documentType->name . '/' . $document->file_name . '.' . $this->getExtension($document->mine_type);
+            $path = public_path() . '/storage/' . $documentType->name . '/' . $document->file_name . '.' . $this->getExtension($document->mime_type);
             return Response::download($path);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 404, 40400);
@@ -371,7 +371,7 @@ class CvDocumentController extends Controller
         $typeOfDocument = $documentType->name;
         $document = Document::where('id', $cvDocument->$typeOfDocument)->firstOrFail();
         try {
-            $path = public_path() . '/storage/' . $documentType->name . '/' . $document->file_name . '.' . $this->getExtension($document->mine_type);
+            $path = public_path() . '/storage/' . $documentType->name . '/' . $document->file_name . '.' . $this->getExtension($document->mime_type);
             return Response::download($path);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 404, 40400);
