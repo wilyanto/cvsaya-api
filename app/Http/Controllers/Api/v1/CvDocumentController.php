@@ -60,7 +60,7 @@ class CvDocumentController extends Controller
         $user = auth()->user();
         $request->validate([
             'type' =>
-                'integer|required|exists:App\Models\DocumentType,id',
+            'integer|required|exists:App\Models\DocumentType,id',
 
             'id' => [
                 'string',
@@ -69,7 +69,7 @@ class CvDocumentController extends Controller
         ]);
 
         $documentType = DocumentType::where('id', $request->type)->firstOrFail();
-        $document = Document::where('id',$request->id)->where('type_id',$documentType->id)->firstOrFail();
+        $document = Document::where('id', $request->id)->where('type_id', $documentType->id)->firstOrFail();
         $cvDocument = CvDocument::where('user_id', $user->id_kustomer)->first();
         if (!$cvDocument) {
             $cvDocument = new CvDocument;
