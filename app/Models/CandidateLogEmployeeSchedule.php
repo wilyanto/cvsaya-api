@@ -16,7 +16,7 @@ class CandidateLogEmployeeSchedule extends Model
     protected $primaryKey = 'id';
 
     public $fillable = [
-        'candidate_id',
+        'candidate_interview_schedules_id',
         'interview_at',
         'interview_by',
         'note',
