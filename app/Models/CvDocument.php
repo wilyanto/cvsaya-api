@@ -46,10 +46,10 @@ class CvDocument extends Model
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'identity_card' => $this->identityCard == null ? null : $this->identityCard->file_name,
-            'front_selfie' => $this->frontSelfie == null ? null : $this->frontSelfie->file_name,
-            'left_selfie' => $this->rightSelfie == null ? null : $this->rightSelfie->file_name,
-            'right_selfie' => $this->leftSelfie == null ? null : $this->leftSelfie->file_name,
+            'identity_card' => $this->identity_card,
+            'front_selfie' => $this->front_selfie,
+            'left_selfie' => $this->left_selfie,
+            'right_selfie' => $this->right_selfie,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

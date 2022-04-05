@@ -12,8 +12,16 @@ class Document extends Model
 
     protected $database = 'documents';
 
+    protected $keytype = 'string';
+
     public $fillable = [
         'file_name', 'mime_type', 'type_id', 'original_file_name'
     ];
+
+    public function toIdDocuments(){
+        return [
+            'id' => $this->id,
+        ];
+    }
 
 }

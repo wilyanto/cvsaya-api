@@ -58,30 +58,28 @@ class CvDocumentController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
-
-        $validateURL = 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i';
-
         $request->validate([
-            'identity_picture_card' => 'required', $validateURL,
-            'selfie_front' => 'required', $validateURL,
-            'selfie_left' => 'required',  $validateURL,
-            'selfie_right' => 'required',  $validateURL,
+            'type' =>
+                'integer|required|exists:App\Models\DocumentType,id',
+
+            'id' => [
+                'string',
+                'exists:App\Models\Document,id',
+            ]
         ]);
-        $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
-        // dump($data);
-        $data['identity_picture_card'] = explode("/", $data['identity_picture_card'])[5];
-        $data['selfie_front'] = explode("/", $data['selfie_front'])[5];
-        $data['selfie_left'] = explode("/", $data['selfie_left'])[5];
-        $data['selfie_right'] = explode("/", $data['selfie_right'])[5];
-        // dd($data);
-        $document = CvDocument::where('user_id', $data['user_id'])->first();
-        if (!$document) {
-            $document = CvDocument::create($data);
+
+        $documentType = DocumentType::where('id', $request->type)->firstOrFail();
+        $document = Document::where('id',$request->id)->where('type_id',$documentType->id)->firstOrFail();
+        $cvDocument = CvDocument::where('user_id', $user->id_kustomer)->first();
+        if (!$cvDocument) {
+            $cvDocument = new CvDocument;
+            $cvDocument->user_id = $user->id_kustomer;
         }
-        $document->update($data);
-        // dd($document);
-        return $this->showOne($document);
+        $typeOfDocument = $documentType->name;
+
+        $cvDocument->$typeOfDocument = $document->id;
+        $cvDocument->save();
+        return $this->showOne($cvDocument);
     }
 
     public function random4Digits()
@@ -281,46 +279,6 @@ class CvDocumentController extends Controller
         return $extensions[$mime_type];
     }
 
-    public function uploadDocuments(Request $request)
-    {
-        $user = auth()->user();
-
-        $request->validate([
-            'file' => 'file|required',
-            'type' => [
-                'integer',
-                Rule::in([1, 2, 3, 4]),
-            ],
-        ]);
-        $documentType = DocumentType::where('id', $request->type)->firstOrFail();
-        $time = date('Y-m-d_H-i-s', time());
-        $randomNumber = $this->random4Digits();
-
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo->file($request->file('file')); // variable
-        $extension = $this->getExtension($mimeType);
-
-        $filenameWithoutExtenstion = $time . '_' . $user->id_kustomer . '_' . $randomNumber;
-        $filename = $filenameWithoutExtenstion . '.' . $extension;
-
-        $request->file('file')->storeAs('public/' . $documentType->name, $filename);
-        $document = Document::create([
-            'file_name' => $filenameWithoutExtenstion,
-            'mime_type' => $mimeType,
-            'type_id' => $documentType->id,
-            'original_file_name' => $request->file->getClientOriginalName(),
-        ]);
-        $cvDocument = CvDocument::where('user_id', $user->id_kustomer)->first();
-        if (!$cvDocument) {
-            $cvDocument = new CvDocument;
-            $cvDocument->user_id = $user->id_kustomer;
-        }
-        $typeOfDocument = $documentType->name;
-
-        $cvDocument->$typeOfDocument = $document->id;
-        $cvDocument->save();
-        return $this->showOne($cvDocument);
-    }
 
     public function upload(Request $request)
     {
@@ -352,7 +310,7 @@ class CvDocumentController extends Controller
             'original_file_name' => $request->file->getClientOriginalName(),
         ]);
 
-        return $this->showOne($document);
+        return $this->showOne($document->toIdDocuments());
     }
 
     /**

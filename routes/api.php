@@ -144,17 +144,11 @@ Route::prefix('v1')->group(function () {
             Route::controller(CvDocumentController::class)->group(function () {
                 Route::get('/type', 'getDocumentByID');
                 Route::get('/', 'getByDefault');
-                Route::post('/upload', 'uploadDocuments');
+                Route::post('/upload', 'upload');
                 Route::post('/', 'store');
                 Route::group(['middleware' => 'throttle:1000,60'], function () {
                     Route::get('/file', 'show');
                 });
-            });
-        });
-
-        Route::prefix('upload')->group(function () {
-            Route::controller(CvDocumentController::class)->group(function () {
-                Route::post('/', 'upload');
             });
         });
 
