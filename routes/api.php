@@ -78,6 +78,10 @@ Route::prefix('v1')->group(function () {
                 Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                     Route::get('/{id}/interviews', 'getDetail'); // path user/id/cv
                 });
+
+                Route::controller(CvDocumentController::class)->group(function () {
+                    Route::get('/{id}/documents', 'index'); // path user/id/cv
+                });
             });
 
             Route::controller(CandidateInterviewScheduleController::class)->group(function () {
