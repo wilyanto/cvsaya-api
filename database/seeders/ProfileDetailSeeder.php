@@ -60,7 +60,7 @@ class ProfileDetailSeeder extends Seeder
                     'country_id' => 62,
                     'province_id' => 12,
                     'city_id' => 1275,
-                    'district_id' => 1275150,
+                    'sub_district_id' => 1275150,
                     'village_id' => 1275150007,
                     'address' => $faker->address,
                 ]);

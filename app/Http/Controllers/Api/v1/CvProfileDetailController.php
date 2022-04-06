@@ -294,7 +294,7 @@ class CvProfileDetailController extends Controller
             #Address
             'domicile.province_id' => 'integer|required',
             'domicile.city_id' => 'integer|required',
-            'domicile.district_id' => 'integer|required',
+            'domicile.sub_district_id' => 'integer|required',
             'domicile.village_id' => 'integer|required',
             'domicile.address' => 'string|required',
 
@@ -335,7 +335,7 @@ class CvProfileDetailController extends Controller
                     $requestAddress['country_id'],
                     $requestAddress['province_id'],
                     $requestAddress['city_id'],
-                    $requestAddress['district_id'],
+                    $requestAddress['sub_district_id'],
                     $requestAddress['village_id'],
                     explode(' ', $request->header('Authorization'))[1]
                 );

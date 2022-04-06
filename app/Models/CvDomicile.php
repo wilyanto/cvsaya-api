@@ -25,7 +25,7 @@ class CvDomicile extends Model
         'country_id',
         'province_id',
         'city_id',
-        'district_id',
+        'sub_district_id',
         'village_id',
         'address',
         'result',
@@ -80,7 +80,7 @@ class CvDomicile extends Model
     }
     public function subDistrict()
     {
-        $url = env('KADA_URL') . "/v1/domicile/sub-districts/" . $this->district_id;
+        $url = env('KADA_URL') . "/v1/domicile/sub-districts/" . $this->sub_district_id;
         $this->requestDomicile($url);
         $response = $this->requestDomicile($url);
         return $response['message'];
