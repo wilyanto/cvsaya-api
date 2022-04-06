@@ -128,6 +128,12 @@ Route::prefix('v1')->group(function () {
             });
         });
 
+        Route::prefix('document-types')->group(function(){
+            Route::controller(CvDocumentController::class)->group(function () {
+                Route::get('/type', 'getDocumentByID');
+            });
+        });
+
         Route::prefix('cv')->group(function () {
             Route::prefix('profile')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
