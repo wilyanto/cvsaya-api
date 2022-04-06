@@ -46,6 +46,8 @@ class CandidateController extends Controller
             'country_id' => 'nullable',
             'province_id' => 'nullable',
             'city_id' => 'nullable',
+            'city_id' => 'nullable',
+            'city_id' => 'nullable',
             'position_id' => 'nullable|exists:App\Models\CandidatePosition,id',
             'order_by' => [
                 'nullable',
@@ -74,6 +76,12 @@ class CandidateController extends Controller
                     }
                     if ($provinceId != null) {
                         $secondQuery->where('province_id', $provinceId);
+                    }
+                    if ($cityId != null) {
+                        $secondQuery->where('city_id', $cityId);
+                    }
+                    if ($cityId != null) {
+                        $secondQuery->where('city_id', $cityId);
                     }
                     if ($cityId != null) {
                         $secondQuery->where('city_id', $cityId);
