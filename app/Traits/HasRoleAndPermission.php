@@ -10,6 +10,9 @@ trait HasRoleAndPermission
 {
     protected function hasRole(Array $roles,$idKustomer){
         $employee = EmployeeDetail::where('user_id',$idKustomer)->first();
+        if(!$employee){
+            return false;
+        }
         if (! $employee->hasAnyRole($roles)) {
             throw UnauthorizedException::forRoles($roles);
         }
@@ -17,6 +20,9 @@ trait HasRoleAndPermission
 
     protected function hasPermission(Array $permissions,$idKustomer){
         $employee = EmployeeDetail::where('user_id',$idKustomer)->first();
+        if(!$employee){
+            return false;
+        }
         $permissionsUser = collect($employee->getAllPermissions()->pluck('name'))->toArray();
         $intersectPermission = array_intersect($permissionsUser,$permissions);
         if(count($intersectPermission)){
