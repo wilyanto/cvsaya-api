@@ -5,19 +5,15 @@ namespace App\Http\Controllers\Api\v1;
 use App\Models\CvDocument;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Candidate;
-use App\Models\CvExperience;
 use App\Models\DocumentType;
 use App\Models\Document;
 use App\Traits\ApiResponser;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Storage;
+use App\Traits\HasRoleAndPermission;
 use Illuminate\Support\Facades\Response;
-use Return\Exception;
 
 class CvDocumentController extends Controller
 {
-    use ApiResponser;
+    use ApiResponser,HasRoleAndPermission;
     /**
      * Display a listing of the resource.
      *
@@ -305,6 +301,7 @@ class CvDocumentController extends Controller
         $request->file('file')->storeAs('public/' . $documentType->name, $filename);
         $document = Document::create([
             'file_name' => $filenameWithoutExtenstion,
+            'user_id' => $user->id_kustomer,
             'mime_type' => $mimeType,
             'type_id' => $documentType->id,
             'original_file_name' => $request->file->getClientOriginalName(),
@@ -326,44 +323,20 @@ class CvDocumentController extends Controller
         return $this->showAll($documentType);
     }
 
-    public function show(Request $request, $type)
+    public function showById(Request $request, $documentID)
     {
         $user = auth()->user();
-        $documentType = DocumentType::where('id', $type)->firstOrFail();
-        if ($documentType->id == DocumentType::PAYSLIP) {
-            $request->validate([
-                'experience_id' => 'integer|exists:App\Models\CvExperience,id|required',
-            ]);
-            // dump( CvExperience::where('id',$request->experience_id)->where('user_id',$user->id_kustomer)->first());
-            $cvDocument = CvExperience::where('user_id', $user->id_kustomer)->where('id', $request->experience_id)->firstOrFail();
-        } else {
-            $cvDocument = CvDocument::where('user_id', $user->id_kustomer)->firstOrFail();
+        $permissions = [
+            'manage-candidate'
+        ];
+        $hasPermission = $this->hasPermission($permissions,$user->id_kustomer);
+        if($hasPermission){
+            $document = Document::where('id', $documentID)->first();
+        }else{
+            $document = Document::where('id', $documentID)->where('user_id', $user->id_kustomer)->first();
         }
-        $typeOfDocument = $documentType->name;
-        $document = Document::where('id', $cvDocument->$typeOfDocument)->firstOrFail();
-        try {
-            $path = public_path() . '/storage/' . $documentType->name . '/' . $document->file_name . '.' . $this->getExtension($document->mime_type);
-            return Response::download($path);
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 404, 40400);
-        }
-    }
 
-
-    public function showById(Request $request, $id, $type)
-    {
-        $documentType = DocumentType::where('id', $type)->firstOrFail();
-        if ($documentType->id == DocumentType::PAYSLIP) {
-            $request->validate([
-                'experience_id' => 'integer|exists:App\Models\CvExperience,id|required',
-            ]);
-            // dump( CvExperience::where('id',$request->experience_id)->where('user_id',$user->id_kustomer)->first());
-            $cvDocument = CvExperience::where('user_id', $id)->where('id', $request->experience_id)->firstOrFail();
-        } else {
-            $cvDocument = CvDocument::where('user_id', $id)->firstOrFail();
-        }
-        $typeOfDocument = $documentType->name;
-        $document = Document::where('id', $cvDocument->$typeOfDocument)->firstOrFail();
+        $documentType = DocumentType::where('id',$document->type_id)->firstOrFail();
         try {
             $path = public_path() . '/storage/' . $documentType->name . '/' . $document->file_name . '.' . $this->getExtension($document->mime_type);
             return Response::download($path);

@@ -66,11 +66,6 @@ Route::prefix('v1')->group(function () {
                 Route::controller(CvExpectedJobsController::class)->group(function () {
                     Route::get('/{id}/expected-job', 'getIndexByID'); // path user/id/expected-jobs
                 });
-                Route::group(['middleware' => 'throttle:1000,60'], function () {
-                    Route::controller(CvDocumentController::class)->group(function () {
-                        Route::get('/{id}/documents/{type}', 'showById')->middleware(['throttle:1000']); // path user/id/document
-                    });
-                });
 
                 Route::controller(CvProfileDetailController::class)->group(function () {
                     Route::get('/{id}/curriculum-vitae', 'cvDetailByID'); // path user/id/cv
@@ -124,7 +119,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/type', 'getDocumentByID');
                 Route::post('/upload', 'upload');
                 Route::group(['middleware' => 'throttle:1000,60'], function () {
-                    Route::get('/{type}', 'show');
+                    Route::get('/{documentID}', 'showById');
                 });
             });
         });

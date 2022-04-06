@@ -15,7 +15,7 @@ class Document extends Model
     protected $keytype = 'string';
 
     public $fillable = [
-        'file_name', 'mime_type', 'type_id', 'original_file_name'
+        'user_id','file_name', 'mime_type', 'type_id', 'original_file_name'
     ];
 
     public function toIdDocuments(){
