@@ -68,7 +68,7 @@ Route::prefix('v1')->group(function () {
                 });
                 Route::group(['middleware' => 'throttle:1000,60'], function () {
                     Route::controller(CvDocumentController::class)->group(function () {
-                        Route::get('/{id}/documents/file', 'showById')->middleware(['throttle:1000']); // path user/id/document
+                        Route::get('/{id}/documents/{type}', 'showById')->middleware(['throttle:1000']); // path user/id/document
                     });
                 });
 
@@ -119,90 +119,95 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('profile')->group(function () {
-            Route::controller(CvProfileDetailController::class)->group(function () {
-                Route::get('/',  'getDetailByDefault');
-                Route::post('/', 'store');
-                Route::put('/', 'update');
-            });
-        });
-
-        Route::prefix('completeness-status')->group(function () {
-            Route::controller(CvProfileDetailController::class)->group(function () {
-                Route::get('/', 'status');
-            });
-        });
-
-        Route::prefix('expected-job')->group(function () {
-            Route::controller(CvExpectedJobsController::class)->group(function () {
-                Route::get('/', 'getIndexByDefault');
-                Route::post('/', 'storeOrUpdate');
-            });
-        });
-
         Route::prefix('documents')->group(function () {
             Route::controller(CvDocumentController::class)->group(function () {
                 Route::get('/type', 'getDocumentByID');
-                Route::get('/', 'getByDefault');
                 Route::post('/upload', 'upload');
-                Route::post('/', 'store');
                 Route::group(['middleware' => 'throttle:1000,60'], function () {
-                    Route::get('/file', 'show');
+                    Route::get('/{type}', 'show');
                 });
             });
         });
 
-        Route::prefix('curriculum-vitae')->group(function () {
+        Route::prefix('cv')->group(function () {
+            Route::prefix('profile')->group(function () {
+                Route::controller(CvProfileDetailController::class)->group(function () {
+                    Route::get('/',  'getDetailByDefault');
+                    Route::post('/', 'store');
+                    Route::put('/', 'update');
+                });
+            });
+
+            Route::prefix('completeness-status')->group(function () {
+                Route::controller(CvProfileDetailController::class)->group(function () {
+                    Route::get('/', 'status');
+                });
+            });
+
+            Route::prefix('expected-job')->group(function () {
+                Route::controller(CvExpectedJobsController::class)->group(function () {
+                    Route::get('/', 'getIndexByDefault');
+                    Route::post('/', 'storeOrUpdate');
+                });
+            });
+
+            Route::prefix('documents')->group(function () {
+                Route::controller(CvDocumentController::class)->group(function () {
+                    Route::get('/', 'getByDefault');
+                    Route::post('/', 'store');
+                });
+            });
+
             Route::controller(CvProfileDetailController::class)->group(function () {
                 Route::get('/', 'cvDetailByDefault');
             });
-        });
 
-        Route::prefix('certifications')->group(function () {
-            Route::controller(CvCertificationsController::class)->group(function () {
-                Route::get('/', 'index');
-                Route::post('/', 'create');
-                Route::put('/{id}', 'update');
-                Route::delete('/{id}', 'destroy');
+            Route::prefix('certifications')->group(function () {
+                Route::controller(CvCertificationsController::class)->group(function () {
+                    Route::get('/', 'index');
+                    Route::post('/', 'create');
+                    Route::put('/{id}', 'update');
+                    Route::delete('/{id}', 'destroy');
+                });
             });
-        });
 
-        Route::prefix('educations')->group(function () {
-            Route::controller(CvEducationsController::class)->group(function () {
-                Route::get('/', 'index');
-                Route::post('/', 'add');
-                Route::delete('/{id}', 'destroy');
-                Route::put('/{id}',  'update');
+            Route::prefix('educations')->group(function () {
+                Route::controller(CvEducationsController::class)->group(function () {
+                    Route::get('/', 'index');
+                    Route::post('/', 'add');
+                    Route::delete('/{id}', 'destroy');
+                    Route::put('/{id}',  'update');
+                });
             });
-        });
 
-        Route::prefix('experiences')->group(function () {
-            Route::controller(CvExperiencesController::class)->group(function () {
-                Route::get('/', 'index');
-                Route::post('/', 'add');
-                Route::put('/{ip}', 'update');
-                Route::delete('/{ip}',  'destroy');
+            Route::prefix('experiences')->group(function () {
+                Route::controller(CvExperiencesController::class)->group(function () {
+                    Route::get('/', 'index');
+                    Route::post('/', 'add');
+                    Route::put('/{ip}', 'update');
+                    Route::delete('/{ip}',  'destroy');
+                });
             });
-        });
 
-        Route::prefix('hobbies')->group(function () {
-            Route::controller(CvHobbiesController::class)->group(function () {
-                Route::get('/', 'index');
-                Route::get('/suggestions', 'suggestion');
-                Route::post('/', 'create');
-                Route::delete('/{id}', 'destroy');
-                Route::put('/{id}', 'update');
+            Route::prefix('hobbies')->group(function () {
+                Route::controller(CvHobbiesController::class)->group(function () {
+                    Route::get('/', 'index');
+                    Route::get('/suggestions', 'suggestion');
+                    Route::post('/', 'create');
+                    Route::delete('/{id}', 'destroy');
+                    Route::put('/{id}', 'update');
+                });
             });
-        });
 
-        Route::prefix('specialities')->group(function () {
-            Route::controller(CvSpecialitiesController::class)->group(function () {
-                Route::get('/',  'index');
-                Route::get('/suggestions', 'suggestion');
-                Route::post('/', 'create');
-                Route::put('/{id}/certificates', 'updateCertificate');
-                Route::put('/{id}',  'update');
-                Route::delete('/{id}', 'destroy');
+            Route::prefix('specialities')->group(function () {
+                Route::controller(CvSpecialitiesController::class)->group(function () {
+                    Route::get('/',  'index');
+                    Route::get('/suggestions', 'suggestion');
+                    Route::post('/', 'create');
+                    Route::put('/{id}/certificates', 'updateCertificate');
+                    Route::put('/{id}',  'update');
+                    Route::delete('/{id}', 'destroy');
+                });
             });
         });
 

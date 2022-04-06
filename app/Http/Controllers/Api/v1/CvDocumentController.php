@@ -326,13 +326,10 @@ class CvDocumentController extends Controller
         return $this->showAll($documentType);
     }
 
-    public function show(Request $request)
+    public function show(Request $request, $type)
     {
         $user = auth()->user();
-        $request->validate([
-            'type' => 'integer|exists:App\Models\DocumentType,id',
-        ]);
-        $documentType = DocumentType::where('id', $request->type)->firstOrFail();
+        $documentType = DocumentType::where('id', $type)->firstOrFail();
         if ($documentType->id == DocumentType::PAYSLIP) {
             $request->validate([
                 'experience_id' => 'integer|exists:App\Models\CvExperience,id|required',
@@ -353,12 +350,9 @@ class CvDocumentController extends Controller
     }
 
 
-    public function showById(Request $request, $id)
+    public function showById(Request $request, $id, $type)
     {
-        $request->validate([
-            'type' => 'integer|exists:App\Models\DocumentType,id',
-        ]);
-        $documentType = DocumentType::where('id', $request->type)->firstOrFail();
+        $documentType = DocumentType::where('id', $type)->firstOrFail();
         if ($documentType->id == DocumentType::PAYSLIP) {
             $request->validate([
                 'experience_id' => 'integer|exists:App\Models\CvExperience,id|required',
