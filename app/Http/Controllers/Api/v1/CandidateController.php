@@ -46,8 +46,6 @@ class CandidateController extends Controller
             'country_id' => 'nullable',
             'province_id' => 'nullable',
             'city_id' => 'nullable',
-            'city_id' => 'nullable',
-            'city_id' => 'nullable',
             'position_id' => 'nullable|exists:App\Models\CandidatePosition,id',
             'order_by' => [
                 'nullable',

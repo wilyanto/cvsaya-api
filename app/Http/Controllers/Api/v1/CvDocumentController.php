@@ -331,9 +331,9 @@ class CvDocumentController extends Controller
         ];
         $hasPermission = $this->hasPermission($permissions,$user->id_kustomer);
         if($hasPermission){
-            $document = Document::where('id', $documentID)->first();
+            $document = Document::where('id', $documentID)->firstOrFail();
         }else{
-            $document = Document::where('id', $documentID)->where('user_id', $user->id_kustomer)->first();
+            $document = Document::where('id', $documentID)->where('user_id', $user->id_kustomer)->firstOrFail();
         }
 
         $documentType = DocumentType::where('id',$document->type_id)->firstOrFail();
