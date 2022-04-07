@@ -26,21 +26,6 @@ class CreateCertificationsTable extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('cv_log_certifications', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('certification_id')->unsigned();
-            $table->string('name')->nullable();
-            $table->string('organization')->nullable();
-            $table->date('issued_at')->nullable();
-            $table->date('expired_at')->nullable();
-            $table->string('credential_id')->nullable();
-            $table->longText('credential_url')->nullable();
-            $table->timestamp('created_at');
-        });
-
-        Schema::table('cv_log_certifications',function(Blueprint $table){
-            $table->foreign('certification_id')->references('id')->on('cv_certifications');
-        });
     }
 
     /**
@@ -50,12 +35,6 @@ class CreateCertificationsTable extends Migration
      */
     public function down()
     {
-        Schema::table('cv_log_certifications',function(Blueprint $table){
-            $table->dropForeign(['certification_id']);
-        });
-
-        Schema::dropIfExists('cv_log_certifications');
-
         Schema::dropIfExists('cv_certifications');
     }
 }

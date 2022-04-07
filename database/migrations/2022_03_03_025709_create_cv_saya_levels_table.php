@@ -1,10 +1,10 @@
-<?php
+w<?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateCvSayaLevelsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('documents',function (Blueprint $table){
-            $table->bigInteger('user_id')->unsigned()->nullable()->after('id');
+        Schema::create('levels', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('company_id')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
         });
+
     }
 
     /**
@@ -26,8 +31,6 @@ return new class extends Migration
     public function down()
     {
 
-        Schema::table('documents',function (Blueprint $table){
-            $table->dropColumn('user_id');
-        });
+        Schema::dropIfExists('levels');
     }
-};
+}

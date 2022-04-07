@@ -16,8 +16,8 @@ class CreateCvSayaPositionsTable extends Migration
         Schema::create('positions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->bigInteger('department_id')->unsigned();
-            $table->bigInteger('level_id')->unsigned();
+            $table->bigInteger('department_id')->unsigned()->nullable();
+            $table->bigInteger('level_id')->unsigned()->nullable();
             $table->integer('priority')->unsigned()->nullable();
             $table->bigInteger('parent_id')->unsigned()->nullable();
             $table->integer('remaining_slot')->nullable();
@@ -29,6 +29,7 @@ class CreateCvSayaPositionsTable extends Migration
 
         Schema::table('positions', function (Blueprint $table) {
             $table->foreign('department_id')->references('id')->on('departments');
+            $table->foreign('level_id')->references('id')->on('levels');
             $table->foreign('parent_id')->references('id')->on('positions');
         });
 
