@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\Department;
 use App\Models\Level;
 use App\Models\EmployeeDetail;
+use App\Models\User;
 use App\Models\Position;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -50,10 +51,16 @@ class EmployeeSeeder extends Seeder
             ]);
         }
 
-        EmployeeDetail::create([
-            'user_id' => 28031,
-            'position_id' => rand(1, count($positions)),
-            'salary' => 10000000,
-        ]);
+        $phoneNumbers = ['081228859658', '081260355756', '081360016097', '0895347272593', '082166236702', '081342110098'];
+        foreach ($phoneNumbers as $phoneNumber) {
+            $user = User::where('telpon', $phoneNumber)->first();
+            if ($user) {
+                EmployeeDetail::create([
+                    'user_id' => $user->id_kustomer,
+                    'position_id' => rand(1, count($positions)),
+                    'salary' => 1000000,
+                ]);
+            }
+        }
     }
 }

@@ -16,7 +16,7 @@ class CvSpecialityCertificate extends Model implements Auditable
 
     use \OwenIt\Auditing\Auditable;
 
-    protected $table = 'cv_speciality_certifications';
+    protected $table = 'cv_specialities_certifications';
 
     protected $guard = 'id';
 

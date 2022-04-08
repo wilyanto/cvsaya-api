@@ -249,8 +249,8 @@ class CandidateController extends Controller
 
         if ($request->status == Candidate::INTERVIEW) {
             $request->validate([
-                'interview_at' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
-                'interview_by' => 'integer|exists:employee_details,id',
+                'interviewed_at' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
+                'interviewed_by' => 'integer|exists:employee_details,id',
             ]);
 
             $candidateController = new CvProfileDetailController;
@@ -269,7 +269,7 @@ class CandidateController extends Controller
             }
 
             $data = $request->all();
-            $data['interview_at'] = date('Y-m-d H:i:s', strtotime($data['interview_at']));
+            $data['interviewed_at'] = date('Y-m-d H:i:s', strtotime($data['interview_at']));
             $data['candidate_id'] = $id;
 
             $candidateEmpolyeeSchedule = CandidateInterviewSchedule::create($data);
