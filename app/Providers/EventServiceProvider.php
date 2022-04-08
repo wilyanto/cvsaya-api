@@ -53,20 +53,6 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        CvProfileDetail::observe(CvProfileDetailObserver::class);
-        CvSosmed::observe(CvSosmedObserver::class);
-        CvDomicile::observe(CvDomicileObserver::class);
-        CvDocument::observe(CvDocumentObserver::class);
-        CvExpectedJob::observe(CvExpectedJobObserver::class);
-        CvExperience::observe(CvExperienceObserver::class);
-        CvEducation::observe(CvEducationObserver::class);
-        CvCertification::observe(CvCertificationObserver::class);
-        CvSpeciality::observe(CvSpecialityObserver::class);
-        CvSpecialityCertificate::observe(CvSpecialityCertificateObserver::class);
-        CvHobby::observe(CvHobbyObserver::class);
-
-
-        Candidate::observe(CandidateObserver::class);
-        CandidateInterviewSchedule::observe(CandidateInterviewScheduleObserver::class);
+      
     }
 }

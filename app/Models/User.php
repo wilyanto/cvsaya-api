@@ -38,6 +38,11 @@ class User extends Authenticatable
         'telpon', 'nama_lengkap', 'email', 'password', 'NIK', 'tgl_lahir','jam_slot', 'jeniskelamin', 'ID_perusahaan', 'alamat', 'diskon'
     ];
 
+    protected $auditInclude = [
+        'title',
+        'content',
+    ];
+
     /**
      * The attributes that should be hidden for arrays.
      *

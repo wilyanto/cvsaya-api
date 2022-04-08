@@ -205,7 +205,7 @@ class CvProfileDetailController extends Controller
         $candidate->name = $request->first_name . " " . $request->last_name;
         $candidate->phone_number = (int) substr($user->telpon, 1);
         $candidate->country_code = 62;
-        $candidate->register_at = date('Y-m-d H:i:s', time());
+        $candidate->registered_at = date('Y-m-d H:i:s', time());
         $candidate->status = 3;
         $candidate->save();
     }
