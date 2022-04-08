@@ -100,21 +100,18 @@ class CvExpectedJobsController extends Controller
         ]);
         $keyword = $request->keyword;
         $isVerfied = $request->is_verified;
-        // dd($request->all());
-        $specialities = CandidatePosition::where(function ($qurey) use ($keyword, $isVerfied) {
+        $specialities = CandidatePosition::where(function ($query) use ($keyword, $isVerfied) {
             if ($keyword != null) {
-                $qurey->where('name', 'LIKE', '%' . $keyword . '%');
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
             }
             if (isset($isVerfied)) {
                 if ($isVerfied) {
-                    $qurey->whereNotNull('validated_at');
+                    $query->whereNotNull('validated_at');
                 } else {
-                    $qurey->whereNull('validated_at');
+                    $query->whereNull('validated_at');
                 }
             }
         })->get();
-
-        // $specialities = CandidatePositions::where('name','LIKE', '%'.$request->filter_by.'%')->whereNotNull('validated_at')->get();
 
         return $this->showAll($specialities);
     }
@@ -140,7 +137,7 @@ class CvExpectedJobsController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function updateVerfiedCandidatePositions(Request $request, $id)
+    public function verfiedCandidatePositions(Request $request, $id)
     {
         $user = auth()->user();
         $validate = CandidatePosition::where('id', $request->id)->firstOrFail();

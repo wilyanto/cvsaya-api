@@ -27,17 +27,7 @@ class CandidateController extends Controller
 
     public function index(Request $request)
     {
-
-        // Collection::macro('test',function(){
-        //     return 'test';
-        // });
-
         $user = auth()->user();
-
-        // $posistion = EmployeeDetails::where('user_id',$user->id_kustomer)->first();
-        // if(!$posistion){
-        //     return $this->errorResponse('user tidak di temukan',404,40401);
-        // };
         $request->validate([
             'page' => 'required|numeric|gt:0',
             'page_size' => 'required|numeric|gt:0',
@@ -164,12 +154,10 @@ class CandidateController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            // 'company_id' => 'integer|required',
             'page' => 'required|numeric|gt:0',
             'page_size' => 'required|numeric|gt:0'
         ]);
 
-        // dump($user);
         $result = [];
         $positions = CandidatePosition::orderBy('name', 'desc')
             ->paginate(
@@ -178,9 +166,7 @@ class CandidateController extends Controller
                 $pageName = 'page',
                 $pageBody = $request->page
             );
-        // dump($positions);
         foreach ($positions as $position) {
-            // dump($position);
             $result[] = [
                 'id' => $position->id,
                 'name' => $position->name,
@@ -188,7 +174,6 @@ class CandidateController extends Controller
             ];
         }
 
-        // return $this->showAll(collect($result));
         return $this->showPaginate('positions', collect($result), collect($positions));
     }
 
@@ -265,7 +250,7 @@ class CandidateController extends Controller
             $data = $request->all();
             if ($request->interviewed_at) {
                 $data['interviewed_at'] = date('Y-m-d H:i:s', strtotime($data['interviewed_at']));
-            }else{
+            } else {
                 $data['interviewed_at'] = null;
             }
             $data['candidate_id'] = $id;

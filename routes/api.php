@@ -272,7 +272,7 @@ Route::prefix('v1')->group(function () {
             Route::controller(CvExpectedJobsController::class)->group(function () {
                 Route::get('/', 'getListCandidatePositions');
                 Route::post('/', 'createCandidatePositions');
-                Route::put('/{id}', 'updateVerfiedCandidatePositions');
+                Route::put('/{id}', 'verfiedCandidatePositions');
             });
         });
 
@@ -288,5 +288,4 @@ Route::prefix('v1')->group(function () {
             });
         });
     });
-    //master
 });
