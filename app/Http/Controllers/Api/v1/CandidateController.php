@@ -78,12 +78,6 @@ class CandidateController extends Controller
                     if ($cityId != null) {
                         $secondQuery->where('city_id', $cityId);
                     }
-                    if ($cityId != null) {
-                        $secondQuery->where('city_id', $cityId);
-                    }
-                    if ($cityId != null) {
-                        $secondQuery->where('city_id', $cityId);
-                    }
                 });
             }
 
@@ -269,10 +263,10 @@ class CandidateController extends Controller
             }
 
             $data = $request->all();
-            if ($data['interview_at']) {
-                $data['interview_at'] = date('Y-m-d H:i:s', strtotime($data['interview_at']));
+            if ($data['interviewed_at']) {
+                $data['interviewed_at'] = date('Y-m-d H:i:s', strtotime($data['interviewed_at']));
             }else{
-                $data['interview_at'] = null;
+                $data['interviewed_at'] = null;
             }
             $data['candidate_id'] = $id;
 

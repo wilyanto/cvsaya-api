@@ -24,9 +24,9 @@ class CvExperiencesController extends Controller
         // dump($user);
         $data = [];
         $experiences = CvExperience::where('user_id', $user->id_kustomer)
-            ->orderBy('start_at', 'DESC')
-            ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
-            ->orderBy('until_at', 'DESC')
+            ->orderBy('started_at', 'DESC')
+            ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('ended_at', 'DESC')
             ->get();
         return $this->showAll($experiences);
     }
@@ -44,8 +44,8 @@ class CvExperiencesController extends Controller
             'employment_type_id' => 'exists:App\Models\EmploymentType,id|required',
             'company_name' => 'required|string',
             'company_location' => 'nullable|string',
-            'start_at' => 'required|date',
-            'until_at' => 'nullable|date|after:start_at',
+            'started_at' => 'required|date',
+            'ended_at' => 'nullable|date|after:started_at',
             'jobdesc' => 'nullable|string',
             'resign_reason' => 'string|min:20|required',
             'reference' => 'nullable|string',
@@ -70,8 +70,8 @@ class CvExperiencesController extends Controller
         $experience->company_name = $request->company_name;
         $experience->employment_type_id = $request->employment_type_id;
         $experience->company_location = $request->company_location;
-        $experience->start_at = date('Y-m-d', strtotime($request->start_at));
-        $experience->until_at = date('Y-m-d', strtotime($request->until_at));
+        $experience->started_at = date('Y-m-d', strtotime($request->started_at));
+        $experience->ended_at = date('Y-m-d', strtotime($request->ended_at));
         $experience->jobdesc =  $request->jobdesc;
         $experience->reference = $request->reference;
         $experience->previous_salary = $request->previous_salary;
@@ -128,8 +128,8 @@ class CvExperiencesController extends Controller
             'employment_type' => 'exists:App\Models\EmploymentType,id|nullable',
             'company_name' => 'nullable|string',
             'company_location' => 'nullable|string',
-            'start_at' => 'nullable|date',
-            'until_at' => 'nullable|date|after:start_at',
+            'started_at' => 'nullable|date',
+            'ended_at' => 'nullable|date|after:started_at',
             'jobdesc' => 'nullable|string',
             'resign_reason' => 'string|min:50|nullable',
             'reference' => 'nullable|string',
@@ -158,13 +158,13 @@ class CvExperiencesController extends Controller
             $experience->company_location = $request->company_location;
         }
 
-        if (strtotime($experience->until_at) > strtotime($request->start_at)) {
-            $experience->start_at = date('Y-m-d', strtotime($request->start_at));
+        if (strtotime($experience->ended_at) > strtotime($request->started_at)) {
+            $experience->started_at = date('Y-m-d', strtotime($request->stared_at));
         } else {
             return $this->errorResponse('The start at must be a date before saved until at', 422, 42200);
         }
-        if (strtotime($experience->start_at) < strtotime($request->until_at)) {
-            $experience->until_at = date('Y-m-d', strtotime($request->until_at));
+        if (strtotime($experience->started_at) < strtotime($request->ended_at)) {
+            $experience->ended_at = date('Y-m-d', strtotime($request->ended_at));
         } else {
             return $this->errorResponse('The until at must be a date after saved start at', 422, 42200);
         }

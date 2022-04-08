@@ -53,8 +53,8 @@ class CuriculmVitaeSeeder extends Seeder
                     'user_id' => $user->user_id,
                     'company_name' => 'S1',
                     'company_location' => 'Testing',
-                    'start_at' => $startAt,
-                    'until_at' => $untilAt,
+                    'started_at' => $startAt,
+                    'ended_at' => $untilAt,
                     'jobdesc' => $faker->text(),
                     'resign_reason' => $faker->text(),
                     'reference' => 'seed',
@@ -79,7 +79,7 @@ class CuriculmVitaeSeeder extends Seeder
                     'instance' => 'S1',
                     'field_of_study' => 'Testing',
                     'grade' => '4.0',
-                    'start_at' => Carbon::now(),
+                    'started_at' => Carbon::now(),
                     'degree_id' => Degree::all()->random()->id,
                 ]);
             }

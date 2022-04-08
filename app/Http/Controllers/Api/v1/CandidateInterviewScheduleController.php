@@ -34,10 +34,10 @@ class CandidateInterviewScheduleController extends Controller
     {
         $user = auth()->user();
 
-        if ($request->start_at) {
+        if ($request->started_at) {
             return $this->indexByDate($request);
         }
-        $candidate = CandidateInterviewSchedule::whereNull('result_id')->whereNull('rejected_at')->whereNotNull('interview_at')->distinct('candidate_id')->get();
+        $candidate = CandidateInterviewSchedule::whereNull('result_id')->whereNull('rejected_at')->whereNotNull('interviewed_at')->distinct('candidate_id')->get();
 
         return $this->showALl($candidate);
     }
@@ -58,8 +58,8 @@ class CandidateInterviewScheduleController extends Controller
 
         $schedules = CandidateInterviewSchedule::
             // whereBettween('date_time',)
-            whereNull('interview_at')
-            ->where('interview_by', $employee->id)
+            whereNull('interviewed_at')
+            ->where('interviewed_by', $employee->id)
             ->whereNull('result_id')
             ->whereNull('rejected_at')
             ->distinct('candidate_id')
@@ -80,16 +80,16 @@ class CandidateInterviewScheduleController extends Controller
         $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
         // dump($request->input());
         $request->validate([
-            'start_at' => 'date|required',
+            'started_at' => 'date|required',
             'until_at' => 'date|nullable',
         ]);
 
         if (!$request->until_at) {
-            $untilAt = $request->start_at . "+1day";
+            $untilAt = $request->started_at . "+1day";
         } else {
             $untilAt = $request->until_at . "+1day";
         }
-        $begin = new DateTime(date('Y-m-d H:i:s', strtotime($request->start_at)));
+        $begin = new DateTime(date('Y-m-d H:i:s', strtotime($request->started_at)));
         $until = new DateTime(date('Y-m-d H:i:s', strtotime($untilAt)));
         $interval = DateInterval::createFromDateString('1 day');
         $periods = new DatePeriod($begin, $interval, $until);
@@ -100,14 +100,14 @@ class CandidateInterviewScheduleController extends Controller
             $date = $period->format('Y-m-d H:i:s');
             $schedules = CandidateInterviewSchedule::
                 // whereBettween('date_time',)
-                whereDate('interview_at', $period->format('Y-m-d'))
-                ->where('interview_by', $employee->id)
+                whereDate('interviewed_at', $period->format('Y-m-d'))
+                ->where('interviewed_by', $employee->id)
                 ->whereNull('result_id')
                 ->distinct('candidate_id')
                 ->get();
             foreach ($schedules as $schedule) {
                 $scheduleArray[] = [
-                    'interview_at' => $schedule->interview_at,
+                    'interviewed_at' => $schedule->interviewed_at,
                     'schedule_detail' => $schedule->toArraySchedule(),
                 ];
             }
@@ -194,8 +194,8 @@ class CandidateInterviewScheduleController extends Controller
      */
     public function isThereAnyOtherSchedule($date, $time, $interviewer)
     {
-        $schedule = CandidateInterviewSchedule::where('interview_by', $interviewer)
-            ->where('interview_at', date('Y-m-d H:i:s', strtotime($date . ' ' . $time)))->first();
+        $schedule = CandidateInterviewSchedule::where('interviewed_by', $interviewer)
+            ->where('interviewed_at', date('Y-m-d H:i:s', strtotime($date . ' ' . $time)))->first();
         if ($schedule) {
             return true;
         }
@@ -221,14 +221,14 @@ class CandidateInterviewScheduleController extends Controller
         //check role
         $request->validate([
             // 'employee_candidate_id' => 'required|exists:candidate_employee_schedules,employee_candidate_id',
-            'interview_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
+            'interviewed_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
         ]);
         $schedule = CandidateInterviewSchedule::where('id', $id)->firstOrFail();
 
         // if ($this->isThereAnyOtherSchedule($request->date, $request->ti me, $schedule->interview_by)) {
         //     return $this->errorResponse('You have another schedule execpt this schedule', 422, 42201);
         // }
-        $schedule->interview_at = date('Y-m-d H:i:s', strtotime($request->interview_at));
+        $schedule->interviewed_at = date('Y-m-d H:i:s', strtotime($request->interviewed_at));
         $schedule->save();
         return $this->showOne($schedule);
     }

@@ -167,7 +167,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', 'cvDetailByDefault');
             });
 
-            Route::prefix('certifications')->group(function () {
+            Route::prefix('certificates')->group(function () {
                 Route::controller(CvCertificationsController::class)->group(function () {
                     Route::get('/', 'index');
                     Route::post('/', 'create');
@@ -189,8 +189,8 @@ Route::prefix('v1')->group(function () {
                 Route::controller(CvExperiencesController::class)->group(function () {
                     Route::get('/', 'index');
                     Route::post('/', 'add');
-                    Route::put('/{ip}', 'update');
-                    Route::delete('/{ip}',  'destroy');
+                    Route::put('/{id}', 'update');
+                    Route::delete('/{id}',  'destroy');
                 });
             });
 

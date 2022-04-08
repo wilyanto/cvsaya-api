@@ -71,7 +71,7 @@ class CvSpecialitiesController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'certificates' => 'required',
+            'certificates' => 'array',
         ]);
         $certificates = $request->certificates;
         // dd($request->input());

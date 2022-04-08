@@ -22,9 +22,9 @@ class CvEducationsController extends Controller
     {
         $user = auth()->user();
         $educations = CvEducation::where('user_id', $user->id_kustomer)
-            ->orderBy('start_at', 'DESC')
-            ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
-            ->orderBy('until_at', 'DESC')
+            ->orderBy('started_at', 'DESC')
+            ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('ended_at', 'DESC')
             ->get();
 
         return $this->showAll($educations);
@@ -50,18 +50,18 @@ class CvEducationsController extends Controller
             'degree_id' => 'exists:degrees,id|required',
             'field_of_study' => 'required|string',
             'grade' => 'required|string',
-            'start_at' => 'required|date',
-            'until_at' => 'nullable|date|after_or_equal:start_at',
+            'started_at' => 'required|date',
+            'ended_at' => 'nullable|date|after_or_equal:started_at',
             'description' => 'nullable|string',
         ]);
 
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $data['start_at'] = date('Y-m-d', strtotime($data['start_at']));
-        if ($request->until_at == null) {
-            $data['until_at'] = date('Y-m-d', strtotime($data['until_at']));
+        $data['started_at'] = date('Y-m-d', strtotime($data['started_at']));
+        if ($request->ended_at == null) {
+            $data['ended_at'] = date('Y-m-d', strtotime($data['ended_at']));
         } else {
-            $data['until_at'] = null;
+            $data['ended_at'] = null;
         }
         $educations = CvEducation::create($data);
         return $this->showOne($educations);
@@ -116,21 +116,21 @@ class CvEducationsController extends Controller
             'degree_id' => 'exists:degrees,id|required',
             'field_of_study' => 'nullable|string',
             'grade' => 'nullable|string',
-            'start_at' => 'nullable|date',
-            'until_at' => 'nullable|date|after_or_equal:start_at',
+            'started_at' => 'nullable|date',
+            'ended_at' => 'nullable|date|after_or_equal:started_at',
             'description' => 'nullable|string',
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        if ($request->start_at != null) {
-            $data['start_at'] = date('Y-m-d', strtotime($data['start_at']));
+        if ($request->started_at != null) {
+            $data['started_at'] = date('Y-m-d', strtotime($data['started_at']));
         } else {
-            $data['start_at'] = null;
+            $data['started_at'] = null;
         }
-        if ($request->until_at != null) {
-            $data['until_at'] = date('Y-m-d', strtotime($data['until_at']));
+        if ($request->ended_at != null) {
+            $data['ended_at'] = date('Y-m-d', strtotime($data['ended_at']));
         } else {
-            $data['until_at'] = null;
+            $data['ended_at'] = null;
         }
         $educations = CvEducation::where('id', $id)->where('user_id', $user->id_kustomer)->first();
         if (!$educations) {

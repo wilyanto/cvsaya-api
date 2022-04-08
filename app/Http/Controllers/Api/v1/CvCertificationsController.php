@@ -43,7 +43,7 @@ class CvCertificationsController extends Controller
             'name' => 'required|string',
             'organization' => 'required|string',
             'issued_at' => 'required|date',
-            'expired_at' => 'nullable|after:start_at',
+            'expired_at' => 'nullable|after:issued_at',
             'credential_id' => 'string|nullable',
             'credential_url' => 'string|nullable',
         ]);
@@ -108,7 +108,7 @@ class CvCertificationsController extends Controller
             'name' => 'nullable|string',
             'organization' => 'nullable|string',
             'issued_at' => 'required|date',
-            'expired_at' => 'nullable|after:start_at',
+            'expired_at' => 'nullable|after:issued_at',
             'credential_id' => 'nullable|nullable',
             'credential_url' => 'nullable|nullable',
         ]);

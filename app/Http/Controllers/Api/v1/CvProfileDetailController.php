@@ -69,16 +69,16 @@ class CvProfileDetailController extends Controller
             $id = $user->id_kustomer;
         }
         $education = CvEducation::where('user_id', $id)
-            ->orderBy('start_at', 'DESC')
-            ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
-            ->orderBy('until_at', 'DESC')
+            ->orderBy('started_at', 'DESC')
+            ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('ended_at', 'DESC')
             ->get();
         $data['educations'] = $education;
 
         $experience = CvExperience::where('user_id', $id)
-            ->orderBy('start_at', 'DESC')
-            ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
-            ->orderBy('until_at', 'DESC')
+            ->orderBy('started_at', 'DESC')
+            ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('ended_at', 'DESC')
             ->get();
         $data['experiences'] = $experience;
 
@@ -256,7 +256,7 @@ class CvProfileDetailController extends Controller
             'country_code' => $country,
             'province_code' => $province,
             'city_code' => $city,
-            'sub_district_code' => $subDistrict,
+            'subdistrict_code' => $subDistrict,
             'village_code' => $village,
         ];
         $response = Http::withHeaders([
@@ -294,7 +294,7 @@ class CvProfileDetailController extends Controller
             #Address
             'domicile.province_id' => 'integer|required',
             'domicile.city_id' => 'integer|required',
-            'domicile.sub_district_id' => 'integer|required',
+            'domicile.subdistrict_id' => 'integer|required',
             'domicile.village_id' => 'integer|required',
             'domicile.address' => 'string|required',
 
@@ -335,7 +335,7 @@ class CvProfileDetailController extends Controller
                     $requestAddress['country_id'],
                     $requestAddress['province_id'],
                     $requestAddress['city_id'],
-                    $requestAddress['sub_district_id'],
+                    $requestAddress['subdistrict_id'],
                     $requestAddress['village_id'],
                     explode(' ', $request->header('Authorization'))[1]
                 );

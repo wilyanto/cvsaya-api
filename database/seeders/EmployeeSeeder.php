@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Company;
+use App\Models\CvProfileDetail;
 use App\Models\Department;
 use App\Models\Level;
 use App\Models\EmployeeDetail;
@@ -60,7 +61,18 @@ class EmployeeSeeder extends Seeder
                     'position_id' => rand(1, count($positions)),
                     'salary' => 1000000,
                 ]);
+
+                $profileDetail = CvProfileDetail::where('user_id',$user->id_kustomer)->first();
+                if(!$profileDetail){
+                    CvProfileDetail::create([
+                        'first_name' => 'dodo',
+                        'last_name' => 'superman',
+                        'user_id' => $user->id_kustomer,
+                    ]);
+                }
             }
+
+
         }
     }
 }

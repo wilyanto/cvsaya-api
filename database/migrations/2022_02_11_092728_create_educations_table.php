@@ -20,7 +20,7 @@ class CreateEducationsTable extends Migration
             $table->string('field_of_study');
             $table->bigInteger('degree_id')->unsigned();
             $table->string('grade');
-            $table->date('start_at');
+            $table->date('started_at');
             $table->date('ended_at')->nullable();
             $table->longText('description')->nullable();
             $table->timestamps();

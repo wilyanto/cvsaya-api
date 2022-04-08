@@ -75,9 +75,9 @@ class Candidate extends Model implements Auditable
     public function educations()
     {
         return $this->hasMany(CvEducation::class, 'user_id', 'user_id')
-            ->orderBy('start_at', 'DESC')
-            ->orderByRaw("CASE WHEN until_at IS NULL THEN 0 ELSE 1 END ASC")
-            ->orderBy('until_at', 'DESC');
+            ->orderBy('started_at', 'DESC')
+            ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('ended_at', 'DESC');
     }
 
     public function profile()

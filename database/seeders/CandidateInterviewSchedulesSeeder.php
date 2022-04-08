@@ -26,7 +26,6 @@ class CandidateInterviewSchedulesSeeder extends Seeder
         foreach ($candidates as $candidate) {
             $random = rand(1, 5);
             for ($i = 1; $i <= $random; $i++) {
-                $employee = EmployeeDetail::all()->random()->id;
                 if ($i > 1) {
                     $isWithSchedule = rand(0, 1);
                     $isWithResult = rand(0, 1);
@@ -34,7 +33,7 @@ class CandidateInterviewSchedulesSeeder extends Seeder
                     $schedule = CandidateInterviewSchedule::create([
                         'candidate_id' => $candidate->id,
                         'interviewed_at' => $isWithResult ? ($isWithSchedule ? $faker->dateTime() : null) : null,
-                        'interviewed_by' => $employee,
+                        'interviewed_by' => EmployeeDetail::all()->random()->id,
                         'result_id' => $isWithResult ? InterviewResult::all()->random()->id : null,
                         'rejected_at' => $isWithResult ? null : $faker->dateTime(),
                         'note' =>  $isWithResult ? $faker->text() : null,
@@ -49,7 +48,7 @@ class CandidateInterviewSchedulesSeeder extends Seeder
                 if (!rand(0, 1)) {
                     $schedule = CandidateInterviewSchedule::create([
                         'candidate_id' => $candidate->id,
-                        'interviewed_by' => $employee,
+                        'interviewed_by' => EmployeeDetail::all()->random()->id,
                     ]);
                 }
             }

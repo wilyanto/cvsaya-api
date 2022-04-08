@@ -21,8 +21,8 @@ class CandidateInterviewSchedule extends Model implements Auditable
     public $fillable = [
         'id',
         'candidate_id',
-        'interview_at',
-        'interview_by',
+        'interviewed_at',
+        'interviewed_by',
         'result_id',
         'note',
     ];
@@ -44,12 +44,12 @@ class CandidateInterviewSchedule extends Model implements Auditable
 
     public function interviewBy()
     {
-        return $this->hasOne(EmployeeDetail::class, 'id', 'interview_by');
+        return $this->hasOne(EmployeeDetail::class, 'id', 'interviewed_by');
     }
 
     public function characterTraits()
     {
-        return $this->hasManyThrough(CharacterTrait::class, CandidateInterviewSchedulesCharacterTrait::class, 'candidate_interview_schedule_id', 'id',  'id','character_trait_id');
+        return $this->hasManyThrough(CharacterTrait::class, CandidateInterviewSchedulesCharacterTrait::class, 'candidate_interview_schedule_id', 'id',  'id', 'character_trait_id');
     }
 
     public function toArrayCandidate()
@@ -60,15 +60,16 @@ class CandidateInterviewSchedule extends Model implements Auditable
             'id' => $getCandidate->id,
             'user_id' => $getCandidate->user_id,
             'name' => $getCandidate->name,
-            'interview_at' => $this->interview_at,
+            'interviewed_at' => $this->interviewed_at,
             'phone_number' => $getCandidate->phone_number,
             'register_date' => $getCandidate->register_date,
             'education' => $education->first(),
-            'job' => $getCandidate->job->expected_position,
+            'job' => $getCandidate->job ? $getCandidate->job->expected_position : null,
         ];
     }
 
-    public function toArraySchedule(){
+    public function toArraySchedule()
+    {
         return [
             'id' => $this->id,
             'user_id' => $this->candidate->user_id,
@@ -80,13 +81,17 @@ class CandidateInterviewSchedule extends Model implements Auditable
         ];
     }
 
-    public function interviewer(){
-        return [
-            'id' => $this->interviewBy->id,
-            'first_name' => $this->interviewBy->profileDetail->first_name,
-            'last_name' => $this->interviewBy->profileDetail->last_name,
-        ];
-
+    public function interviewer()
+    {
+        if ($this->interviewBy) {
+            return [
+                'id' => $this->interviewBy->id,
+                'first_name' => $this->interviewBy->profileDetail->first_name,
+                'last_name' => $this->interviewBy->profileDetail->last_name,
+            ];
+        }else{
+            return null;
+        }
     }
 
     public function toArray()
@@ -106,7 +111,8 @@ class CandidateInterviewSchedule extends Model implements Auditable
         ];
     }
 
-    public function interviewResult(){
+    public function interviewResult()
+    {
         return [
             'interviewer' => $this->interviewer(),
             'note' => $this->note,

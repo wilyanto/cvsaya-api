@@ -22,17 +22,12 @@ class CvDomicile extends Model implements Auditable
     public $fillable = [
         'id',
         'user_id',
-        'empolyee_candidate_id',
-        'interview_at',
-        'interview_by',
         'country_id',
         'province_id',
         'city_id',
-        'sub_district_id',
+        'subdistrict_id',
         'village_id',
         'address',
-        'result',
-        'note',
     ];
 
     public function result()
@@ -83,7 +78,7 @@ class CvDomicile extends Model implements Auditable
     }
     public function subDistrict()
     {
-        $url = env('KADA_URL') . "/v1/domicile/sub-districts/" . $this->sub_district_id;
+        $url = env('KADA_URL') . "/v1/domicile/sub-districts/" . $this->subdistrict_id;
         $this->requestDomicile($url);
         $response = $this->requestDomicile($url);
         return $response['message'];
@@ -106,7 +101,7 @@ class CvDomicile extends Model implements Auditable
             'country' => $this->country(),
             'province' => $this->province(),
             'city' => $this->city(),
-            'sub_district' => $this->subDistrict(),
+            'subdistrict' => $this->subDistrict(),
             'village' => $this->village(),
             'address' => $this->address,
             'created_at' => $this->created_at,
