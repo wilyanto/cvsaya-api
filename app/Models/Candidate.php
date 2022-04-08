@@ -98,7 +98,7 @@ class Candidate extends Model implements Auditable
 
     public function label()
     {
-        $result = CandidateInterviewSchedule::where('candidate_id', $this->id)->whereNull('rejected_at')->orderBy('interview_at', 'DESC')->first();
+        $result = CandidateInterviewSchedule::where('candidate_id', $this->id)->whereNull('rejected_at')->orderBy('created_at', 'DESC')->first();
         if ($result) {
             return $result->result;
         }
