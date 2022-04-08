@@ -9,6 +9,8 @@ class CandidateInterviewSchedule extends Model
 {
     use HasFactory;
 
+    use \OwenIt\Auditing\Auditable;
+
     protected $table = 'candidate_interview_schedules';
 
     protected $guard = 'id';

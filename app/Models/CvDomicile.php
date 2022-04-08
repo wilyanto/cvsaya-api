@@ -10,6 +10,8 @@ class CvDomicile extends Model
 {
     use HasFactory;
 
+    use \OwenIt\Auditing\Auditable;
+
     protected $table = 'cv_domiciles';
 
     protected $guard = 'id';

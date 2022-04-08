@@ -12,6 +12,8 @@ class CvExperience extends Model
 {
     use HasFactory,SoftDeletes;
 
+    use \OwenIt\Auditing\Auditable;
+
     protected $table = 'cv_experiences';
 
     protected $guard = 'id';

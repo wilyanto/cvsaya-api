@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class CandidateResult extends Model
 {
     use HasFactory;
+
+    use \OwenIt\Auditing\Auditable;
 }

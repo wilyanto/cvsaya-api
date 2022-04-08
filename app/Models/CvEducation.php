@@ -10,6 +10,8 @@ class CvEducation extends Model
 {
     use HasFactory,SoftDeletes;
 
+    use \OwenIt\Auditing\Auditable;
+
     protected $table = 'cv_educations';
 
     protected $guard = 'id';

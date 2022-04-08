@@ -71,7 +71,6 @@ class CvExpectedJobsController extends Controller
         if (!$position) {
             $position = new CandidatePosition();
             $position->name = $data['expected_position']->name;
-            $position->inserted_by = $user->id_kustomer;
             $position->save();
         }
         $data['expected_position'] = $position->id;
@@ -130,7 +129,6 @@ class CvExpectedJobsController extends Controller
         ]);
 
         $data = $request->all();
-        $data['inserted_by'] = $user->id_kustomer;
         $position = CandidatePosition::create($data);
 
         return $this->showOne($position);

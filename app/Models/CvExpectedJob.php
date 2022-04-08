@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class CvExpectedJob extends Model
+class CvExpectedJob extends Model implements Auditable
 {
     use HasFactory;
+
+    use \OwenIt\Auditing\Auditable;
 
     protected $table = 'cv_expected_jobs';
 
@@ -29,12 +32,14 @@ class CvExpectedJob extends Model
         'expected_salary' => 'integer',
     ];
 
-    public function candidates(){
-        return $this->hasMany(Candidate::class,'user_id','user_id');
+    public function candidates()
+    {
+        return $this->hasMany(Candidate::class, 'user_id', 'user_id');
     }
 
-    public function position(){
-        return $this->hasOne(CandidatePosition::class,'id','expected_position');
+    public function position()
+    {
+        return $this->hasOne(CandidatePosition::class, 'id', 'expected_position');
     }
 
     public function toArray()
@@ -51,4 +56,3 @@ class CvExpectedJob extends Model
         ];
     }
 }
-

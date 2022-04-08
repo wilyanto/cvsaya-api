@@ -19,10 +19,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements Auditable
 {
     use HasApiTokens, Notifiable, HasRoles;
+
+    use \OwenIt\Auditing\Auditable;
 
     protected $primaryKey = 'id_kustomer';
     protected $table =  'kustomer';
@@ -84,5 +87,9 @@ class User extends Authenticatable
 
     public function accessTokens(){
         return $this->hasMany(OauthAccessToken::class);
+    }
+
+    public function getAuthIdentifier(){
+        return $this->id_kustomer;
     }
 }

@@ -11,6 +11,8 @@ class CandidatePosition extends Model
 {
     use HasFactory;
 
+    use \OwenIt\Auditing\Auditable;
+
     protected $table = 'candidate_positions';
 
     protected $primaryKey = 'id';

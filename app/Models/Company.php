@@ -13,6 +13,8 @@ class Company extends Model
     use CrudTrait; // <----- this
     use HasRoles;
 
+    use \OwenIt\Auditing\Auditable;
+
     protected $primaryKey = 'id';
 
     protected $table = 'companies';

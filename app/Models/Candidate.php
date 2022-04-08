@@ -13,6 +13,8 @@ class Candidate extends Model
 {
     use HasFactory;
 
+    use \OwenIt\Auditing\Auditable;
+
     public const BLASTING = 1;
 
     public const REGISTEREDKADA = 2;

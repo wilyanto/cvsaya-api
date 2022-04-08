@@ -12,6 +12,7 @@ class CvCertification extends Model
 {
     use HasFactory,SoftDeletes;
 
+    use \OwenIt\Auditing\Auditable;
 
     protected $table = 'cv_certifications';
 

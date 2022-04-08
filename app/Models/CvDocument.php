@@ -9,6 +9,8 @@ class CvDocument extends Model
 {
     use HasFactory;
 
+    use \OwenIt\Auditing\Auditable;
+
     protected $table = 'cv_documents';
 
     protected $guard = 'id';
