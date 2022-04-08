@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\CvSpecialityCertificate;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class CvCertification extends Model
+class CvCertification extends Model implements Auditable
 {
     use HasFactory,SoftDeletes;
 

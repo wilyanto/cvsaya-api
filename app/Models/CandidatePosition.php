@@ -6,8 +6,9 @@ use App\Models\Candidate;
 use App\Models\CvExpectedJob;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class CandidatePosition extends Model
+class CandidatePosition extends Model implements Auditable
 {
     use HasFactory;
 

@@ -10,12 +10,15 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class EmployeeDetail extends Authenticatable
+class EmployeeDetail extends Authenticatable implements Auditable
 {
     use HasFactory, SoftDeletes;
     use CrudTrait;
     use HasRoles;
+
+    use \OwenIt\Auditing\Auditable;
 
     protected $table = 'employee_details';
 

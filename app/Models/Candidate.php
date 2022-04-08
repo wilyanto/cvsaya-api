@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Candidate extends Model
+class Candidate extends Model implements Auditable
 {
     use HasFactory;
 

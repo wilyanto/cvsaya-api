@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\CvSpecialityCertificate;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class CvSpeciality extends Model
+class CvSpeciality extends Model implements Auditable
 {
     use HasFactory,SoftDeletes;
+
+    use \OwenIt\Auditing\Auditable;
 
     protected $table = 'cv_specialities';
 

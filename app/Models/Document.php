@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\UuidGenerator;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Document extends Model
+class Document extends Model implements Auditable
 {
     use HasFactory,UuidGenerator;
+
+    use \OwenIt\Auditing\Auditable;
 
     protected $database = 'documents';
 

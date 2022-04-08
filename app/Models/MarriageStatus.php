@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class MarriageStatus extends Model
+class MarriageStatus extends Model implements Auditable
 {
     use HasFactory;
+
+    use \OwenIt\Auditing\Auditable;
 
     protected  $table = 'marriage_statuses';
 }

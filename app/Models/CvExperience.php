@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\EmploymentType;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class CvExperience extends Model
+class CvExperience extends Model implements Auditable
 {
     use HasFactory,SoftDeletes;
 
