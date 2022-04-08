@@ -64,7 +64,7 @@ class CandidateInterviewSchedule extends Model implements Auditable
             'phone_number' => $getCandidate->phone_number,
             'register_date' => $getCandidate->register_date,
             'education' => $education->first(),
-            'job' => $getCandidate->job ? $getCandidate->job->expected_position : null,
+            'job' => $getCandidate->job ? $getCandidate->job->position : null,
         ];
     }
 

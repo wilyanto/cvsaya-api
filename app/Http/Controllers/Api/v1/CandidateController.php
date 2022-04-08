@@ -263,7 +263,7 @@ class CandidateController extends Controller
             }
 
             $data = $request->all();
-            if ($data['interviewed_at']) {
+            if ($request->interviewed_at) {
                 $data['interviewed_at'] = date('Y-m-d H:i:s', strtotime($data['interviewed_at']));
             }else{
                 $data['interviewed_at'] = null;
