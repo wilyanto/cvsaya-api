@@ -159,7 +159,7 @@ class CvExperiencesController extends Controller
         }
 
         if (strtotime($experience->ended_at) > strtotime($request->started_at)) {
-            $experience->started_at = date('Y-m-d', strtotime($request->stared_at));
+            $experience->started_at = date('Y-m-d', strtotime($request->started_at));
         } else {
             return $this->errorResponse('The start at must be a date before saved until at', 422, 42200);
         }
