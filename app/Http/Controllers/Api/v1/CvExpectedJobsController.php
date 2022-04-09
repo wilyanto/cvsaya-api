@@ -93,19 +93,18 @@ class CvExpectedJobsController extends Controller
      */
     public function getListCandidatePositions(Request $request)
     {
-        $user = auth()->user();
         $request->validate([
             'keyword' => 'string|nullable',
             'is_verified' => 'nullable|boolean'
         ]);
         $keyword = $request->keyword;
-        $isVerfied = $request->is_verified;
-        $specialities = CandidatePosition::where(function ($query) use ($keyword, $isVerfied) {
+        $isVerified = $request->is_verified;
+        $specialities = CandidatePosition::where(function ($query) use ($keyword, $isVerified) {
             if ($keyword != null) {
                 $query->where('name', 'LIKE', '%' . $keyword . '%');
             }
-            if (isset($isVerfied)) {
-                if ($isVerfied) {
+            if (isset($isVerified)) {
+                if ($isVerified) {
                     $query->whereNotNull('validated_at');
                 } else {
                     $query->whereNull('validated_at');
@@ -126,6 +125,7 @@ class CvExpectedJobsController extends Controller
         ]);
 
         $data = $request->all();
+        $data['validated_at'] = true;
         $position = CandidatePosition::create($data);
 
         return $this->showOne($position);

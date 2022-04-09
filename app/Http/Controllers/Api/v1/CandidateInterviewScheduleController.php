@@ -32,19 +32,27 @@ class CandidateInterviewScheduleController extends Controller
      */
     public function index(Request $request)
     {
-        $user = auth()->user();
 
-        if ($request->started_at) {
-            return $this->indexByDate($request);
-        }
-        $candidate = CandidateInterviewSchedule::whereNull('result_id')->whereNull('rejected_at')->whereNotNull('interviewed_at')->distinct('candidate_id')->get();
+        $request->validate([
+            'date' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
+        ]);
+        $date = $request->date;
+        $candidate = CandidateInterviewSchedule::whereNull('result_id')
+            ->whereNull('rejected_at')
+            ->whereNotNull('interviewed_by')
+            ->where(function ($query) use ($date) {
+                if ($date) {
+                    $date = date('Y-m-d', strtotime($date));
+                    $query->whereDate('interviewed_at', $date);
+                }
+            })->distinct('candidate_id')->get();
 
         return $this->showALl($candidate);
     }
 
     public function getDetail($id)
     {
-        $candidate = Candidate::where('user_id',$id)->firstOrFail();
+        $candidate = Candidate::where('user_id', $id)->firstOrFail();
 
         $schedules = CandidateInterviewSchedule::where('candidate_id', $candidate->id)->get();
 
@@ -81,16 +89,16 @@ class CandidateInterviewScheduleController extends Controller
         // dump($request->input());
         $request->validate([
             'started_at' => 'date|required',
-            'until_at' => 'date|nullable',
+            'ended_at' => 'date|nullable',
         ]);
 
-        if (!$request->until_at) {
-            $untilAt = $request->started_at . "+1day";
+        if (!$request->ended_at) {
+            $ended_at = $request->started_at . "+1day";
         } else {
-            $untilAt = $request->until_at . "+1day";
+            $ended_at = $request->ended_at . "+1day";
         }
         $begin = new DateTime(date('Y-m-d H:i:s', strtotime($request->started_at)));
-        $until = new DateTime(date('Y-m-d H:i:s', strtotime($untilAt)));
+        $until = new DateTime(date('Y-m-d H:i:s', strtotime($ended_at)));
         $interval = DateInterval::createFromDateString('1 day');
         $periods = new DatePeriod($begin, $interval, $until);
 
@@ -233,7 +241,8 @@ class CandidateInterviewScheduleController extends Controller
         return $this->showOne($schedule);
     }
 
-    public function rejectInterview(Request $request,$id){
+    public function rejectInterview(Request $request, $id)
+    {
         $request->validate([
             'note' => 'string|min:50|nullable',
         ]);
@@ -251,7 +260,6 @@ class CandidateInterviewScheduleController extends Controller
         $schedule->save();
 
         return $this->showOne($schedule);
-
     }
 
     public function giveResult(Request $request, $id)

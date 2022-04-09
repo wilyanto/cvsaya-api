@@ -131,7 +131,7 @@ class Candidate extends Model implements Auditable
             'name' => $this->name,
             'phone_number' => $this->phone_number,
             'country_code' => $this->country_code,
-            'register_at' => $this->register_at,
+            'registered_at' => $this->register_at,
             'status' => $status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
@@ -172,21 +172,18 @@ class Candidate extends Model implements Auditable
 
     public function toArray()
     {
-        $value = $this->label();
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
             'name' => $this->name,
-            'phone_number' => $this->phone_number,
-            'country_code' => $this->country_code,
-            'register_at' => $this->register_at,
             'status' => $this->status,
-            'suggest_by' => $this->SuggestBy,
-            'many_requst' => $this->many_request,
+            'country_code' => $this->country_code,
+            'phone_number' => $this->phone_number,
+            'interviews' => $this->schedules,
+            'latest_result' => $this->label(),
+            'registered_at' => $this->registered_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'schedule' => $this->schedule,
-            'latest_result' => $this->label(),
         ];
     }
 }

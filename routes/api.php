@@ -99,6 +99,12 @@ Route::prefix('v1')->group(function () {
                 });
             });
 
+            Route::prefix('interview-periods')->group(function () {
+                Route::controller(CandidateInterviewScheduleController::class)->group(function () {
+                    Route::get('/', 'indexByDate');
+                });
+            });
+
             Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                 Route::get('/interviewers', 'indexInterviewer');
             });
@@ -128,7 +134,7 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('document-types')->group(function(){
+        Route::prefix('document-types')->group(function () {
             Route::controller(CvDocumentController::class)->group(function () {
                 Route::get('/type', 'getDocumentByID');
             });
