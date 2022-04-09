@@ -11,7 +11,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class CvExperience extends Model implements Auditable
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     use \OwenIt\Auditing\Auditable;
 
@@ -21,23 +21,31 @@ class CvExperience extends Model implements Auditable
 
     protected $primaryKey = 'id';
 
-    public function user(){
-        return $this->belongsTo(User::class,'id_kustomer','user_id');
+    protected $casts = [
+        'previous_salary' => 'int',
+    ];
+
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_kustomer', 'user_id');
     }
 
-    public function EmployeeType(){
-        return $this->hasOne(EmploymentType::class,'id','employment_type_id');
+    public function EmployeeType()
+    {
+        return $this->hasOne(EmploymentType::class, 'id', 'employment_type_id');
     }
 
-    public function candidatePositions(){
-        return $this->hasOne(CandidatePosition::class,'id','position_id');
+    public function candidatePositions()
+    {
+        return $this->hasOne(CandidatePosition::class, 'id', 'position_id');
     }
 
     public function toArray()
     {
         return [
             'id' => $this->id,
-            'user_id'=> $this->user_id,
+            'user_id' => $this->user_id,
             'position' => $this->candidatePositions,
             'employment_type' => $this->employeeType,
             'company_name' => $this->company_name,
@@ -46,7 +54,7 @@ class CvExperience extends Model implements Auditable
             'ended_at' => $this->ended_at,
             'jobdesc' => $this->jobdesc,
             'reference' => $this->reference,
-            'previous_salary' => $this->previous_salary,
+            'previous_salary' => (int) $this->previous_salary,
             'payslip' => $this->payslip,
             'resign_reason' => $this->resign_reason,
             'created_at' => $this->created_at,

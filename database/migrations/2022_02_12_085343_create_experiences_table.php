@@ -22,7 +22,7 @@ class CreateExperiencesTable extends Migration
             $table->string('company_location')->nullable();
             $table->longText('jobdesc')->nullable();
             $table->string('resign_reason');
-            $table->string('reference');
+            $table->string('reference')->nullable();
             $table->integer('previous_salary')->nullable();
             $table->uuid('payslip')->nullable();
             $table->date('started_at');
