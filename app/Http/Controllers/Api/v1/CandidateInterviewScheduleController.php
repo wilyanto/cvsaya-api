@@ -89,8 +89,8 @@ class CandidateInterviewScheduleController extends Controller
         $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
         // dump($request->input());
         $request->validate([
-            'started_at' => 'date|required',
-            'ended_at' => 'date|nullable',
+            'started_at' => 'date_format:Y-m-d\TH:i:s.v\Z|required',
+            'ended_at' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
         ]);
 
         if (!$request->ended_at) {
