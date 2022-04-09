@@ -18,11 +18,11 @@ class Candidate extends Model implements Auditable
 
     public const BLASTING = 1;
 
-    public const REGISTEREDKADA = 2;
+    public const REGISTERED_KADA = 2;
 
-    public const INPUTINGKADA = 3;
+    public const INPUTING_KADA = 3;
 
-    public const ReadyToInterview = 4;
+    public const READY_TO_INTERVIEW = 4;
 
     public const INTERVIEW = 5;
 
@@ -36,9 +36,6 @@ class Candidate extends Model implements Auditable
 
     public const DECLINE = 10;
 
-    public const RESULT_RECOMMENDED = 1;
-    public const RESULT_HOLD = 2;
-    public const RESULT_BAD = 3;
 
     protected $table = 'candidates';
 

@@ -14,6 +14,7 @@ use App\Models\CandidatePosition;
 use App\Models\CandidateInterviewSchedule;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
+use App\Models\InterviewResult;
 
 
 class CandidateController extends Controller
@@ -77,7 +78,7 @@ class CandidateController extends Controller
                 });
             }
             if ($status != null) {
-                if ($status == Candidate::ReadyToInterview) {
+                if ($status == Candidate::READY_TO_INTERVIEW) {
                     $query->where('status', 3);
                 } else {
                     $query->where('status', $status);
@@ -92,7 +93,7 @@ class CandidateController extends Controller
             );
         $data = [];
         foreach ($candidates as $candidate) {
-            if ($status == Candidate::ReadyToInterview) {
+            if ($status == Candidate::READY_TO_INTERVIEW) {
                 $candidateController = new CvProfileDetailController;
 
                 $status = $candidateController->getStatus($candidate->user_id);
@@ -152,7 +153,6 @@ class CandidateController extends Controller
 
     public function getPosition(Request $request)
     {
-        $user = auth()->user();
         $request->validate([
             'page' => 'required|numeric|gt:0',
             'page_size' => 'required|numeric|gt:0'
@@ -185,17 +185,17 @@ class CandidateController extends Controller
         })->count();
         $data['bad'] = collect($position->candidates)->filter(function ($item) {
             if ($item->label()) {
-                return $item->label()->id == Candidate::RESULT_BAD;
+                return $item->label()->id == InterviewResult::RESULT_BAD;
             }
         })->count();
         $data['hold'] = collect($position->candidates)->filter(function ($item) {
             if ($item->label()) {
-                return $item->label()->id == Candidate::RESULT_HOLD;
+                return $item->label()->id == InterviewResult::RESULT_HOLD;
             }
         })->count();
         $data['recommended'] = collect($position->candidates)->filter(function ($item) {
             if ($item->label()) {
-                return $item->label()->id == Candidate::RESULT_RECOMMENDED;
+                return $item->label()->id == InterviewResult::RESULT_RECOMMENDED;
             }
         })->count();
         $data['accepted'] = collect($position->candidates)->filter(function ($item) {

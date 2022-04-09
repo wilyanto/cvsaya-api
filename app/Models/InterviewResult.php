@@ -13,4 +13,10 @@ class InterviewResult extends Model implements Auditable
     use \OwenIt\Auditing\Auditable;
 
     protected $database = 'interview_results';
+
+    public const RESULT_RECOMMENDED = 1;
+
+    public const RESULT_HOLD = 2;
+
+    public const RESULT_BAD = 3;
 }
