@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Candidate;
 use App\Models\Company;
 use App\Models\CvProfileDetail;
 use App\Models\Department;
@@ -52,7 +53,7 @@ class EmployeeSeeder extends Seeder
             ]);
         }
 
-        $phoneNumbers = ['081228859658', '081260355756', '081360016097', '0895347272593', '082166236702', '081342110098'];
+        $phoneNumbers = ['081228859658', '081260355756', '081360016097', '0895347272593', '082166236702', '081342110089'];
         foreach ($phoneNumbers as $phoneNumber) {
             $user = User::where('telpon', $phoneNumber)->first();
             if ($user) {
@@ -62,11 +63,30 @@ class EmployeeSeeder extends Seeder
                     'salary' => 1000000,
                 ]);
 
+                $candidate = Candidate::where('phone_number',substr($phoneNumber,1))->first();
+                if(!$candidate){
+                    Candidate::create([
+                        'user_id' => $user->id_kustomer,
+                        'name' => $user->nama_lengkap,
+                        'status' => 9,
+                        'phone_number' => substr($phoneNumber,1),
+                        'country_code' => 62,
+                    ]);
+                }else{
+                    Candidate::where('phone_number',substr($phoneNumber,1))->update([
+                        'user_id' => $user->id_kustomer,
+                        'name' => $user->nama_lengkap,
+                        'status' => 9,
+                        'phone_number' => substr($phoneNumber,1),
+                        'country_code' => 62,
+                    ]);
+                }
+
                 $profileDetail = CvProfileDetail::where('user_id',$user->id_kustomer)->first();
                 if(!$profileDetail){
                     CvProfileDetail::create([
-                        'first_name' => 'dodo',
-                        'last_name' => 'superman',
+                        'first_name' => $user->nama_lengkap,
+                        'last_name' => 'employee',
                         'user_id' => $user->id_kustomer,
                     ]);
                 }

@@ -27,7 +27,7 @@ class CuriculmVitaeSeeder extends Seeder
      */
     public function run()
     {
-        $totalSeed = 45;
+        $totalSeed = 50;
         $faker = Faker::create('id_ID');
 
         for ($i = 1; $i < $totalSeed; $i++) {
@@ -66,8 +66,8 @@ class CuriculmVitaeSeeder extends Seeder
             for ($j = 1; $j <= rand(1, 5); $j++) {
                 CvCertification::create([
                     'user_id' => $user->user_id,
-                    'name' => $faker->name,
-                    'organization' => $faker->name,
+                    'name' => $faker->word(),
+                    'organization' => $faker->word(),
                     'issued_at' => Carbon::now(),
                 ]);
             }
@@ -87,14 +87,14 @@ class CuriculmVitaeSeeder extends Seeder
             for ($j = 1; $j <= rand(1, 5); $j++) {
                 CvHobby::create([
                     'user_id' => $user->user_id,
-                    'name' => $faker->name,
+                    'name' => $faker->word(),
                 ]);
             }
 
             for ($j = 1; $j <= rand(1, 5); $j++) {
                 CvSpeciality::create([
                     'user_id' => $user->user_id,
-                    'name' => $faker->name,
+                    'name' => $faker->word(2,true),
                 ]);
             }
             for ($j = 1; $j <= rand(1, 5); $j++) {
