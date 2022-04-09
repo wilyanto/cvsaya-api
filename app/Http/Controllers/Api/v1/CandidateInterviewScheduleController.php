@@ -32,14 +32,15 @@ class CandidateInterviewScheduleController extends Controller
      */
     public function index(Request $request)
     {
-
+        $user = auth()->user();
+        $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
         $request->validate([
             'date' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
         ]);
         $date = $request->date;
         $candidate = CandidateInterviewSchedule::whereNull('result_id')
             ->whereNull('rejected_at')
-            ->whereNotNull('interviewed_by')
+            ->where('interviewed_by', $employee->id)
             ->where(function ($query) use ($date) {
                 if ($date) {
                     $date = date('Y-m-d', strtotime($date));
