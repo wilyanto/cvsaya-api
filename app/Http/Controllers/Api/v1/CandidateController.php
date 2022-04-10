@@ -143,7 +143,7 @@ class CandidateController extends Controller
 
         $data = $request->all();
         $data['status'] = Candidate::BLASTING;
-        $data['suggest_by'] = $posistion->id;
+        $data['suggested_by'] = $posistion->id;
 
         $candidates = Candidate::create($data);
 

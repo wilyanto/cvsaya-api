@@ -303,7 +303,7 @@ class CvProfileDetailController extends Controller
             'sosmed.tiktok' => 'string',
             'sosmed.youtube' => 'string',
             'sosmed.facebook' => 'string',
-            'sosmed.website_url' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]i',
+            'sosmed.website_url' => 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]i',
         ]);
 
         $json = $request->input();

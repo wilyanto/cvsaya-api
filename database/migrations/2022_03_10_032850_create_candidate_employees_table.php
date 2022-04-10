@@ -20,13 +20,10 @@ return new class extends Migration
             $table->integer('country_code');
             $table->string('phone_number');
             $table->bigInteger('status')->unsigned();
-            $table->bigInteger('suggest_by')->unsigned()->nullable();
+            $table->bigInteger('suggested_by')->unsigned()->nullable();
             $table->timestamp('registered_at')->nullable();
+            $table->foreign('suggested_by')->references('id')->on('employee_details');
             $table->timestamps();
-        });
-
-        Schema::table('candidates',function(Blueprint $table){
-            $table->foreign('suggest_by')->references('id')->on('employee_details');
         });
     }
 

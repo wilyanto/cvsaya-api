@@ -28,8 +28,6 @@ class Candidate extends Model implements Auditable
 
     public const STANDBY = 6;
 
-    public const PASS = 7;
-
     public const CONSIDER = 8;
 
     public const ACCEPTED = 9;
@@ -49,7 +47,7 @@ class Candidate extends Model implements Auditable
         'phone_number',
         'user_id',
         'status',
-        'suggest_by',
+        'suggested_by',
         'register_date',
     ];
 
@@ -61,7 +59,7 @@ class Candidate extends Model implements Auditable
 
     public function suggestBy()
     {
-        return $this->hasOne(EmployeeDetail::class, 'id', 'suggest_by');
+        return $this->hasOne(EmployeeDetail::class, 'id', 'suggested_by');
     }
 
     public function schedules()

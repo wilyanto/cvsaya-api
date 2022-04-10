@@ -15,7 +15,7 @@ class ReligionSeeder extends Seeder
      */
     public function run()
     {
-        $religions = ['Buddha','Kristen','Islam','Kong Hu Cu','Hindu'];
+        $religions = ['Islam','Kristen','Hindu','Buddha','Kong Hu Cu'];
         foreach($religions as $religion){
             Religion::create([
                 'name' => $religion,
