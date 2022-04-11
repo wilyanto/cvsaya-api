@@ -35,11 +35,10 @@ class CandidatePositionOldSeeder extends Seeder
             ];
         });
 
-        Log::info($candidates);
+        // Log::info($candidates);
         $totalCandidates = count($candidates);
-        if($totalCandidates >= 15000){
-            Log::info($totalCandidates / 2);
-        }
-        Log::info(count($candidates));
+        $splitBy = intdiv($totalCandidates,15000);
+        Log::info($splitBy);
+;        Log::info(count($candidates));
     }
 }
