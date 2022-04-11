@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Candidate;
 use Illuminate\Support\Collection;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -23,22 +24,31 @@ class CandidatePositionOldSeeder extends Seeder
         $pengalamans = DB::connection('cvsaya')
             ->table('1pengalaman')
             ->groupBy('sebagai')
-            ->limit(25000)
+            ->select('sebagai')
+            // ->distinct('sebagai')
             ->get();
-
+        $employees = DB::connection('cvsaya')
+        ->table('1employee')
+        ->groupBy('job')
+        ->select('job')
+        ->get();
 
         $candidates = $pengalamans->map(function ($item, $key) {
             return [
                 'name' => $item->sebagai,
-                'created_at' => date('Y-m-d H:i:s',time()),
-                'updated_at' => date('Y-m-d H:i:s',time()),
+                'created_at' => date('Y-m-d H:i:s', time()),
+                'updated_at' => date('Y-m-d H:i:s', time()),
             ];
         });
 
-        // Log::info($candidates);
-        $totalCandidates = count($candidates);
-        $splitBy = intdiv($totalCandidates,15000);
-        Log::info($splitBy);
-;        Log::info(count($candidates));
+        $employees = $employees->map(function ($item, $key) {
+            return [
+                'name' => $item->job,
+                'created_at' => date('Y-m-d H:i:s', time()),
+                'updated_at' => date('Y-m-d H:i:s', time()),
+            ];
+        });
+        CandidatePosition::insert($candidates->toArray());
+        CandidatePosition::insert($employees->toArray());
     }
 }
