@@ -299,11 +299,11 @@ class CvProfileDetailController extends Controller
             'domicile.address' => 'string|required',
 
             #Sosmed
-            'sosmed.instagram' => 'string',
-            'sosmed.tiktok' => 'string',
-            'sosmed.youtube' => 'string',
-            'sosmed.facebook' => 'string',
-            'sosmed.website_url' => 'required', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]i',
+            'sosmed.instagram' => 'string|nullable',
+            'sosmed.tiktok' => 'string|nullable',
+            'sosmed.youtube' => 'string|nullable',
+            'sosmed.facebook' => 'string|nullable',
+            'sosmed.website_url' => 'nullable', 'regex:/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]i',
         ]);
 
         $json = $request->input();
