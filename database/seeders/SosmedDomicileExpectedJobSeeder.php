@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 
-class MigrationOtherDBSeeder extends Seeder
+class SosmedDomicileExpectedJobSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -34,6 +34,10 @@ class MigrationOtherDBSeeder extends Seeder
         Log::info('Kustomer : ' . count($users));
         $administrators = DB::connection('cvsaya')->table('administrator')->get();
         Log::info('Administrator : ' . count($administrators));
+        $employeeDetails = DB::connection('cvsaya')->table('1employeedetail')->get();
+        $employees = DB::connection('cvsaya')->table('1employee')->get();
+        $keinginanGajis = DB::connection('cvsaya')->table('1keinginangaji')->get();
+        $pengalamansAll = DB::connection('cvsaya')->table('1pengalaman')->get();
         // $users = User::whereNotNull('telpon')->get();
         $profileDetails = [];
         $cvSpecialities = [];
@@ -44,13 +48,12 @@ class MigrationOtherDBSeeder extends Seeder
         $domiciles = [];
         $expectedJobs = [];
         foreach ($users as $index => $user) {
-            // $administrator = $administrators->where('no_telp', $user->telpon)->first();
-            $administrator = DB::connection('cvsaya')->table('administrator')->where('no_telp', $user->telpon)->first();
+            $administrator = $administrators->where('no_telp', $user->telpon)->first();
             if ($administrator) {
-                $employeeDetail = DB::connection('cvsaya')->table('1employeedetail')->where('idlogin', $administrator->idlogin)->first();
+                $employeeDetail = $employeeDetails->where('idlogin', $administrator->idlogin)->first();
                 if ($employeeDetail) {
-                    $employee = DB::connection('cvsaya')->table('1employee')->where('idlogin', $administrator->idlogin)->first();
-                    $keinginanGaji = DB::connection('cvsaya')->table('1keinginangaji')->where('idlogin', $administrator->idlogin)->first();
+                    $employee = $employees->where('idlogin', $administrator->idlogin)->first();
+                    $keinginanGaji = $keinginanGajis->where('idlogin', $administrator->idlogin)->first();
                     $name = explode(" ", $administrator->nama_lengkap);
                     $profileDetail = [
                         'user_id' => $user->id_kustomer,
@@ -97,7 +100,7 @@ class MigrationOtherDBSeeder extends Seeder
                             ];
                         }
                     }
-                    $pengalamans = DB::connection('cvsaya')->table('1pengalaman')->where('idlogin', $administrator->idlogin)->get();
+                    $pengalamans = $pengalamansAll->where('idlogin', $administrator->idlogin)->all();
                     foreach ($pengalamans as $pengalaman) {
                         $candidatePosition = CandidatePosition::where('name', $pengalaman->sebagai)->first();
                         if (!$candidatePosition) {
@@ -174,14 +177,14 @@ class MigrationOtherDBSeeder extends Seeder
             }
             Log::info('Index ke: '.$index);
         }
-        CvProfileDetail::create([$profileDetails]);
-        Candidate::create([$candidates]);
-        CvSosmed::create([$sosmeds]);
-        CvDomicile::create([$domiciles]);
-        CvExpectedJob::create([$expectedJobs]);
-        CvHobby::create([$cvHobbies]);
-        CvSpeciality::create([$cvSpecialities]);
-        CvExperience::create([$cvExperiences]);
-        CvEducation::create([$pendidikans]);
+        CvProfileDetail::create($profileDetails);
+        Candidate::create($candidates);
+        CvSosmed::create($sosmeds);
+        CvDomicile::create($domiciles);
+        CvExpectedJob::create($expectedJobs);
+        CvHobby::create($cvHobbies);
+        CvSpeciality::create($cvSpecialities);
+        CvExperience::create($cvExperiences);
+        CvEducation::create($pendidikans);
     }
 }
