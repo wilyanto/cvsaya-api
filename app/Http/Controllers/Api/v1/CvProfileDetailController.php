@@ -256,7 +256,7 @@ class CvProfileDetailController extends Controller
             'country_code' => $country,
             'province_code' => $province,
             'city_code' => $city,
-            'subdistrict_code' => $subDistrict,
+            'sub_district_code' => $subDistrict,
             'village_code' => $village,
         ];
         $response = Http::withHeaders([
