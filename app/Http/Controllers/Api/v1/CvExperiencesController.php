@@ -71,7 +71,9 @@ class CvExperiencesController extends Controller
         $experience->employment_type_id = $request->employment_type_id;
         $experience->company_location = $request->company_location;
         $experience->started_at = date('Y-m-d', strtotime($request->started_at));
-        $experience->ended_at = date('Y-m-d', strtotime($request->ended_at));
+        if($request->ended_at){
+            $experience->ended_at = date('Y-m-d', strtotime($request->ended_at));
+        }
         $experience->jobdesc =  $request->jobdesc;
         $experience->reference = $request->reference;
         $experience->previous_salary = $request->previous_salary;
@@ -163,10 +165,14 @@ class CvExperiencesController extends Controller
         } else {
             return $this->errorResponse('The start at must be a date before saved until at', 422, 42200);
         }
-        if (strtotime($experience->started_at) < strtotime($request->ended_at)) {
-            $experience->ended_at = date('Y-m-d', strtotime($request->ended_at));
-        } else {
-            return $this->errorResponse('The until at must be a date after saved start at', 422, 42200);
+        if($request->ended_at){
+            if (strtotime($experience->started_at) < strtotime($request->ended_at)) {
+                $experience->ended_at = date('Y-m-d', strtotime($request->ended_at));
+            } else {
+                return $this->errorResponse('The until at must be a date after saved start at', 422, 42200);
+            }
+        }else{
+            $experience->ended_at = null;
         }
         if ($request->jobdesc) {
             $experience->jobdesc =  $request->jobdesc;

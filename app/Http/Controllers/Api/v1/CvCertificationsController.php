@@ -116,7 +116,7 @@ class CvCertificationsController extends Controller
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
         $data['issued_at'] = date('Y-m-d', strtotime($request->issued_at));
-        $data['expired_at'] = date('Y-m-d', strtotime($request->expired_at));
+        $data['expired_at'] = !empty($request->expired_at) ? date('Y-m-d', strtotime($request->expired_at)) : null;
         // dd($data);
         // dd($data);
         $certifications = CvCertification::where('id', $id)->where('user_id', $user->id_kustomer)->first();
