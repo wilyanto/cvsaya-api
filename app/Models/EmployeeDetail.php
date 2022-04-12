@@ -50,15 +50,15 @@ class EmployeeDetail extends Authenticatable implements Auditable
 
     public function getCompanyName()
     {
-        return $this->company->name;
+        if($this->company){
+            return $this->company->name;
+        }
     }
 
     public function getUserName()
     {
         if($this->profileDetail){
             return $this->profileDetail->first_name;
-        }else{
-            return null;
         }
     }
 
