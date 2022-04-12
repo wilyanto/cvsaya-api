@@ -55,7 +55,11 @@ class EmployeeDetail extends Authenticatable implements Auditable
 
     public function getUserName()
     {
-        return $this->profileDetail->first_name;
+        if($this->profileDetail){
+            return $this->profileDetail->first_name;
+        }else{
+            return null;
+        }
     }
 
     public function interviewerDetail()
