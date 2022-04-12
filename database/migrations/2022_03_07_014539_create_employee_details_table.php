@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('employee_details', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
-            $table->bigInteger('position_id')->unsigned();
+            $table->bigInteger('position_id')->unsigned()->nullable();
             $table->integer('salary')->unsigned()->nullable();
             $table->timestamp('joined_at')->nullable();
             $table->timestamps();

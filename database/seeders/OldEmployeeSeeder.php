@@ -1,0 +1,64 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Candidate;
+use App\Models\CandidatePosition;
+use App\Models\CvDomicile;
+use App\Models\CvEducation;
+use App\Models\CvExpectedJob;
+use App\Models\CvExperience;
+use App\Models\CvHobby;
+use App\Models\CvProfileDetail;
+use App\Models\CvSosmed;
+use App\Models\CvSpeciality;
+use App\Models\Degree;
+use App\Models\Department;
+use App\Models\EmployeeDetail;
+use App\Models\Position;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use App\Models\User;
+use Exception;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
+
+class OldEmployeeSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        try {
+            $users = User::whereRaw('LENGTH(telpon) > 7')->get();
+            Log::info('Kustomer : ' . count($users));
+            $administrators = DB::connection('cvsaya')->table('administrator')->get();
+            Log::info('Administrator : ' . count($administrators));
+            $employees = [];
+            foreach ($users as $index => $user) {
+                $administrator = $administrators->where('no_telp', $user->telpon)->first();
+                if ($administrator) {
+                    $isDeleted = null;
+                    if ($administrator->blokir == 'Y') {
+                        $isDeleted = date('Y-m-d H:i:s', time());
+                    }
+                    $employees[] = [
+                        'user_id' => $user->id_kustomer,
+                        'position_id' => null,
+                        'salary' => 0,
+                        'deleted_at' => $isDeleted,
+                    ];
+                }
+                Log::info('Index ke: ' . $index);
+            }
+
+            EmployeeDetail::insert($employees);
+        } catch (Exception $e) {
+            Log::info('Exception : ' . $e);
+        }
+    }
+}

@@ -13,6 +13,7 @@ use App\Models\CvProfileDetail;
 use App\Models\CvSosmed;
 use App\Models\CvSpeciality;
 use App\Models\Degree;
+use App\Models\EmployeeDetail;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
@@ -57,6 +58,7 @@ class OldDatabaseSeeder extends Seeder
             Log::info('degree : ' . count($degrees));
             $recentCometsAll = DB::connection('cvsaya')->table('9Recentcomet')->get();
             Log::info('9Recentcomet : ' . count($recentCometsAll));
+            $cvEmployeeDetail = EmployeeDetail::all();
             // $users = User::whereNotNull('telpon')->get();
             $profileDetails = [];
             $cvSpecialities = [];
