@@ -132,7 +132,7 @@ class Candidate extends Model implements Auditable
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'last_assessment' => $this->label(),
-            'religion' => $this->profile->religion,
+            'religion' => $this->profile ? $this->profile->religion : null,
             'education' => $this->educations->first(),
             'gender' => $this->profile->gender,
             'position' => $this->job == null ? null : $this->job->position,
