@@ -113,11 +113,16 @@ Route::prefix('v1')->group(function () {
                 Route::prefix('candidates')->group(function () {
                     Route::controller(CandidateController::class)->group(function () {
                         Route::get('/', 'index');
-                        Route::get('/positions', 'getPosition');
                         Route::get('/{id}', 'indexDetail');
                         Route::post('/', 'addCandidateToBlast');
                         Route::put('/{id}', 'updateStatus');
                         // Route::post('update-status','updateStatus');
+
+                    });
+                });
+                Route::prefix('candidates-positions')->group(function (){
+                    Route::controller(CandidateController::class)->group(function () {
+                        Route::get('/positions', 'getPosition');
 
                     });
                 });

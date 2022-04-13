@@ -106,7 +106,7 @@ class CandidateInterviewScheduleController extends Controller
         $data = [];
         foreach ($periods as $period) {
             $scheduleArray = [];
-            $date = $period->format('Y-m-d H:i:s');
+            $date = $period->format('Y-m-d\TH:i:s.v\Z');
             $schedules = CandidateInterviewSchedule::
                 // whereBettween('date_time',)
                 whereDate('interviewed_at', $period->format('Y-m-d'))
@@ -121,7 +121,7 @@ class CandidateInterviewScheduleController extends Controller
                 ];
             }
             $data[] = [
-                'period' => $period,
+                'period' => $date,
                 'schedules' => $scheduleArray,
             ];
         }
