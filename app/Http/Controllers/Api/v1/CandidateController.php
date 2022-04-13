@@ -246,7 +246,6 @@ class CandidateController extends Controller
             ) {
                 return $this->errorResponse('this Candidate cannot going interview', 422, 42201);
             }
-
             $data = $request->all();
             if ($request->interviewed_at) {
                 $data['interviewed_at'] = date('Y-m-d H:i:s', strtotime($data['interviewed_at']));

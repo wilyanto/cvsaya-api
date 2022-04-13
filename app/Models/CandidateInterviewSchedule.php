@@ -35,7 +35,7 @@ class CandidateInterviewSchedule extends Model implements Auditable
 
     public function setInterviewedAtAttribute($value)
     {
-        return $this->attributes['interviewed_at'] = date('Y-m-d\TH:i:s.v\Z', strtotime($this->value));
+        return $this->attributes['interviewed_at'] = date('Y-m-d\TH:i:s.v\Z', strtotime($value));
     }
 
     public function result()
@@ -118,7 +118,8 @@ class CandidateInterviewSchedule extends Model implements Auditable
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'result' => $this->result,
-            'rejected_at' => $this->rejected_at ?  date('Y-m-d\TH:i:s.v\Z', strtotime($this->rejected_at)) : null,
+            // 'rejected_at' => $this->rejected_at ?  date('Y-m-d\TH:i:s.v\Z', strtotime($this->rejected_at)) : null,
+            'rejected_at' => $this->rejected_at,
         ];
     }
 
