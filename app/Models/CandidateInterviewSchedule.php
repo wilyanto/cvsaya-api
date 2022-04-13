@@ -66,16 +66,16 @@ class CandidateInterviewSchedule extends Model implements Auditable
     public function toArrayCandidate()
     {
         $getCandidate = $this->candidate;
-        $education = $this->candidate->educations;
+        $education = $this->candidate ? $this->candidate->educations : null;
         return [
-            'id' => $getCandidate->id,
-            'user_id' => $getCandidate->user_id,
-            'name' => $getCandidate->name,
-            'interviewed_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->interviewed_at)),
-            'phone_number' => $getCandidate->phone_number,
-            'register_date' => $getCandidate->register_date,
+            'id' => $getCandidate ? $getCandidate->id : null,
+            'user_id' => $getCandidate ? $getCandidate->user_id : null,
+            'name' => $getCandidate ? $getCandidate->name : null,
+            'interviewed_at' => $this->interviewed_at ? date('Y-m-d\TH:i:s.v\Z', strtotime($this->interviewed_at)) : null,
+            'phone_number' => $getCandidate ? $getCandidate->phone_number : null,
+            'register_date' => $getCandidate ? $getCandidate->register_date : null,
             'education' => $education->first(),
-            'job' => $getCandidate->job ? $getCandidate->job->position : null,
+            'job' => $getCandidate ? ($getCandidate->job ? $getCandidate->job->position : null) : null,
         ];
     }
 
@@ -83,12 +83,12 @@ class CandidateInterviewSchedule extends Model implements Auditable
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->candidate->user_id,
+            'user_id' => $this->candidate ? $this->candidate->user_id : null,
             'candidate' => $this->toArrayCandidate(),
             'interviewer' => $this->interviewer(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'rejected_at' => $this->rejected_at,
+            'rejected_at' => $this->rejected_at ?  date('Y-m-d\TH:i:s.v\Z', strtotime($this->rejected_at)) : null,
         ];
     }
 
@@ -118,7 +118,7 @@ class CandidateInterviewSchedule extends Model implements Auditable
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'result' => $this->result,
-            'rejected_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->rejected_at)),
+            'rejected_at' => $this->rejected_at ?  date('Y-m-d\TH:i:s.v\Z', strtotime($this->rejected_at)) : null,
         ];
     }
 
@@ -131,7 +131,7 @@ class CandidateInterviewSchedule extends Model implements Auditable
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'result' => $this->result,
-            'rejected_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->rejected_at)),
+            'rejected_at' => $this->rejected_at ?  date('Y-m-d\TH:i:s.v\Z', strtotime($this->rejected_at)) : null,
         ];
     }
 }
