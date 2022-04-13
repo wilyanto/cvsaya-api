@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Models\Document;
 use App\Models\CandidatePosition;
+use Illuminate\Validation\Rule;
 
 class CvExperiencesController extends Controller
 {
@@ -47,14 +48,18 @@ class CvExperiencesController extends Controller
             'started_at' => 'required|date',
             'ended_at' => 'nullable|date',
             'jobdesc' => 'nullable|string',
-            'resign_reason' => 'string|min:20|required',
+            'resign_reason' => [
+                'string',
+                'min:20',
+                Rule::requiredIf($request->ended_at),
+            ],
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
-            'payslip' => 'nullable','exists:App\Models\Document,id',
+            'payslip' => 'nullable', 'exists:App\Models\Document,id',
         ]);
         $documents = null;
-        if($request->payslip){
-            $documents = Document::where('id',$request->payslip)->firstOrFail();
+        if ($request->payslip) {
+            $documents = Document::where('id', $request->payslip)->firstOrFail();
         }
         $experience = new CvExperience();
         $experience->user_id = $user->id_kustomer;
@@ -71,7 +76,7 @@ class CvExperiencesController extends Controller
         $experience->employment_type_id = $request->employment_type_id;
         $experience->company_location = $request->company_location;
         $experience->started_at = date('Y-m-d', strtotime($request->started_at));
-        if($request->ended_at){
+        if ($request->ended_at) {
             $experience->ended_at = date('Y-m-d', strtotime($request->ended_at));
         }
         $experience->jobdesc =  $request->jobdesc;
@@ -133,10 +138,14 @@ class CvExperiencesController extends Controller
             'started_at' => 'nullable|date',
             'ended_at' => 'nullable|date',
             'jobdesc' => 'nullable|string',
-            'resign_reason' => 'string|min:50|nullable',
+            'resign_reason' => [
+                'string',
+                'min:20',
+                Rule::requiredIf($request->ended_at),
+            ],
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
-            'payslip' => 'nullable','exists:App\Models\Document,id',
+            'payslip' => 'nullable', 'exists:App\Models\Document,id',
         ]);
         $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
         if ($request->position) {
@@ -165,20 +174,20 @@ class CvExperiencesController extends Controller
         } else {
             return $this->errorResponse('The start at must be a date before saved until at', 422, 42200);
         }
-        if($request->ended_at){
+        if ($request->ended_at) {
             if (strtotime($experience->started_at) < strtotime($request->ended_at)) {
                 $experience->ended_at = date('Y-m-d', strtotime($request->ended_at));
             } else {
                 return $this->errorResponse('The until at must be a date after saved start at', 422, 42200);
             }
-        }else{
+        } else {
             $experience->ended_at = null;
         }
         if ($request->jobdesc) {
             $experience->jobdesc =  $request->jobdesc;
         }
         if ($request->payslip) {
-            $documents = Document::where('id',$request->payslip)->firstOrFail();
+            $documents = Document::where('id', $request->payslip)->firstOrFail();
             $experience->payslip = $documents->id;
         }
         if ($request->reference) {
