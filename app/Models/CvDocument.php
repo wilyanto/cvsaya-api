@@ -53,8 +53,8 @@ class CvDocument extends Model implements Auditable
             'front_selfie' => $this->front_selfie,
             'left_selfie' => $this->left_selfie,
             'right_selfie' => $this->right_selfie,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => date('Y-m-d\TH:i:s.v\Z',strtotime($this->created_at)),
+            'updated_at' =>  date('Y-m-d\TH:i:s.v\Z',strtotime($this->updated_at)),
         ];
     }
 }

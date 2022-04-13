@@ -25,8 +25,8 @@ class DegreeOldSeeder extends Seeder
         $candidates = $pendidikans->map(function ($item, $key) {
             return [
                 'name' => $item->pendidikan,
-                'created_at' => date('Y-m-d H:i:s', time()),
-                'updated_at' => date('Y-m-d H:i:s', time()),
+                'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
             ];
         });
         Degree::insert($candidates->toArray());

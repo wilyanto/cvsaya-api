@@ -34,22 +34,4 @@ class CvSpecialityCertificate extends Model implements Auditable
     public function certifcate(){
         return $this->hasOne(CvCertification::class,'certificate_id','id');
     }
-
-    // public function toArray()
-    // {
-    //     $certificates = CvSayaCertifications::where('id',$this->certificate_id)->get();
-    //     $data = [];
-    //     foreach($certificates as $certificate){
-    //         $data[] = [
-    //             'id' => $certificate->id,
-    //             'name' => $certificate->name,
-    //             'issued_at' => $certificate->issued_at,
-    //             'expired_at' => $certificate->expired_at,
-    //             'credential_id' => $certificate->credential_id,
-    //             'credential_url' => $certificate->credential_url,
-    //         ];
-    //     }
-    //     return $data;
-    // }
-
 }

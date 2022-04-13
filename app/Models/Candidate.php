@@ -34,8 +34,6 @@ class Candidate extends Model implements Auditable
 
     public const DECLINE = 10;
 
-
-
     protected $table = 'candidates';
 
     protected $guard = 'id';

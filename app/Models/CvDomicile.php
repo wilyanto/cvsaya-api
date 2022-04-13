@@ -104,8 +104,8 @@ class CvDomicile extends Model implements Auditable
             'subdistrict' => $this->subDistrict(),
             'village' => $this->village(),
             'address' => $this->address,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => date('Y-m-d\TH:i:s.v\Z',strtotime($this->created_at)),
+            'updated_at' => date('Y-m-d\TH:i:s.v\Z',strtotime($this->updated_at)),
         ];
     }
 }

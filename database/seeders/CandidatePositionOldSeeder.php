@@ -36,16 +36,16 @@ class CandidatePositionOldSeeder extends Seeder
         $candidates = $pengalamans->map(function ($item, $key) {
             return [
                 'name' => $item->sebagai,
-                'created_at' => date('Y-m-d H:i:s', time()),
-                'updated_at' => date('Y-m-d H:i:s', time()),
+                'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
             ];
         });
 
         $employees = $employees->map(function ($item, $key) {
             return [
                 'name' => $item->job,
-                'created_at' => date('Y-m-d H:i:s', time()),
-                'updated_at' => date('Y-m-d H:i:s', time()),
+                'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
             ];
         });
         CandidatePosition::insert($candidates->toArray());

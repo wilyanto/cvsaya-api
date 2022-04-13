@@ -19,7 +19,7 @@ class CandidatePositions extends Seeder
         foreach($positions as $position){
             CandidatePosition::create([
                 'name' => $position,
-                'validated_at' => date('Y-m-d H:i:s',time()),
+                'validated_at' => date('Y-m-d\TH:i:s.v\Z',time()),
             ]);
         }
     }

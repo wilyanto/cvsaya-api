@@ -44,7 +44,7 @@ class OldEmployeeSeeder extends Seeder
                 if ($administrator) {
                     $isDeleted = null;
                     if ($administrator->blokir == 'Y') {
-                        $isDeleted = date('Y-m-d H:i:s', time());
+                        $isDeleted = date('Y-m-d\TH:i:s.v\Z', time());
                     }
                     $employees[] = [
                         'user_id' => $user->id_kustomer,

@@ -37,7 +37,7 @@ class CandidateInterviewScheduleController extends Controller
         $request->validate([
             'date' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
         ]);
-        $date = $request->date;
+        $date = date('Y-m-d',strtotime($request->date));
         $candidate = CandidateInterviewSchedule::whereNull('result_id')
             ->whereNull('rejected_at')
             ->where('interviewed_by', $employee->id)
@@ -116,7 +116,7 @@ class CandidateInterviewScheduleController extends Controller
                 ->get();
             foreach ($schedules as $schedule) {
                 $scheduleArray[] = [
-                    'interviewed_at' => $schedule->interviewed_at,
+                    'interviewed_at' => date('Y-m-d\TH:i:s.v\Z',strtotime($schedule->interviewed_at)),
                     'schedule_detail' => $schedule->toArraySchedule(),
                 ];
             }

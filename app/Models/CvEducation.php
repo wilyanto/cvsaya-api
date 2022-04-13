@@ -9,7 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class CvEducation extends Model implements Auditable
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     use \OwenIt\Auditing\Auditable;
 
@@ -31,40 +31,45 @@ class CvEducation extends Model implements Auditable
         'description'
     ];
 
-    public function experiences(){
-        return $this->hasOne(CvExperience::class,'user_id','user_id');
+    public function experiences()
+    {
+        return $this->hasOne(CvExperience::class, 'user_id', 'user_id');
     }
 
-    public function certifications(){
-        return $this->hasOne(CvCertification::class,'user_id','user_id');
+    public function certifications()
+    {
+        return $this->hasOne(CvCertification::class, 'user_id', 'user_id');
     }
 
-    public function specialities(){
-        return $this->hasOne(CvSpeciality::class,'user_id','user_id');
+    public function specialities()
+    {
+        return $this->hasOne(CvSpeciality::class, 'user_id', 'user_id');
     }
 
-    public function hobbies(){
-        return $this->hasOne(CvHobby::class,'user_id','user_id');
+    public function hobbies()
+    {
+        return $this->hasOne(CvHobby::class, 'user_id', 'user_id');
     }
 
-    public function degree(){
-        return $this->hasOne(Degree::class,'id','degree_id');
+    public function degree()
+    {
+        return $this->hasOne(Degree::class, 'id', 'degree_id');
     }
 
     public function toArray()
     {
         return [
-            'id'=> $this->id,
+            'id' => $this->id,
             'user_id' => $this->user_id,
-            'instance'=> $this->instance,
+            'instance' => $this->instance,
             'degree' => $this->degree,
             'field_of_study' => $this->field_of_study,
             'grade' => $this->grade,
-        'started_at' => $this->started_at,
-            'ended_at' => $this->ended_at,
+            'started_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->started_at)),
+            'ended_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->ended_at)),
             'description' => $this->description,
-            'created_at' => $this->created_at,
-            'updated_at'=> $this->updated_at,
+            'created_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->created_at)),
+            'updated_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->updated_at)),
         ];
     }
 }

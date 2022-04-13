@@ -83,14 +83,14 @@ class OldDatabaseSeeder extends Seeder
                             'first_name' => $name[0],
                             'last_name' => substr($administrator->nama_lengkap, strlen($name[0]) + 1),
                             'birth_location' => $employeeDetail->tpl,
-                            'birth_date' => date('Y-m-d H:i:s', strtotime($employeeDetail->ttl)),
+                            'birth_date' => date('Y-m-d\TH:i:s.v\Z', strtotime($employeeDetail->ttl)),
                             'gender' => $employeeDetail->jk == 'P' ? 'Perempuan' : ($employeeDetail->jk == 'L' ? 'Laki - Laki' : 'M'),
                             'identity_number' => $administrator->id_ktp,
                             'reference' => !empty($employeeDetail->referensi) ? $employeeDetail->referensi : null,
                             'religion_id' => !empty($employeeDetail->IdAgama) ? $employeeDetail->IdAgama : null,
                             'marriage_status_id' => null,
-                            'created_at' => date('Y-m-d H:i:s', time()),
-                            'updated_at' => date('Y-m-d H:i:s', time()),
+                            'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                            'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
                         ];
                         $candidate = Candidate::create([
                             'user_id' => $user->id_kustomer,
@@ -98,7 +98,7 @@ class OldDatabaseSeeder extends Seeder
                             'country_code' => 62,
                             'phone_number' => substr($user->telpon, 1),
                             'status' => 2,
-                            'registered_at' => date('Y-m-d H:i:s', strtotime($user->tgl_kus)),
+                            'registered_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($user->tgl_kus)),
                         ]);
                         $recentComets = $recentCometsAll->where('idlogin', $administrator->idlogin)->all();
                         foreach ($recentComets as $recentComet) {
@@ -112,8 +112,8 @@ class OldDatabaseSeeder extends Seeder
                                             'candidate_id' => $candidate->id,
                                             'employee_id' => $cvEmployeeDetail->id,
                                             'note' => $recentComet->ulasan,
-                                            'created_at' => date('Y-m-d H:i:s', time()),
-                                            'updated_at' => date('Y-m-d H:i:s', time()),
+                                            'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                            'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
                                         ];
                                     }
                                 }
@@ -133,8 +133,8 @@ class OldDatabaseSeeder extends Seeder
                                 'subdistrict_id' => 0,
                                 'village_id' => 0,
                                 'address' => $employee->alamat,
-                                'created_at' => date('Y-m-d H:i:s', time()),
-                                'updated_at' => date('Y-m-d H:i:s', time()),
+                                'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
                             ];
                             if ($keinginanGaji) {
                                 $candidatePosition = $candidatePositions->where('name', $employee->job)->first();
@@ -149,8 +149,8 @@ class OldDatabaseSeeder extends Seeder
                                     'expected_position' => $candidatePosition->id,
                                     'position_reason' => $employee->inginposisi,
                                     'salary_reason' => $keinginanGaji->Ulasan,
-                                    'created_at' => date('Y-m-d H:i:s', time()),
-                                    'updated_at' => date('Y-m-d H:i:s', time()),
+                                    'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                    'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
                                 ];
                             }
                         }
@@ -172,10 +172,10 @@ class OldDatabaseSeeder extends Seeder
                                 'resign_reason' => $pengalaman->resign,
                                 'reference' => null,
                                 'previous_salary' => 0,
-                                'started_at' => date('Y-m-d H:i:s', strtotime($pengalaman->tahun)),
-                                'ended_at' => date('Y-m-d H:i:s', strtotime($pengalaman->sampai)),
-                                'created_at' => date('Y-m-d H:i:s', time()),
-                                'updated_at' => date('Y-m-d H:i:s', time()),
+                                'started_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($pengalaman->tahun)),
+                                'ended_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($pengalaman->sampai)),
+                                'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
                             ];
                         }
 
@@ -196,8 +196,8 @@ class OldDatabaseSeeder extends Seeder
                                 'started_at' => $pendidikan->Tahun,
                                 'ended_at' => $pendidikan->sampai,
                                 'description' => '-',
-                                'created_at' => date('Y-m-d H:i:s', time()),
-                                'updated_at' => date('Y-m-d H:i:s', time()),
+                                'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
                             ];
                         }
 
@@ -206,8 +206,8 @@ class OldDatabaseSeeder extends Seeder
                             $cvSpecialities[] = [
                                 'user_id' => $user->id_kustomer,
                                 'name' => $kualifikasi->kualifikasi,
-                                'created_at' => date('Y-m-d H:i:s', time()),
-                                'updated_at' => date('Y-m-d H:i:s', time()),
+                                'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
                             ];
                         }
 
@@ -216,8 +216,8 @@ class OldDatabaseSeeder extends Seeder
                             $cvHobbies[] = [
                                 'user_id' => $user->id_kustomer,
                                 'name' => $hoby->hoby,
-                                'created_at' => date('Y-m-d H:i:s', time()),
-                                'updated_at' => date('Y-m-d H:i:s', time()),
+                                'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
                             ];
                         }
                         if ($profileDetail) {
