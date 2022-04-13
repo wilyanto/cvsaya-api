@@ -145,9 +145,9 @@ class CvProfileDetailController extends Controller
         if ($employee) {
             $result['is_employee'] = true;
             $position = [
-                'id' => $employee->position->id,
-                'name' => $employee->position->name,
-                'company' => $employee->position->company
+                'id' => $employee->position ? $employee->position->id : null,
+                'name' => $employee->position ? $employee->position->name : null,
+                'company' => $employee->position ? $employee->position->company : null
             ];
             $result['position'] = $position;
         } else {
