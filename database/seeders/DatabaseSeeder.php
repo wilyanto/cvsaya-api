@@ -23,11 +23,11 @@ class DatabaseSeeder extends Seeder
             DocumentTypeSeeder::class,
             DegreeSeeder::class,
             CandidatePositions::class,
-            CvProfileDetailSeeder::class,
-            CvExpectedJobSeeder::class,
-            EmployeeSeeder::class,
-            CuriculmVitaeSeeder::class,
-            CandidateInterviewSchedulesSeeder::class,
+            // CvProfileDetailSeeder::class,
+            // CvExpectedJobSeeder::class,
+            // EmployeeSeeder::class,
+            // CuriculmVitaeSeeder::class,
+            // CandidateInterviewSchedulesSeeder::class,
         ]);
     }
 }
