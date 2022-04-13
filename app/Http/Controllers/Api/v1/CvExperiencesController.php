@@ -51,7 +51,7 @@ class CvExperiencesController extends Controller
             'resign_reason' => [
                 'string',
                 'min:20',
-                Rule::requiredIf($request->ended_at),
+                Rule::requiredIf($request->ended_at != null),
             ],
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
@@ -141,7 +141,7 @@ class CvExperiencesController extends Controller
             'resign_reason' => [
                 'string',
                 'min:20',
-                Rule::requiredIf($request->ended_at),
+                Rule::requiredIf($request->ended_at != null),
             ],
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
