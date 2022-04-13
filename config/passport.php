@@ -59,7 +59,7 @@ return [
 
     'storage' => [
         'database' => [
-            'connection' => 'mysql',
+            'connection' => 'kada',
         ],
     ],
 
