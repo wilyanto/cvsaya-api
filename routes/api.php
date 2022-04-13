@@ -120,7 +120,7 @@ Route::prefix('v1')->group(function () {
 
                     });
                 });
-                Route::prefix('position-cadidates')->group(function (){
+                Route::prefix('position-candidates')->group(function (){
                     Route::controller(CandidateController::class)->group(function () {
                         Route::get('/', 'getPosition');
 
