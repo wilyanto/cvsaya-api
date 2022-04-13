@@ -51,7 +51,7 @@ class CvEducationsController extends Controller
             'field_of_study' => 'required|string',
             'grade' => 'required|string',
             'started_at' => 'required|date',
-            'ended_at' => 'nullable|date|after_or_equal:started_at',
+            'ended_at' => 'nullable|date|after:started_at',
             'description' => 'nullable|string',
         ]);
 
@@ -117,7 +117,7 @@ class CvEducationsController extends Controller
             'field_of_study' => 'nullable|string',
             'grade' => 'nullable|string',
             'started_at' => 'nullable|date',
-            'ended_at' => 'nullable|date|after_or_equal:started_at',
+            'ended_at' => 'nullable|date|after:started_at',
             'description' => 'nullable|string',
         ]);
         $data = $request->all();

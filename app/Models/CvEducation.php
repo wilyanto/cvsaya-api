@@ -60,7 +60,7 @@ class CvEducation extends Model implements Auditable
             'degree' => $this->degree,
             'field_of_study' => $this->field_of_study,
             'grade' => $this->grade,
-            'started_at' => $this->started_at,
+        'started_at' => $this->started_at,
             'ended_at' => $this->ended_at,
             'description' => $this->description,
             'created_at' => $this->created_at,
