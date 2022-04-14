@@ -169,10 +169,12 @@ class CvExperiencesController extends Controller
             $experience->company_location = $request->company_location;
         }
 
-        if (strtotime($experience->ended_at) > strtotime($request->started_at)) {
-            $experience->started_at = date('Y-m-d', strtotime($request->started_at));
-        } else {
-            return $this->errorResponse('The start at must be a date before saved until at', 422, 42200);
+        if($experience->ended_at){
+            if (strtotime($experience->ended_at) > strtotime($request->started_at)) {
+                $experience->started_at = date('Y-m-d', strtotime($request->started_at));
+            } else {
+                return $this->errorResponse('The start at must be a date before saved until at', 422, 42200);
+            }
         }
         if ($request->ended_at) {
             if (strtotime($experience->started_at) < strtotime($request->ended_at)) {
