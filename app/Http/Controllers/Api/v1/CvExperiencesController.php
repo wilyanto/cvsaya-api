@@ -126,6 +126,7 @@ class CvExperiencesController extends Controller
         $data = $request->all();
         $data['position_id'] = $position->id;
         $data['user_id'] = $user->id_kustomer;
+        unset($data['position']);
         if ($request->ended_at) {
             if (strtotime($experience->ended_at) > strtotime($request->started_at)) {
                 $data['started_at'] = date('Y-m-d', strtotime($request->started_at));

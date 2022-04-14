@@ -33,6 +33,7 @@ class CvExperience extends Model implements Auditable
     public $fillable = [
         'id',
         'user_id',
+        'position_id',
         'employment_type_id',
         'company_name',
         'company_location',
@@ -64,7 +65,6 @@ class CvExperience extends Model implements Auditable
     {
         return [
             'id' => $this->id,
-
             'user_id' => $this->user_id,
             'position' => $this->candidatePositions,
             'employment_type' => $this->employeeType,
