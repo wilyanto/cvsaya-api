@@ -28,10 +28,10 @@ class CvSpecialityCertificate extends Model implements Auditable
     ];
 
     public function speciality(){
-        return $this->belongsTo(CvSpeciality::class,'speciality_id','id');
+        return $this->belongsTo(CvSpeciality::class,'speciality_id','id')->withDefault();
     }
 
     public function certifcate(){
-        return $this->hasOne(CvCertification::class,'certificate_id','id');
+        return $this->hasOne(CvCertification::class,'certificate_id','id')->withDefault();
     }
 }

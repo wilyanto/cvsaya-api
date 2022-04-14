@@ -32,12 +32,12 @@ class CvDomicile extends Model implements Auditable
 
     public function result()
     {
-        return $this->hasOne(Result::class, 'id', 'result_id');
+        return $this->hasOne(Result::class, 'id', 'result_id')->withDefault();
     }
 
     public function profileDetails()
     {
-        return $this->belongsTo(CvProfileDetail::class, 'user_id', 'user_id');
+        return $this->belongsTo(CvProfileDetail::class, 'user_id', 'user_id')->withDefault();
     }
 
     public function requestDomicile($url)

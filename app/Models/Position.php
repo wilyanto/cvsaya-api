@@ -54,12 +54,12 @@ class Position extends Model implements Auditable
 
     public function departments()
     {
-        return $this->belongsTo(Department::class, 'department_id', 'id');
+        return $this->belongsTo(Department::class, 'department_id', 'id')->withDefault();
     }
 
     public function levels()
     {
-        return $this->belongsTo(Level::class, 'level_id', 'id');
+        return $this->belongsTo(Level::class, 'level_id', 'id')->withDefault();
     }
 
     public function ExpectedPositions()
@@ -69,7 +69,7 @@ class Position extends Model implements Auditable
 
     public function company()
     {
-        return $this->hasOne(Company::class, 'id', 'company_id');
+        return $this->hasOne(Company::class, 'id', 'company_id')->withDefault();
     }
 
     public function toCandidate()
@@ -95,22 +95,4 @@ class Position extends Model implements Auditable
             'company' => $this->company,
         ];
     }
-
-    // public function getCompanyName(){
-    //     return 'test';
-    // }
-
-    // public function toArray()
-    // {
-    //     $company = $this->departments;
-    //     // dd($company->name);
-    //     return [
-    //         'id' => $this->id,
-    //         'name' => $this->name,
-    //         'department_id' => $this->departments,
-    //         'level' => $this->level(),
-    //         'company' => $this->departments->company_id,
-    //         'children' => $this->getAllChildren(),
-    //     ];
-    // }
 }

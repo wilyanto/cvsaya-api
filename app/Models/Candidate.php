@@ -40,6 +40,10 @@ class Candidate extends Model implements Auditable
 
     protected $primaryKey = 'id';
 
+    protected $dates = [
+        'register_date',
+    ];
+
     public $fillable = [
         'id',
         'name',
@@ -53,12 +57,12 @@ class Candidate extends Model implements Auditable
     public function domicile()
     {
         // dd($)
-        return $this->hasOne(CvDomicile::class, 'user_id', 'user_id');
+        return $this->hasOne(CvDomicile::class, 'user_id', 'user_id')->withDefault();
     }
 
     public function suggestBy()
     {
-        return $this->hasOne(EmployeeDetail::class, 'id', 'suggested_by');
+        return $this->hasOne(EmployeeDetail::class, 'id', 'suggested_by')->withDefault();
     }
 
     public function schedules()
@@ -76,18 +80,18 @@ class Candidate extends Model implements Auditable
 
     public function profile()
     {
-        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id');
+        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id')->withDefault();
     }
 
     public function job()
     {
-        return $this->hasOne(CvExpectedJob::class, 'user_id', 'user_id');
+        return $this->hasOne(CvExpectedJob::class, 'user_id', 'user_id')->withDefault();
     }
 
 
     public function results()
     {
-        return $this->hasManyThrough(InterviewResult::class, CandidateInterviewSchedule::class,  'candidate_id', 'id', 'id', 'result_id');
+        return $this->hasManyThrough(InterviewResult::class, CandidateInterviewSchedule::class,  'candidate_id', 'id', 'id', 'result_id')->withDefault();
     }
 
     public function label()
@@ -130,11 +134,11 @@ class Candidate extends Model implements Auditable
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'last_assessment' => $this->label(),
-            'religion' => $this->profile ? $this->profile->religion : null,
+            'religion' => $this->profile->religion,
             'education' => $this->educations->first(),
-            'gender' => $this->profile ? $this->profile->gender : null,
-            'position' => $this->job == null ? null : $this->job->position,
-            'domicile' => $this->domicile != null ? $this->domicile->province() : null,
+            'gender' =>  $this->profile->gender,
+            'position' => $this->job->position,
+            'domicile' => $this->domicile->province(),
         ];
     }
 

@@ -25,20 +25,25 @@ class CvExperience extends Model implements Auditable
         'previous_salary' => 'int',
     ];
 
+    protected $dates = [
+        'started_at',
+        'ended_at',
+    ];
+
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_kustomer', 'user_id');
+        return $this->belongsTo(User::class, 'id_kustomer', 'user_id')->withDefault();
     }
 
     public function EmployeeType()
     {
-        return $this->hasOne(EmploymentType::class, 'id', 'employment_type_id');
+        return $this->hasOne(EmploymentType::class, 'id', 'employment_type_id')->withDefault();
     }
 
     public function candidatePositions()
     {
-        return $this->hasOne(CandidatePosition::class, 'id', 'position_id');
+        return $this->hasOne(CandidatePosition::class, 'id', 'position_id')->withDefault();
     }
 
     public function toArray()
@@ -50,8 +55,8 @@ class CvExperience extends Model implements Auditable
             'employment_type' => $this->employeeType,
             'company_name' => $this->company_name,
             'company_location' => $this->company_location,
-            'started_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->started_at)),
-            'ended_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->ended_at)),
+            'started_at' => $this->started_at,
+            'ended_at' => $this->ended_at,
             'jobdesc' => $this->jobdesc,
             'reference' => $this->reference,
             'previous_salary' => (int) $this->previous_salary,

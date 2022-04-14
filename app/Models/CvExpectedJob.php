@@ -39,7 +39,7 @@ class CvExpectedJob extends Model implements Auditable
 
     public function position()
     {
-        return $this->hasOne(CandidatePosition::class, 'id', 'expected_position');
+        return $this->hasOne(CandidatePosition::class, 'id', 'expected_position')->withDefault();
     }
 
     public function toArray()

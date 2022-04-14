@@ -48,17 +48,4 @@ class CvSpeciality extends Model implements Auditable
         ];
         return $data;
     }
-    // public function toArray()
-    // {
-    //     // dump($this->certification_id);
-    //     $certifcates = CvSayaSpecialiteCertificates::where('id',$this->speciality_certificate_id)->first();
-    //     // dd($certifcates->toArray());
-    //     $data = [
-    //         'id' => $this->id,
-    //         'user_id' => $this->user_id,
-    //         'name' => $this->name,
-    //         'certificates' => $certifcates,
-    //     ];
-    //     return $data;
-    // }
 }

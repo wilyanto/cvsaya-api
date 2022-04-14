@@ -11,7 +11,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class CvProfileDetail extends Model implements Auditable
 {
     use HasFactory;
-    
+
     use \OwenIt\Auditing\Auditable;
 
     protected $casts = [
@@ -38,32 +38,32 @@ class CvProfileDetail extends Model implements Auditable
 
     public function addresses()
     {
-        return $this->hasOne(CvDomicile::class, 'user_id', 'user_id');
+        return $this->hasOne(CvDomicile::class, 'user_id', 'user_id')->withDefault();
     }
 
     public function sosmeds()
     {
-        return $this->hasOne(CvSosmed::class, 'user_id', 'user_id');
+        return $this->hasOne(CvSosmed::class, 'user_id', 'user_id')->withDefault();
     }
 
     public function employeeDetails()
     {
-        return $this->belongsToMany(EmployeeDetails::class, 'user_id', 'user_id');
+        return $this->belongsToMany(EmployeeDetails::class, 'user_id', 'user_id')->withDefault();
     }
 
     public function religion()
     {
-        return $this->hasOne(Religion::class, 'id', 'religion_id');
+        return $this->hasOne(Religion::class, 'id', 'religion_id')->withDefault();
     }
 
     public function marriageStatus()
     {
-        return $this->hasOne(MarriageStatus::class, 'id', 'marriage_status_id');
+        return $this->hasOne(MarriageStatus::class, 'id', 'marriage_status_id')->withDefault();
     }
 
     public function candidate()
     {
-        return $this->hasOne(Candidate::class, 'user_id', 'user_id');
+        return $this->hasOne(Candidate::class, 'user_id', 'user_id')->withDefault();
     }
 
     public function toArray()

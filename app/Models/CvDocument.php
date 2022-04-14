@@ -29,19 +29,19 @@ class CvDocument extends Model implements Auditable
 
     public function identityCard(){
 
-        return $this->hasOne(Document::class,'id','identity_card');
+        return $this->hasOne(Document::class,'id','identity_card')->withDefault();
     }
 
     public function frontSelfie(){
-        return $this->hasOne(Document::class,'id','front_selfie');
+        return $this->hasOne(Document::class,'id','front_selfie')->withDefault();
     }
 
     public function leftSelfie(){
-        return $this->hasOne(Document::class,'id','left_selfie');
+        return $this->hasOne(Document::class,'id','left_selfie')->withDefault();
     }
 
     public function rightSelfie(){
-        return $this->hasOne(Document::class,'id','right_selfie');
+        return $this->hasOne(Document::class,'id','right_selfie')->withDefault();
     }
 
     public function toArray()

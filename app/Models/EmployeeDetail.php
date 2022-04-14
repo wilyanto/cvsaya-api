@@ -35,29 +35,29 @@ class EmployeeDetail extends Authenticatable implements Auditable
 
     public function position()
     {
-        return $this->hasOne(Position::class, 'id', 'position_id');
+        return $this->hasOne(Position::class, 'id', 'position_id')->withDefault();
     }
 
     public function profileDetail()
     {
-        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id');
+        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id')->withDefault();
     }
 
     public function company()
     {
-        return $this->hasOneThrough(Company::class, Position::class, 'id', 'id', 'position_id', 'company_id');
+        return $this->hasOneThrough(Company::class, Position::class, 'id', 'id', 'position_id', 'company_id')->withDefault();
     }
 
     public function getCompanyName()
     {
-        if($this->company){
+        if ($this->company) {
             return $this->company->name;
         }
     }
 
     public function getUserName()
     {
-        if($this->profileDetail){
+        if ($this->profileDetail) {
             return $this->profileDetail->first_name;
         }
     }

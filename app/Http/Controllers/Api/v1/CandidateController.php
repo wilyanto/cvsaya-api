@@ -117,7 +117,7 @@ class CandidateController extends Controller
     public function indexDetail(Request $request, $id)
     {
         $candidate = Candidate::where('id', $id)->firstOrFail();
-        return $this->showOne($candidate);
+        return $this->showOne($candidate->listDefaultCandidate());
     }
 
     public function addCandidateToBlast(Request $request)

@@ -11,7 +11,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class CvCertification extends Model implements Auditable
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     use \OwenIt\Auditing\Auditable;
 
@@ -21,9 +21,14 @@ class CvCertification extends Model implements Auditable
 
     protected $primaryKey = 'id';
 
-    public function user(){
-        return $this->belongsTo(User::class,'id_kustomer','user_id');
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_kustomer', 'user_id')->withDefault();
     }
+    protected $dates = [
+        'issued_at',
+        'expired_at',
+    ];
 
     public $fillable = [
         'id',
@@ -36,7 +41,8 @@ class CvCertification extends Model implements Auditable
         'credential_url'
     ];
 
-    public function speciality(){
-        $this->hasMany(SpecialityCertificate::class,'id','certification_id');
+    public function speciality()
+    {
+        $this->hasMany(SpecialityCertificate::class, 'id', 'certification_id');
     }
 }
