@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+// use App\Http\Requests\CvExperienceRequests;
 use App\Models\CvExperience;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
@@ -88,6 +89,11 @@ class CvExperiencesController extends Controller
         return $this->showOne($experience);
     }
 
+        // public function add (CvExperienceRequests $request){
+        //     $validated = $request->validated();
+        //     return $validated;
+        // }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -139,9 +145,10 @@ class CvExperiencesController extends Controller
             'ended_at' => 'nullable|date',
             'jobdesc' => 'nullable|string',
             'resign_reason' => [
+                'nullable',
+                'required_with:ended_at',
                 'string',
                 'min:20',
-                Rule::requiredIf($request->ended_at != null),
             ],
             'reference' => 'nullable|string',
             'previous_salary' => 'integer|required',
