@@ -30,6 +30,20 @@ class CvExperience extends Model implements Auditable
         'ended_at',
     ];
 
+    public $fillable = [
+        'id',
+        'user_id',
+        'employment_type_id',
+        'company_name',
+        'company_location',
+        'started_at',
+        'ended_at',
+        'jobdesc',
+        'payslip',
+        'previous_salary',
+        'reference',
+        'resign_reason',
+    ];
 
     public function user()
     {
@@ -50,6 +64,7 @@ class CvExperience extends Model implements Auditable
     {
         return [
             'id' => $this->id,
+
             'user_id' => $this->user_id,
             'position' => $this->candidatePositions,
             'employment_type' => $this->employeeType,

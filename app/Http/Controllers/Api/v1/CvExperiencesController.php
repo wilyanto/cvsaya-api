@@ -4,7 +4,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-// use App\Http\Requests\CvExperienceRequests;
+use App\Http\Requests\CvExperienceRequests;
 use App\Models\CvExperience;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
@@ -38,61 +38,36 @@ class CvExperiencesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function add(Request $request)
+
+    public function add(CvExperienceRequests $request)
     {
+        $validated = $request->validated();
+
         $user = auth()->user();
-        $request->validate([
-            'position' => 'required',
-            'employment_type_id' => 'exists:App\Models\EmploymentType,id|required',
-            'company_name' => 'required|string',
-            'company_location' => 'nullable|string',
-            'started_at' => 'required|date',
-            'ended_at' => 'nullable|date',
-            'jobdesc' => 'nullable|string',
-            'resign_reason' => [
-                'string',
-                'min:20',
-                Rule::requiredIf($request->ended_at != null),
-            ],
-            'reference' => 'nullable|string',
-            'previous_salary' => 'integer|required',
-            'payslip' => 'nullable', 'exists:App\Models\Document,id',
-        ]);
-        $documents = null;
+
+        $document = null;
         if ($request->payslip) {
             $documents = Document::where('id', $request->payslip)->firstOrFail();
+            $document = $documents->id;
         }
-        $experience = new CvExperience();
-        $experience->user_id = $user->id_kustomer;
-        $positionCollection = json_decode($request->position);
-        $position = CandidatePosition::where('id', $positionCollection->id)->orWhere('name', $positionCollection->name)->first();
+        $data = $request->all();
+        $data['user_id'] = $user->id_kustomer;
+        $positionObjects = json_decode($request->position);
+        $position = CandidatePosition::where('id', $positionObjects->id)->orWhere('name', $positionObjects->name)->first();
         if (!$position) {
-            $position = new CandidatePosition();
-            $position->name = $positionCollection->name;
-            $position->inserted_by = $user->id_kustomer;
-            $position->save();
+            $position = CandidatePosition::create([
+                'name' => $positionObjects->name,
+                'inserted_by' => $user->id_kustomer,
+            ]);
         }
-        $experience->position_id = $position->id;
-        $experience->company_name = $request->company_name;
-        $experience->employment_type_id = $request->employment_type_id;
-        $experience->company_location = $request->company_location;
-        $experience->started_at = date('Y-m-d', strtotime($request->started_at));
-        if ($request->ended_at) {
-            $experience->ended_at = date('Y-m-d', strtotime($request->ended_at));
-        }
-        $experience->jobdesc =  $request->jobdesc;
-        $experience->reference = $request->reference;
-        $experience->previous_salary = $request->previous_salary;
-        $experience->resign_reason = $request->resign_reason;
-        $experience->payslip = $documents == null ? null : $documents->id;
-        $experience->save();
+        $data['position_id'] = $position->id;
+        $data['started_at'] = date('Y-m-d', strtotime($request->started_at));
+        $data['ended_at'] = $request->ended_at ? date('Y-m-d', strtotime($request->ended_at)) : null;
+        $data['payslip'] = $document;
+        unset($data['position']);
+        $experience = CvExperience::create($data);
         return $this->showOne($experience);
     }
-
-        // public function add (CvExperienceRequests $request){
-        //     $validated = $request->validated();
-        //     return $validated;
-        // }
 
     /**
      * Store a newly created resource in storage.
@@ -133,84 +108,45 @@ class CvExperiencesController extends Controller
      * @param  \App\Models\Experiences  $experiences
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-        $user = auth()->user();
-        $request->validate([
-            'position' => 'required',
-            'employment_type' => 'exists:App\Models\EmploymentType,id|nullable',
-            'company_name' => 'nullable|string',
-            'company_location' => 'nullable|string',
-            'started_at' => 'nullable|date',
-            'ended_at' => 'nullable|date',
-            'jobdesc' => 'nullable|string',
-            'resign_reason' => [
-                'nullable',
-                'required_with:ended_at',
-                'string',
-                'min:20',
-            ],
-            'reference' => 'nullable|string',
-            'previous_salary' => 'integer|required',
-            'payslip' => 'nullable', 'exists:App\Models\Document,id',
-        ]);
-        $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
-        if ($request->position) {
-            $position = $request->position;
-            $position = CandidatePosition::where('id', $position['id'])->orWhere('name', $position['name'])->first();
-            if (!$position) {
-                $position = new CandidatePosition();
-                $position->name = $position->name;
-                $position->inserted_by = $user->id_kustomer;
-                $position->save();
-            }
-            $experience->position_id = $position->id;
-        }
-        if ($request->employment_type) {
-            $experience->employment_type = $request->employment_type;
-        }
-        if ($request->company_name) {
-            $experience->company_name = $request->company_name;
-        }
-        if ($request->company_location) {
-            $experience->company_location = $request->company_location;
-        }
 
-        if($experience->ended_at){
+    public function update(CvExperienceRequests $request, $id)
+    {
+        $validated = $request->validated();
+
+        $user = auth()->user();
+        $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
+        $positionObjects = $request->position;
+        $position = CandidatePosition::where('id', $positionObjects['id'])->orWhere('name', $positionObjects['name'])->first();
+        if (!$position) {
+            $position = CandidatePosition::create([
+                'name' => $positionObjects['name'],
+                'inserted_by' => $user->id_kustomer,
+            ]);
+        }
+        $data = $request->all();
+        $data['position_id'] = $position->id;
+        $data['user_id'] = $user->id_kustomer;
+        if ($request->ended_at) {
             if (strtotime($experience->ended_at) > strtotime($request->started_at)) {
-                $experience->started_at = date('Y-m-d', strtotime($request->started_at));
+                $data['started_at'] = date('Y-m-d', strtotime($request->started_at));
             } else {
                 return $this->errorResponse('The start at must be a date before saved until at', 422, 42200);
             }
         }
-        if ($request->ended_at) {
+        if ($request->filled('ended_at')) {
             if (strtotime($experience->started_at) < strtotime($request->ended_at)) {
-                $experience->ended_at = date('Y-m-d', strtotime($request->ended_at));
+                $experience->ended_at  = date('Y-m-d', strtotime($request->ended_at));
             } else {
                 return $this->errorResponse('The until at must be a date after saved start at', 422, 42200);
             }
         } else {
             $experience->ended_at = null;
         }
-        if ($request->jobdesc) {
-            $experience->jobdesc =  $request->jobdesc;
+        $experience = $experience->fill($data);
+        if ($experience->isDirty()) {
+            $experience->update([$data]);
         }
-        if ($request->payslip) {
-            $documents = Document::where('id', $request->payslip)->firstOrFail();
-            $experience->payslip = $documents->id;
-        }
-        if ($request->reference) {
-            $experience->reference = $request->reference;
-        }
-        if ($request->previous_salary) {
-            $experience->previous_salary = $request->previous_salary;
-        }
-        if ($request->resign_reason) {
-            $experience->resign_reason = $request->resign_reason;
-        }
-        $experience->save();
-
-        return $this->showOne($experience);
+        return $experience;
     }
 
     /**
