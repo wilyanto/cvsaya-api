@@ -127,8 +127,8 @@ class CvExperiencesController extends Controller
         $data['position_id'] = $position->id;
         $data['user_id'] = $user->id_kustomer;
         unset($data['position']);
-        if ($request->ended_at) {
-            if (strtotime($experience->ended_at) > strtotime($request->started_at)) {
+        if ($request->started_at) {
+            if (strtotime($experience->ended_at) > strtotime($request->started_at) || $experience->ended_at == null) {
                 $data['started_at'] = date('Y-m-d', strtotime($request->started_at));
             } else {
                 return $this->errorResponse('The start at must be a date before saved until at', 422, 42200);
