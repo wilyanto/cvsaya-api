@@ -79,7 +79,7 @@ class CandidateInterviewSchedule extends Model implements Auditable
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->candidate,
+            'user_id' => $this->candidate->user_id,
             'candidate' => $this->toArrayCandidate(),
             'interviewer' => $this->interviewer(),
             'created_at' => $this->created_at,

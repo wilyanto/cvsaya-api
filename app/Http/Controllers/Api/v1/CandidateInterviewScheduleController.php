@@ -37,7 +37,7 @@ class CandidateInterviewScheduleController extends Controller
         $request->validate([
             'date' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
         ]);
-        $date = date('Y-m-d',strtotime($request->date));
+        $date = date('Y-m-d', strtotime($request->date));
         $candidate = CandidateInterviewSchedule::whereNull('result_id')
             ->whereNull('rejected_at')
             ->where('interviewed_by', $employee->id)
@@ -86,47 +86,21 @@ class CandidateInterviewScheduleController extends Controller
     public function indexByDate(Request $request)
     {
         $user = auth()->user();
-        $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
-        // dump($request->input());
         $request->validate([
             'started_at' => 'date_format:Y-m-d\TH:i:s.v\Z|required',
             'ended_at' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
         ]);
 
-        if (!$request->ended_at) {
-            $ended_at = $request->started_at . "+1day";
-        } else {
-            $ended_at = $request->ended_at . "+1day";
-        }
-        $begin = new DateTime(date('Y-m-d H:i:s', strtotime($request->started_at)));
-        $until = new DateTime(date('Y-m-d H:i:s', strtotime($ended_at)));
-        $interval = DateInterval::createFromDateString('1 day');
-        $periods = new DatePeriod($begin, $interval, $until);
+        $schedules = CandidateInterviewSchedule::whereBetween('interviewed_at', [$request->started_at, $request->ended_at])
+            ->whereNull('result_id')
+            ->distinct('candidate_id')
+            ->get();
 
-        $data = [];
-        foreach ($periods as $period) {
-            $scheduleArray = [];
-            $date = $period->format('Y-m-d\TH:i:s.v\Z');
-            $schedules = CandidateInterviewSchedule::
-                // whereBettween('date_time',)
-                whereDate('interviewed_at', $period->format('Y-m-d'))
-                ->where('interviewed_by', $employee->id)
-                ->whereNull('result_id')
-                ->distinct('candidate_id')
-                ->get();
-            foreach ($schedules as $schedule) {
-                $scheduleArray[] = [
-                    'interviewed_at' => date('Y-m-d\TH:i:s.v\Z',strtotime($schedule->interviewed_at)),
-                    'schedule_detail' => $schedule->toArraySchedule(),
-                ];
-            }
-            $data[] = [
-                'period' => $date,
-                'schedules' => $scheduleArray,
-            ];
-        }
+        $schedules = $schedules->map(function ($item, $key) {
+            return $item->toArraySchedule();
+        });
 
-        return $this->showAll(collect($data));
+        return $this->showAll(collect($schedules));
     }
 
     public function indexInterviewer()
