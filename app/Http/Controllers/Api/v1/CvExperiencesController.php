@@ -147,7 +147,7 @@ class CvExperiencesController extends Controller
         if ($experience->isDirty()) {
             $experience->update([$data]);
         }
-        return $experience;
+        return $this->showOne($experience);
     }
 
     /**
