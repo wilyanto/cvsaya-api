@@ -51,9 +51,9 @@ class CvExperience extends Model implements Auditable
         return $this->belongsTo(User::class, 'id_kustomer', 'user_id')->withDefault();
     }
 
-    public function EmployeeType()
+    public function employeeType()
     {
-        return $this->hasOne(EmploymentType::class, 'id', 'employment_type_id')->withDefault();
+        return $this->hasOne(EmploymentType::class, 'id', 'employment_type_id');
     }
 
     public function candidatePositions()
