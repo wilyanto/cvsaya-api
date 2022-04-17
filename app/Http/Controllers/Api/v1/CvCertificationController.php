@@ -6,10 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\CvCertification;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
-use Illuminate\Support\Facades\DB;
 
 
-class CvCertificationsController extends Controller
+class CvCertificationController extends Controller
 {
     use ApiResponser;
 
@@ -112,13 +111,10 @@ class CvCertificationsController extends Controller
             'credential_id' => 'nullable|nullable',
             'credential_url' => 'nullable|nullable',
         ]);
-        // dump($user);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
         $data['issued_at'] = date('Y-m-d', strtotime($request->issued_at));
         $data['expired_at'] = !empty($request->expired_at) ? date('Y-m-d', strtotime($request->expired_at)) : null;
-        // dd($data);
-        // dd($data);
         $certifications = CvCertification::where('id', $id)->where('user_id', $user->id_kustomer)->first();
 
         if (!$certifications) {

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Models\Degree;
 
-class CvEducationsController extends Controller
+class CvEducationController extends Controller
 {
     use ApiResponser;
 

@@ -8,10 +8,8 @@ use App\Models\CvExpectedJob;
 use App\Models\CandidatePosition;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
-use App\Models\Candidate;
-use Illuminate\Support\Facades\Redis;
 
-class CvExpectedJobsController extends Controller
+class CvExpectedJobController extends Controller
 {
     use ApiResponser;
     /**
@@ -91,6 +89,40 @@ class CvExpectedJobsController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
+    public function getListCandidatePositionsWithPaginate(Request $request)
+    {
+        $request->validate([
+            'keyword' => 'string|nullable',
+            'is_verified' => 'nullable|boolean',
+            'page' => 'required|numeric|gt:0',
+            'page_size' => 'required|numeric|gt:0'
+        ]);
+        $keyword = $request->keyword;
+        $isVerified = $request->is_verified;
+        $specialities = CandidatePosition::where(function ($query) use ($keyword, $isVerified) {
+            if ($keyword != null) {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
+            }
+            if (isset($isVerified)) {
+                if ($isVerified) {
+                    $query->whereNotNull('validated_at');
+                } else {
+                    $query->whereNull('validated_at');
+                }
+            }
+        })->paginate(
+            $perpage = $request->page_size,
+            $columns =  ['*'],
+            $pageName = 'page',
+            $pageBody = $request->page
+        );
+        $result = $specialities->map(function ($item, $key) {
+            return $item;
+        });
+
+        return $this->showPaginate('candidates-positions',collect($result), collect($specialities));
+    }
+
     public function getListCandidatePositions(Request $request)
     {
         $request->validate([
@@ -118,8 +150,6 @@ class CvExpectedJobsController extends Controller
     public function createCandidatePositions(Request $request)
     {
 
-        $user = auth()->user();
-
         $request->validate([
             'name' => 'string',
         ]);
@@ -137,18 +167,20 @@ class CvExpectedJobsController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function verfiedCandidatePositions(Request $request, $id)
+    public function verifiedCandidatePositions($id)
     {
-        $user = auth()->user();
-        $validate = CandidatePosition::where('id', $request->id)->firstOrFail();
-
-        if (!$validate->validated_at) {
-            $validate->validated_at = date('Y-m-d h:i:s', time());
-        } else {
-            $validate->validated_at = null;
-        }
+        $validate = CandidatePosition::where('id', $id)->firstOrFail();
+        $validate->validated_at = date('Y-m-d h:i:s', time());
         $validate->save();
 
+        return $this->showOne($validate);
+    }
+
+    public function deleteVerifiedCandidatePositions($id)
+    {
+        $validate = CandidatePosition::where('id', $id)->firstOrFail();
+        $validate->validated_at = null;
+        $validate->save();
 
         return $this->showOne($validate);
     }
@@ -160,9 +192,16 @@ class CvExpectedJobsController extends Controller
      * @param  \App\Models\ExpectedSalaries  $expectedSalaries
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, CvExpectedJob $expectedSalaries)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'string',
+        ]);
+
+        $data = $request->all();
+        $position = CandidatePosition::where('id', $id)->update($data);
+
+        return $this->showOne($position);
     }
 
     /**

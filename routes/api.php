@@ -4,15 +4,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Http\Controllers\Api\v1\CvDocumentController;
-use App\Http\Controllers\Api\v1\CvExpectedJobsController;
-use App\Http\Controllers\Api\v1\CvCertificationsController;
-use App\Http\Controllers\Api\v1\CvExperiencesController;
-use App\Http\Controllers\Api\v1\CvEducationsController;
-use App\Http\Controllers\Api\v1\CvHobbiesController;
-use App\Http\Controllers\Api\v1\CvSpecialitiesController;
-use App\Http\Controllers\Api\v1\DepartmentsController;
+use App\Http\Controllers\Api\v1\CvExpectedJobController;
+use App\Http\Controllers\Api\v1\CvCertificationController;
+use App\Http\Controllers\Api\v1\CvExperienceController;
+use App\Http\Controllers\Api\v1\CvEducationController;
+use App\Http\Controllers\Api\v1\CvHobbyController;
+use App\Http\Controllers\Api\v1\CvSpecialityController;
+use App\Http\Controllers\Api\v1\DepartmentController;
 use App\Http\Controllers\Api\v1\LevelController;
-use App\Http\Controllers\Api\v1\PositionsController;
+use App\Http\Controllers\Api\v1\PositionController;
 use App\Http\Controllers\Api\v1\CandidateController;
 use App\Http\Controllers\Api\v1\EmployeeDetailsController;
 use App\Http\Controllers\Api\v1\CandidateInterviewScheduleController;
@@ -63,7 +63,7 @@ Route::prefix('v1')->group(function () {
                     Route::get('/{id}/profile',  'getDetailByID');
                 });
 
-                Route::controller(CvExpectedJobsController::class)->group(function () {
+                Route::controller(CvExpectedJobController::class)->group(function () {
                     Route::get('/{id}/expected-job', 'getIndexByID'); // path user/id/expected-jobs
                 });
 
@@ -161,7 +161,7 @@ Route::prefix('v1')->group(function () {
             });
 
             Route::prefix('expected-job')->group(function () {
-                Route::controller(CvExpectedJobsController::class)->group(function () {
+                Route::controller(CvExpectedJobController::class)->group(function () {
                     Route::get('/', 'getIndexByDefault');
                     Route::post('/', 'storeOrUpdate');
                 });
@@ -179,7 +179,7 @@ Route::prefix('v1')->group(function () {
             });
 
             Route::prefix('certificates')->group(function () {
-                Route::controller(CvCertificationsController::class)->group(function () {
+                Route::controller(CvCertificationController::class)->group(function () {
                     Route::get('/', 'index');
                     Route::post('/', 'create');
                     Route::put('/{id}', 'update');
@@ -188,7 +188,7 @@ Route::prefix('v1')->group(function () {
             });
 
             Route::prefix('educations')->group(function () {
-                Route::controller(CvEducationsController::class)->group(function () {
+                Route::controller(CvEducationController::class)->group(function () {
                     Route::get('/', 'index');
                     Route::post('/', 'add');
                     Route::delete('/{id}', 'destroy');
@@ -197,7 +197,7 @@ Route::prefix('v1')->group(function () {
             });
 
             Route::prefix('experiences')->group(function () {
-                Route::controller(CvExperiencesController::class)->group(function () {
+                Route::controller(CvExperienceController::class)->group(function () {
                     Route::get('/', 'index');
                     Route::post('/', 'add');
                     Route::put('/{id}', 'update');
@@ -206,7 +206,7 @@ Route::prefix('v1')->group(function () {
             });
 
             Route::prefix('hobbies')->group(function () {
-                Route::controller(CvHobbiesController::class)->group(function () {
+                Route::controller(CvHobbyController::class)->group(function () {
                     Route::get('/', 'index');
                     Route::get('/suggestions', 'suggestion');
                     Route::post('/', 'create');
@@ -216,7 +216,7 @@ Route::prefix('v1')->group(function () {
             });
 
             Route::prefix('specialities')->group(function () {
-                Route::controller(CvSpecialitiesController::class)->group(function () {
+                Route::controller(CvSpecialityController::class)->group(function () {
                     Route::get('/',  'index');
                     Route::get('/suggestions', 'suggestion');
                     Route::post('/', 'create');
@@ -237,7 +237,7 @@ Route::prefix('v1')->group(function () {
 
 
         Route::prefix('departments')->group(function () {
-            Route::controller(DepartmentsController::class)->group(function () {
+            Route::controller(DepartmentController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::post('/', 'create');
                 Route::put('/{id}', 'update');
@@ -255,7 +255,7 @@ Route::prefix('v1')->group(function () {
 
 
         Route::prefix('positions')->group(function () {
-            Route::controller(PositionsController::class)->group(function () {
+            Route::controller(PositionController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::post('/', 'store');
                 Route::get('/structure-organization', 'show');
@@ -265,7 +265,7 @@ Route::prefix('v1')->group(function () {
 
 
         Route::prefix('degrees')->group(function () {
-            Route::controller(CvEducationsController::class)->group(function () {
+            Route::controller(CvEducationController::class)->group(function () {
                 Route::get('/', 'degreeList');
             });
         });
@@ -280,10 +280,12 @@ Route::prefix('v1')->group(function () {
             });
         });
         Route::prefix('candidate-positions')->group(function () {
-            Route::controller(CvExpectedJobsController::class)->group(function () {
+            Route::controller(CvExpectedJobController::class)->group(function () {
                 Route::get('/', 'getListCandidatePositions');
                 Route::post('/', 'createCandidatePositions');
-                Route::put('/{id}', 'verfiedCandidatePositions');
+                Route::put('/{id}/verified', 'verifiedCandidatePositions');
+                Route::put('/{id}', 'update');
+                Route::delete('/{id}/verified', 'deleteVerifiedCandidatePositions');
             });
         });
 

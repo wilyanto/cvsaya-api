@@ -10,7 +10,7 @@ use App\Models\Department;
 use App\Models\Level;
 use App\Traits\ApiResponser;
 
-class PositionsController extends Controller
+class PositionController extends Controller
 {
     use ApiResponser;
     /**
