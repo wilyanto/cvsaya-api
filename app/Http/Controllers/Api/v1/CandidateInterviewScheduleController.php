@@ -27,18 +27,28 @@ class CandidateInterviewScheduleController extends Controller
         $user = auth()->user();
         $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
         $request->validate([
-            'date' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
+            'started_at' => [
+                'date_format:Y-m-d\TH:i:s.v\Z',
+                'nullable',
+                'required_with:ended_at',
+            ],
+            'ended_at' => [
+                'date_format:Y-m-d\TH:i:s.v\Z',
+                'required_with:started_at',
+                'nullable',
+            ],
         ]);
-        $date = date('Y-m-d', strtotime($request->date));
-        $candidate = CandidateInterviewSchedule::whereNull('result_id')
+        $startedAt = $request->started_at;
+        $endedAt = $request->ended_at;
+        $candidate = CandidateInterviewSchedule::where(function ($query) use ($startedAt, $endedAt) {
+            if ($startedAt || $endedAt) {
+                $query->whereBetween('interviewed_at', [$startedAt, $endedAt]);
+            }
+        })
+            ->whereNull('result_id')
             ->whereNull('rejected_at')
             ->where('interviewed_by', $employee->id)
-            ->where(function ($query) use ($date) {
-                if ($date) {
-                    $date = date('Y-m-d', strtotime($date));
-                    $query->whereDate('interviewed_at', $date);
-                }
-            })->distinct('candidate_id')->get();
+            ->get();
 
         return $this->showALl($candidate);
     }
@@ -73,25 +83,6 @@ class CandidateInterviewScheduleController extends Controller
         $results = InterviewResult::all();
 
         return $this->showAll($results);
-    }
-
-    public function indexByDate(Request $request)
-    {
-        $request->validate([
-            'started_at' => 'date_format:Y-m-d\TH:i:s.v\Z|required',
-            'ended_at' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
-        ]);
-
-        $schedules = CandidateInterviewSchedule::whereBetween('interviewed_at', [$request->started_at, $request->ended_at])
-            ->whereNull('result_id')
-            ->distinct('candidate_id')
-            ->get();
-
-        $schedules = $schedules->map(function ($item) {
-            return $item->toArraySchedule();
-        });
-
-        return $this->showAll(collect($schedules));
     }
 
     public function indexInterviewer()

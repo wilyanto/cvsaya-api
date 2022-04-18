@@ -98,13 +98,6 @@ Route::prefix('v1')->group(function () {
                     Route::put('/{id}/reject', 'rejectInterview');
                 });
             });
-
-            Route::prefix('interview-periods')->group(function () {
-                Route::controller(CandidateInterviewScheduleController::class)->group(function () {
-                    Route::get('/', 'indexByDate');
-                });
-            });
-
             Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                 Route::get('/interviewers', 'indexInterviewer');
             });
