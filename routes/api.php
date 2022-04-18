@@ -113,7 +113,7 @@ Route::prefix('v1')->group(function () {
 
                     });
                 });
-                Route::prefix('position-candidates')->group(function (){
+                Route::prefix('candidate-positions')->group(function (){
                     Route::controller(CandidateController::class)->group(function () {
                         Route::get('/', 'getPosition');
 
@@ -265,8 +265,8 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('employees')->group(function () {
             Route::controller(EmployeeDetailsController::class)->group(function () {
+                Route::get('/{id}', 'show');
                 Route::get('/', 'index');
-                Route::post('/', 'create');
             });
             Route::controller(EmploymentTypeController::class)->group(function () {
                 Route::get('/types', 'index');
