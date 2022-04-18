@@ -97,7 +97,7 @@ class OldDatabaseSeeder extends Seeder
                             'name' => $user->nama_lengkap,
                             'country_code' => 62,
                             'phone_number' => substr($user->telpon, 1),
-                            'status' => 2,
+                            'status' => 3,
                             'registered_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($user->tgl_kus)),
                         ]);
                         $recentComets = $recentCometsAll->where('idlogin', $administrator->idlogin)->all();
