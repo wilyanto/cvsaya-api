@@ -159,7 +159,7 @@ class CandidateController extends Controller
         ]);
 
         $result = [];
-        $positions = CandidatePosition::orderBy('name', 'desc')
+        $positions = CandidatePosition::orderBy('name', 'desc')->whereNotNull('validated_at')
             ->paginate(
                 $perpage = $request->page_size,
                 $columns =  ['*'],
@@ -199,7 +199,7 @@ class CandidateController extends Controller
             }
         })->count();
         $data['accepted'] = collect($position->candidates)->filter(function ($item) {
-            return $item->status == Candidate::ACCEPTED;
+                return $item->status == Candidate::ACCEPTED;
         })->count();
 
         return $data;
