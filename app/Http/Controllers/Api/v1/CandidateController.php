@@ -181,7 +181,9 @@ class CandidateController extends Controller
     {
         $data['total'] = collect($position->candidates)->count();
         $data['interview'] = collect($position->candidates)->filter(function ($item) {
-            return $item->label() == null;
+            if ($item->status == 5) {
+                return $item->label() == null;
+            }
         })->count();
         $data['bad'] = collect($position->candidates)->filter(function ($item) {
             if ($item->label()) {
@@ -199,7 +201,7 @@ class CandidateController extends Controller
             }
         })->count();
         $data['accepted'] = collect($position->candidates)->filter(function ($item) {
-                return $item->status == Candidate::ACCEPTED;
+            return $item->status == Candidate::ACCEPTED;
         })->count();
 
         return $data;
