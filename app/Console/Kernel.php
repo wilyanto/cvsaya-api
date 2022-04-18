@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(CandidateStatusCron::class)->everyMinute();
+        $schedule->command(CandidateStatusCron::class)->dailyAt('08:00');
     }
 
     /**
