@@ -274,7 +274,7 @@ Route::prefix('v1')->group(function () {
         });
         Route::prefix('candidate-positions')->group(function () {
             Route::controller(CvExpectedJobController::class)->group(function () {
-                Route::get('/', 'getListCandidatePositions');
+                Route::get('/', 'getListCandidatePositionsWithPaginate');
                 Route::post('/', 'createCandidatePositions');
                 Route::put('/{id}/verified', 'verifiedCandidatePositions');
                 Route::put('/{id}', 'update');

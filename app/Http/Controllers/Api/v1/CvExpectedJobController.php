@@ -94,11 +94,13 @@ class CvExpectedJobController extends Controller
         $request->validate([
             'keyword' => 'string|nullable',
             'is_verified' => 'nullable|boolean',
-            'page' => 'required|numeric|gt:0',
-            'page_size' => 'required|numeric|gt:0'
+            'page' => 'nullable|numeric|gt:0',
+            'page_size' => 'nullable|numeric|gt:0'
         ]);
         $keyword = $request->keyword;
         $isVerified = $request->is_verified;
+        $page = $request->page ? $request->page  : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
         $specialities = CandidatePosition::where(function ($query) use ($keyword, $isVerified) {
             if ($keyword != null) {
                 $query->where('name', 'LIKE', '%' . $keyword . '%');
@@ -111,16 +113,16 @@ class CvExpectedJobController extends Controller
                 }
             }
         })->paginate(
-            $perpage = $request->page_size,
+            $perpage = $pageSize,
             $columns =  ['*'],
             $pageName = 'page',
-            $pageBody = $request->page
+            $pageBody = $page
         );
         $result = $specialities->map(function ($item, $key) {
             return $item;
         });
 
-        return $this->showPaginate('candidates-positions',collect($result), collect($specialities));
+        return $this->showPaginate('candidates_positions',collect($result), collect($specialities));
     }
 
     public function getListCandidatePositions(Request $request)
