@@ -48,11 +48,21 @@ class EmployeeDetail extends Authenticatable implements Auditable
         return $this->hasOneThrough(Company::class, Position::class, 'id', 'id', 'position_id', 'company_id')->withDefault();
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id_kustomer')->withDefault();
+    }
+
     public function getCompanyName()
     {
         if ($this->company) {
             return $this->company->name;
         }
+    }
+
+    public function getPhoneNumber()
+    {
+        return $this->user->telpon;
     }
 
     public function getUserName()
