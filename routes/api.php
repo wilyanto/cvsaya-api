@@ -169,7 +169,7 @@ Route::prefix('v1')->group(function () {
             });
 
             Route::controller(CvProfileDetailController::class)->group(function () {
-                Route::get('/', 'index');
+                Route::get('/', 'cvDetailByDefault');
             });
 
             Route::prefix('certificates')->group(function () {
