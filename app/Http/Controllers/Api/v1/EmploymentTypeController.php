@@ -26,7 +26,7 @@ class EmploymentTypeController extends Controller
         }
         $id = $request->id;
         $name = $request->name;
-        $religions = EmploymentType::where(function ($query) use ($id, $name) {
+        $employee = EmploymentType::where(function ($query) use ($id, $name) {
             if ($id != null) {
                 $query->where('id', $id);
             }
@@ -34,7 +34,7 @@ class EmploymentTypeController extends Controller
                 $query->where('name', 'like', '%' . $name . '%');
             }
         })->get();
-        return $this->showAll($religions);
+        return $this->showAll($employee);
     }
 
     /**
