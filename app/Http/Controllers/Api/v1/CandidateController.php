@@ -161,10 +161,10 @@ class CandidateController extends Controller
         $result = [];
         $positions = CandidatePosition::orderBy('name', 'desc')->whereNotNull('validated_at')
             ->paginate(
-                $perpage = $request->page_size,
-                $columns =  ['*'],
-                $pageName = 'page',
-                $pageBody = $request->page
+                $request->page_size,
+                ['*'],
+                'page',
+                $request->page
             );
         foreach ($positions as $position) {
             $result[] = [

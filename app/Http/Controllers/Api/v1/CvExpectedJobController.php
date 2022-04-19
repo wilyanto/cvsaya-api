@@ -17,19 +17,18 @@ class CvExpectedJobController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getIndexByDefault()
+    public function show($id)
     {
-        return $this->getIndexByID(null);
+        $expectedSalaries = CvExpectedJob::where('user_id', $id)->firstOrFail();
+
+        return $this->showOne($expectedSalaries);
     }
 
-    public function getIndexByID($id)
+    public function index()
     {
         $user = auth()->user();
-        if (!$id) {
-            $id = $user->id_kustomer;
-        }
 
-        $expectedSalaries = CvExpectedJob::where('user_id', $id)->firstOrFail();
+        $expectedSalaries = CvExpectedJob::where('user_id', $user->id_kustomer)->firstOrFail();
 
         return $this->showOne($expectedSalaries);
     }
@@ -113,16 +112,16 @@ class CvExpectedJobController extends Controller
                 }
             }
         })->paginate(
-            $perpage = $pageSize,
-            $columns =  ['*'],
-            $pageName = 'page',
-            $pageBody = $page
+            $pageSize,
+            ['*'],
+            'page',
+            $page
         );
-        $result = $specialities->map(function ($item, $key) {
-            return $item;
+        $result = $specialities->map(function ($item) {
+            return $item->toArrayCategories();
         });
 
-        return $this->showPaginate('candidates_positions',collect($result), collect($specialities));
+        return $this->showPaginate('candidate_positions', collect($result), collect($specialities));
     }
 
     public function getListCandidatePositions(Request $request)

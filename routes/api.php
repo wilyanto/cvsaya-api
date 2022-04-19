@@ -60,11 +60,11 @@ Route::prefix('v1')->group(function () {
 
             Route::prefix('users')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
-                    Route::get('/{id}/profile',  'getDetailByID');
+                    Route::get('/{id}/profile',  'indexDetail');
                 });
 
                 Route::controller(CvExpectedJobController::class)->group(function () {
-                    Route::get('/{id}/expected-job', 'getIndexByID'); // path user/id/expected-jobs
+                    Route::get('/{id}/expected-job', 'show'); // path user/id/expected-jobs
                 });
 
                 Route::controller(CvProfileDetailController::class)->group(function () {
@@ -80,7 +80,7 @@ Route::prefix('v1')->group(function () {
                 });
 
                 Route::controller(CvDocumentController::class)->group(function () {
-                    Route::get('/{id}/documents', 'index'); // path user/id/cv
+                    Route::get('/{id}/documents', 'show'); // path user/id/cv
                 });
             });
 
@@ -142,7 +142,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('cv')->group(function () {
             Route::prefix('profile')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
-                    Route::get('/',  'getDetailByDefault');
+                    Route::get('/',  'index');
                     Route::post('/', 'store');
                     Route::put('/', 'update');
                 });
@@ -156,20 +156,20 @@ Route::prefix('v1')->group(function () {
 
             Route::prefix('expected-job')->group(function () {
                 Route::controller(CvExpectedJobController::class)->group(function () {
-                    Route::get('/', 'getIndexByDefault');
+                    Route::get('/', 'index');
                     Route::post('/', 'storeOrUpdate');
                 });
             });
 
             Route::prefix('documents')->group(function () {
                 Route::controller(CvDocumentController::class)->group(function () {
-                    Route::get('/', 'getByDefault');
+                    Route::get('/', 'index');
                     Route::post('/', 'store');
                 });
             });
 
             Route::controller(CvProfileDetailController::class)->group(function () {
-                Route::get('/', 'cvDetailByDefault');
+                Route::get('/', 'index');
             });
 
             Route::prefix('certificates')->group(function () {

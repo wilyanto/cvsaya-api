@@ -19,20 +19,17 @@ class CvDocumentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function index()
     {
         $user = auth()->user();
-        if (!$id) {
-            $id = $user->id_kustomer;
-        }
 
-        $getDocuments = CvDocument::where('user_id', $id)->firstOrFail();
+        $getDocuments = CvDocument::where('user_id', $user->id_kustomer)->firstOrFail();
         return $this->showOne($getDocuments);
     }
 
-    public function getByDefault()
-    {
-        return $this->index(null);
+    public function show($id){
+        $getDocuments = CvDocument::where('user_id', $id)->firstOrFail();
+        return $this->showOne($getDocuments);
     }
 
     /**
