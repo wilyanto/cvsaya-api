@@ -109,6 +109,7 @@ Route::prefix('v1')->group(function () {
                         Route::get('/{id}', 'indexDetail');
                         Route::post('/', 'addCandidateToBlast');
                         Route::put('/{id}', 'updateStatus');
+                        Route::put('/{id}/interviews', 'addSchdule');
                         // Route::post('update-status','updateStatus');
 
                     });
@@ -264,12 +265,12 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('employees')->group(function () {
+            Route::controller(EmploymentTypeController::class)->group(function () {
+                Route::get('/types', 'index');
+            });
             Route::controller(EmployeeDetailsController::class)->group(function () {
                 Route::get('/{id}', 'show');
                 Route::get('/', 'index');
-            });
-            Route::controller(EmploymentTypeController::class)->group(function () {
-                Route::get('/types', 'index');
             });
         });
         Route::prefix('candidate-positions')->group(function () {
