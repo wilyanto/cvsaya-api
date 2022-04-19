@@ -8,12 +8,12 @@
         - [Show](#show-departments)
     4. [Delete](#delete-departments)
 -   [Levels](#levels)
-    1. Create
-    2. Update
+    1. [Create](#create-levels)
+    2. [Update](#update-levels)
     3. [GET](#get-levels)
-        - [Index](#index-levels)
+        - [Index](#index)
         - [Show](#show-levels)
-    4. Delete
+    4. [Delete](#delete-levels)
 -   Positions
     1. Create
     2. Update
@@ -37,131 +37,48 @@
 
 # [Departments](#departments)
 
-## [GET Departments](#get-departments)
-
 ### [Index Departments](#index-departments)
 
-> this api show every departments
->
-> > GET "/api/v1/departments"
+this api show every departments
 
 ```
-    Request Department :
-
-        Header : {
-            "Accepted"  : "application/json"
-            "Content-Type" : "application/json"
-            "Authorization" : "Bearer TOKEN"
-
-        }
-        Body : {
-            "company_id" : "kada" or null,
-        }
-
-    Response Department :
-    Body :{
-        "meta" :{
-                "success" : true,
-                "code" : 200000,
-                "message" : request success"
-            },
-        data :[
-                {
-                    "id" : "dept-1",
-                    "name" : "Human Resource",
-                    "head" : {
-                        "id" : "employee_id",
-                        "name" : "Victor Yansen",
-                    },
-                    "total" : 8
-                },
-                {
-                    "id" : "dept-2",
-                    "name" : "Human Resource",
-                    "head" : "Information Technology",
-                    "total" : 8,
-                    "company" : {
-                        "id" : "comp-1",
-                        "name" : "KADA",
-                    },
-                }
-            ]
-        }
+GET "/api/v1/departments"
 ```
 
-### [Show Departments](#show-departments)
+Request description:
 
-> this api show department by requested id
->
-> > GET "/api/v1/departments/dept-1"
+> | Name       | Type                  | Description            | nullable |
+> | ---------- | --------------------- | ---------------------- | -------- |
+> | company_id | Primary Key (integer) | primary key of company | yes      |
+
+Request Example :
 
 ```
-Request Department :
+{
+    "company_id" : "kada" or null,
+}
+```
 
-        Header : {
-            "Accepted"  : "application/json"
-            "Content-Type" : "application/json"
-            "Authorization" : "Bearer TOKEN"
+Response Example:
 
-        }
-
-    Response Department :
-        Body :
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :[
         {
-            "meta" :{
-                "success" : true,
-                "code" : 200000,
-                "message" : request success"
+            "id" : "dept-1",
+            "name" : "Human Resource",
+            "head" : {
+                "id" : "employee_id",
+                "name" : "Victor Yansen",
             },
-            data :{
-                "id" : "dept-1",
-                "name" : "Human Resource",
-                "head" : {
-                    "id" : "employee_id",
-                    "name" : "Victor Yansen",
-                },
-                "total" : 8
-            }
-        }
-
-```
-
-> | Name    | Type                  | Description                              |
-> | ------- | --------------------- | ---------------------------------------- |
-> | Id      | Primary Key (integer) | primary key of departments               |
-> | Name    | String                | Name of Department                       |
-> | head    | Object                | object of employee as head of department |
-> | total   | integer               | total employee every department          |
-> | company | Object                | Object of company                        |
-
-## [Create Departments](#create-departments)
-
-> Create new Departments
->
-> > POST "/api/v1/departments"
-
-```
-Request Department :
-
-    Header : {
-        "Accepted"  : "application/json"
-        "Content-Type" : "application/json"
-        "Authorization" : "Bearer TOKEN"
-
-    }
-    Body : {
-        "name" : "dept-1",
-        "company_id" : "comp-1",
-    }
-
-Response Department :
-    Body :  {
-        "meta" :{
-            "success" : true,
-            "code" : 200000,
-            "message" : request success"
+            "total" : 8
         },
-        data :{
+        {
             "id" : "dept-2",
             "name" : "Human Resource",
             "head" : "Information Technology",
@@ -171,319 +88,383 @@ Response Department :
                 "name" : "KADA",
             },
         }
-    }
+    ]
+}
 ```
 
-> | Name       | Type                  | Description                              |
-> | ---------- | --------------------- | ---------------------------------------- |
-> | Id         | Primary Key (integer) | primary key of departments               |
-> | Name       | String                | Name of Department                       |
-> | head       | Object                | object of employee as head of department |
-> | total      | integer               | total employee every department          |
-> | company    | Object                | Object of company                        |
-> | company_id | integer               | primary key or id of company             |
+### [Show Departments](#show-departments)
 
-### [Update Departments](#update-departments)
-
-> Update Department By Id
->
-> > PUT "/api/v1/departments/dept-2"
+this api show department by requested id
 
 ```
-Request Department :
+GET "/api/v1/departments/{id}"
+```
 
-    Header : {
-        "Accepted"  : "application/json"
-        "Content-Type" : "application/json"
-        "Authorization" : "Bearer TOKEN"
+Request description:
 
-    }
-    Body : {
-        "name" : "Resource Human",
-        "company_id" : "comp-1",
-    }
+> | Name | Type                  | Description                            |
+> | ---- | --------------------- | -------------------------------------- |
+> | Id   | Primary Key (integer) | primary key of departments on Resource |
 
-Response Department :
-    Body :{
-        "meta" :{
-            "success" : true,
-            "code" : 200000,
-            "message" : request success"
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :{
+        "id" : "dept-1",
+        "name" : "Human Resource",
+        "head" : {
+            "id" : "employee_id",
+            "name" : "Victor Yansen",
         },
-        data :{
-            "id" : "dept-2",
-            "name" : "Resource Human",
-            "head" : "Information Technology",
-            "total" : 8,
+        "total" : 8
+    }
+}
+
+```
+
+## [Create Departments](#create-departments)
+
+Create new Departments
+
+##### Request Url :
+
+```
+POST "/api/v1/departments"
+```
+
+Request Example :
+
+> | Name       | Type   | Description            | nullable |
+> | ---------- | ------ | ---------------------- | -------- |
+> | Name       | String | Name of Department     | no       |
+> | company_id | String | primary key of company | no       |
+
+Request Example :
+
+```
+{
+    "name" : "dept-1",
+    "company_id" : "comp-1",
+}
+```
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :{
+        "id" : "dept-2",
+        "name" : "Human Resource",
+        "head" : "Information Technology",
+        "total" : 8,
+        "company" : {
+            "id" : "comp-1",
+            "name" : "KADA",
+        },
+    }
+}
+```
+
+## [Update Departments](#update-departments)
+
+Update Department By Id
+
+```
+PUT "/api/v1/departments/dept-2"
+```
+
+Request description :
+
+> | Name       | Type                  | Description                  |
+> | ---------- | --------------------- | ---------------------------- |
+> | Id         | Primary Key (integer) | primary key of departments   |
+> | company_id | integer               | primary key or id of company |
+
+Request Example :
+
+```
+{
+    "name" : "Resource Human",
+    "company_id" : "comp-1",
+}
+```
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :{
+        "id" : "dept-2",
+        "name" : "Resource Human",
+        "head" : "Information Technology",
+        "total" : 8,
+        "company" : {
+            "id" : "comp-1",
+            "name" : "KADA",
+        },
+    }
+}
+```
+
+## [Delete-departments](#delete-departments)
+
+Delete Department by Id all Position has connected with department will change to null or moved base on your request params
+
+```
+DELETE "api/v1/departments/dept-1
+```
+
+Request Description :
+
+> | Name | Type                  | Description                                                | Nullable |
+> | ---- | --------------------- | ---------------------------------------------------------- | -------- |
+> | Id   | Primary Key (integer) | primary key of departments                                 | no       |
+> | Id   | Primary Key (integer) | primary key of departments for replace deleted departments | yes      |
+
+Request Example:
+
+```
+{
+    "department_id" : "dept-1",
+}
+```
+
+Response Example:
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+        },
+    "data" : null
+}
+```
+
+# [Levels](#levels)
+
+## [Index](#index-levels)
+
+#### Show every levels
+
+```
+GET /api/v1/levels
+```
+
+Request description:
+
+> | Name       | Type        | Description |
+> | ---------- | ----------- | ----------- |
+> | company_id | primary key | company_id  |
+
+Request Example:
+
+```
+{
+    "company_id" : "KADA"
+}
+```
+
+Response Example:
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :[
+        {
+            "id" : "Lv-1",
+            "name" : "Level - C",
+            "company" : {
+                "id" : "comp-1",
+                "name" : "KADA",
+            },
+        },
+        {
+            "id" : "Lv-2",
+            "name" : "Level - Staff",
             "company" : {
                 "id" : "comp-1",
                 "name" : "KADA",
             },
         }
-    }
-```
-
-> | Name       | Type                  | Description                              |
-> | ---------- | --------------------- | ---------------------------------------- |
-> | Id         | Primary Key (integer) | primary key of departments               |
-> | Name       | String                | Name of Department                       |
-> | head       | Object                | object of employee as head of department |
-> | total      | integer               | total employee every department          |
-> | company    | Object                | Object of company                        |
-> | company_id | integer               | primary key or id of company             |
-
-## [Delete-departments](#delete-departments)
-
-> Delete Department by Id all Position has connected with department will change to null or moved base on your request params
->
-> > DELETE "api/v1/departments/dept-1
-
-```
-    Request Department :
-
-        Header : {
-            "Accepted"  : "application/json"
-            "Content-Type" : "application/json"
-            "Authorization" : "Bearer TOKEN"
-
-        }
-        Body : {
-            "positions_id" : "position-1",
-        }
-
-    Response Department :
-        Body :{
-            "meta" :{
-                "success" : true,
-                "code" : 200000,
-                "message" : request success"
-            },
-            "data" : null
-        }
-```
-
-> | Name         | Type                   | Description                |
-> | ------------ | ---------------------- | -------------------------- |
-> | Id           | Primary Key (integer)  | primary key of departments |
-> | positions_id | primary key ( integer) | primary key of positions   |
-
-# [Levels](#levels)
-
-## [GET Levels](#get-levels)
-
-### [Index Levels](#index-levels)
-> this api show every levels
->
-> > GET "/api/v1/levels"
-
-```
-    Request :
-
-        Header : {
-            "Accepted"  : "application/json"
-            "Content-Type" : "application/json"
-            "Authorization" : "Bearer TOKEN"
-
-        }
-        Body : {
-            "company_id" : "kada",
-        }
-
-    Response :
-    Body :{
-        "meta" :{
-                "success" : true,
-                "code" : 200000,
-                "message" : request success"
-            },
-        data :[
-                {
-                    "id" : "Lv-1",
-                    "name" : "Level - C", 
-                    "company" : {
-                        "id" : "comp-1",
-                        "name" : "KADA",
-                    },
-                },
-                {
-                    "id" : "Lv-2",
-                    "name" : "Level - Staff",
-                    "company" : {
-                        "id" : "comp-1",
-                        "name" : "KADA",
-                    },
-                }
-            ]
-        }
+    ]
+}
 ```
 
 ### [Show Level](#show-levels)
 
-> this api show level by requested id
->
-> > GET "/api/v1/levels/lv-1"
+this api show level by requested id
 
 ```
-Request :
+GET "/api/v1/levels/lv-1"
+```
 
-        Header : {
-            "Accepted"  : "application/json"
-            "Content-Type" : "application/json"
-            "Authorization" : "Bearer TOKEN"
-
-        }
-
-    Response :
-        Body :
-        {
-            "meta" :{
-                "success" : true,
-                "code" : 200000,
-                "message" : request success"
-            },
-            data :{
-                "id" : "Lv-1",
-                    "name" : "Level - C", 
-                    "company" : {
-                        "id" : "comp-1",
-                        "name" : "KADA",
-                    },
-            }
-        }
+Response Example:
 
 ```
 
-> | Name    | Type                  | Description                              |
-> | ------- | --------------------- | ---------------------------------------- |
-> | Id      | Primary Key (integer) | primary key of departments               |
-> | Name    | String                | Name of Department                       |
-> | company | Object                | Object of company                        |
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :{
+        "id" : "Lv-1",
+        "name" : "Level - C",
+        "company" : {
+            "id" : "comp-1",
+            "name" : "KADA",
+        },
+    }
+}
+
+```
 
 ## [Create Levels](#create-levels)
 
-> Create new Levels
->
-> > POST "/api/v1/levels"
+Create new Levels
 
 ```
-Request Department :
+POST "/api/v1/levels"
+```
 
-    Header : {
-        "Accepted"  : "application/json"
-        "Content-Type" : "application/json"
-        "Authorization" : "Bearer TOKEN"
+Request Description:
 
-    }
-    Body : {
+> | Name       | Type    | Description                  | nullable |
+> | ---------- | ------- | ---------------------------- | -------- |
+> | Name       | String  | Name of level                | no       |
+> | company_id | integer | primary key or id of company | no       |
+
+Request Example :
+
+```
+{
+    "name" : "Level - Office",
+    "company_id" : "comp-1",
+}
+```
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :{
+        "id" : "lv-3",
         "name" : "Level - Office",
-        "company_id" : "comp-1",
-    }
-
-Response Department :
-    Body :  {
-        "meta" :{
-            "success" : true,
-            "code" : 200000,
-            "message" : request success"
+        "company" : {
+            "id" : "comp-1",
+            "name" : "KADA",
         },
-        data :{
-            "id" : "lv-2",
-            "name" : "Level - Office",
-            "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
-            },
-        }
     }
+}
 ```
 
-> | Name       | Type                  | Description                              |
-> | ---------- | --------------------- | ---------------------------------------- |
-> | Id         | Primary Key (integer) | primary key of departments               |
-> | Name       | String                | Name of Department                       |
-> | company    | Object                | Object of company                        |
-> | company_id | integer               | primary key or id of company             |
+## [Update Levels](#update-levels)
 
-### [Update Levels](#update-levels)
-
-> Update Department By Id
->
-> > PUT "/api/v1/levels/lv-2"
+Update level By Id
 
 ```
-Request :
+PUT "/api/v1/levels/lv-3"
+```
 
-    Header : {
-        "Accepted"  : "application/json"
-        "Content-Type" : "application/json"
-        "Authorization" : "Bearer TOKEN"
+Request Description :
 
-    }
-    Body : {
-        "name" : "Resource Human",
-        "company_id" : "comp-1",
-    }
+> | Name       | Type                  | Description            | nullable |
+> | ---------- | --------------------- | ---------------------- | -------- |
+> | Id         | Primary Key (integer) | primary key of levels  | no       |
+> | Name       | String                | Name of levels         | no       |
+> | company_id | integer               | primary key of company | no       |
 
-Response :
-    Body :{
-        "meta" :{
-            "success" : true,
-            "code" : 200000,
-            "message" : request success"
+Request Example :
+
+```
+{
+    "name" : "Level - B",
+    "company_id" : "comp-1",
+}
+```
+
+Response Example:
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :{
+        "id" : "lv-3",
+        "name" : "Level - B",
+        "company" : {
+            "id" : "comp-1",
+            "name" : "KADA",
         },
-        data :{
-            "id" : "dept-2",
-            "name" : "Resource Human",
-            "head" : "Information Technology",
-            "total" : 8,
-            "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
-            },
-        }
     }
+}
 ```
 
-> | Name       | Type                  | Description                              |
-> | ---------- | --------------------- | ---------------------------------------- |
-> | Id         | Primary Key (integer) | primary key of departments               |
-> | Name       | String                | Name of Department                       |
-> | head       | Object                | object of employee as head of department |
-> | total      | integer               | total employee every department          |
-> | company    | Object                | Object of company                        |
-> | company_id | integer               | primary key or id of company             |
+## [Delete Levels](#delete-levels)
 
-## [Delete-departments](#delete-departments)
-
-> Delete Department by Id all Position has connected with department will change to null or moved base on your request params
->
-> > DELETE "api/v1/departments/dept-1
+Delete level by Id all Position has connected with level will change to null or moved base on your request params
 
 ```
-    Request Department :
-
-        Header : {
-            "Accepted"  : "application/json"
-            "Content-Type" : "application/json"
-            "Authorization" : "Bearer TOKEN"
-
-        }
-        Body : {
-            "positions_id" : "kada",
-        }
-
-    Response Department :
-        Body :{
-            "meta" :{
-                "success" : true,
-                "code" : 200000,
-                "message" : request success"
-            },
-            "data" : null
-        }
+DELETE "api/v1/levels/{id}
 ```
 
-> | Name         | Type                   | Description                |
-> | ------------ | ---------------------- | -------------------------- |
-> | Id           | Primary Key (integer)  | primary key of departments |
-> | positions_id | primary key ( integer) | primary key of positions   |
+Request description :
+
+> | Name     | Type                  | Description                                     | Nullable |
+> | -------- | --------------------- | ----------------------------------------------- | -------- |
+> | id       | Primary Key (integer) | primary key of levels                           | no       |
+> | level_id | Primary Key (integer) | primary key of levels for replace deleted level | yes      |
+
+Request Example :
+
+```
+{
+    "level_id" : "lv-2",
+}
+```
+
+Response Example:
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    "data" : null
+}
+```
+
+# [Positions](#positions)
