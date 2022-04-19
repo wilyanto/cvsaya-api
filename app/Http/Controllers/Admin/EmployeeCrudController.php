@@ -30,10 +30,22 @@ class EmployeeCrudController extends CrudController
         // dump($this);
         $this->crud->addColumns([
             [
+                'label' => 'User ID',
+                'name'  => 'user_id',
+                'type' => 'text',
+                'attribute' => 'user_id',
+            ],
+            [
                 'label' => 'Name',
                 'type'  => 'model_function',
-                'name'  => 'user_id',
+                'name'  => 'name',
                 'function_name' => 'getUserName',
+            ],
+            [
+                'label' => 'No Telepon',
+                'type'  => 'model_function',
+                'name'  => 'phone_number',
+                'function_name' => 'getPhoneNumber',
             ],
             [
                 'label' => 'Position',
@@ -148,12 +160,35 @@ class EmployeeCrudController extends CrudController
     {
         $this->crud->addFields([
             [
+                'label' => 'User ID',
+                'name'  => 'user_id',
+                'type' => 'text',
+                'attribute' => 'user_id',
+                'attributes' => [
+                    'readonly'    => 'readonly',
+                    'disabled'    => 'disabled',
+                ]
+            ],
+            [
                 'label' => 'Name',
                 'type'  => 'select',
                 'name' => 'first_name',
                 'entity' => 'profileDetail',
                 'attribute' => 'first_name',
                 'model' => 'App\Models\CvProfileDetail',
+                'subfields' => [],
+                'attributes' => [
+                    'readonly'    => 'readonly',
+                    'disabled'    => 'disabled',
+                ]
+            ],
+            [
+                'label' => 'No Telepon',
+                'type'  => 'select',
+                'name'  => 'phone_number',
+                'entity' => 'user',
+                'attribute' => 'telpon',
+                'model' => 'App\Models\User',
                 'subfields' => [],
                 'attributes' => [
                     'readonly'    => 'readonly',
