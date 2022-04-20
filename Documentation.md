@@ -106,7 +106,7 @@ Request description:
 
 > | Name | Type                  | Description                            |
 > | ---- | --------------------- | -------------------------------------- |
-> | Id   | Primary Key (integer) | primary key of departments on Resource |
+> | id   | Primary Key (integer) | primary key of departments on Resource |
 
 Response Example :
 
@@ -144,7 +144,7 @@ Request Example :
 
 > | Name       | Type   | Description            | nullable |
 > | ---------- | ------ | ---------------------- | -------- |
-> | Name       | String | Name of Department     | no       |
+> | name       | String | Name of Department     | no       |
 > | company_id | String | primary key of company | no       |
 
 Request Example :
@@ -183,14 +183,14 @@ Response Example :
 Update Department By Id
 
 ```
-PUT "/api/v1/departments/dept-2"
+PUT "/api/v1/departments/{id}"
 ```
 
 Request description :
 
 > | Name       | Type                  | Description                  |
 > | ---------- | --------------------- | ---------------------------- |
-> | Id         | Primary Key (integer) | primary key of departments   |
+> | id         | Primary Key (integer) | primary key of departments   |
 > | company_id | integer               | primary key or id of company |
 
 Request Example :
@@ -229,15 +229,15 @@ Response Example :
 Delete Department by Id all Position has connected with department will change to null or moved base on your request params
 
 ```
-DELETE "api/v1/departments/dept-1
+DELETE "api/v1/departments/{id}
 ```
 
 Request Description :
 
-> | Name | Type                  | Description                                                | Nullable |
-> | ---- | --------------------- | ---------------------------------------------------------- | -------- |
-> | Id   | Primary Key (integer) | primary key of departments                                 | no       |
-> | Id   | Primary Key (integer) | primary key of departments for replace deleted departments | yes      |
+> | Name          | Type                  | Description                                                | Nullable |
+> | ------------- | --------------------- | ---------------------------------------------------------- | -------- |
+> | id            | Primary Key (integer) | primary key of departments                                 | no       |
+> | department_id | Primary Key (integer) | primary key of departments for replace deleted departments | yes      |
 
 Request Example:
 
@@ -319,8 +319,14 @@ Response Example:
 this api show level by requested id
 
 ```
-GET "/api/v1/levels/lv-1"
+GET "/api/v1/levels/{id}"
 ```
+
+Response Description :
+
+> | Name | Type        | Description           | nullable |
+> | ---- | ----------- | --------------------- | -------- |
+> | id   | primary Key | primary key of levels | no       |
 
 Response Example:
 
@@ -356,7 +362,7 @@ Request Description:
 
 > | Name       | Type    | Description                  | nullable |
 > | ---------- | ------- | ---------------------------- | -------- |
-> | Name       | String  | Name of level                | no       |
+> | name       | String  | Name of level                | no       |
 > | company_id | integer | primary key or id of company | no       |
 
 Request Example :
@@ -393,15 +399,15 @@ Response Example :
 Update level By Id
 
 ```
-PUT "/api/v1/levels/lv-3"
+PUT "/api/v1/levels/{id}"
 ```
 
 Request Description :
 
 > | Name       | Type                  | Description            | nullable |
 > | ---------- | --------------------- | ---------------------- | -------- |
-> | Id         | Primary Key (integer) | primary key of levels  | no       |
-> | Name       | String                | Name of levels         | no       |
+> | id         | Primary Key (integer) | primary key of levels  | no       |
+> | name       | String                | Name of levels         | no       |
 > | company_id | integer               | primary key of company | no       |
 
 Request Example :
@@ -593,8 +599,12 @@ Response Example:
 this api show positions by requested id
 
 ```
-GET "/api/v1/positions/positions-1"
+GET "/api/v1/positions/{id}"
 ```
+
+> | Name | Type        | Description                | nullable |
+> | ---- | ----------- | -------------------------- | -------- |
+> | id   | primary key | primary key of position id | no       |
 
 Response Example:
 
@@ -644,7 +654,7 @@ Request Description:
 
 > | Name          | Type    | Description                      | nullable |
 > | ------------- | ------- | -------------------------------- | -------- |
-> | Name          | String  | Name of level                    | no       |
+> | name          | String  | Name of level                    | no       |
 > | company_id    | integer | primary key or id of company     | no       |
 > | parent_id     | integer | primary key of table positions   | no       |
 > | department_id | integer | primary key of table departments | no       |
@@ -719,15 +729,15 @@ Response Example :
 Update level By Id
 
 ```
-PUT "/api/v1/positions/position-4"
+PUT "/api/v1/positions/{id}"
 ```
 
 Request Description :
 
 > | Name          | Type                  | Description                      | nullable |
 > | ------------- | --------------------- | -------------------------------- | -------- |
-> | Id            | Primary Key (integer) | primary key of levels            | no       |
-> | Name          | String                | Name of levels                   | no       |
+> | id            | Primary Key (integer) | primary key of levels            | no       |
+> | name          | String                | Name of levels                   | no       |
 > | department_id | integer               | primary key of table departments | no       |
 > | level_id      | integer               | primary key of table levels      | no       |
 
@@ -795,19 +805,19 @@ Response Example:
 }
 ```
 
-## [Delete Levels](#delete-levels)
+## [Delete positions](#delete-positions)
 
 Delete level by Id all Position has connected with level will change to null or moved base on your request params
 
 ```
-DELETE "api/v1/positions/positions-3
+DELETE "api/v1/positions/{id}
 ```
 
 Request description :
 
 > | Name | Type                  | Description           | Nullable |
 > | ---- | --------------------- | --------------------- | -------- |
-> | id   | Primary Key (integer) | primary key of levels | no       |
+> | id   | Primary Key (integer) | primary key of positions | no       |
 
 Response Example:
 
@@ -1006,8 +1016,15 @@ Response Example 1:
 this api show Employee by requested id
 
 ```
-GET "/api/v1/employees/employee-1"
+GET "/api/v1/employees/{id}"
+
 ```
+
+Response Description:
+
+> | Name | Type        | Description                     |
+> | ---- | ----------- | ------------------------------- |
+> | id   | primary key | primary key of table employee s |
 
 Response Example:
 
@@ -1169,13 +1186,14 @@ Response Example :
 Update Employees By Id
 
 ```
-PUT "/api/v1/Employees/employee-1"
+PUT "/api/v1/Employees/{id}"
 ```
 
 Request Description :
 
 > | Name            | Type          | Description                             | nullable |
 > | --------------- | ------------- | --------------------------------------- | -------- |
+> | id              | primary key   | primary key of employee                 | no       |
 > | candidate_id    | foreign_key   | primary key on table candidates         | no       |
 > | position_id     | foreign_key   | primary key on table positions          | no       |
 > | employment_type | foreign_key   | primary key on table employment_types   | no       |
