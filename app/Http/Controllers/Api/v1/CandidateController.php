@@ -154,12 +154,17 @@ class CandidateController extends Controller
     public function getPosition(Request $request)
     {
         $request->validate([
+            'keyword' => 'nullable',
             'page' => 'required|numeric|gt:0',
             'page_size' => 'required|numeric|gt:0'
         ]);
-
+        $keyword = $request->keyword;
         $result = [];
-        $positions = CandidatePosition::orderBy('name', 'desc')->whereNotNull('validated_at')
+        $positions = CandidatePosition::where(function ($query) use ($keyword) {
+            if ($keyword != null) {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
+            }
+        })->orderBy('name', 'desc')->whereNotNull('validated_at')
             ->paginate(
                 $request->page_size,
                 ['*'],
