@@ -973,7 +973,29 @@ Response Example 1:
                 "id" : "et-1",
                 "name" : "Full-Time",
             },
+            "salary_type_id" : {
+                "id" : "st-1",
+                "name" : "full-time"
+            }
+            "amount" : 1000000,
             "deleted_at" : null,
+            "teams" : [
+            {
+                "leader" : {
+                    "id" : "employee-2",
+                    "name" : "Victor Yansen",
+                },
+                "project : CvSaya,
+                "pathner-employees": [
+                    {
+                    "id" : "employee-3",
+                    "name" : "Ricky",
+                    },
+                ],
+                "created_at" : "2022-04-05T00:00:00.000000Z",
+                "updated_at" : "2022-04-05T00:00:00.000000Z",
+            },
+        ]
         }
     ]
 }
@@ -1022,7 +1044,29 @@ Response Example:
             "id" : "et-1",
             "name" : "Full-Time",
         },
+        "salary_type_id" : {
+            "id" : "st-1",
+            "name" : "full-time"
+        }
+        "amount" : 1000000,
         "deleted_at" : null,
+        "teams" : [
+            {
+                "leader" : {
+                    "id" : "employee-2",
+                    "name" : "Victor Yansen",
+                },
+                "project : CvSaya,
+                "pathner-employees": [
+                    {
+                    "id" : "employee-3",
+                    "name" : "Ricky",
+                    },
+                ],
+                "created_at" : "2022-04-05T00:00:00.000000Z",
+                "updated_at" : "2022-04-05T00:00:00.000000Z",
+            },
+        ]
     }
 }
 
@@ -1093,33 +1137,62 @@ Response Example :
             "id" : "et-1",
             "name" : "Full-Time",
         },
+        "salary_type_id" : {
+            "id" : "st-1",
+            "name" : "Harian"
+        }
+        "amount" : 1000000,
         "deleted_at" : null,
+        "teams" : [
+            {
+                "leader" : {
+                    "id" : "employee-2",
+                    "name" : "Victor Yansen",
+                },
+                "project : CvSaya,
+                "pathner-employees": [
+                    {
+                    "id" : "employee-3",
+                    "name" : "Ricky",
+                    },
+                ],
+                "created_at" : "2022-04-05T00:00:00.000000Z",
+                "updated_at" : "2022-04-05T00:00:00.000000Z",
+            },
+        ]
     }
 }
 ```
 
 ## [Update Employees](#update-Employees)
 
-Update level By Id
+Update Employees By Id
 
 ```
-PUT "/api/v1/levels/lv-3"
+PUT "/api/v1/Employees/employee-1"
 ```
 
 Request Description :
 
-> | Name       | Type                  | Description            | nullable |
-> | ---------- | --------------------- | ---------------------- | -------- |
-> | Id         | Primary Key (integer) | primary key of levels  | no       |
-> | Name       | String                | Name of levels         | no       |
-> | company_id | integer               | primary key of company | no       |
+> | Name            | Type          | Description                             | nullable |
+> | --------------- | ------------- | --------------------------------------- | -------- |
+> | candidate_id    | foreign_key   | primary key on table candidates         | no       |
+> | position_id     | foreign_key   | primary key on table positions          | no       |
+> | employment_type | foreign_key   | primary key on table employment_types   | no       |
+> | joined_at       | timestamp iso | time when employee will join at company | no       |
+> | salary_type_id  | foreign_key   | primary key on table salary_types       | no       |
+> | salary_amount   | integer       | amount salary of employee               | no       |
 
 Request Example :
 
 ```
 {
-    "name" : "Level - B",
-    "company_id" : "comp-1",
+    "candidate_id" : "candidate-1",
+    "position_id" : "position-1",
+    "employment_type" : "et-2",
+    "joined_at" : "2022-04-05T00:00:00.000000Z",
+    "salary_type_id" : "st_id",
+    "amount" : 1000000,
 }
 ```
 
@@ -1133,19 +1206,59 @@ Response Example:
         "message" : request success"
     },
     data :{
-        "id" : "lv-3",
-        "name" : "Level - B",
+        "id" : "employee-2",
+        "name" : "Victor Yansen",
         "company" : {
             "id" : "comp-1",
             "name" : "KADA",
         },
+        "positions" : {
+            "id" : "position-1",
+            "name" : "HRD"
+        }
+        "department" : {
+            "id" : "dept-1",
+            "name" : "Human Resource"
+        },
+        "level" : {
+            "id" : "lv-1",
+            "name" : "level-c"
+        },
+        "join-at" : "2022-04-05T00:00:00.000000Z",
+        "employment_type" : {
+            "id" : "et-2",
+            "name" : "Full-Time",
+        },
+        "salary_type_id" : {
+            "id" : "st-1",
+            "name" : "Bulanan"
+        }
+        "amount" : 1000000,
+        "deleted_at" : null,
+        "teams" : [
+            {
+                "leader" : {
+                    "id" : "employee-2",
+                    "name" : "Victor Yansen",
+                },
+                "project : CvSaya,
+                "pathner-employees": [
+                    {
+                    "id" : "employee-3",
+                    "name" : "Ricky",
+                    },
+                ],
+                "created_at" : "2022-04-05T00:00:00.000000Z",
+                "updated_at" : "2022-04-05T00:00:00.000000Z",
+            },
+        ]
     }
 }
 ```
 
-## [Delete Levels](#delete-levels)
+## [Delete Employees](#delete-levels)
 
-Delete level by Id all Position has connected with level will change to null or moved base on your request params
+Employee Resign, by input new employee_id all team has old employees id will be replace with new employees
 
 ```
 DELETE "api/v1/levels/{id}
@@ -1153,18 +1266,10 @@ DELETE "api/v1/levels/{id}
 
 Request description :
 
-> | Name     | Type                  | Description                                     | Nullable |
-> | -------- | --------------------- | ----------------------------------------------- | -------- |
-> | id       | Primary Key (integer) | primary key of levels                           | no       |
-> | level_id | Primary Key (integer) | primary key of levels for replace deleted level | yes      |
-
-Request Example :
-
-```
-{
-    "level_id" : "lv-2",
-}
-```
+> | Name        | Type                    | Description             | Nullable |
+> | ----------- | ----------------------- | ----------------------- | -------- |
+> | id          | Primary Key (integer)   | primary key of levels   | no       |
+> | employee_id | Foreign Key ( integer ) | primary key of employee | yes      |
 
 Response Example:
 
@@ -1176,5 +1281,67 @@ Response Example:
         "message" : request success"
     },
     "data" : null
+}
+```
+
+Response Index Employee after Delete Example:
+
+```
+
+{
+     "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :[
+        {
+        "id" : "employee-1",
+        "first-name" : "Wilyanto",
+        "company" : {
+            "id" : "comp-1",
+            "name" : "KADA",
+        },
+        "positions" : {
+            "id" : "position-1",
+            "name" : "HRD"
+        }
+        "department" : {
+            "id" : "dept-1",
+            "name" : "Human Resource"
+        },
+        "level" : {
+            "id" : "lv-1",
+            "name" : "level-c"
+        },
+        "join-at" : "2022-04-05T00:00:00.000000Z",
+        "employment_type" : {
+            "id" : "et-1",
+            "name" : "Full-Time",
+        },
+        "salary_type_id" : {
+            "id" : "st-1",
+            "name" : "full-time"
+        }
+        "amount" : 1000000,
+        "deleted_at" : null,
+        "teams" : [
+            {
+                "leader" : {
+                    "id" : "employee-2",
+                    "name" : "Victor Yansen",
+                },
+                "project : CvSaya,
+                "pathner-employees": [
+                    {
+                    "id" : "employee-3",
+                    "name" : "Ricky",
+                    },
+                ],
+                "created_at" : "2022-04-05T00:00:00.000000Z",
+                "updated_at" : "2022-04-05T00:00:00.000000Z",
+            },
+        ]
+    }
 }
 ```
