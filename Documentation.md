@@ -34,6 +34,15 @@
         - [Show Salary Employee](#show-salary-employee)
     2. [Create](#create-salary-type)
     3. [Update](#update-salary-type)
+-   [Shifts/Attendance](#shiftsattendance)
+    1. [GET](#index-shifts-mobile)
+        - [Mobile](#index-shifts-mobile)
+        - [index](#index-attendance)
+    2. [Add](#add-attendance)
+-   [Permissions](#permissions)
+    1. [Index](#index-permission)
+    2. [Show](#show-permissions)
+    3. [Create](#create-permissions)
 
 # [Departments](#departments)
 
@@ -1512,7 +1521,7 @@ Response Example :
 }
 ```
 
-# [Shifts](#Shifts)
+# [Shifts/Attendance](#shiftsattendance)
 
 ## [Index Shifts Mobile](#index-shifts-mobile)
 
@@ -1561,7 +1570,7 @@ Response Example :
 ]
 ```
 
-## [Show Index attendance](#show-today-absence)
+## [Index attendance](#index-attendance)
 
 Get List attendance by date
 
