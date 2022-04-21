@@ -10,7 +10,7 @@
 -   [Levels](#levels)
     1. [Create](#create-levels)
     2. [Update](#update-levels)
-    3. [GET](#get-levels)
+    3. [GET](#index)
         - [Index](#index)
         - [Show](#show-levels)
     4. [Delete](#delete-levels)
@@ -21,21 +21,19 @@
         - [Index](#index-positions)
         - [Show](#show-positions)
     4. [Delete](#delete-positions)
--   Employees
-    1. Create
-    2. Update
-    3. Read
-    4. Delete
--   Salary
-    1. Create
-    2. Update
-    3. Read
-    4. Delete
--   Salary Type
-    1. Create
-    2. Update
-    3. Read
-    4. Delete
+-   [Employees](#employees)
+    1. [Get](#index-employees)
+        - [index](#index-employees)
+        - [Show](#show-employees)
+    2. [Create](#create-employees)
+    3. [Update](#update-employees)
+    4. [Delete](#delete-employees)
+-   [Salary Type](#salary-type)
+    1. [GET](#get-salary-types)
+        - [Index Salary Employee](#index-salary-employee)
+        - [Show Salary Employee](#show-salary-employee)
+    2. [Create](#create-salary-type)
+    3. [Update](#update-salary-type)
 
 # [Departments](#departments)
 
@@ -49,15 +47,15 @@ GET "/api/v1/departments"
 
 Request description:
 
-> | Name       | Type                  | Description            | nullable |
-> | ---------- | --------------------- | ---------------------- | -------- |
-> | company_id | Primary Key (integer) | primary key of company | yes      |
+> | Name      | Type  | Description                   | nullable |
+> | --------- | ----- | ----------------------------- | -------- |
+> | companies | array | list primary key of companies | yes      |
 
 Request Example :
 
 ```
 {
-    "company_id" : "kada" or null,
+    "company_id" : ["kada"]
 }
 ```
 
@@ -104,9 +102,9 @@ GET "/api/v1/departments/{id}"
 
 Request description:
 
-> | Name | Type                  | Description                            |
-> | ---- | --------------------- | -------------------------------------- |
-> | id   | Primary Key (integer) | primary key of departments on Resource |
+> | Name | Type                  | Description                            | nullable |
+> | ---- | --------------------- | -------------------------------------- | -------- |
+> | id   | Primary Key (integer) | primary key of departments on Resource | no       |
 
 Response Example :
 
@@ -188,10 +186,11 @@ PUT "/api/v1/departments/{id}"
 
 Request description :
 
-> | Name       | Type                  | Description                  |
-> | ---------- | --------------------- | ---------------------------- |
-> | id         | Primary Key (integer) | primary key of departments   |
-> | company_id | integer               | primary key or id of company |
+> | Name       | Type                  | Description                  | nullable |
+> | ---------- | --------------------- | ---------------------------- | -------- |
+> | id         | Primary Key (integer) | primary key of departments   | no       |
+> | name       | string                | new name of department       | no       |
+> | company_id | integer               | primary key or id of company | no       |
 
 Request Example :
 
@@ -229,7 +228,7 @@ Response Example :
 Delete Department by Id all Position has connected with department will change to null or moved base on your request params
 
 ```
-DELETE "api/v1/departments/{id}
+DELETE "api/v1/departments/{id}"
 ```
 
 Request Description :
@@ -272,15 +271,15 @@ GET /api/v1/levels
 
 Request description:
 
-> | Name       | Type        | Description |
-> | ---------- | ----------- | ----------- |
-> | company_id | primary key | company_id  |
+> | Name     | Type  | Description                   | nullable |
+> | -------- | ----- | ----------------------------- | -------- |
+> | companys | array | list primary key of companies | yes      |
 
 Request Example:
 
 ```
 {
-    "company_id" : "KADA"
+    "companys" : ["KADA"]
 }
 ```
 
@@ -444,7 +443,7 @@ Response Example:
 Delete level by Id all Position has connected with level will change to null or moved base on your request params
 
 ```
-DELETE "api/v1/levels/{id}
+DELETE "api/v1/levels/{id}"
 ```
 
 Request description :
@@ -487,17 +486,17 @@ GET /api/v1/positions
 
 Request description:
 
-> | Name          | Type        | Description                      | nullable |
-> | ------------- | ----------- | -------------------------------- | -------- |
-> | company_id    | foreign key | company_id                       | yes      |
-> | department_id | foreign key | primary key on table departments | yes      |
-> | level_id      | foreign key | primary ky on table levels       | yes      |
+> | Name        | Type  | Description                           | nullable |
+> | ----------- | ----- | ------------------------------------- | -------- |
+> | companies   | array | list primary key of companies         | yes      |
+> | departments | array | list primary key on table departments | yes      |
+> | levels      | array | list primary ky on table levels       | yes      |
 
 Request Example:
 
 ```
 {
-    "company_id" : "KADA",
+    "companies" : ["KADA",]
     "department_id" : "",
     "level_id : ""
 }
@@ -599,7 +598,7 @@ Response Example:
 this api show positions by requested id
 
 ```
-GET "/api/v1/positions/{id}"
+GET /api/v1/positions/{id}
 ```
 
 > | Name | Type        | Description                | nullable |
@@ -647,7 +646,7 @@ Response Example:
 Create new Levels
 
 ```
-POST "/api/v1/positions"
+POST /api/v1/positions
 ```
 
 Request Description:
@@ -729,7 +728,7 @@ Response Example :
 Update level By Id
 
 ```
-PUT "/api/v1/positions/{id}"
+PUT /api/v1/positions/{id}
 ```
 
 Request Description :
@@ -810,13 +809,13 @@ Response Example:
 Delete level by Id all Position has connected with level will change to null or moved base on your request params
 
 ```
-DELETE "api/v1/positions/{id}
+DELETE api/v1/positions/{id}
 ```
 
 Request description :
 
-> | Name | Type                  | Description           | Nullable |
-> | ---- | --------------------- | --------------------- | -------- |
+> | Name | Type                  | Description              | Nullable |
+> | ---- | --------------------- | ------------------------ | -------- |
 > | id   | Primary Key (integer) | primary key of positions | no       |
 
 Response Example:
@@ -978,7 +977,7 @@ Response Example 1:
                 "id" : "lv-1",
                 "name" : "level-c"
             },
-            "join-at" : "2022-04-05T00:00:00.000000Z",
+            "joined_at" : "2022-04-05T00:00:00.000000Z",
             "employment_type" : {
                 "id" : "et-1",
                 "name" : "Full-Time",
@@ -988,24 +987,7 @@ Response Example 1:
                 "name" : "full-time"
             }
             "amount" : 1000000,
-            "deleted_at" : null,
-            "teams" : [
-            {
-                "leader" : {
-                    "id" : "employee-2",
-                    "name" : "Victor Yansen",
-                },
-                "project : CvSaya,
-                "pathner-employees": [
-                    {
-                    "id" : "employee-3",
-                    "name" : "Ricky",
-                    },
-                ],
-                "created_at" : "2022-04-05T00:00:00.000000Z",
-                "updated_at" : "2022-04-05T00:00:00.000000Z",
-            },
-        ]
+            "deleted_at" : null
         }
     ]
 }
@@ -1056,7 +1038,7 @@ Response Example:
             "id" : "lv-1",
             "name" : "level-c"
         },
-        "join-at" : "2022-04-05T00:00:00.000000Z",
+        "joined_at" : "2022-04-05T00:00:00.000000Z",
         "employment_type" : {
             "id" : "et-1",
             "name" : "Full-Time",
@@ -1066,30 +1048,13 @@ Response Example:
             "name" : "full-time"
         }
         "amount" : 1000000,
-        "deleted_at" : null,
-        "teams" : [
-            {
-                "leader" : {
-                    "id" : "employee-2",
-                    "name" : "Victor Yansen",
-                },
-                "project : CvSaya,
-                "pathner-employees": [
-                    {
-                    "id" : "employee-3",
-                    "name" : "Ricky",
-                    },
-                ],
-                "created_at" : "2022-04-05T00:00:00.000000Z",
-                "updated_at" : "2022-04-05T00:00:00.000000Z",
-            },
-        ]
+        "deleted_at" : null
     }
 }
 
 ```
 
-## [Create Employees](#create-Employees)
+## [Create Employees](#create-employees)
 
 Create new Employees, to create new employees candidate finish all prosedure in interview
 
@@ -1181,7 +1146,7 @@ Response Example :
 }
 ```
 
-## [Update Employees](#update-Employees)
+## [Update Employees](#update-employees)
 
 Update Employees By Id
 
@@ -1242,7 +1207,7 @@ Response Example:
             "id" : "lv-1",
             "name" : "level-c"
         },
-        "join-at" : "2022-04-05T00:00:00.000000Z",
+        "joined_at" : "2022-04-05T00:00:00.000000Z",
         "employment_type" : {
             "id" : "et-2",
             "name" : "Full-Time",
@@ -1253,41 +1218,31 @@ Response Example:
         }
         "amount" : 1000000,
         "deleted_at" : null,
-        "teams" : [
-            {
-                "leader" : {
-                    "id" : "employee-2",
-                    "name" : "Victor Yansen",
-                },
-                "project : CvSaya,
-                "pathner-employees": [
-                    {
-                    "id" : "employee-3",
-                    "name" : "Ricky",
-                    },
-                ],
-                "created_at" : "2022-04-05T00:00:00.000000Z",
-                "updated_at" : "2022-04-05T00:00:00.000000Z",
-            },
-        ]
     }
 }
 ```
 
-## [Delete Employees](#delete-levels)
+## [Delete Employees](#delete-employees)
 
 Employee Resign, by input new employee_id all team has old employees id will be replace with new employees
 
 ```
-DELETE "api/v1/levels/{id}
+DELETE api/v1/levels/{id}
 ```
 
 Request description :
 
-> | Name        | Type                    | Description             | Nullable |
-> | ----------- | ----------------------- | ----------------------- | -------- |
-> | id          | Primary Key (integer)   | primary key of levels   | no       |
-> | employee_id | Foreign Key ( integer ) | primary key of employee | yes      |
+> | Name | Type                  | Description           | Nullable |
+> | ---- | --------------------- | --------------------- | -------- |
+> | id   | Primary Key (integer) | primary key of levels | no       |
+
+Request Example:
+
+```
+{
+    "employee_id" : "employee-1",
+}
+```
 
 Response Example:
 
@@ -1332,7 +1287,7 @@ Response Index Employee after Delete Example:
             "id" : "lv-1",
             "name" : "level-c"
         },
-        "join-at" : "2022-04-05T00:00:00.000000Z",
+        "joined_at" : "2022-04-05T00:00:00.000000Z",
         "employment_type" : {
             "id" : "et-1",
             "name" : "Full-Time",
@@ -1343,23 +1298,533 @@ Response Index Employee after Delete Example:
         }
         "amount" : 1000000,
         "deleted_at" : null,
-        "teams" : [
-            {
-                "leader" : {
-                    "id" : "employee-2",
-                    "name" : "Victor Yansen",
-                },
-                "project : CvSaya,
-                "pathner-employees": [
-                    {
-                    "id" : "employee-3",
-                    "name" : "Ricky",
+    }
+}
+```
+
+# [Salary Types](#salary-types)
+
+## [Get Salary Types](#get-salary-types)
+
+List Master of Salary Types
+
+```
+GET /api/v1/salary-types
+```
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :[
+        {
+            "id" : "st-1",
+        "company_id" : "Kada",
+            "name" : "Gaji Pokok"
+        },
+        {
+            "id" : "st-2",
+        "company_id" : "Kada",
+            "name" : "Tunjangan Transportasi",
+        }
+    ]
+}
+```
+
+## [Create Salary Type](#create-salary-type)
+
+Create Salary Type
+
+```
+POST /api/salary-types
+```
+
+Request Description :
+
+> | Name       | Type        | Description              | Nullable |
+> | ---------- | ----------- | ------------------------ | -------- |
+> | name       | string      | name of new salary type  | no       |
+> | company_id | foreign key | primary key of companies | no       |
+
+Request Example :
+
+```
+{
+    "name" : "Tujuangan Kehadiran",
+    "company_id" : "Kada"
+}
+```
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :{
+        "id" : "st-3",
+        "company_id" : "Kada",
+        "name" : "Tujuangan Kehadiran"
+    },
+}
+```
+
+## [Update Salary Type](#update-salary-type)
+
+Update Salary Type
+
+```
+PUT /api/salary-types/{id}
+```
+
+Request Description :
+
+> | Name       | Type        | Description                 | Nullable |
+> | ---------- | ----------- | --------------------------- | -------- |
+> | id         | primary key | primary key of salary types | no       |
+> | name       | string      | name of new salary type     | no       |
+> | company_id | foreign key | foreign key of companies    | no       |
+
+Request Example :
+
+```
+{
+    "name" : "Tujuangan Kehadiran1",
+    "company_id : "KADA",
+}
+```
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :{
+        "id" : "st-3",
+        "company_id" : "Kada",
+        "name" : "Tujuangan Kehadiran1"
+    },
+}
+```
+
+## [Index Salary Employee](#index-salary-employee)
+
+List salary Every Employee
+
+```
+GET /api/v1/employees/salary
+```
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :[
+        {
+            "id" : "employee-1",
+            "name" : "wilyanto",
+            "company_id" : "Kada",
+            "salary_types" : [
+                {
+                    "id" : "est-1",
+                    "salary_type" : {
+                        "id" : "ST-1",
+                        "name" : "Gaji Pokok",
                     },
-                ],
-                "created_at" : "2022-04-05T00:00:00.000000Z",
-                "updated_at" : "2022-04-05T00:00:00.000000Z",
+                    "amoung" : 1000000,
+                },
+                {
+                    "id" : "est-2",
+                    "salary_type" : {
+                        "id" : "ST-2",
+                        "name" : "Tujangan Transportasi",
+                    },
+                    "amoung" : 50000,
+                }
+            ]
+        }
+    ]
+}
+```
+
+## [Show Salary Employee](#show-salary-employee)
+
+List salary Every Employee
+
+```
+GET /api/v1/employees/{id}/salary
+```
+
+> | Name | Type                  | Description             | Nullable |
+> | ---- | --------------------- | ----------------------- | -------- |
+> | id   | Primary Key (integer) | primary key of employee | no       |
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :[
+        {
+            "id" : "employee-1",
+            "name" : "wilyanto",
+            "salary_types" : [
+                {
+                    "id" : "est-1",
+                    "salary_type" : {
+                        "id" : "ST-1",
+                        "name" : "Gaji Pokok",
+                    },
+                    "amoung" : 1000000,
+                },
+                {
+                    "id" : "est-2",
+                    "salary_type" : {
+                        "id" : "ST-2",
+                        "name" : "Tujangan Transportasi",
+                    },
+                    "amoung" : 50000,
+                }
+            ]
+        }
+    ]
+}
+```
+
+# [Shifts](#Shifts)
+
+## [Index Shifts Mobile](#index-shifts-mobile)
+
+List Shifts for user by Mobile
+
+```
+GET /api/v1/shifts
+```
+
+Request Description
+
+> | Name | Type             | Description            | Nullable |
+> | ---- | ---------------- | ---------------------- | -------- |
+> | date | timestamps (iso) | date of shifts by user | no       |
+
+Request Example :
+
+```
+{
+    "date" : "2022-04-07T00:00:00.000000Z",
+}
+```
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :{
+        "id" : "employee-1",
+        "name" : "wilyanto",
+        "company_id" : "comp-1",
+        "date" : "2022-04-07T00:00:00.000000Z",
+        "shift": {
+            "id" : "shifts-1",
+            "started_at" : "07:45",
+            "ended_at" : "17:00",
+            "break_started_at" : "12:00",
+            "break_ended_at" : "13:00"
+        }
+    }
+]
+```
+
+## [Show Index attendance](#show-today-absence)
+
+Get List attendance by date
+
+```
+GET /api/v1/attendances
+```
+
+Request description :
+
+> | Name       | Type             | Description                            | Nullable |
+> | ---------- | ---------------- | -------------------------------------- | -------- |
+> | started_at | timestamps (iso) | started date list of absence will take | no       |
+> | ended_at   | timestamps (iso) | ended date list of absence will take   | yes      |
+
+Request Example :
+
+```
+{
+    "started_at" : "2022-04-07T00:00:00.000000Z",
+    "ended_at" : "2022-04-08T00:00:00.000000Z"
+}
+```
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : "request success"
+    },
+    "data" :{
+        "employee" : {
+            "id" : "employee-2",
+            "name" : "Victor Yansen",
+        },
+        "attendances" : [
+            {
+                "date" : "2022-04-07T00:00:00.000000Z",
+                "attendance" : {
+                    "clock_in" : {
+                        "checked_at" : "07:48:00",
+                        "duty_at" : "07:45:00",
+                        "penalty" : -5000,
+                    },
+                    "start_break" : {
+                        "checked_at" : "12:00:00",
+                        "penalty" : 0,
+                        "duty_at" : "12:10:00",
+                    },
+                    "end_break" : {
+                        "checked_at" : "12:48:00",
+                        "duty_at" : "12:50:00",
+                        "penalty" : 0
+                    },
+                    "clock_out" : {
+                        "checked_at" : "17:01:00",
+                        "duty_at" : "17:00:00",
+                        "penalty" : 0
+                    }
+                }
+            },
+            {
+                "date" : "2022-04-08T00:00:00.000000Z",
+                "attendance" : {
+                    "clock_in" : {
+                        "checked_at" : "07:48:00",
+                        "duty_at" : "07:45:00",
+                        "penalty" : -5000,
+                    },
+                    "start_break" : {
+                        "checked_at" : "12:00:00",
+                        "penalty" : 0,
+                        "duty_at" : "12:10:00"
+                    },
+                    "end_break" : {
+                        "checked_at" : "12:48:00",
+                        "duty_at" : "12:50:00",
+                        "penalty" : 0
+                    },
+                    "clock_out" : {
+                        "checked_at" : "17:01:00",
+                        "duty_at" : "17:00:00",
+                        "penalty" : 0
+                    }
+                }
+            },
+            {
+                "date" : "2022-04-09T00:00:00.000000Z",
+                "attendance" : {
+                    "clock_in" : {
+                        "checked_at" : "07:48:00",
+                        "duty_at" : "07:45:00",
+                        "penalty" : -5000,
+                    },
+                    "start_break" : {
+                        "checked_at" : "12:00:00",
+                        "penalty" : 0,
+                        "duty_at" : "12:10:00",
+                    },
+                    "end_break" : {
+                        "checked_at" : "12:48:00",
+                        "duty_at" : "12:50:00",
+                        "penalty" : 0
+                    },
+                    "clock_out" : {
+                        "checked_at" : "17:01:00",
+                        "duty_at" : "17:00:00",
+                        "penalty" : 0
+                    }
+                }
             },
         ]
     }
 }
+```
+
+# [Add Attendance](#add-attendance)
+
+Add new or update attendance
+
+```
+POST /api/v1/attendances
+```
+
+Request Description :
+
+> | Name | Type    | Description                                         | Nullable |
+> | ---- | ------- | --------------------------------------------------- | -------- |
+> | time | time    | time user attend                                    | no       |
+> | type | enum    | "clock_in", "clock_out", "start_break", "end_break" | no       |
+> | file | picture | upload file from camera                             | no       |
+
+Request Example :
+
+```
+{
+    "time" : 12:00,
+    "type" : "clock_in"
+    "file" : file
+}
+```
+
+Response Example :
+
+```
+{
+     "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data :{
+        "employee" : {
+            "id" : "employee-2",
+            "name" : "Victor Yansen",
+        }
+        attendances : [
+            {
+                "date" : "2022-04-09T00:00:00.000000Z",
+                "attendance" : {
+                    "clock_in" : {
+                        "checked_at" : "12:00:00",
+                        "duty_at" : "07:45:00",
+                        "penalty" : -75000,
+                    },
+                    "start_break" : null,
+                    "end_break" : null,
+                    "clock_out" : null
+                }
+            }
+        ]
+    }
+}
+```
+
+# [Permissions](#permissions)
+
+## [Index permission](#index-permission)
+
+get List Permissions
+
+```
+GET /api/v1/attendances/permissions
+```
+
+Response Example :
+
+```
+{
+     "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data : [
+        {
+            "id" : "p-1",
+            "permission-type: {
+                "id" : "pt-1",
+                "name" : "cuti",
+                "is_paid" : true,
+                "company_id" "kada",
+            },
+            "started_at" : "2022-04-01T00:00:00.000000Z",
+            "ended_at" : "2022-04-09T00:00:00.000000Z",
+            "note" : "Liburan Dong"
+        },
+        {
+            "id" : "p-2",
+            "permission-type: {
+                "id" : "pt-2",
+                "name" : "Izin",
+                "is_paid" : false,
+                "company_id" "kada",
+            },
+            "started_at" : "2022-04-09T00:00:00.000000Z",
+            "ended_at" : "2022-04-11T00:00:00.000000Z",
+            "note" : "stress"
+        }
+    ]
+}
+```
+
+## [show Permissions](#show-permissions)
+
+get permission detail
+
+```
+GET /api/v1/attendances/permissions/{id}
+```
+
+> | Name | Type        | Description             | Nullable |
+> | ---- | ----------- | ----------------------- | -------- |
+> | id   | primary key | primary key permissions | no       |
+
+Response Example :
+
+```
+{
+     "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data : {
+        "id" : "p-1",
+        "permission-type: {
+            "id" : "pt-1",
+            "name" : "cuti",
+            "is_paid" : true,
+            "company_id" "kada",
+        },
+        "started_at" : "2022-04-01T00:00:00.000000Z",
+        "ended_at" : "2022-04-09T00:00:00.000000Z",
+        "note" : "Liburan Dong",
+        "images" : [
+            "image-1",
+            "image-2",
+            "image-3",
+            "iamge-4",
+        ],
+        "is_accepted" : null
+    }
 ```
