@@ -1803,7 +1803,7 @@ Response Example :
 
 ```
 {
-     "meta" :{
+    "meta" :{
         "success" : true,
         "code" : 200000,
         "message" : request success"
@@ -1827,4 +1827,65 @@ Response Example :
         ],
         "is_accepted" : null
     }
+```
+
+## [Create Permissions](#create-permissions)
+
+create permissions
+
+```
+POST /api/v1/attendances/permissions
+```
+
+Request Description :
+
+> | Name               | Type             | Description                                                           | Nullable |
+> | ------------------ | ---------------- | --------------------------------------------------------------------- | -------- |
+> | started_at         | timestamps (iso) | timestamp with iso format                                             | no       |
+> | ended_at           | timestamps (iso) | timestamp with iso format                                             | no       |
+> | permission_type_id | foreign key      | id of permission type, earlier_than + today must more than started_at | no       |
+> | note               | longtext         | max 250, min 10                                                       |
+> | images             | array            | list of id document, with type permission_type_id                     |
+
+Request Example :
+
+```
+{
+    "started_at" : "2022-04-01T00:00:00.000000Z",
+    "ended_at" : "2022-04-09T00:00:00.000000Z",
+    "permission_type_id" : "pt-1",
+    "note" : "Izin sakit bla bla",
+    "images" : [image-1,image-2,image-3]
+}
+```
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data : {
+        "id" : "p-1",
+        "permission-type: {
+            "id" : "pt-1",
+            "name" : "cuti",
+            "is_paid" : true,
+            "company_id" "kada",
+        },
+        "started_at" : "2022-04-01T00:00:00.000000Z",
+        "ended_at" : "2022-04-09T00:00:00.000000Z",
+        "note" : "Liburan Dong",
+        "images" : [
+            "image-1",
+            "image-2",
+            "image-3",
+            "iamge-4",
+        ],
+        "is_accepted" : null
+    }
+}
 ```
