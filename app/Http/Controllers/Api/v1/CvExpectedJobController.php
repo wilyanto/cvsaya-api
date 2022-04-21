@@ -19,7 +19,7 @@ class CvExpectedJobController extends Controller
      */
     public function show($id)
     {
-        $expectedSalaries = CvExpectedJob::where('user_id', $id)->firstOrFail();
+        $expectedSalaries = CvExpectedJob::where('user_id', $id)->orderBy('updated_at', 'DESC')->firstOrFail();
 
         return $this->showOne($expectedSalaries);
     }
@@ -28,7 +28,7 @@ class CvExpectedJobController extends Controller
     {
         $user = auth()->user();
 
-        $expectedSalaries = CvExpectedJob::where('user_id', $user->id_kustomer)->firstOrFail();
+        $expectedSalaries = CvExpectedJob::where('user_id', $user->id_kustomer)->orderBy('updated_at', 'DESC')->firstOrFail();
 
         return $this->showOne($expectedSalaries);
     }
@@ -196,11 +196,22 @@ class CvExpectedJobController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'candidate_position_id' => 'exists:candidate_positions,id|nullable',
             'name' => 'string',
         ]);
-
         $data = $request->all();
-        $position = CandidatePosition::where('id', $id)->update($data);
+        unset($data['candidate_position_id']);
+        $data['validated_at'] = date('Y-m-d h:i:s', time());
+        $position = CandidatePosition::findOrFail($id);
+        if ($request->candidate_position_id) {
+            $newPosition = CandidatePosition::findOrFail($request->candidate_position_id);
+            CvExpectedJob::where('expected_position', $id)->update([
+                'expected_position' => $newPosition->id,
+            ]);
+            $position = $newPosition;
+        } else {
+            $position = CandidatePosition::where('id', $id)->update($data);
+        }
 
         return $this->showOne($position);
     }

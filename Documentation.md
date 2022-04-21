@@ -81,17 +81,17 @@ Response Example:
         {
             "id" : "dept-1",
             "name" : "Human Resource",
-            "head" : {
-                "id" : "employee_id",
-                "name" : "Victor Yansen",
+            "total_employees" : 8,
+             "company" : {
+                "id" : "comp-1",
+                "name" : "KADA",
             },
             "total" : 8
         },
         {
             "id" : "dept-2",
             "name" : "Human Resource",
-            "head" : "Information Technology",
-            "total" : 8,
+            "total_employees" : 8,
             "company" : {
                 "id" : "comp-1",
                 "name" : "KADA",
@@ -127,9 +127,10 @@ Response Example :
     data :{
         "id" : "dept-1",
         "name" : "Human Resource",
-        "head" : {
-            "id" : "employee_id",
-            "name" : "Victor Yansen",
+        "total_employees" : 8,
+        "company" : {
+            "id" : "comp-1",
+            "name" : "KADA",
         },
         "total" : 8
     }
@@ -175,8 +176,7 @@ Response Example :
     data :{
         "id" : "dept-2",
         "name" : "Human Resource",
-        "head" : "Information Technology",
-        "total" : 8,
+        "total_employees" : 8,
         "company" : {
             "id" : "comp-1",
             "name" : "KADA",
@@ -222,8 +222,7 @@ Response Example :
     data :{
         "id" : "dept-2",
         "name" : "Resource Human",
-        "head" : "Information Technology",
-        "total" : 8,
+        "total_employees" : 8,
         "company" : {
             "id" : "comp-1",
             "name" : "KADA",
@@ -305,6 +304,7 @@ Response Example:
         {
             "id" : "Lv-1",
             "name" : "Level - C",
+            "total_employees" : 8,
             "company" : {
                 "id" : "comp-1",
                 "name" : "KADA",
@@ -313,6 +313,7 @@ Response Example:
         {
             "id" : "Lv-2",
             "name" : "Level - Staff",
+            "total_employees" : 8,
             "company" : {
                 "id" : "comp-1",
                 "name" : "KADA",
@@ -349,6 +350,7 @@ Response Example:
     data :{
         "id" : "Lv-1",
         "name" : "Level - C",
+        "total_employees" : 8,
         "company" : {
             "id" : "comp-1",
             "name" : "KADA",
@@ -394,6 +396,7 @@ Response Example :
     data :{
         "id" : "lv-3",
         "name" : "Level - Office",
+        "total_employees" : 8,
         "company" : {
             "id" : "comp-1",
             "name" : "KADA",
@@ -439,6 +442,7 @@ Response Example:
     data :{
         "id" : "lv-3",
         "name" : "Level - B",
+        "total_employees" : 8,
         "company" : {
             "id" : "comp-1",
             "name" : "KADA",
@@ -485,7 +489,7 @@ Response Example:
 
 # [Positions](#positions)
 
-## [Index](#index-positions)
+## [Index positions](#index-positions)
 
 Show every positions
 
@@ -505,9 +509,9 @@ Request Example:
 
 ```
 {
-    "companies" : ["KADA",]
-    "department_id" : "",
-    "level_id : ""
+    "companies" : ["KADA"]
+    "department_id" : ["dept-1"],
+    "level_id : ["lv-1"]
 }
 ```
 
@@ -540,42 +544,6 @@ Response Example:
             "min_salary" : 1000,
             "max_salary" : 100000,
             "remaining_slot" : 100,
-            "parent" : [
-                {
-                    "id" : "positions-2",
-                    "name" : "anggota HRD",
-                    "department" : {
-                        "id" : "dept-1",
-                        "name" : "Human Resource",
-                    },
-                    "level" : {
-                        "id" : "lv-2",
-                        "name" : "Level - Staff",
-                    },
-                    "priorty" : 0,
-                    "min_salary" : 1000,
-                    "max_salary" : 100000,
-                    "remaining_slot" : 100,
-                    "parent" : null,
-                },
-                {
-                    "id" : "positions-3",
-                    "name" : "anggota HRD v2",
-                    "department" : {
-                        "id" : "dept-1",
-                        "name" : "Human Resource",
-                    },
-                    "level" : {
-                        "id" : "lv-2",
-                        "name" : "Level - Staff",
-                    },
-                    "priorty" : 0,
-                    "min_salary" : 1000,
-                    "max_salary" : 100000,
-                    "remaining_slot" : 100,
-                    "parent" : null,
-                }
-            ]
         },
         {
             "id" : "position-4",
@@ -596,15 +564,14 @@ Response Example:
             "min_salary" : 1000,
             "max_salary" : 100000,
             "remaining_slot" : 100,
-            "parent" : null
         }
     ]
 }
 ```
 
-### [Show Positions](#show-levels)
+### [Show Positions](#show-positions)
 
-this api show positions by requested id
+this api show positions by requested id without organization structure
 
 ```
 GET /api/v1/positions/{id}
@@ -643,11 +610,9 @@ Response Example:
             "min_salary" : 1000,
             "max_salary" : 100000,
             "remaining_slot" : 100,
-            "parent" : null
         }
     }
 }
-
 ```
 
 ## [Create positions](#create-positions)
@@ -660,15 +625,18 @@ POST /api/v1/positions
 
 Request Description:
 
-> | Name          | Type    | Description                      | nullable |
-> | ------------- | ------- | -------------------------------- | -------- |
-> | name          | String  | Name of level                    | no       |
-> | company_id    | integer | primary key or id of company     | no       |
-> | parent_id     | integer | primary key of table positions   | no       |
-> | department_id | integer | primary key of table departments | no       |
-> | level_id      | integer | primary key of table levels      | no       |
-
-Request Example :
+> | Name           | Type    | Description                           | nullable |
+> | -------------- | ------- | ------------------------------------- | -------- |
+> | name           | String  | Name of level                         | no       |
+> | company_id     | integer | primary key or id of company          | no       |
+> | parent_id      | integer | primary key of table positions        | no       |
+> | department_id  | integer | primary key of table departments      | no       |
+> | level_id       | integer | primary key of table levels           | no       |
+> | min_salary     | integer | minimum salary will this position get | no       |
+> | max_salary     | integer | maximum salary will this position get | no       |
+> | remaining_slot | integer | slot employee for this positions      | no       |
+>
+> Request Example :
 
 ```
 {
@@ -677,6 +645,10 @@ Request Example :
     "parent_id" : "positions-4",
     "department_id" : "dept-2",
     "level" : "lv-2",
+    "priorty" : 0,
+    "min_salary" : 1000,
+    "max_salary" : 100000,
+    "remaining_slot" : 100,
 }
 ```
 
@@ -708,25 +680,6 @@ Response Example :
             "min_salary" : 1000,
             "max_salary" : 100000,
             "remaining_slot" : 100,
-            "parent" : [
-                {
-                    "id" : "positions-5",
-                    "name" : "anggota IT",
-                    "department" : {
-                        "id" : "dept-2",
-                        "name" : "IT",
-                    },
-                    "level" : {
-                        "id" : "lv-2",
-                        "name" : "Level - Staff",
-                    },
-                    "priorty" : 0,
-                    "min_salary" : 1000,
-                    "max_salary" : 100000,
-                    "remaining_slot" : 100,
-                    "parent" : null,
-                },
-            ]
         }
     }
 }
@@ -742,12 +695,17 @@ PUT /api/v1/positions/{id}
 
 Request Description :
 
-> | Name          | Type                  | Description                      | nullable |
-> | ------------- | --------------------- | -------------------------------- | -------- |
-> | id            | Primary Key (integer) | primary key of levels            | no       |
-> | name          | String                | Name of levels                   | no       |
-> | department_id | integer               | primary key of table departments | no       |
-> | level_id      | integer               | primary key of table levels      | no       |
+> | Name           | Type                  | Description                           | nullable |
+> | -------------- | --------------------- | ------------------------------------- | -------- |
+> | id             | Primary Key (integer) | primary key of levels                 | no       |
+> | name           | String                | Name of level                         | no       |
+> | company_id     | integer               | primary key or id of company          | no       |
+> | parent_id      | integer               | primary key of table positions        | no       |
+> | department_id  | integer               | primary key of table departments      | no       |
+> | level_id       | integer               | primary key of table levels           | no       |
+> | min_salary     | integer               | minimum salary will this position get | no       |
+> | max_salary     | integer               | maximum salary will this position get | no       |
+> | remaining_slot | integer               | slot employee for this positions      | no       |
 
 Request Example :
 
@@ -758,6 +716,10 @@ Request Example :
     "parent_id" : "positions-0",
     "department_id" : "dept-2",
     "level" : "lv-1",
+    "priorty" : 0,
+    "min_salary" : 1000,
+    "max_salary" : 100000,
+    "remaining_slot" : 100,
 }
 ```
 
@@ -789,25 +751,6 @@ Response Example:
             "min_salary" : 1000,
             "max_salary" : 100000,
             "remaining_slot" : 100,
-            "parent" : [
-                {
-                    "id" : "positions-5",
-                    "name" : "anggota IT",
-                    "department" : {
-                        "id" : "dept-2",
-                        "name" : "IT",
-                    },
-                    "level" : {
-                        "id" : "lv-2",
-                        "name" : "Level - Staff",
-                    },
-                    "priorty" : 0,
-                    "min_salary" : 1000,
-                    "max_salary" : 100000,
-                    "remaining_slot" : 100,
-                    "parent" : null,
-                },
-            ]
         }
     }
 }
