@@ -951,7 +951,6 @@ this api show Employee by requested id
 
 ```
 GET "/api/v1/employees/{id}"
-
 ```
 
 Response Description:
@@ -1533,7 +1532,7 @@ Request Example :
 ```
 {
     "started_at" : "2022-04-07T00:00:00.000000Z",
-    "ended_at" : "2022-04-08T00:00:00.000000Z"
+    "ended_at" : "2022-04-09T00:00:00.000000Z"
 }
 ```
 
@@ -1554,77 +1553,71 @@ Response Example :
         "attendances" : [
             {
                 "date" : "2022-04-07T00:00:00.000000Z",
-                "attendance" : {
-                    "clock_in" : {
-                        "checked_at" : "07:48:00",
-                        "duty_at" : "07:45:00",
-                        "penalty" : -5000,
-                    },
-                    "start_break" : {
-                        "checked_at" : "12:00:00",
-                        "penalty" : 0,
-                        "duty_at" : "12:10:00",
-                    },
-                    "end_break" : {
-                        "checked_at" : "12:48:00",
-                        "duty_at" : "12:50:00",
-                        "penalty" : 0
-                    },
-                    "clock_out" : {
-                        "checked_at" : "17:01:00",
-                        "duty_at" : "17:00:00",
-                        "penalty" : 0
-                    }
+                "clock_in" : {
+                    "checked_at" : "2022-04-07T07:48:00.000000Z",
+                    "duty_at" : "07:45:00",
+                    "penalty" : -5000,
+                },
+                "start_break" : {
+                    "checked_at" : "2022-04-07T12:00:00.000000Z",
+                    "penalty" : 0,
+                    "duty_at" : "12:10:00",
+                },
+                "end_break" : {
+                    "checked_at" : "2022-04-07T12:48:00.000000Z",
+                    "duty_at" : "12:50:00",
+                    "penalty" : 0
+                },
+                "clock_out" : {
+                    "checked_at" : "2022-04-07T17:01:00.000000Z",
+                    "duty_at" : "17:00:00",
+                    "penalty" : 0
                 }
             },
             {
                 "date" : "2022-04-08T00:00:00.000000Z",
-                "attendance" : {
-                    "clock_in" : {
-                        "checked_at" : "07:48:00",
-                        "duty_at" : "07:45:00",
-                        "penalty" : -5000,
-                    },
-                    "start_break" : {
-                        "checked_at" : "12:00:00",
-                        "penalty" : 0,
-                        "duty_at" : "12:10:00"
-                    },
-                    "end_break" : {
-                        "checked_at" : "12:48:00",
-                        "duty_at" : "12:50:00",
-                        "penalty" : 0
-                    },
-                    "clock_out" : {
-                        "checked_at" : "17:01:00",
-                        "duty_at" : "17:00:00",
-                        "penalty" : 0
-                    }
+                "clock_in" : {
+                    "checked_at" : "2022-04-08T07:48:00.000000Z",
+                    "duty_at" : "07:45:00",
+                    "penalty" : -5000,
+                },
+                "start_break" : {
+                    "checked_at" : "2022-04-08T12:00:00.000000Z",
+                    "penalty" : 0,
+                    "duty_at" : "12:10:00",
+                },
+                "end_break" : {
+                    "checked_at" : "2022-04-08T12:48:00.000000Z",
+                    "duty_at" : "12:50:00",
+                    "penalty" : 0
+                },
+                "clock_out" : {
+                    "checked_at" : "2022-04-08T17:01:00.000000Z",
+                    "duty_at" : "17:00:00",
+                    "penalty" : 0
                 }
             },
             {
                 "date" : "2022-04-09T00:00:00.000000Z",
-                "attendance" : {
-                    "clock_in" : {
-                        "checked_at" : "07:48:00",
-                        "duty_at" : "07:45:00",
-                        "penalty" : -5000,
-                    },
-                    "start_break" : {
-                        "checked_at" : "12:00:00",
-                        "penalty" : 0,
-                        "duty_at" : "12:10:00",
-                    },
-                    "end_break" : {
-                        "checked_at" : "12:48:00",
-                        "duty_at" : "12:50:00",
-                        "penalty" : 0
-                    },
-                    "clock_out" : {
-                        "checked_at" : "17:01:00",
-                        "duty_at" : "17:00:00",
-                        "penalty" : 0
-                    }
+                "clock_in" : {
+                    "checked_at" : "2022-04-09T07:48:00.000000Z",
+                    "duty_at" : "07:45:00",
+                    "penalty" : -5000,
+                },
+                "start_break" : {
+                    "checked_at" : "2022-04-09T12:00:00.000000Z",
+                    "penalty" : 0,
+                    "duty_at" : "12:10:00",
+                },
+                "end_break" : {
+                    "checked_at" : "2022-04-09T12:48:00.000000Z",
+                    "duty_at" : "12:50:00",
+                    "penalty" : 0
+                },
+                "clock_out" : {
+                    "checked_at" : "2022-04-09T17:01:00.000000Z",
+                    "duty_at" : "17:00:00",
+                    "penalty" : 0
                 }
             },
         ]
@@ -1632,7 +1625,64 @@ Response Example :
 }
 ```
 
-# [Add Attendance](#add-attendance)
+## [Add Shifts](#add-shift)
+
+Add new Shifts
+
+```
+POST /api/v1/shifts
+```
+
+Request Description
+
+> | Name             | Type       | Description                                         | Nullable |
+> | ---------------- | ---------- | --------------------------------------------------- | -------- |
+> | name             | string     | name shift                                          | no       |
+> | started_at       | time       | time shift will start                               | no       |
+> | ended_at         | time       | time shift will end                                 | no       |
+> | break_started_at | time       | time break shift will start                         | no       |
+> | break_ended_at   | time       | time break shift will end                           | no       |
+> | company_id       | foreign_id | "clock_in", "clock_out", "start_break", "end_break" | no       |
+> | break_duration   | integer    | how much hour duration will be taken                | no       |
+
+Request Example:
+
+```
+{
+    "name" : 12:00:00,
+    "started_at" : "12:00:00",
+    "ended_at" : "12:00:00",
+    "break_started_at" : "12:00:00",
+    "break_ended_at" : "12:00:00",
+    "break_duration" : 1,
+    "company_id" : "comp-1"
+}
+```
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : "request success"
+    },
+    "data" :{
+        "name" : "Office",
+        "started_at" : "12:00:00",
+        "ended_at" : "12:00:00",
+        "break_started_at" : "12:00:00",
+        "break_ended_at" : "12:00:00",
+        "break_duration" : 1,
+        "company_id" : "comp-1"
+        "created_at" : "2022-04-09T17:01:00.000000Z",
+        "updated_at" : "2022-04-09T17:01:00.000000Z"
+    }
+}
+```
+
+## [Add Attendance](#add-attendance)
 
 Add new or update attendance
 
@@ -1796,8 +1846,70 @@ Request Description :
 > | started_at         | timestamps (iso) | timestamp with iso format                                             | no       |
 > | ended_at           | timestamps (iso) | timestamp with iso format                                             | no       |
 > | permission_type_id | foreign key      | id of permission type, earlier_than + today must more than started_at | no       |
-> | note               | longtext         | max 250, min 10                                                       |
-> | images             | array            | list of id document, with type permission_type_id                     |
+> | note               | longtext         | max 250, min 10                                                       | no       |
+> | images             | array            | list of id document, with type permission_type_id                     | no       |
+
+Request Example :
+
+```
+{
+    "started_at" : "2022-04-01T00:00:00.000000Z",
+    "ended_at" : "2022-04-09T00:00:00.000000Z",
+    "permission_type_id" : "pt-1",
+    "note" : "Izin sakit bla bla",
+    "images" : [image-1,image-2,image-3]
+}
+```
+
+Response Example :
+
+```
+{
+    "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data : {
+        "id" : "p-1",
+        "permission-type: {
+            "id" : "pt-1",
+            "name" : "cuti",
+            "is_paid" : true,
+            "company_id" "kada",
+        },
+        "started_at" : "2022-04-01T00:00:00.000000Z",
+        "ended_at" : "2022-04-09T00:00:00.000000Z",
+        "note" : "Liburan Dong",
+        "images" : [
+            "image-1",
+            "image-2",
+            "image-3",
+            "iamge-4",
+        ],
+        "is_accepted" : null
+    }
+}
+```
+
+## [Update Permissions](#update-permissions)
+
+Update Permission only Picture
+
+```
+PUT /api/v1/attendances/permissions/{id}
+```
+
+Request Description :
+
+> | Name               | Type             | Description                                                           | Nullable |
+> | ------------------ | ---------------- | --------------------------------------------------------------------- | -------- |
+> | id                 | primary key      | primary key of permissions                                            | no       |
+> | started_at         | timestamps (iso) | timestamp with iso format                                             | no       |
+> | ended_at           | timestamps (iso) | timestamp with iso format                                             | no       |
+> | permission_type_id | foreign key      | id of permission type, earlier_than + today must more than started_at | no       |
+> | note               | longtext         | max 250, min 10                                                       | no       |
+> | images             | array            | list of id document, with type permission_type_id                     | no       |
 
 Request Example :
 
