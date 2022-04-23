@@ -66,7 +66,9 @@ Request Example :
 
 ```
 {
-    "company_id" : ["kada"]
+    "companies" : ["kada"],
+    "page" : 1,
+    "page_size" : 10,
 }
 ```
 
@@ -298,7 +300,9 @@ Request Example:
 
 ```
 {
-    "companys" : ["KADA"]
+    "companys" : ["KADA"],
+    "page" : 1,
+    "page_size" : 10,
 }
 ```
 
@@ -531,7 +535,9 @@ Request Example:
 {
     "companies" : ["KADA"]
     "department_id" : ["dept-1"],
-    "level_id : ["lv-1"]
+    "level_id : ["lv-1"],
+    "page" : 1,
+    "page_size" : 10,
 }
 ```
 
