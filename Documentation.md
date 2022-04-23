@@ -56,9 +56,11 @@ GET "/api/v1/departments"
 
 Request description:
 
-> | Name      | Type  | Description                   | nullable |
-> | --------- | ----- | ----------------------------- | -------- |
-> | companies | array | list primary key of companies | yes      |
+> | Name      | Type    | Description                   | nullable |
+> | --------- | ------- | ----------------------------- | -------- |
+> | companies | array   | list primary key of companies | yes      |
+> | page      | integer | page to                       | no       |
+> | page_size | integer | size list every page          | no       |
 
 Request Example :
 
@@ -78,28 +80,32 @@ Response Example:
         "message" : request success"
     },
     data :[
-        {
-            "id" : "dept-1",
-            "name" : "Human Resource",
-            "total_employees" : 8,
-             "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
+        departments: [
+            {
+                "id" : "dept-1",
+                "name" : "Human Resource",
+                "total_employees" : 8,
+                "company" : {
+                    "id" : "comp-1",
+                    "name" : "KADA",
+                },
+                "total" : 8
             },
-<<<<<<< HEAD
-=======
-            "total" : 8
->>>>>>> development
-        },
-        {
-            "id" : "dept-2",
-            "name" : "Human Resource",
-            "total_employees" : 8,
-            "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
-            },
-        }
+            {
+                "id" : "dept-2",
+                "name" : "Human Resource",
+                "total_employees" : 8,
+                "company" : {
+                    "id" : "comp-1",
+                    "name" : "KADA",
+                },
+            }
+        ],
+        "page_info": {
+			"last_page": 1,
+			"current_page": 1,
+			"path": "http://dev-cvsaya.x5.com.au/api/v1/departments"
+		}
     ]
 }
 ```
@@ -135,10 +141,7 @@ Response Example :
             "id" : "comp-1",
             "name" : "KADA",
         },
-<<<<<<< HEAD
-=======
         "total" : 8
->>>>>>> development
     }
 }
 
@@ -285,9 +288,11 @@ GET /api/v1/levels
 
 Request description:
 
-> | Name     | Type  | Description                   | nullable |
-> | -------- | ----- | ----------------------------- | -------- |
-> | companys | array | list primary key of companies | yes      |
+> | Name      | Type    | Description                   | nullable |
+> | --------- | ------- | ----------------------------- | -------- |
+> | companys  | array   | list primary key of companies | yes      |
+> | page      | integer | page to                       | no       |
+> | page_size | integer | size list every page          | no       |
 
 Request Example:
 
@@ -307,24 +312,31 @@ Response Example:
         "message" : request success"
     },
     data :[
-        {
-            "id" : "Lv-1",
-            "name" : "Level - C",
-            "total_employees" : 8,
-            "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
+        levels : [
+            {
+                "id" : "Lv-1",
+                "name" : "Level - C",
+                "total_employees" : 8,
+                "company" : {
+                    "id" : "comp-1",
+                    "name" : "KADA",
+                },
             },
-        },
-        {
-            "id" : "Lv-2",
-            "name" : "Level - Staff",
-            "total_employees" : 8,
-            "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
-            },
-        }
+            {
+                "id" : "Lv-2",
+                "name" : "Level - Staff",
+                "total_employees" : 8,
+                "company" : {
+                    "id" : "comp-1",
+                    "name" : "KADA",
+                },
+            }
+        ],
+        "page_info": {
+			"last_page": 1,
+			"current_page": 1,
+			"path": "http://dev-cvsaya.x5.com.au/api/v1/levels"
+		}
     ]
 }
 ```
@@ -505,11 +517,13 @@ GET /api/v1/positions
 
 Request description:
 
-> | Name        | Type  | Description                           | nullable |
-> | ----------- | ----- | ------------------------------------- | -------- |
-> | companies   | array | list primary key of companies         | yes      |
-> | departments | array | list primary key on table departments | yes      |
-> | levels      | array | list primary ky on table levels       | yes      |
+> | Name        | Type    | Description                           | nullable |
+> | ----------- | ------- | ------------------------------------- | -------- |
+> | companies   | array   | list primary key of companies         | yes      |
+> | departments | array   | list primary key on table departments | yes      |
+> | levels      | array   | list primary ky on table levels       | yes      |
+> | page        | integer | page to                               | no       |
+> | page_size   | integer | size list every page                  | no       |
 
 Request Example:
 
@@ -531,46 +545,54 @@ Response Example:
         "message" : request success"
     },
     data :[
-        {
-            "id" : "position-1",
-            "name" : "HRD",
-            "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
+        positions : [
+
+            {
+                "id" : "position-1",
+                "name" : "HRD",
+                "company" : {
+                    "id" : "comp-1",
+                    "name" : "KADA",
+                },
+                "department" : {
+                    "id" : "dept-1",
+                    "name" : "Human Resource",
+                },
+                "level" : {
+                    "id" : "lv-1",
+                    "name" : "Level - C"
+                },
+                "priorty" : 0,
+                "min_salary" : 1000,
+                "max_salary" : 100000,
+                "remaining_slot" : 100,
             },
-            "department" : {
-                "id" : "dept-1",
-                "name" : "Human Resource",
-            },
-            "level" : {
-                "id" : "lv-1",
-                "name" : "Level - C"
-            },
-            "priorty" : 0,
-            "min_salary" : 1000,
-            "max_salary" : 100000,
-            "remaining_slot" : 100,
-        },
-        {
-            "id" : "position-4",
-            "name" : "IT",
-            "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
-            },
-            "department" : {
-                "id" : "dept-2,
+            {
+                "id" : "position-4",
                 "name" : "IT",
-            },
-            "level" : {
-                "id" : "lv-1",
-                "name" : "Level - C"
-            },
-            "priorty" : 0,
-            "min_salary" : 1000,
-            "max_salary" : 100000,
-            "remaining_slot" : 100,
-        }
+                "company" : {
+                    "id" : "comp-1",
+                    "name" : "KADA",
+                },
+                "department" : {
+                    "id" : "dept-2,
+                    "name" : "IT",
+                },
+                "level" : {
+                    "id" : "lv-1",
+                    "name" : "Level - C"
+                },
+                "priorty" : 0,
+                "min_salary" : 1000,
+                "max_salary" : 100000,
+                "remaining_slot" : 100,
+            }
+        ],
+        "page_info": {
+			"last_page": 1,
+			"current_page": 1,
+			"path": "http://dev-cvsaya.x5.com.au/api/v1/departments"
+		}
     ]
 }
 ```
@@ -888,12 +910,14 @@ GET /api/v1/employees
 
 Request description:
 
-> | Name          | Type        | Description                      |
-> | ------------- | ----------- | -------------------------------- |
-> | company_id    | primary key | company_id                       |
-> | position_id   | primary key | primary key of table positions   |
-> | department_id | primary key | primary key of table departments |
-> | level_id      | primary key | primary key of table levels      |
+> | Name          | Type        | Description                      | nullable |
+> | ------------- | ----------- | -------------------------------- | -------- |
+> | company_id    | primary key | company_id                       | yes      |
+> | position_id   | primary key | primary key of table positions   | yes      |
+> | department_id | primary key | primary key of table departments | yes      |
+> | level_id      | primary key | primary key of table levels      | yes      |
+> | page          | integer     | page to                          | no       |
+> | page_size     | integer     | size list every page             | no       |
 
 Request Example 1:
 
@@ -1512,12 +1536,8 @@ Response Example :
             "started_at" : "07:45",
             "ended_at" : "17:00",
             "break_started_at" : "12:00",
-<<<<<<< HEAD
             "break_ended_at" : "13:00",
             "break_duration" : 1
-=======
-            "break_ended_at" : "13:00"
->>>>>>> development
         }
     }
 ]
@@ -1703,28 +1723,17 @@ POST /api/v1/attendances
 
 Request Description :
 
-<<<<<<< HEAD
-> | Name | Type          | Description                                         | Nullable |
-> | ---- | ------------- | --------------------------------------------------- | -------- |
-> | key  | unique string | unique string for qr code                           | no       |
-> | type | enum          | "clock_in", "clock_out", "start_break", "end_break" | no       |
-> | file | picture       | upload file from camera                             | no       |
-=======
 > | Name | Type    | Description                                         | Nullable |
 > | ---- | ------- | --------------------------------------------------- | -------- |
 > | time | time    | time user attend                                    | no       |
 > | type | enum    | "clock_in", "clock_out", "start_break", "end_break" | no       |
 > | file | picture | upload file from camera                             | no       |
->>>>>>> development
 
 Request Example :
 
 ```
 {
-<<<<<<< HEAD
-=======
     "time" : 12:00,
->>>>>>> development
     "type" : "clock_in"
     "file" : file
 }
@@ -1744,19 +1753,6 @@ Response Example :
             "id" : "employee-2",
             "name" : "Victor Yansen",
         }
-<<<<<<< HEAD
-        attendance : {
-            "date" : "2022-04-09T00:00:00.000000Z",
-            "clock_in" : {
-                "checked_at" : "12:00:00",
-                "duty_at" : "07:45:00",
-                "penalty" : -75000,
-            },
-            "start_break" : null,
-            "end_break" : null,
-            "clock_out" : null
-        }
-=======
         attendances : [
             {
                 "date" : "2022-04-09T00:00:00.000000Z",
@@ -1772,7 +1768,6 @@ Response Example :
                 }
             }
         ]
->>>>>>> development
     }
 }
 ```
@@ -1989,7 +1984,6 @@ Response Example :
     }
 }
 ```
-<<<<<<< HEAD
 
 ## [Index Permission Type](#index-permission-type)
 
@@ -2015,5 +2009,3 @@ Response Example :
 {
 
 }
-=======
->>>>>>> development
