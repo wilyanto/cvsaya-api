@@ -2,25 +2,17 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Http\Controllers\api\v1\CandidateController;
 use App\Models\Candidate;
 use App\Models\CandidateInterviewSchedule;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Collection;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Api\v1\CvProfileDetailController;
-use App\Models\CvExpectedSalary;
 use App\Models\EmployeeDetail;
 use App\Models\CandidateInterviewSchedulesCharacterTrait;
 use App\Models\CharacterTrait;
-use App\Models\Position;
-use Spatie\Permission\Models\Role;
 use Carbon\Carbon;
 use App\Models\InterviewResult;
-use DateTime;
-use DateInterval;
-use DatePeriod;
 
 class CandidateInterviewScheduleController extends Controller
 {
@@ -35,18 +27,28 @@ class CandidateInterviewScheduleController extends Controller
         $user = auth()->user();
         $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
         $request->validate([
-            'date' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
+            'started_at' => [
+                'date_format:Y-m-d\TH:i:s.v\Z',
+                'nullable',
+                'required_with:ended_at',
+            ],
+            'ended_at' => [
+                'date_format:Y-m-d\TH:i:s.v\Z',
+                'required_with:started_at',
+                'nullable',
+            ],
         ]);
-        $date = date('Y-m-d', strtotime($request->date));
-        $candidate = CandidateInterviewSchedule::whereNull('result_id')
+        $startedAt = $request->started_at;
+        $endedAt = $request->ended_at;
+        $candidate = CandidateInterviewSchedule::where(function ($query) use ($startedAt, $endedAt) {
+            if ($startedAt || $endedAt) {
+                $query->whereBetween('interviewed_at', [$startedAt, $endedAt]);
+            }
+        })
+            ->whereNull('result_id')
             ->whereNull('rejected_at')
             ->where('interviewed_by', $employee->id)
-            ->where(function ($query) use ($date) {
-                if ($date) {
-                    $date = date('Y-m-d', strtotime($date));
-                    $query->whereDate('interviewed_at', $date);
-                }
-            })->distinct('candidate_id')->get();
+            ->get();
 
         return $this->showALl($candidate);
     }
@@ -60,7 +62,7 @@ class CandidateInterviewScheduleController extends Controller
         return $this->showAll($schedules);
     }
 
-    public function indexWithoutInterviewDate(Request $request)
+    public function indexWithoutInterviewDate()
     {
         $user = auth()->user();
         $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
@@ -76,31 +78,11 @@ class CandidateInterviewScheduleController extends Controller
         return $this->showAll($schedules);
     }
 
-    public function assessmentInterview(Request $request)
+    public function assessmentInterview()
     {
         $results = InterviewResult::all();
 
         return $this->showAll($results);
-    }
-
-    public function indexByDate(Request $request)
-    {
-        $user = auth()->user();
-        $request->validate([
-            'started_at' => 'date_format:Y-m-d\TH:i:s.v\Z|required',
-            'ended_at' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
-        ]);
-
-        $schedules = CandidateInterviewSchedule::whereBetween('interviewed_at', [$request->started_at, $request->ended_at])
-            ->whereNull('result_id')
-            ->distinct('candidate_id')
-            ->get();
-
-        $schedules = $schedules->map(function ($item, $key) {
-            return $item->toArraySchedule();
-        });
-
-        return $this->showAll(collect($schedules));
     }
 
     public function indexInterviewer()
@@ -110,7 +92,6 @@ class CandidateInterviewScheduleController extends Controller
 
         Collection::macro('interviewer', function () {
             return $this->map(function ($value) {
-                // dump($value);
                 return [
                     'id' => $value->id,
                     'user_id' => $value->user_id,
@@ -120,7 +101,7 @@ class CandidateInterviewScheduleController extends Controller
             });
         });
 
-        $interviewers = $employee->filter(function ($employee, $key) {
+        $interviewers = $employee->filter(function ($employee) {
             if ($employee->hasRole('interviewer')) {
                 return $employee;
             }
@@ -201,16 +182,11 @@ class CandidateInterviewScheduleController extends Controller
 
     public function updateSchedule(Request $request, $id)
     {
-        //check role
         $request->validate([
-            // 'employee_candidate_id' => 'required|exists:candidate_employee_schedules,employee_candidate_id',
             'interviewed_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
         ]);
         $schedule = CandidateInterviewSchedule::where('id', $id)->firstOrFail();
 
-        // if ($this->isThereAnyOtherSchedule($request->date, $request->ti me, $schedule->interview_by)) {
-        //     return $this->errorResponse('You have another schedule execpt this schedule', 422, 42201);
-        // }
         $schedule->interviewed_at = date('Y-m-d H:i:s', strtotime($request->interviewed_at));
         $schedule->save();
         return $this->showOne($schedule);
@@ -226,7 +202,6 @@ class CandidateInterviewScheduleController extends Controller
         if ($schedule->candidate->status < Candidate::INTERVIEW) {
             return $this->errorResponse('candidate rejected because status not on interview', 422, 42201);
         }
-        // dd($request->note);
         if ($request->note) {
             $schedule->note = $request->note;
         }
@@ -261,7 +236,6 @@ class CandidateInterviewScheduleController extends Controller
                 ]);
             }
         }
-        // dump($schedule);
         $schedule->save();
         return $this->showOne($schedule);
     }

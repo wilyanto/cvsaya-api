@@ -70,7 +70,7 @@ return [
             'port' => env('DB_PORT_3', '3306'),
             'database' => env('DB_DATABASE_3', 'forge'),
             'username' => env('DB_USERNAME_3', 'forge'),
-            'password' => 'M#6nwyRP/',env('DB_PASSWORD_3', ''),
+            'password' => 'M#6nwyRP/',//env('DB_PASSWORD_3', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',

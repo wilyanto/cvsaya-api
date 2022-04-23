@@ -154,17 +154,22 @@ class CandidateController extends Controller
     public function getPosition(Request $request)
     {
         $request->validate([
+            'keyword' => 'nullable',
             'page' => 'required|numeric|gt:0',
             'page_size' => 'required|numeric|gt:0'
         ]);
-
+        $keyword = $request->keyword;
         $result = [];
-        $positions = CandidatePosition::orderBy('name', 'desc')
+        $positions = CandidatePosition::where(function ($query) use ($keyword) {
+            if ($keyword != null) {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
+            }
+        })->orderBy('name', 'desc')->whereNotNull('validated_at')
             ->paginate(
-                $perpage = $request->page_size,
-                $columns =  ['*'],
-                $pageName = 'page',
-                $pageBody = $request->page
+                $request->page_size,
+                ['*'],
+                'page',
+                $request->page
             );
         foreach ($positions as $position) {
             $result[] = [
@@ -181,7 +186,9 @@ class CandidateController extends Controller
     {
         $data['total'] = collect($position->candidates)->count();
         $data['interview'] = collect($position->candidates)->filter(function ($item) {
-            return $item->label() == null;
+            if ($item->status == 5) {
+                return $item->label() == null;
+            }
         })->count();
         $data['bad'] = collect($position->candidates)->filter(function ($item) {
             if ($item->label()) {
@@ -259,6 +266,61 @@ class CandidateController extends Controller
 
         $candidate->status = $request->status;
         $candidate->save();
+        return $this->showOne($candidate);
+    }
+
+    public function addSchdule(Request $request, $id)
+    {
+        $user = auth()->user();
+        $request->validate([
+            'interviewed_at' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
+            'interviewed_by' => 'integer|exists:employee_details,id',
+        ]);
+
+        $candidate = Candidate::where('id', $id)->firstOrFail();
+        $employee = EmployeeDetail::where('id', $request->interviewed_by)->firstOrFail();
+        if ($employee->user_id == $candidate->user_id) {
+            return $this->errorResponse('Candidate cannot set own Interviewer', 422, 42201);
+        }
+
+        if ($candidate->status >= Candidate::INTERVIEW) {
+            if ($candidate->user_id == $user->id_kustomer) {
+                return $this->errorResponse('Candidate cannot update his own status', 422, 42202);
+            }
+
+            if (!$candidate->label() && count($candidate->schedules)) {
+                return $this->errorResponse('Candidate has not finish old schedule yet', 422, 42203);
+            }
+        } else {
+            $candidateController = new CvProfileDetailController;
+
+            $status = $candidateController->getStatus($candidate->user_id);
+            $status = $status->original;
+            $status = $status['data']['completeness_status'];
+            if (
+                $candidate->status != Candidate::INTERVIEW &&
+                $status['is_profile_completed'] == false &&
+                $status['is_job_completed'] == false &&
+                $status['is_document_completed']  == false &&
+                $status['is_cv_completed'] == false
+            ) {
+                return $this->errorResponse('this Candidate cannot going interview', 422, 42204);
+            }
+            $candidate->status = $request->status;
+            $candidate->save();
+        }
+        $data = $request->all();
+        if ($request->interviewed_at) {
+            $data['interviewed_at'] = date('Y-m-d H:i:s', strtotime($data['interviewed_at']));
+        } else {
+            $data['interviewed_at'] = null;
+        }
+        $data['candidate_id'] = $id;
+
+        CandidateInterviewSchedule::create($data);
+
+        $candidate->refresh();
+
         return $this->showOne($candidate);
     }
 

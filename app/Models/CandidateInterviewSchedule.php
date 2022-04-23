@@ -40,7 +40,7 @@ class CandidateInterviewSchedule extends Model implements Auditable
 
     public function result()
     {
-        return $this->hasOne(InterviewResult::class, 'id', 'result_id')->withDefault();
+        return $this->hasOne(InterviewResult::class, 'id', 'result_id');
     }
 
     public function candidate()

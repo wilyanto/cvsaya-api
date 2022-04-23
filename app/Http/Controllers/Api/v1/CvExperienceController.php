@@ -4,15 +4,14 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CvExperienceRequests;
+use App\Http\Requests\CvExperienceRequest;
 use App\Models\CvExperience;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Models\Document;
 use App\Models\CandidatePosition;
-use Illuminate\Validation\Rule;
 
-class CvExperiencesController extends Controller
+class CvExperienceController extends Controller
 {
     use ApiResponser;
     /**
@@ -23,8 +22,6 @@ class CvExperiencesController extends Controller
     public function index()
     {
         $user = auth()->user();
-        // dump($user);
-        $data = [];
         $experiences = CvExperience::where('user_id', $user->id_kustomer)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
@@ -39,9 +36,9 @@ class CvExperiencesController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function add(CvExperienceRequests $request)
+    public function add(CvExperienceRequest $request)
     {
-        $validated = $request->validated();
+        $request->validated();
 
         $user = auth()->user();
 
@@ -52,11 +49,11 @@ class CvExperiencesController extends Controller
         }
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $positionObjects = json_decode($request->position);
-        $position = CandidatePosition::where('id', $positionObjects->id)->orWhere('name', $positionObjects->name)->first();
+        $requestPosition = json_decode($request->position);
+        $position = CandidatePosition::where('id', $requestPosition->id)->orWhere('name', $requestPosition->name)->first();
         if (!$position) {
             $position = CandidatePosition::create([
-                'name' => $positionObjects->name,
+                'name' => $requestPosition->name,
                 'inserted_by' => $user->id_kustomer,
             ]);
         }
@@ -109,17 +106,17 @@ class CvExperiencesController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function update(CvExperienceRequests $request, $id)
+    public function update(CvExperienceRequest $request, $id)
     {
-        $validated = $request->validated();
+        $request->validated();
 
         $user = auth()->user();
         $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
-        $positionObjects = $request->position;
-        $position = CandidatePosition::where('id', $positionObjects['id'])->orWhere('name', $positionObjects['name'])->first();
+        $requestPosition = $request->position;
+        $position = CandidatePosition::where('id', $requestPosition['id'])->orWhere('name', $requestPosition['name'])->first();
         if (!$position) {
             $position = CandidatePosition::create([
-                'name' => $positionObjects['name'],
+                'name' => $requestPosition['name'],
                 'inserted_by' => $user->id_kustomer,
             ]);
         }

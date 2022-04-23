@@ -37,6 +37,7 @@ class OldEmployeeSeeder extends Seeder
             $users = User::whereRaw('LENGTH(telpon) > 7')->get();
             Log::info('Kustomer : ' . count($users));
             $administrators = DB::connection('cvsaya')->table('administrator')->get();
+        
             Log::info('Administrator : ' . count($administrators));
             $employees = [];
             foreach ($users as $index => $user) {

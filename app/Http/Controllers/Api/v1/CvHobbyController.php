@@ -9,7 +9,7 @@ use  App\Http\Controllers\Controller;
 use App\Traits\ApiResponser;
 
 
-class CvHobbiesController extends Controller
+class CvHobbyController extends Controller
 {
     use ApiResponser;
     /**

@@ -6,11 +6,9 @@ use App\Models\CvSpeciality;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
-use App\Models\CvCertifications;
 use App\Models\CvSpecialityCertificate;
-use Nette\Utils\Json;
 
-class CvSpecialitiesController extends Controller
+class CvSpecialityController extends Controller
 {
     use ApiResponser;
     /**

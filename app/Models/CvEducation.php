@@ -39,27 +39,27 @@ class CvEducation extends Model implements Auditable
 
     public function experiences()
     {
-        return $this->hasOne(CvExperience::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvExperience::class, 'user_id', 'user_id');
     }
 
     public function certifications()
     {
-        return $this->hasOne(CvCertification::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvCertification::class, 'user_id', 'user_id');
     }
 
     public function specialities()
     {
-        return $this->hasOne(CvSpeciality::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvSpeciality::class, 'user_id', 'user_id');
     }
 
     public function hobbies()
     {
-        return $this->hasOne(CvHobby::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvHobby::class, 'user_id', 'user_id');
     }
 
     public function degree()
     {
-        return $this->hasOne(Degree::class, 'id', 'degree_id')->withDefault();
+        return $this->hasOne(Degree::class, 'id', 'degree_id');
     }
 
     public function toArray()
