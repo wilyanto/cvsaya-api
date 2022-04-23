@@ -23,18 +23,34 @@ class DepartmentController extends Controller
             'companies' => [
                 'array',
                 'nullable'
-            ]
+            ],
+            'keyword' => [
+                'string',
+            ],
+            'page' => 'required|numeric|gt:0',
+            'page_size' => 'required|numeric|gt:0'
         ]);
+        $page = $request->page ? $request->page  : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
         $companies = $request->companies;
-        $data = Department::where(function ($query) use ($companies) {
+        $keyword = $request->keyword;
+        $departments = Department::where(function ($query) use ($companies, $keyword) {
             if ($companies) {
                 $query->whereIn('company_id', $companies);
             }
-        })->get();
-        $data = $data->map(function ($item) {
+            if ($keyword) {
+                $query->where('name', 'like', $keyword);
+            }
+        })->paginate(
+            $pageSize,
+            ['*'],
+            'page',
+            $page
+        );
+        $data = $departments->map(function ($item) {
             return $item->toArrayIndex();
         });
-        return $this->showAll($data);
+        return $this->showPaginate('departments', collect($data), collect($departments));
     }
 
     /**

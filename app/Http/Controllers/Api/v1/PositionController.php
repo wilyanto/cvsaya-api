@@ -33,11 +33,20 @@ class PositionController extends Controller
                 'array',
                 'nullable'
             ],
+
+            'keyword' => [
+                'string',
+            ],
+            'page' => 'required|numeric|gt:0',
+            'page_size' => 'required|numeric|gt:0'
         ]);
+        $page = $request->page ? $request->page  : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
         $companies = $request->companies;
         $departments = $request->departments;
+        $keyword = $request->keyword;
         $levels = $request->levels;
-        $getListPosition = Position::where(function ($query) use ($companies, $departments, $levels) {
+        $positions = Position::where(function ($query) use ($companies, $departments, $levels, $keyword) {
             if ($companies) {
                 $query->whereIn('company_id', $companies);
             }
@@ -47,11 +56,19 @@ class PositionController extends Controller
             if ($levels) {
                 $query->whereIn('level_id', $levels);
             }
-        })->get();
-        $getListPosition = $getListPosition->map(function ($item) {
+            if ($keyword) {
+                $query->where('name', 'like', $keyword);
+            }
+        })->paginate(
+            $pageSize,
+            ['*'],
+            'page',
+            $page
+        );
+        $data = $positions->map(function ($item) {
             return $item->toArrayDefault();
         });
-        return $this->showAll($getListPosition);
+        return $this->showPaginate('positions', collect($data), collect($positions));
     }
 
     public function show($id)
