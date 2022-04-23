@@ -60,200 +60,206 @@ class OldDatabaseSeeder extends Seeder
             $recentCometsAll = DB::connection('cvsaya')->table('9Recentcomet')->get();
             Log::info('9Recentcomet : ' . count($recentCometsAll));
             $cvEmployeeDetails = Employee::all();
-            // $users = User::whereNotNull('telpon')->get();
-            // $profileDetails = [];
-            // $cvSpecialities = [];
-            // $cvExperiences = [];
-            $cvEducation = [];
-            // $candidates = [];
-            // $sosmeds = [];
-            // $domiciles = [];
-            // $expectedJobs = [];
-            $note = [];
-            foreach ($users as $index => $user) {
-                $administrator = $administrators->where('no_telp', $user->telpon)->first();
-                if ($administrator) {
-                    $employeeDetail = $employeeDetails->where('idlogin', $administrator->idlogin)->first();
-                    if ($employeeDetail) {
-                        $employee = $employees->where('idlogin', $administrator->idlogin)->first();
-                        // $keinginanGaji = $keinginanGajis->where('idlogin', $administrator->idlogin)->first();
-                        // $name = explode(" ", $administrator->nama_lengkap);
-                        // $profileDetail = [
-                        //     'user_id' => $user->id_kustomer,
-                        //     'first_name' => $name[0],
-                        //     'last_name' => substr($administrator->nama_lengkap, strlen($name[0]) + 1),
-                        //     'birth_location' => $employeeDetail->tpl,
-                        //     'birth_date' => date('Y-m-d\TH:i:s.v\Z', strtotime($employeeDetail->ttl)),
-                        //     'gender' => $employeeDetail->jk == 'P' ? 'Perempuan' : ($employeeDetail->jk == 'L' ? 'Laki - Laki' : 'M'),
-                        //     'identity_number' => $administrator->id_ktp,
-                        //     'reference' => !empty($employeeDetail->referensi) ? $employeeDetail->referensi : null,
-                        //     'religion_id' => !empty($employeeDetail->IdAgama) ? $employeeDetail->IdAgama : null,
-                        //     'marriage_status_id' => null,
-                        //     'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                        //     'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                        // ];
-                        // $candidate = Candidate::create([
-                        //     'user_id' => $user->id_kustomer,
-                        //     'name' => $user->nama_lengkap,
-                        //     'country_code' => 62,
-                        //     'phone_number' => substr($user->telpon, 1),
-                        //     'status' => 3,
-                        //     'registered_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($user->tgl_kus)),
-                        // ]);
-                        // $recentComets = $recentCometsAll->where('idlogin', $administrator->idlogin)->all();
-                        // foreach ($recentComets as $recentComet) {
-                        //     $AdminInterivewer = $administrators->where('idlogin', $recentComet->Usercreate)->first();
-                        //     if ($AdminInterivewer) {
-                        //         $interivewer = $users->where('telpon', $AdminInterivewer->no_telp)->first();
-                        //         if ($interivewer) {
-                        //             $cvEmployeeDetail = $cvEmployeeDetails->where('user_id', $interivewer->id_kustomer)->first();
-                        //             if ($cvEmployeeDetail) {
-                        //                 $note[] = [
-                        //                     'candidate_id' => $candidate->id,
-                        //                     'employee_id' => $cvEmployeeDetail->id,
-                        //                     'note' => $recentComet->ulasan,
-                        //                     'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                        //                     'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                        //                 ];
-                        //             }
-                        //         }
-                        //     }
-                        // }
+            $users = User::whereNotNull('telpon')->get();
+            foreach (collect($users)->chunk(ceil(count(collect($users)) / 2))->all() as $index => $user2s) {
+                $note = [];
 
-                        // $sosmed = [
-                        //     'user_id' => $user->id_kustomer,
-                        // ];
+                $profileDetails = [];
+                $cvSpecialities = [];
+                $cvExperiences = [];
+                $cvEducation = [];
+                $candidates = [];
+                $sosmeds = [];
+                $domiciles = [];
+                $expectedJobs = [];
+                $cvHobbies = [];
+                if ($index == 1) {
 
-                        // if ($employee) {
-                        //     $domicile = [
-                        //         'user_id' => $user->id_kustomer,
-                        //         'country_id' => 62,
-                        //         'province_id' => $administrator->IDprovinces,
-                        //         'city_id' => 0,
-                        //         'subdistrict_id' => 0,
-                        //         'village_id' => 0,
-                        //         'address' => $employee->alamat,
-                        //         'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                        //         'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                        //     ];
-                        //     if ($keinginanGaji) {
-                        //         $candidatePosition = $candidatePositions->where('name', $employee->job)->first();
-                        //         if (!$candidatePosition) {
-                        //             $candidatePosition = new CandidatePosition();
-                        //             $candidatePosition->name = $employee->job;
-                        //             $candidatePosition->save();
-                        //         }
-                        //         $expectedJob = [
-                        //             'user_id' => $user->id_kustomer,
-                        //             'expected_salary' => $keinginanGaji->Desired,
-                        //             'expected_position' => $candidatePosition->id,
-                        //             'position_reason' => $employee->inginposisi,
-                        //             'salary_reason' => $keinginanGaji->Ulasan,
-                        //             'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                        //             'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                        //         ];
-                        //     }
-                        // }
-                        $pengalamans = $pengalamansAll->where('idlogin', $administrator->idlogin)->all();
-                        foreach ($pengalamans as $pengalaman) {
-                            $candidatePosition = $candidatePositions->where('name', $pengalaman->sebagai)->first();
-                            if (!$candidatePosition) {
-                                $candidatePosition = new CandidatePosition();
-                                $candidatePosition->name = $employee->job;
-                                $candidatePosition->save();
+                    foreach ($user2s as $index2 => $user) {
+
+                        $administrator = $administrators->where('no_telp', $user->telpon)->first();
+                        if ($administrator) {
+                            $employeeDetail = $employeeDetails->where('idlogin', $administrator->idlogin)->first();
+                            if ($employeeDetail) {
+                                $employee = $employees->where('idlogin', $administrator->idlogin)->first();
+                                $keinginanGaji = $keinginanGajis->where('idlogin', $administrator->idlogin)->first();
+                                $name = explode(" ", $administrator->nama_lengkap);
+                                $profileDetail = [
+                                    'user_id' => $user->id_kustomer,
+                                    'first_name' => $name[0],
+                                    'last_name' => substr($administrator->nama_lengkap, strlen($name[0]) + 1),
+                                    'birth_location' => $employeeDetail->tpl,
+                                    'birth_date' => date('Y-m-d\TH:i:s.v\Z', strtotime($employeeDetail->ttl)),
+                                    'gender' => $employeeDetail->jk == 'P' ? 'Perempuan' : ($employeeDetail->jk == 'L' ? 'Laki - Laki' : 'M'),
+                                    'identity_number' => $administrator->id_ktp,
+                                    'reference' => !empty($employeeDetail->referensi) ? $employeeDetail->referensi : null,
+                                    'religion_id' => !empty($employeeDetail->IdAgama) ? $employeeDetail->IdAgama : null,
+                                    'marriage_status_id' => null,
+                                    'created_at' => $administrator->TglPost ? $employeeDetail->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
+                                    'updated_at' => $employeeDetail->TglPost ? $employeeDetail->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
+                                ];
+                                $candidate = Candidate::create([
+                                    'user_id' => $user->id_kustomer,
+                                    'name' => $user->nama_lengkap,
+                                    'country_code' => 62,
+                                    'phone_number' => substr($user->telpon, 1),
+                                    'status' => 3,
+                                    'registered_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($user->tgl_kus)),
+                                ]);
+                                $recentComets = $recentCometsAll->where('idlogin', $administrator->idlogin)->all();
+                                foreach ($recentComets as $recentComet) {
+                                    $AdminInterivewer = $administrators->where('idlogin', $recentComet->Usercreate)->first();
+                                    if ($AdminInterivewer) {
+                                        $interivewer = $users->where('telpon', $AdminInterivewer->no_telp)->first();
+                                        if ($interivewer) {
+                                            $cvEmployeeDetail = $cvEmployeeDetails->where('user_id', $interivewer->id_kustomer)->first();
+                                            if ($cvEmployeeDetail) {
+                                                $note[] = [
+                                                    'candidate_id' => $candidate->id,
+                                                    'employee_id' => $cvEmployeeDetail->id,
+                                                    'note' => $recentComet->ulasan,
+                                                    'created_at' => $recentComet->TglPost ? $recentComet->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
+                                                    'updated_at' => $recentComet->TglPost ? $recentComet->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
+                                                ];
+                                            }
+                                        }
+                                    }
+                                }
+
+                                $sosmed = [
+                                    'user_id' => $user->id_kustomer,
+                                ];
+
+                                if ($employee) {
+                                    $domicile = [
+                                        'user_id' => $user->id_kustomer,
+                                        'country_id' => 62,
+                                        'province_id' => $administrator->IDprovinces,
+                                        'city_id' => 0,
+                                        'subdistrict_id' => 0,
+                                        'village_id' => 0,
+                                        'address' => $employee->alamat,
+                                        'created_at' => $administrator->TglPost ? $administrator->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
+                                        'updated_at' => $employee->TglPost ? $employee->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
+                                    ];
+                                    if ($keinginanGaji) {
+                                        $candidatePosition = $candidatePositions->where('name', $employee->job)->first();
+                                        if (!$candidatePosition) {
+                                            $candidatePosition = new CandidatePosition();
+                                            $candidatePosition->name = $employee->job;
+                                            $candidatePosition->save();
+                                        }
+                                        $expectedJob = [
+                                            'user_id' => $user->id_kustomer,
+                                            'expected_salary' => $keinginanGaji->Desired,
+                                            'expected_position' => $candidatePosition->id,
+                                            'position_reason' => $employee->inginposisi,
+                                            'salary_reason' => $keinginanGaji->Ulasan,
+                                            'created_at' => $employee->TglPost ? $employee->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
+                                            'updated_at' => $employee->TglPost ? $employee->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
+                                        ];
+                                    }
+                                }
+                                $pengalamans = $pengalamansAll->where('idlogin', $administrator->idlogin)->all();
+                                foreach ($pengalamans as $pengalaman) {
+                                    $candidatePosition = $candidatePositions->where('name', $pengalaman->sebagai)->first();
+                                    if (!$candidatePosition) {
+                                        $candidatePosition = new CandidatePosition();
+                                        $candidatePosition->name = $employee->job;
+                                        $candidatePosition->save();
+                                    }
+                                    $cvExperiences[] = [
+                                        'user_id' => $user->id_kustomer,
+                                        'employment_type_id' => null,
+                                        'position_id' => $candidatePosition->id,
+                                        'company_name' => $pengalaman->perusahaan,
+                                        'company_location' => null,
+                                        'jobdesc' => $pengalaman->sebagai,
+                                        'resign_reason' => $pengalaman->resign,
+                                        'reference' => null,
+                                        'previous_salary' => 0,
+                                        'started_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($pengalaman->tahun)),
+                                        'ended_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($pengalaman->sampai)),
+                                        'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                        'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                    ];
+                                }
+
+                                $pendidikans = $pendidikansAll->where('idlogin', $administrator->idlogin)->all();
+                                foreach ($pendidikans as $pendidikan) {
+                                    $degree = $degrees->where('name', 'like', '%' . $pendidikan->pendidikan . '%')->first();
+                                    if (!$degree) {
+                                        $degree = new Degree();
+                                        $degree->name = $pendidikan->pendidikan;
+                                        $degree->save();
+                                    }
+                                    $cvEducation[] = [
+                                        'user_id' => $user->id_kustomer,
+                                        'instance' => $pendidikan->asal,
+                                        'field_of_study' => '-',
+                                        'degree_id' => $degree->id,
+                                        'grade' => '-',
+                                        'started_at' => $pendidikan->Tahun,
+                                        'ended_at' => $pendidikan->sampai,
+                                        'description' => '-',
+                                        'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                        'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                    ];
+                                }
+
+                                $kualifikasis = $kualifikasisAll->where('idlogin', $administrator->idlogin)->all();
+                                foreach ($kualifikasis as $kualifikasi) {
+                                    $cvSpecialities[] = [
+                                        'user_id' => $user->id_kustomer,
+                                        'name' => $kualifikasi->kualifikasi,
+                                        'created_at' => $kualifikasi->TglPost ? $kualifikasi->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
+                                        'updated_at' =>  $kualifikasi->TglPost ? $kualifikasi->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
+                                    ];
+                                }
+
+                                $hobies = $hobiesAll->where('idlogin', $administrator->idlogin)->all();
+                                foreach ($hobies as $hoby) {
+                                    $cvHobbies[] = [
+                                        'user_id' => $user->id_kustomer,
+                                        'name' => $hoby->hoby,
+                                        'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                        'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
+                                    ];
+                                }
+                                if ($profileDetail) {
+                                    $profileDetails[] = $profileDetail;
+                                }
+                                if ($candidate) {
+                                    $candidates[] = $candidate;
+                                }
+                                if ($sosmed) {
+                                    $sosmeds[] = $sosmed;
+                                }
+                                if ($domicile) {
+                                    $domiciles[] = $domicile;
+                                }
+                                if ($expectedJob) {
+                                    $expectedJobs[] = $expectedJob;
+                                }
                             }
-                            $cvExperiences[] = [
-                                'user_id' => $user->id_kustomer,
-                                'employment_type_id' => null,
-                                'position_id' => $candidatePosition->id,
-                                'company_name' => $pengalaman->perusahaan,
-                                'company_location' => null,
-                                'jobdesc' => $pengalaman->sebagai,
-                                'resign_reason' => $pengalaman->resign,
-                                'reference' => null,
-                                'previous_salary' => 0,
-                                'started_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($pengalaman->tahun)),
-                                'ended_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($pengalaman->sampai)),
-                                'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                                'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                            ];
                         }
-
-                        $pendidikans = $pendidikansAll->where('idlogin', $administrator->idlogin)->all();
-                        foreach ($pendidikans as $pendidikan) {
-                            $degree = $degrees->where('name', 'like', '%' . $pendidikan->pendidikan . '%')->first();
-                            if (!$degree) {
-                                $degree = new Degree();
-                                $degree->name = $pendidikan->pendidikan;
-                                $degree->save();
-                            }
-                            $cvEducation[] = [
-                                'user_id' => $user->id_kustomer,
-                                'instance' => $pendidikan->asal,
-                                'field_of_study' => '-',
-                                'degree_id' => $degree->id,
-                                'grade' => '-',
-                                'started_at' => $pendidikan->Tahun,
-                                'ended_at' => $pendidikan->sampai,
-                                'description' => '-',
-                                'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                                'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                            ];
-                        }
-
-                        // $kualifikasis = $kualifikasisAll->where('idlogin', $administrator->idlogin)->all();
-                        // foreach ($kualifikasis as $kualifikasi) {
-                        //     $cvSpecialities[] = [
-                        //         'user_id' => $user->id_kustomer,
-                        //         'name' => $kualifikasi->kualifikasi,
-                        //         'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                        //         'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                        //     ];
-                        // }
-
-                        // $hobies = $hobiesAll->where('idlogin', $administrator->idlogin)->all();
-                        // foreach ($hobies as $hoby) {
-                        //     $cvHobbies[] = [
-                        //         'user_id' => $user->id_kustomer,
-                        //         'name' => $hoby->hoby,
-                        //         'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                        //         'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                        //     ];
-                        // }
-                        // if ($profileDetail) {
-                        //     $profileDetails[] = $profileDetail;
-                        // }
-                        // if ($candidate) {
-                        //     $candidates[] = $candidate;
-                        // }
-                        // if ($sosmed) {
-                        //     $sosmeds[] = $sosmed;
-                        // }
-                        // if ($domicile) {
-                        //     $domiciles[] = $domicile;
-                        // }
-                        // if ($expectedJob) {
-                        //     $expectedJobs[] = $expectedJob;
-                        // }
+                        Log::info('Index ke: ' . $index . ',' . $index2);
+                    }
+                    CvProfileDetail::insert($profileDetails);
+                    CandidateNote::insert($note);
+                    CvSosmed::insert($sosmeds);
+                    CvDomicile::insert($domiciles);
+                    CvExpectedJob::insert($expectedJobs);
+                    CvHobby::insert($cvHobbies);
+                    CvSpeciality::insert($cvSpecialities);
+                    foreach (array_chunk($cvEducation, 1000) as $t) {
+                        CvEducation::insert($t);
+                    }
+                    foreach (array_chunk($cvExperiences, 1000) as $t) {
+                        CvExperience::insert($t);
                     }
                 }
-                Log::info('Index ke: ' . $index);
             }
-            // CvProfileDetail::insert($profileDetails);
-            // CandidateNote::insert($note);
-            // CvSosmed::insert($sosmeds);
-            // CvDomicile::insert($domiciles);
-            // CvExpectedJob::insert($expectedJobs);
-            // CvHobby::insert($cvHobbies);
-            // CvSpeciality::insert($cvSpecialities);
-            foreach (collect($cvExperiences)->chunk(6000)->all() as $chunk){
-                CvExperience::insert($chunk->toArray());
-            }
-
-            foreach (collect($cvEducation)->chunk(6000)->all() as $chunk){
-                CvEducation::insert($chunk->toArray());
-            }
-            // CvEducation::insert(collect($cvEducation)->chunk(5));
         } catch (Exception $e) {
             Log::info('Error :' . $e);
         }

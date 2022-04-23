@@ -86,6 +86,10 @@ Response Example:
                 "id" : "comp-1",
                 "name" : "KADA",
             },
+<<<<<<< HEAD
+=======
+            "total" : 8
+>>>>>>> development
         },
         {
             "id" : "dept-2",
@@ -131,6 +135,10 @@ Response Example :
             "id" : "comp-1",
             "name" : "KADA",
         },
+<<<<<<< HEAD
+=======
+        "total" : 8
+>>>>>>> development
     }
 }
 
@@ -1504,8 +1512,12 @@ Response Example :
             "started_at" : "07:45",
             "ended_at" : "17:00",
             "break_started_at" : "12:00",
+<<<<<<< HEAD
             "break_ended_at" : "13:00",
             "break_duration" : 1
+=======
+            "break_ended_at" : "13:00"
+>>>>>>> development
         }
     }
 ]
@@ -1691,16 +1703,28 @@ POST /api/v1/attendances
 
 Request Description :
 
+<<<<<<< HEAD
 > | Name | Type          | Description                                         | Nullable |
 > | ---- | ------------- | --------------------------------------------------- | -------- |
 > | key  | unique string | unique string for qr code                           | no       |
 > | type | enum          | "clock_in", "clock_out", "start_break", "end_break" | no       |
 > | file | picture       | upload file from camera                             | no       |
+=======
+> | Name | Type    | Description                                         | Nullable |
+> | ---- | ------- | --------------------------------------------------- | -------- |
+> | time | time    | time user attend                                    | no       |
+> | type | enum    | "clock_in", "clock_out", "start_break", "end_break" | no       |
+> | file | picture | upload file from camera                             | no       |
+>>>>>>> development
 
 Request Example :
 
 ```
 {
+<<<<<<< HEAD
+=======
+    "time" : 12:00,
+>>>>>>> development
     "type" : "clock_in"
     "file" : file
 }
@@ -1720,6 +1744,7 @@ Response Example :
             "id" : "employee-2",
             "name" : "Victor Yansen",
         }
+<<<<<<< HEAD
         attendance : {
             "date" : "2022-04-09T00:00:00.000000Z",
             "clock_in" : {
@@ -1731,6 +1756,23 @@ Response Example :
             "end_break" : null,
             "clock_out" : null
         }
+=======
+        attendances : [
+            {
+                "date" : "2022-04-09T00:00:00.000000Z",
+                "attendance" : {
+                    "clock_in" : {
+                        "checked_at" : "12:00:00",
+                        "duty_at" : "07:45:00",
+                        "penalty" : -75000,
+                    },
+                    "start_break" : null,
+                    "end_break" : null,
+                    "clock_out" : null
+                }
+            }
+        ]
+>>>>>>> development
     }
 }
 ```
@@ -1947,6 +1989,7 @@ Response Example :
     }
 }
 ```
+<<<<<<< HEAD
 
 ## [Index Permission Type](#index-permission-type)
 
@@ -1972,3 +2015,5 @@ Response Example :
 {
 
 }
+=======
+>>>>>>> development
