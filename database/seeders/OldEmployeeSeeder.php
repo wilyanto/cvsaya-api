@@ -37,7 +37,7 @@ class OldEmployeeSeeder extends Seeder
             $users = User::whereRaw('LENGTH(telpon) > 7')->get();
             Log::info('Kustomer : ' . count($users));
             $administrators = DB::connection('cvsaya')->table('administrator')->get();
-        
+
             Log::info('Administrator : ' . count($administrators));
             $employees = [];
             foreach ($users as $index => $user) {
@@ -52,6 +52,9 @@ class OldEmployeeSeeder extends Seeder
                         'position_id' => null,
                         'salary' => 0,
                         'deleted_at' => $isDeleted,
+                        'created_at' => $administrator->TglPost ? $administrator->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
+                        'updated_at' =>  $administrator->TglPost ? $administrator->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
+
                     ];
                 }
                 Log::info('Index ke: ' . $index);
