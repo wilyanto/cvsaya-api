@@ -50,7 +50,7 @@ class CandidateInterviewSchedule extends Model implements Auditable
 
     public function interviewBy()
     {
-        return $this->hasOne(EmployeeDetail::class, 'id', 'interviewed_by')->withDefault();
+        return $this->hasOne(Employee::class, 'id', 'interviewed_by')->withDefault();
     }
 
     public function characterTraits()
