@@ -9,7 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class Level extends Model implements Auditable
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     use \OwenIt\Auditing\Auditable;
 
@@ -21,7 +21,36 @@ class Level extends Model implements Auditable
         'company_id',
     ];
 
-    public function positions(){
-        return $this->hasMany(Positions::class,'level_id','id');
+    public function positions()
+    {
+        return $this->hasMany(Position::class, 'level_id', 'id');
+    }
+
+    public function company()
+    {
+        return $this->hasOne(Company::class, 'id', 'company_id');
+    }
+
+    public function toarrayIndex()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'company' => $this->company,
+            'total_employee' => count($this->positions),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'company' => $this->company,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
     }
 }

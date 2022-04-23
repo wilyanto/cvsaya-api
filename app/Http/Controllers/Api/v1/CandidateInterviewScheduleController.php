@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Collection;
 use App\Http\Controllers\Controller;
-use App\Models\EmployeeDetail;
+use App\Models\Employee;
 use App\Models\CandidateInterviewSchedulesCharacterTrait;
 use App\Models\CharacterTrait;
 use Carbon\Carbon;
@@ -25,7 +25,7 @@ class CandidateInterviewScheduleController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
         $request->validate([
             'started_at' => [
                 'date_format:Y-m-d\TH:i:s.v\Z',
@@ -65,7 +65,7 @@ class CandidateInterviewScheduleController extends Controller
     public function indexWithoutInterviewDate()
     {
         $user = auth()->user();
-        $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
 
         $schedules = CandidateInterviewSchedule::
             // whereBettween('date_time',)
@@ -88,7 +88,7 @@ class CandidateInterviewScheduleController extends Controller
     public function indexInterviewer()
     {
 
-        $employee = EmployeeDetail::with('roles')->get();
+        $employee = Employee::with('roles')->get();
 
         Collection::macro('interviewer', function () {
             return $this->map(function ($value) {

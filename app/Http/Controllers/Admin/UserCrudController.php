@@ -8,8 +8,7 @@ use Backpack\PermissionManager\app\Http\Requests\UserStoreCrudRequest as StoreRe
 use Backpack\PermissionManager\app\Http\Requests\UserUpdateCrudRequest as UpdateRequest;
 use Illuminate\Support\Facades\Hash;
 use SebastianBergmann\CodeCoverage\Report\Xml\Tests;
-use App\Models\EmployeeDetail;
-
+use App\Models\Employee;
 class UserCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
@@ -19,7 +18,7 @@ class UserCrudController extends CrudController
 
     public function setup()
     {
-        $this->crud->setModel('App\Models\EmployeeDetail');
+        $this->crud->setModel('App\Models\Employee');
         $this->crud->setEntityNameStrings('employee','employees');
         $this->crud->setRoute(backpack_url('user'));
     }

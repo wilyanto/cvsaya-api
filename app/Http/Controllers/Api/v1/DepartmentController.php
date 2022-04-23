@@ -20,14 +20,20 @@ class DepartmentController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'company_id'=>'string|nullable'
+            'companies' => [
+                'array',
+                'nullable'
+            ]
         ]);
-
-        if(!$request->company_id){
-            $data = Department::all();
-        }else{
-            $data = Department::where('company_id',$request->company_id)->get();
-        };
+        $companies = $request->companies;
+        $data = Department::where(function ($query) use ($companies) {
+            if ($companies) {
+                $query->whereIn('company_id', [$companies]);
+            }
+        })->get();
+        $data = $data->map(function ($item) {
+            return $item->toArrayIndex();
+        });
         return $this->showAll($data);
     }
 
@@ -45,7 +51,7 @@ class DepartmentController extends Controller
 
         $create = Department::create($request->all());
 
-        return $this->showOne($create);
+        return $this->showOne($create->toArrayIndex());
     }
 
     /**
@@ -65,9 +71,10 @@ class DepartmentController extends Controller
      * @param  \App\Models\CvSayaDepartments  $cvSayaDepartments
      * @return \Illuminate\Http\Response
      */
-    public function show(Department $cvSayaDepartments)
+    public function show($id)
     {
-        //
+        $data = Department::findOrFail($id);
+        return $this->showOne($data->toArrayIndex());
     }
 
     /**
@@ -88,17 +95,16 @@ class DepartmentController extends Controller
      * @param  \App\Models\CvSayaDepartments  $cvSayaDepartments
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'name' => 'string|nullable',
             'company_id' => 'string|nullable',
         ]);
-        $find = Department::where('id',$id)->firstOrFail();
+        $find = Department::findOrFail($id);
         $find->update($request->all());
 
-        return $this->showOne($find);
-
+        return $this->showOne($find->toArrayIndex());
     }
 
     /**
@@ -107,20 +113,28 @@ class DepartmentController extends Controller
      * @param  \App\Models\CvSayaDepartments  $cvSayaDepartments
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request,$id)
+    public function destroy(Request $request, $id)
     {
 
-        $find = Department::where('id',$request->id)->first();
-        if(!$find){
-            return $this->errorResponse('id not found',404,40401);
-        }else{
-            $usingLevel =  Position::where('level_id',$request->id)->count();
-            if($usingLevel){
-                return $this->errorResponse('Departement still been use',409,40901);
-            }
+        $request->validate([
+            'department_id' => 'nullable|exists:departments,id',
+        ]);
+
+        $find = Department::findOrFail($id);
+        if ($request->department_id == $id) {
+            return $this->errorResponse('department_id and id cannot be same', 422, 42201);
+        }
+        if ($request->department_id) {
+            Position::where('department_id', $id)->update([
+                'department_id' => $request->department_id,
+            ]);
+        } else {
+            Position::where('department_id', $id)->update([
+                'department_id' => null,
+            ]);
         }
         $find->delete();
 
-        return $this->showOne($find);
+        return $this->showOne(null);
     }
 }

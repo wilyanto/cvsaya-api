@@ -12,7 +12,7 @@ return [
     */
 
     'models' => [
-        'user'       => App\Models\EmployeeDetail::class,//config('backpack.base.user_model_fqn', \App\Models\EmployeeDetail::class),
+        'user'       => App\Models\Employee::class,//config('backpack.base.user_model_fqn', \App\Models\EmployeeDetail::class),
         'permission' => Backpack\PermissionManager\app\Models\Permission::class,
         'role'       => Backpack\PermissionManager\app\Models\Role::class,
     ],

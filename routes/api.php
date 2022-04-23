@@ -14,7 +14,7 @@ use App\Http\Controllers\Api\v1\DepartmentController;
 use App\Http\Controllers\Api\v1\LevelController;
 use App\Http\Controllers\Api\v1\PositionController;
 use App\Http\Controllers\Api\v1\CandidateController;
-use App\Http\Controllers\Api\v1\EmployeeDetailsController;
+use App\Http\Controllers\Api\v1\EmployeeController;
 use App\Http\Controllers\Api\v1\CandidateInterviewScheduleController;
 use App\Http\Controllers\Api\v1\CompanyController;
 use App\Http\Controllers\Api\v1\EmploymentTypeController;
@@ -60,11 +60,11 @@ Route::prefix('v1')->group(function () {
 
             Route::prefix('users')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
-                    Route::get('/{id}/profile',  'getDetailByID');
+                    Route::get('/{id}/profile',  'indexDetail');
                 });
 
                 Route::controller(CvExpectedJobController::class)->group(function () {
-                    Route::get('/{id}/expected-job', 'getIndexByID'); // path user/id/expected-jobs
+                    Route::get('/{id}/expected-job', 'show'); // path user/id/expected-jobs
                 });
 
                 Route::controller(CvProfileDetailController::class)->group(function () {
@@ -80,7 +80,7 @@ Route::prefix('v1')->group(function () {
                 });
 
                 Route::controller(CvDocumentController::class)->group(function () {
-                    Route::get('/{id}/documents', 'index'); // path user/id/cv
+                    Route::get('/{id}/documents', 'show'); // path user/id/cv
                 });
             });
 
@@ -109,14 +109,14 @@ Route::prefix('v1')->group(function () {
                         Route::get('/{id}', 'indexDetail');
                         Route::post('/', 'addCandidateToBlast');
                         Route::put('/{id}', 'updateStatus');
+                        Route::post('/{id}/interviews', 'addSchdule');
                         // Route::post('update-status','updateStatus');
 
                     });
                 });
-                Route::prefix('candidate-positions')->group(function (){
+                Route::prefix('candidate-positions')->group(function () {
                     Route::controller(CandidateController::class)->group(function () {
                         Route::get('/statistic', 'getPosition');
-
                     });
                 });
             });
@@ -141,7 +141,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('cv')->group(function () {
             Route::prefix('profile')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
-                    Route::get('/',  'getDetailByDefault');
+                    Route::get('/',  'index');
                     Route::post('/', 'store');
                     Route::put('/', 'update');
                 });
@@ -155,14 +155,14 @@ Route::prefix('v1')->group(function () {
 
             Route::prefix('expected-job')->group(function () {
                 Route::controller(CvExpectedJobController::class)->group(function () {
-                    Route::get('/', 'getIndexByDefault');
+                    Route::get('/', 'index');
                     Route::post('/', 'storeOrUpdate');
                 });
             });
 
             Route::prefix('documents')->group(function () {
                 Route::controller(CvDocumentController::class)->group(function () {
-                    Route::get('/', 'getByDefault');
+                    Route::get('/', 'index');
                     Route::post('/', 'store');
                 });
             });
@@ -226,33 +226,35 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-
-
-
         Route::prefix('departments')->group(function () {
             Route::controller(DepartmentController::class)->group(function () {
+                Route::get('/{id}', 'show');
+                Route::put('/{id}', 'update');
+                Route::delete('/{id}', 'destroy');
                 Route::get('/', 'index');
                 Route::post('/', 'create');
-                Route::put('/{id}', 'update');
             });
         });
 
 
         Route::prefix('levels')->group(function () {
             Route::controller(LevelController::class)->group(function () {
+                Route::get('/{id}', 'show');
+                Route::put('/{id}', 'update');
+                Route::delete('/{id}', 'destroy');
                 Route::get('/', 'index');
                 Route::post('/', 'create');
-                Route::put('/{id}', 'update');
             });
         });
 
 
         Route::prefix('positions')->group(function () {
             Route::controller(PositionController::class)->group(function () {
+                Route::get('/{id}','show');
+                Route::put('/{id}', 'update');
                 Route::get('/', 'index');
                 Route::post('/', 'store');
-                Route::get('/structure-organization', 'show');
-                Route::post('/{id}', 'update');
+                // Route::get('/structure-organization', 'show');
             });
         });
 
@@ -264,12 +266,12 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('employees')->group(function () {
-            Route::controller(EmployeeDetailsController::class)->group(function () {
-                Route::get('/{id}', 'show');
-                Route::get('/', 'index');
-            });
             Route::controller(EmploymentTypeController::class)->group(function () {
                 Route::get('/types', 'index');
+            });
+            Route::controller(EmployeeController::class)->group(function () {
+                Route::get('/{id}', 'show');
+                Route::get('/', 'index');
             });
         });
         Route::prefix('candidate-positions')->group(function () {

@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 
-use App\Models\EmployeeDetail;
+use App\Models\Employee;
 use Closure;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 
@@ -28,7 +28,7 @@ class Permission
             ? $permission
             : explode('|', $permission);
 
-        $employee = EmployeeDetail::where('user_id',$authGuard->user()->id_kustomer)->firstOrFail();
+        $employee = Employee::where('user_id',$authGuard->user()->id_kustomer)->firstOrFail();
         $permissionsUser = collect($employee->getAllPermissions()->pluck('name'))->toArray();
         $intersectPermission = array_intersect($permissionsUser,$permissions);
         if(count($intersectPermission)){

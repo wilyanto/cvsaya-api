@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use App\Models\EmploymentType;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Traits\ApiResponser;
+use App\Http\Controllers\Controller;
+use App\Models\Employee;
+use App\Models\ShiftEmployee;
+use Doctrine\DBAL\Schema\Schema;
 
-class EmploymentTypeController extends Controller
+class AttendanceController extends Controller
 {
-    use ApiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -17,24 +19,22 @@ class EmploymentTypeController extends Controller
      */
     public function index(Request $request)
     {
+        // $request->validate([
+        //     'started_at' => [
+        //         'date_format:Y-m-d\TH:i:s.v\Z',
+        //         'required'
+        //     ],
+        //     'updated_at' => [
+        //         'date_format:Y-m-d\TH:i:s.v\Z',
+        //         'required'
+        //     ],
+        // ]);
 
-        if ($request->input()) {
-            $request->validate([
-                'id' => 'nullable|integer',
-                'name' => 'nullable|string'
-            ]);
-        }
-        $id = $request->id;
-        $name = $request->name;
-        $employee = EmploymentType::where(function ($query) use ($id, $name) {
-            if ($id != null) {
-                $query->where('id', $id);
-            }
-            if ($name != null) {
-                $query->where('name', 'like', '%' . $name . '%');
-            }
-        })->get();
-        return $this->showAll($employee);
+        // $user = auth()->user();
+
+        // $employee = Employee::where('user_id',$user->id_kustomer)->firstOrfail();
+
+
     }
 
     /**
@@ -61,10 +61,10 @@ class EmploymentTypeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\EmploymentType  $employmentType
+     * @param  \App\Models\Attendance  $attendance
      * @return \Illuminate\Http\Response
      */
-    public function show(EmploymentType $employmentType)
+    public function show(Attendance $attendance)
     {
         //
     }
@@ -72,10 +72,10 @@ class EmploymentTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\EmploymentType  $employmentType
+     * @param  \App\Models\Attendance  $attendance
      * @return \Illuminate\Http\Response
      */
-    public function edit(EmploymentType $employmentType)
+    public function edit(Attendance $attendance)
     {
         //
     }
@@ -84,10 +84,10 @@ class EmploymentTypeController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\EmploymentType  $employmentType
+     * @param  \App\Models\Attendance  $attendance
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, EmploymentType $employmentType)
+    public function update(Request $request, Attendance $attendance)
     {
         //
     }
@@ -95,10 +95,10 @@ class EmploymentTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\EmploymentType  $employmentType
+     * @param  \App\Models\Attendance  $attendance
      * @return \Illuminate\Http\Response
      */
-    public function destroy(EmploymentType $employmentType)
+    public function destroy(Attendance $attendance)
     {
         //
     }

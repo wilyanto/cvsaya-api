@@ -46,14 +46,14 @@ class CvProfileDetail extends Model implements Auditable
         return $this->hasOne(CvSosmed::class, 'user_id', 'user_id')->withDefault();
     }
 
-    public function employeeDetails()
+    public function employee()
     {
-        return $this->belongsToMany(EmployeeDetails::class, 'user_id', 'user_id')->withDefault();
+        return $this->belongsToMany(Employee::class, 'user_id', 'user_id')->withDefault();
     }
 
     public function religion()
     {
-        return $this->hasOne(Religion::class, 'id', 'religion_id')->withDefault();
+        return $this->hasOne(Religion::class, 'id', 'religion_id');
     }
 
     public function marriageStatus()
@@ -82,7 +82,7 @@ class CvProfileDetail extends Model implements Auditable
             'reference' => $this->reference,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'religion' => $this->Religion,
+            'religion' => $this->religion,
         ];
     }
 }

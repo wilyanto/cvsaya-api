@@ -19,14 +19,20 @@ class LevelController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'company_id'=>'string|nullable'
+            'companies' => [
+                'array',
+                'nullable'
+            ]
         ]);
-
-        if(!$request->company_id){
-            $data = Level::all();
-        }else{
-            $data = Level::where('company_id',$request->company_id)->get();
-        };
+        $companies = $request->companies;
+        $data = Level::where(function ($query) use ($companies) {
+            if ($companies) {
+                $query->whereIn('company_id', [$companies]);
+            }
+        })->get();
+        $data = $data->map(function ($item) {
+            return $item->toArrayIndex();
+        });
         return $this->showAll($data);
     }
 
@@ -64,9 +70,10 @@ class LevelController extends Controller
      * @param  \App\Models\CvSayaLevel  $cvSayaLevel
      * @return \Illuminate\Http\Response
      */
-    public function show(Level $cvSayaLevel)
+    public function show($id)
     {
-        //
+        $data = Level::findOrFail($id);
+        return $this->showOne($data->toArrayIndex());
     }
 
     /**
@@ -87,18 +94,16 @@ class LevelController extends Controller
      * @param  \App\Models\CvSayaLevel  $cvSayaLevel
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'name' => 'string|nullable',
             'company_id' => 'string|nullable',
         ]);
-
-        $find = Level::where('id',$id)->firstOrFail();
+        $find = level::findOrFail($id);
         $find->update($request->all());
 
-        return $this->showOne($find);
-
+        return $this->showOne($find->toArrayIndex());
     }
 
     /**
@@ -107,19 +112,27 @@ class LevelController extends Controller
      * @param  \App\Models\CvSayaLevel  $cvSayaLevel
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request,$id)
+    public function destroy(Request $request, $id)
     {
-        $user = auth()->user();
-        $hobbies = Level::where('id', $request->id)->first();
-        if(!$hobbies){
-            return $this->errorResponse('id not found',404,40401);
-        }else{
-            $usingLevel =  Position::where('level_id',$request->id)->count();
-            if($usingLevel){
-                return $this->errorResponse('Level still been use',409,40901);
-            }
+
+        $request->validate([
+            'level_id' => 'nullable|exists:levels,id',
+        ]);
+
+        $find = Level::findOrFail($id);
+        if ($request->level_id == $id) {
+            return $this->errorResponse('level_od and id cannot be same', 422, 42201);
         }
-        $hobbies->delete();
+        if ($request->level_id) {
+            Position::where('level_id', $id)->update([
+                'level_id' => $request->level_id,
+            ]);
+        } else {
+            Position::where('level_id', $id)->update([
+                'level_id' => null,
+            ]);
+        }
+        $find->delete();
 
         return $this->showOne(null);
     }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\api\v1;
 
-use App\Models\EmployeeDetail;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
@@ -13,7 +13,7 @@ class PermissionController extends Controller
     public function getPermission(){
         $user = auth()->user();
 
-        $employee = EmployeeDetail::where('user_id',$user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('user_id',$user->id_kustomer)->firstOrFail();
 
         $data = [
             'role' => $employee->getRoleNames(),

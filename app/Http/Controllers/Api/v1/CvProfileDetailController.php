@@ -15,7 +15,7 @@ use App\Models\CvExperience;
 use App\Models\CvDocument;
 use App\Models\CvExpectedJob;
 use Illuminate\Http\Request;
-use App\Models\EmployeeDetail;
+use App\Models\Employee;
 use App\Models\Religion;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
@@ -33,17 +33,24 @@ class CvProfileDetailController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function getDetailByDefault(Request $request)
+    public function indexDetail($id)
     {
-        return $this->getDetailByID($request, null);
+        $array = [];
+        $userProfileDetail = CvProfileDetail::where('user_id', $id)->firstOrFail();
+        $userAddress = CvDomicile::where('user_id', $id)->firstOrFail();
+        $userSosmed = CvSosmed::where('user_id', $id)->firstOrFail();
+
+        $array['profile_detail'] = $userProfileDetail;
+        $array['domicile'] = $userAddress;
+        $array['sosmed'] = $userSosmed;
+        $collectionArray = collect($array);
+        return $this->showOne($collectionArray);
     }
 
-    public function getDetailByID(Request $request, $id)
+    public function index()
     {
         $user = auth()->user();
-        if (!$id) {
-            $id = $user->id_kustomer;
-        }
+        $id = $user->id_kustomer;
         $array = [];
         $userProfileDetail = CvProfileDetail::where('user_id', $id)->firstOrFail();
         $userAddress = CvDomicile::where('user_id', $id)->firstOrFail();
@@ -59,7 +66,38 @@ class CvProfileDetailController extends Controller
 
     public function cvDetailByDefault()
     {
-        return $this->cvDetailByID(null);
+        $user = auth()->user();
+        $id = $user->id_kustomer;
+        $education = CvEducation::where('user_id', $id)
+            ->orderBy('started_at', 'DESC')
+            ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('ended_at', 'DESC')
+            ->get();
+        $data['educations'] = $education;
+
+        $experience = CvExperience::where('user_id', $id)
+            ->orderBy('started_at', 'DESC')
+            ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('ended_at', 'DESC')
+            ->get();
+        $data['experiences'] = $experience;
+
+        $certifications = CvCertification::where('user_id', $id)
+            ->orderBy('issued_at', 'DESC')
+            ->orderByRaw("CASE WHEN expired_at IS NULL THEN 0 ELSE 1 END ASC")
+            ->orderBy('expired_at', 'DESC')
+            ->get();
+        $data['certifications'] = $certifications;
+
+        $specialities = CvSpeciality::where('user_id', $id)->get();
+        $data['specialities'] = $specialities;
+
+        $hobbies = CvHobby::where('user_id', $id)->get();
+        $data['hobbies'] = $hobbies;
+
+        $data = (object)$data;
+
+        return $this->showOne(collect($data));
     }
 
     public function cvDetailByID($id)
@@ -133,7 +171,7 @@ class CvProfileDetailController extends Controller
             $data['is_cv_completed'] = false;
         }
 
-        if (!$document || !$document->identityCard || !$document->frontSelfie ||!$document->rightSelfie ||!$document->leftSelfie ) {
+        if (!$document || !$document->identityCard || !$document->frontSelfie || !$document->rightSelfie || !$document->leftSelfie) {
             $data['is_document_completed'] = false;
         }
         $result['basic_profile'] = [
@@ -141,7 +179,7 @@ class CvProfileDetailController extends Controller
             'last_name' => $userProfileDetail->last_name,
         ];
 
-        $employee = EmployeeDetail::where('user_id', $id)->first();
+        $employee = Employee::where('user_id', $id)->first();
         if ($employee) {
             $result['is_employee'] = true;
             $position = [
@@ -220,7 +258,7 @@ class CvProfileDetailController extends Controller
     {
         $user = auth()->user();
 
-        $employee = EmployeeDetail::where('user_id',$user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('user_id',$user->id_kustomer)->firstOrFail();
 
         $data = [
             'profile' => $employee->profileDetail,

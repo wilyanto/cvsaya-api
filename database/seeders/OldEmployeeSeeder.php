@@ -2,21 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Candidate;
-use App\Models\CandidatePosition;
-use App\Models\CvDomicile;
-use App\Models\CvEducation;
-use App\Models\CvExpectedJob;
-use App\Models\CvExperience;
-use App\Models\CvHobby;
-use App\Models\CvProfileDetail;
-use App\Models\CvSosmed;
-use App\Models\CvSpeciality;
-use App\Models\Degree;
-use App\Models\Department;
-use App\Models\EmployeeDetail;
-use App\Models\Position;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Employee;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Exception;
@@ -37,6 +23,7 @@ class OldEmployeeSeeder extends Seeder
             $users = User::whereRaw('LENGTH(telpon) > 7')->get();
             Log::info('Kustomer : ' . count($users));
             $administrators = DB::connection('cvsaya')->table('administrator')->get();
+        
             Log::info('Administrator : ' . count($administrators));
             $employees = [];
             foreach ($users as $index => $user) {
@@ -56,7 +43,7 @@ class OldEmployeeSeeder extends Seeder
                 Log::info('Index ke: ' . $index);
             }
 
-            EmployeeDetail::insert($employees);
+            Employee::insert($employees);
         } catch (Exception $e) {
             Log::info('Exception : ' . $e);
         }

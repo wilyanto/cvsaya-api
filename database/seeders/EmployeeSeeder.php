@@ -7,7 +7,7 @@ use App\Models\Company;
 use App\Models\CvProfileDetail;
 use App\Models\Department;
 use App\Models\Level;
-use App\Models\EmployeeDetail;
+use App\Models\Employee;
 use App\Models\User;
 use App\Models\Position;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -57,7 +57,7 @@ class EmployeeSeeder extends Seeder
         foreach ($phoneNumbers as $phoneNumber) {
             $user = User::where('telpon', $phoneNumber)->first();
             if ($user) {
-                EmployeeDetail::create([
+                Employee::create([
                     'user_id' => $user->id_kustomer,
                     'position_id' => rand(1, count($positions)),
                     'salary' => 1000000,
