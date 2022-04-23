@@ -39,13 +39,13 @@ class PositionController extends Controller
         $levels = $request->levels;
         $getListPosition = Position::where(function ($query) use ($companies, $departments, $levels) {
             if ($companies) {
-                $query->whereIn('company_id', [$companies]);
+                $query->whereIn('company_id', $companies);
             }
             if ($departments) {
-                $query->whereIn('department_id', [$departments]);
+                $query->whereIn('department_id', $departments);
             }
             if ($levels) {
-                $query->whereIn('level_id', [$levels]);
+                $query->whereIn('level_id', $levels);
             }
         })->get();
         $getListPosition = $getListPosition->map(function ($item) {
@@ -54,7 +54,8 @@ class PositionController extends Controller
         return $this->showAll($getListPosition);
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $getPosition = Position::findOrFail($id);
 
         return $this->showOne($getPosition->toArrayDefault());

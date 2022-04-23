@@ -27,7 +27,7 @@ class LevelController extends Controller
         $companies = $request->companies;
         $data = Level::where(function ($query) use ($companies) {
             if ($companies) {
-                $query->whereIn('company_id', [$companies]);
+                $query->whereIn('company_id', $companies);
             }
         })->get();
         $data = $data->map(function ($item) {

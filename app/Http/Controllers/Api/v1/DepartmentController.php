@@ -28,7 +28,7 @@ class DepartmentController extends Controller
         $companies = $request->companies;
         $data = Department::where(function ($query) use ($companies) {
             if ($companies) {
-                $query->whereIn('company_id', [$companies]);
+                $query->whereIn('company_id', $companies);
             }
         })->get();
         $data = $data->map(function ($item) {
