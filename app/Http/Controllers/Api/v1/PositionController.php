@@ -172,9 +172,7 @@ class PositionController extends Controller
         ]);
         $request = $request->all();
         $update = Position::findOrFail($id);
-        $update->update([
-            $request
-        ]);
+        $update->update($request);
         $update = $update->refresh();
         return $this->showOne($update);
     }
