@@ -59,6 +59,7 @@ class PositionController extends Controller
             if ($keyword) {
                 $query->where('name', 'like', $keyword);
             }
+
         })->paginate(
             $pageSize,
             ['*'],
