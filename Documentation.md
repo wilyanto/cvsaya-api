@@ -743,7 +743,7 @@ Request Example :
     "company_id" : "comp-1",
     "parent_id" : "positions-0",
     "department_id" : "dept-2",
-    "level" : "lv-1",
+    "level_id" : "lv-1",
     "priorty" : 0,
     "min_salary" : 1000,
     "max_salary" : 100000,
@@ -964,11 +964,18 @@ Response Example 1:
                 "id" : "et-1",
                 "name" : "Full-Time",
             },
-            "salary_type_id" : {
-                "id" : "st-1",
-                "name" : "full-time"
-            }
-            "amount" : 1000000,
+            "salary_types" : [
+                {
+                    "id" : "st-1",
+                    "name" : "Gaji Pokok"
+                    "amount" : 1000000
+                },
+                {
+                    "id" : "st-1",
+                    "name" : "Tunjangan Makan"
+                    "amount" : 5000
+                },
+            ],
             "deleted_at" : null
         }
     ]
@@ -1024,11 +1031,18 @@ Response Example:
             "id" : "et-1",
             "name" : "Full-Time",
         },
-        "salary_type_id" : {
-            "id" : "st-1",
-            "name" : "full-time"
-        }
-        "amount" : 1000000,
+        "salary_types" : [
+                {
+                    "id" : "st-1",
+                    "name" : "Gaji Pokok"
+                    "amount" : 1000000
+                },
+                {
+                    "id" : "st-1",
+                    "name" : "Tunjangan Makan"
+                    "amount" : 5000
+                },
+            ],
         "deleted_at" : null
     }
 }
@@ -1040,19 +1054,20 @@ Response Example:
 Create new Employees, to create new employees candidate finish all prosedure in interview
 
 ```
-POST "/api/v1/Employees"
+POST "/api/v1/employees"
 ```
 
 Request Description:
 
-> | Name            | Type          | Description                             | nullable |
-> | --------------- | ------------- | --------------------------------------- | -------- |
-> | candidate_id    | foreign_key   | primary key on table candidates         | no       |
-> | position_id     | foreign_key   | primary key on table positions          | no       |
-> | employment_type | foreign_key   | primary key on table employment_types   | no       |
-> | joined_at       | timestamp iso | time when employee will join at company | no       |
-> | salary_type_id  | foreign_key   | primary key on table salary_types       | no       |
-> | salary_amount   | integer       | amount salary of employee               | no       |
+> | Name                | Type          | Description                             | nullable |
+> | ------------------- | ------------- | --------------------------------------- | -------- |
+> | candidate_id        | foreign_key   | primary key on table candidates         | no       |
+> | position_id         | foreign_key   | primary key on table positions          | no       |
+> | employment_type_id  | foreign_key   | primary key on table employment_types   | no       |
+> | joined_at           | timestamp iso | time when employee will join at company | no       |
+> | salary_types        | array         | array of list Salary Types              | no       |
+> | salary_types.id     | foreign_key   | primary key on table salary_types       | no       |
+> | salary_types.amount | integer       | amount of salary will be used           | no       |
 
 Request Example :
 
@@ -1062,8 +1077,17 @@ Request Example :
     "position_id" : "position-1",
     "employment_type" : "et-1",
     "joined_at" : "2022-04-05T00:00:00.000000Z",
-    "salary_type_id" : "st_id",
-    "amount" : 1000000,
+    "salary_types" : [
+        {
+            "id" :"st_id",
+            "amount" : 10000000,
+        },
+        {
+            "id" :"st_id",
+            "amount" : 100000,
+        }
+
+    ],
 }
 ```
 
@@ -1100,29 +1124,19 @@ Response Example :
             "id" : "et-1",
             "name" : "Full-Time",
         },
-        "salary_type_id" : {
-            "id" : "st-1",
-            "name" : "Harian"
-        }
-        "amount" : 1000000,
-        "deleted_at" : null,
-        "teams" : [
-            {
-                "leader" : {
-                    "id" : "employee-2",
-                    "name" : "Victor Yansen",
+        "salary_types" : [
+                {
+                    "id" : "st-1",
+                    "name" : "Gaji Pokok"
+                    "amount" : 1000000
                 },
-                "project : CvSaya,
-                "pathner-employees": [
-                    {
-                    "id" : "employee-3",
-                    "name" : "Ricky",
-                    },
-                ],
-                "created_at" : "2022-04-05T00:00:00.000000Z",
-                "updated_at" : "2022-04-05T00:00:00.000000Z",
-            },
-        ]
+                {
+                    "id" : "st-1",
+                    "name" : "Tunjangan Makan"
+                    "amount" : 5000
+                },
+            ],
+        "deleted_at" : null,
     }
 }
 ```
@@ -1132,7 +1146,7 @@ Response Example :
 Update Employees By Id
 
 ```
-PUT "/api/v1/Employees/{id}"
+PUT "/api/v1/employees/{id}"
 ```
 
 Request Description :
@@ -1140,23 +1154,17 @@ Request Description :
 > | Name            | Type          | Description                             | nullable |
 > | --------------- | ------------- | --------------------------------------- | -------- |
 > | id              | primary key   | primary key of employee                 | no       |
-> | candidate_id    | foreign_key   | primary key on table candidates         | no       |
 > | position_id     | foreign_key   | primary key on table positions          | no       |
 > | employment_type | foreign_key   | primary key on table employment_types   | no       |
 > | joined_at       | timestamp iso | time when employee will join at company | no       |
-> | salary_type_id  | foreign_key   | primary key on table salary_types       | no       |
-> | salary_amount   | integer       | amount salary of employee               | no       |
 
 Request Example :
 
 ```
 {
-    "candidate_id" : "candidate-1",
     "position_id" : "position-1",
     "employment_type" : "et-2",
     "joined_at" : "2022-04-05T00:00:00.000000Z",
-    "salary_type_id" : "st_id",
-    "amount" : 1000000,
 }
 ```
 
@@ -1193,19 +1201,46 @@ Response Example:
             "id" : "et-2",
             "name" : "Full-Time",
         },
-        "salary_type_id" : {
-            "id" : "st-1",
-            "name" : "Bulanan"
-        }
-        "amount" : 1000000,
         "deleted_at" : null,
     }
 }
 ```
 
+## [Update Salary Employee](#update-salary-employee)
+
+Update Employees Salary Value if there are five salary types connected with target employee you can update to four salary types only you can delete the employee for the array this will replace all old salary types
+
+```
+PATCH "/api/v1/employees/{id}/salaries"
+```
+
+> | Name                | Type        | Description                       | nullable |
+> | ------------------- | ----------- | --------------------------------- | -------- |
+> | id                  | primary key | primary key of employee           | no       |
+> | salary_types        | array       | array of list Salary Types        | no       |
+> | salary_types.id     | foreign_key | primary key on table salary_types | no       |
+> | salary_types.amount | integer     | amount of salary will be used     | no       |
+
+Request Example :
+
+```
+{
+    "salary_types" : [
+        {
+            "id" : "st-1",
+            "amount" : 1000000
+        },
+        {
+            "id" : "st-2",
+            "amount" : 100000
+        }
+    ],
+}
+```
+
 ## [Delete Employees](#delete-employees)
 
-Employee Resign, by input new employee_id all team has old employees id will be replace with new employees
+Employee Resign
 
 ```
 DELETE api/v1/levels/{id}
@@ -1217,14 +1252,6 @@ Request description :
 > | ---- | --------------------- | --------------------- | -------- |
 > | id   | Primary Key (integer) | primary key of levels | no       |
 
-Request Example:
-
-```
-{
-    "employee_id" : "employee-1",
-}
-```
-
 Response Example:
 
 ```
@@ -1235,51 +1262,6 @@ Response Example:
         "message" : request success"
     },
     "data" : null
-}
-```
-
-Response Index Employee after Delete Example:
-
-```
-
-{
-     "meta" :{
-        "success" : true,
-        "code" : 200000,
-        "message" : request success"
-    },
-    data :[
-        {
-        "id" : "employee-1",
-        "first-name" : "Wilyanto",
-        "company" : {
-            "id" : "comp-1",
-            "name" : "KADA",
-        },
-        "positions" : {
-            "id" : "position-1",
-            "name" : "HRD"
-        }
-        "department" : {
-            "id" : "dept-1",
-            "name" : "Human Resource"
-        },
-        "level" : {
-            "id" : "lv-1",
-            "name" : "level-c"
-        },
-        "joined_at" : "2022-04-05T00:00:00.000000Z",
-        "employment_type" : {
-            "id" : "et-1",
-            "name" : "Full-Time",
-        },
-        "salary_type_id" : {
-            "id" : "st-1",
-            "name" : "full-time"
-        }
-        "amount" : 1000000,
-        "deleted_at" : null,
-    }
 }
 ```
 
@@ -1397,99 +1379,6 @@ Response Example :
         "company_id" : "Kada",
         "name" : "Tujuangan Kehadiran1"
     },
-}
-```
-
-## [Index Salary Employee](#index-salary-employee)
-
-List salary Every Employee
-
-```
-GET /api/v1/employees/salary
-```
-
-Response Example :
-
-```
-{
-    "meta" :{
-        "success" : true,
-        "code" : 200000,
-        "message" : request success"
-    },
-    data :[
-        {
-            "id" : "employee-1",
-            "name" : "wilyanto",
-            "company_id" : "Kada",
-            "salary_types" : [
-                {
-                    "id" : "est-1",
-                    "salary_type" : {
-                        "id" : "ST-1",
-                        "name" : "Gaji Pokok",
-                    },
-                    "amoung" : 1000000,
-                },
-                {
-                    "id" : "est-2",
-                    "salary_type" : {
-                        "id" : "ST-2",
-                        "name" : "Tujangan Transportasi",
-                    },
-                    "amoung" : 50000,
-                }
-            ]
-        }
-    ]
-}
-```
-
-## [Show Salary Employee](#show-salary-employee)
-
-List salary Every Employee
-
-```
-GET /api/v1/employees/{id}/salary
-```
-
-> | Name | Type                  | Description             | Nullable |
-> | ---- | --------------------- | ----------------------- | -------- |
-> | id   | Primary Key (integer) | primary key of employee | no       |
-
-Response Example :
-
-```
-{
-    "meta" :{
-        "success" : true,
-        "code" : 200000,
-        "message" : request success"
-    },
-    data :[
-        {
-            "id" : "employee-1",
-            "name" : "wilyanto",
-            "salary_types" : [
-                {
-                    "id" : "est-1",
-                    "salary_type" : {
-                        "id" : "ST-1",
-                        "name" : "Gaji Pokok",
-                    },
-                    "amoung" : 1000000,
-                },
-                {
-                    "id" : "est-2",
-                    "salary_type" : {
-                        "id" : "ST-2",
-                        "name" : "Tujangan Transportasi",
-                    },
-                    "amoung" : 50000,
-                }
-            ]
-        }
-    ]
 }
 ```
 

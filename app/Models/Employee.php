@@ -29,9 +29,11 @@ class Employee extends Authenticatable implements Auditable
     public $connection = 'mysql';
 
     public $fillable = [
+        'user_id',
         'position_id',
-        'salary',
-        'employement_type'
+        'joined_at',
+        'employment_type_id',
+        'salary_type_id',
     ];
 
     public function position()
@@ -49,9 +51,44 @@ class Employee extends Authenticatable implements Auditable
         return $this->hasOneThrough(Company::class, Position::class, 'id', 'id', 'position_id', 'company_id')->withDefault();
     }
 
+    public function level()
+    {
+        return $this->hasOneThrough(Level::class, Position::class, 'id', 'id', 'position_id', 'level_id')->withDefault();
+    }
+
+    public function department()
+    {
+        return $this->hasOneThrough(Department::class, Position::class, 'id', 'id', 'position_id', 'department_id')->withDefault();
+    }
+
+    public function employmentType(){
+        return $this->hasOne(EmploymentType::class,'id','employment_type_id')->withDefault();
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id_kustomer')->withDefault();
+    }
+
+    public function salaryType(){
+        return $this->hasMany(EmployeeSalaryType::class);
+    }
+
+    public function typeOfSalary(){
+        // $salaries = EmployeeSalaryType::where('employee_id',$this->id)->get();
+        $salaries = $this->salaryType;
+        if(count($salaries)){
+            $salaries = $salaries->map(function ($item){
+                return [
+                    'id' => $item->id,
+                    'salary_type' => $item->salaryType->id,
+                    'amount' => $item->amount,
+                ];
+            });
+        }
+
+
+        return $salaries;
     }
 
     public function getCompanyName()
@@ -100,11 +137,17 @@ class Employee extends Authenticatable implements Auditable
     {
         return [
             'id' => $this->id,
-            'parent_id' => $this->parent_id,
-            'name' => $this->name,
-            'department' => $this->departments,
-            'level' => $this->departments,
+            'name' => $this->profileDetail->first_name.' '.$this->profileDetail->last_name,
+            'employment_type' => $this->employmentType,
+            'salary_types' => $this->typeOfSalary(),
             'company' => $this->company,
+            'department' => $this->department->onlyNameAndId(),
+            'level' => $this->level->onlyNameAndId(),
+            'position' => $this->position->toCandidate(),
+            'parent_id' => $this->parent_id,
+            'joined_at' => $this->joined_at,
+            'created_at' => $this->created_at,
+            'updated_at' =>$this->updated_at,
         ];
     }
 

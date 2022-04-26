@@ -19,7 +19,7 @@ return new class extends Migration
         });
 
         Schema::table('positions', function (Blueprint $table) {
-            $table->string('company_id')->nullable();
+            $table->string('company_id')->nullable()->after('name');
             $table->foreign('company_id')->references('id')->on('companies');
         });
     }

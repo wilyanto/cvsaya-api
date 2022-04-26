@@ -73,11 +73,17 @@ class Position extends Model implements Auditable
         return $this->hasOne(Company::class, 'id', 'company_id');
     }
 
+    public function totalEmployee(){
+        return count($this->all());
+    }
+
     public function toCandidate()
     {
         return [
             'id' => $this->id,
-            'name' => $this->name
+            'name' => $this->name,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 
@@ -86,8 +92,8 @@ class Position extends Model implements Auditable
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'department' => $this->departments->toArray(),
-            'level' => $this->levels->toArray(),
+            'department' => $this->departments->onlyNameAndId(),
+            'level' => $this->levels->onlyNameAndId(),
             'company' => $this->company,
             'min_salary' => $this->min_salary,
             'max_salary' => $this->max_salary,

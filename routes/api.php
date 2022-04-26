@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\v1\EmploymentTypeController;
 use App\Http\Controllers\Api\v1\PermissionController;
 use App\Http\Controllers\Api\v1\ReligionController;
 use App\Http\Controllers\Api\v1\MarriageStatusController;
+use App\Http\Controllers\Api\v1\SalaryTypeController;
 use App\Models\Certifications;
 use App\Models\CvProfileDetail;
 use App\Models\EmploymentType;
@@ -121,6 +122,7 @@ Route::prefix('v1')->group(function () {
                 });
             });
         });
+
 
         Route::prefix('documents')->group(function () {
             Route::controller(CvDocumentController::class)->group(function () {
@@ -250,7 +252,7 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('positions')->group(function () {
             Route::controller(PositionController::class)->group(function () {
-                Route::get('/{id}','show');
+                Route::get('/{id}', 'show');
                 Route::put('/{id}', 'update');
                 Route::get('/', 'index');
                 Route::post('/', 'store');
@@ -271,9 +273,30 @@ Route::prefix('v1')->group(function () {
             });
             Route::controller(EmployeeController::class)->group(function () {
                 Route::get('/{id}', 'show');
-                Route::get('/', 'index');
+                Route::group(['middleware' => ['permission:manage-employee']], function () {
+                    Route::get('/', 'index');
+                    Route::group(['middleware' => ['permission:manage-candidate']], function () {
+                        Route::post('/', 'store');
+                        Route::PATCH('/{id}/salaries', 'updateSalary');
+                        Route::PUT('/{id}', 'update');
+                        Route::delete('/{id}', 'destroy');
+                    });
+                    Route::get('/', 'index');
+                });
             });
         });
+
+        Route::group(['middleware' => ['permission:manage-employee']], function () {
+            Route::prefix('/salary-types')->group(function () {
+                Route::controller(SalaryTypeController::class)->group(function () {
+                    Route::get('/{id}', 'index');
+                    Route::get('/', 'index');
+                    Route::post('/', 'store');
+                    Route::put('/{id}', 'update');
+                });
+            });
+        });
+
         Route::prefix('candidate-positions')->group(function () {
             Route::controller(CvExpectedJobController::class)->group(function () {
                 Route::get('/', 'getListCandidatePositionsWithPaginate');
