@@ -107,7 +107,7 @@ class PositionController extends Controller
             'min_salary' => 'nullable|integer',
             'max_salary' => 'nullable|integer',
         ]);
-        
+
         $create = Position::create($request->all());
 
         return $this->showOne($create->toArrayDefault());
@@ -150,40 +150,11 @@ class PositionController extends Controller
             'min_salary' => 'nullable|integer',
             'max_salary' => 'nullable|integer',
         ]);
-        $data = $request->all();
-        $position = Position::findOrFail($id);
-        if ($request->parent_id) {
-            $this->updateParent($id, $request->parent_id);
-            $position = $position->refresh();
-            return $this->showOne($position->toArrayDefault());
-        }
-        $position->update(
-            $data
-        );
-        $position = $position->refresh();
-        return $this->showOne($position->toArrayDefault());
-    }
-
-
-    public static function updateParent($id, $newParentId)
-    {
-        if ($newParentId == $id) {
-            return 'Changing parent must not same as old parent';
-        }
-        $position = Position::findOrFail($id);
-        $newPosition = Position::findOrFail($newParentId);
-        if ($position->company != $newPosition->company_id) {
-            return 'changing to new parent must at same company';
-        }
-
-        $allChildren = $position->getAllChildren()->pluck('id');
-        foreach ($allChildren as $childrenId) {
-            if ($newPosition->id == $childrenId) {
-                return 'new position must not change to child position';
-            }
-        }
-        $position->parent_id = $newPosition->id;
-        $position->save();
+        $request = $request->all();
+        $update = Position::findOrFail($id);
+        $update->update($request);
+        $update = $update->refresh();
+        return $this->showOne($update);
     }
 
     /**
