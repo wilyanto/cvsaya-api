@@ -563,6 +563,10 @@ Response Example:
                     "id" : "comp-1",
                     "name" : "KADA",
                 },
+                "parent_id" : {
+                    "id" : "position-0",
+                    "name" : "CEO"
+                },
                 "department" : {
                     "id" : "dept-1",
                     "name" : "Human Resource",
@@ -582,6 +586,10 @@ Response Example:
                 "company" : {
                     "id" : "comp-1",
                     "name" : "KADA",
+                },
+                "parent_id" : {
+                    "id" : "position-0",
+                    "name" : "CEO"
                 },
                 "department" : {
                     "id" : "dept-2,
@@ -634,6 +642,10 @@ Response Example:
             "company" : {
                 "id" : "comp-1",
                 "name" : "KADA",
+            },
+            "parent_id" : {
+                "id" : "position-0",
+                "name" : "CEO"
             },
             "department" : {
                 "id" : "dept-2,
@@ -705,6 +717,10 @@ Response Example :
                 "id" : "comp-1",
                 "name" : "KADA",
             },
+            "parent_id" : {
+                "id" : "position-0",
+                "name" : "CEO"
+            },
             "department" : {
                 "id" : "dept-2,
                 "name" : "IT",
@@ -775,6 +791,10 @@ Response Example:
             "company" : {
                 "id" : "comp-1",
                 "name" : "KADA",
+            },
+            "parent_id" : {
+                "id" : "position-0",
+                "name" : "CEO"
             },
             "department" : {
                 "id" : "dept-2,
@@ -849,25 +869,6 @@ Response Index Positions Example:
             "min_salary" : 1000,
             "max_salary" : 100000,
             "remaining_slot" : 100,
-            "parent" : [
-                {
-                    "id" : "positions-2",
-                    "name" : "anggota HRD",
-                    "department" : {
-                        "id" : "dept-1",
-                        "name" : "Human Resource",
-                    },
-                    "level" : {
-                        "id" : "lv-2",
-                        "name" : "Level - Staff",
-                    },
-                    "priorty" : 0,
-                    "min_salary" : 1000,
-                    "max_salary" : 100000,
-                    "remaining_slot" : 100,
-                    "parent" : null,
-                }
-            ]
         },
        {
             "id" : "position-4",
@@ -888,21 +889,6 @@ Response Index Positions Example:
             "min_salary" : 1000,
             "max_salary" : 100000,
             "remaining_slot" : 100,
-            "parent" : [
-                {
-                    "id" : "positions-5",
-                    "name" : "anggota IT",
-                    "department" : {
-                        "id" : "dept-2",
-                        "name" : "IT",
-                    },
-                    "level" : {
-                        "id" : "lv-2",
-                        "name" : "Level - Staff",
-                    },
-                    "parent" : null,
-                },
-            ]
         }
     ]
 ```
