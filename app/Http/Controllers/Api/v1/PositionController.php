@@ -101,13 +101,13 @@ class PositionController extends Controller
             'name' => 'required|string',
             'department_id' => 'required|exists:departments,id',
             'level_id' => 'required|exists:levels,id',
-            'parent_id' => 'nullable|exists:positions,parent_id',
+            'parent_id' => 'nullable|exists:positions,id',
             'remaining_slot' => 'nullable|integer',
             'company_id' => 'nullable|exists:companies,id',
             'min_salary' => 'nullable|integer',
             'max_salary' => 'nullable|integer',
         ]);
-
+        
         $create = Position::create($request->all());
 
         return $this->showOne($create->toArrayDefault());
