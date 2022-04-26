@@ -32,6 +32,9 @@ return new class extends Migration
         Schema::rename('employee_details', 'employees');
 
         Schema::table('employees', function (Blueprint $table) {
+            $table->dropColumn('salary');
+            $table->bigInteger('employment_type_id')->unsigned()->nullable();
+            $table->foreign(['employment_type_id'])->references('id')->on('employment_types')->after('position_id');
             $table->foreign(['position_id'])->references('id')->on('positions');;
         });
 
@@ -56,7 +59,9 @@ return new class extends Migration
     public function down()
     {
         Schema::table('employees', function (Blueprint $table) {
+            $table->dropForeign(['employment_type_id']);
             $table->dropForeign(['position_id']);
+            $table->dropColumn('employment_type_id');
         });
 
         Schema::table('candidates', function (Blueprint $table) {
@@ -71,9 +76,10 @@ return new class extends Migration
             $table->dropForeign(['employee_id']);
         });
 
-        Schema::rename( 'employees','employee_details');
+        Schema::rename('employees', 'employee_details');
 
         Schema::table('employee_details', function (Blueprint $table) {
+            $table->integer('salary');
             $table->foreign(['position_id'])->references('id')->on('positions');;
         });
 

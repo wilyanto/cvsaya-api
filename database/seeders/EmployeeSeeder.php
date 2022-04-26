@@ -60,7 +60,6 @@ class EmployeeSeeder extends Seeder
                 Employee::create([
                     'user_id' => $user->id_kustomer,
                     'position_id' => rand(1, count($positions)),
-                    'salary' => 1000000,
                 ]);
 
                 $candidate = Candidate::where('phone_number',substr($phoneNumber,1))->first();

@@ -59,6 +59,7 @@ class PositionController extends Controller
             if ($keyword) {
                 $query->where('name', 'like', $keyword);
             }
+
         })->paginate(
             $pageSize,
             ['*'],
@@ -100,13 +101,13 @@ class PositionController extends Controller
             'name' => 'required|string',
             'department_id' => 'required|exists:departments,id',
             'level_id' => 'required|exists:levels,id',
-            'parent_id' => 'nullable|exists:positions,parent_id',
+            'parent_id' => 'nullable|exists:positions,id',
             'remaining_slot' => 'nullable|integer',
             'company_id' => 'nullable|exists:companies,id',
             'min_salary' => 'nullable|integer',
             'max_salary' => 'nullable|integer',
         ]);
-
+        
         $create = Position::create($request->all());
 
         return $this->showOne($create->toArrayDefault());
@@ -118,27 +119,6 @@ class PositionController extends Controller
      * @param  \App\Models\CvSayaPositions  $cvSayaPositions
      * @return \Illuminate\Http\Response
      */
-    // public function show(Request $request)
-    // {
-    //     $user =  auth()->user();
-
-    //     $list = Position::where('parent_id', null)->get();
-    //     //    dd($list);
-    //     $data = [];
-    //     foreach ($list as $item => $object) {
-    //         $data[] = [
-    //             'id' => $object->id,
-    //             'name' => $object->name,
-    //             'department_id' => $object->departments,
-    //             'level' => $object->levels,
-    //             'company_id' => $object->departments->company_id,
-    //             'children' => $object->getAllChildren(),
-    //         ];
-    //     }
-    //     $data = collect($data);
-
-    //     return $this->showAll($data);
-    // }
 
     /**
      * Show the form for editing the specified resource.
@@ -164,19 +144,46 @@ class PositionController extends Controller
             'name' => 'required|string',
             'department_id' => 'required|exists:departments,id',
             'level_id' => 'required|exists:levels,id',
-            'parent_id' => 'nullable|exists:positions,parent_id',
+            'parent_id' => 'nullable|exists:positions,id',
             'remaining_slot' => 'nullable|integer',
             'company_id' => 'nullable|exists:companies,id',
             'min_salary' => 'nullable|integer',
             'max_salary' => 'nullable|integer',
         ]);
-        $request = $request->all();
-        $update = Position::findOrFail($id);
-        $update->update([
-            $request
-        ]);
-        $update = $update->refresh();
-        return $this->showOne($update);
+        $data = $request->all();
+        $position = Position::findOrFail($id);
+        if ($request->parent_id) {
+            $this->updateParent($id, $request->parent_id);
+            $position = $position->refresh();
+            return $this->showOne($position->toArrayDefault());
+        }
+        $position->update(
+            $data
+        );
+        $position = $position->refresh();
+        return $this->showOne($position->toArrayDefault());
+    }
+
+
+    public static function updateParent($id, $newParentId)
+    {
+        if ($newParentId == $id) {
+            return 'Changing parent must not same as old parent';
+        }
+        $position = Position::findOrFail($id);
+        $newPosition = Position::findOrFail($newParentId);
+        if ($position->company != $newPosition->company_id) {
+            return 'changing to new parent must at same company';
+        }
+
+        $allChildren = $position->getAllChildren()->pluck('id');
+        foreach ($allChildren as $childrenId) {
+            if ($newPosition->id == $childrenId) {
+                return 'new position must not change to child position';
+            }
+        }
+        $position->parent_id = $newPosition->id;
+        $position->save();
     }
 
     /**

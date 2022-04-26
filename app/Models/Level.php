@@ -43,6 +43,15 @@ class Level extends Model implements Auditable
         ];
     }
 
+    public function onlyNameAndId(){
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
+
     public function toArray()
     {
         return [
