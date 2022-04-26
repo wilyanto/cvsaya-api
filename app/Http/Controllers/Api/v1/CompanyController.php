@@ -28,9 +28,9 @@ class CompanyController extends Controller
         $page = $request->page ? $request->page  : 1;
         $pageSize = $request->page_size ? $request->page_size : 10;
         $keyword = $request->keyword;
-        $companies = Company::where(function ($query) use ($keyword){
+        $companies = Company::where(function ($query) use ($keyword) {
             if ($keyword) {
-                $query->where('name', 'like', $keyword);
+                $query->where('name', 'like', '%' . $keyword . '%');
             }
         })->paginate(
             $pageSize,

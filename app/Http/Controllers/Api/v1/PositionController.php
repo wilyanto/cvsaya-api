@@ -57,9 +57,8 @@ class PositionController extends Controller
                 $query->whereIn('level_id', $levels);
             }
             if ($keyword) {
-                $query->where('name', 'like', $keyword);
+                $query->where('name', 'like', '%' . $keyword . '%');
             }
-
         })->paginate(
             $pageSize,
             ['*'],

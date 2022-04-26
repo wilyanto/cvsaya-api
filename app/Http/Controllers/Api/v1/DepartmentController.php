@@ -39,7 +39,7 @@ class DepartmentController extends Controller
                 $query->whereIn('company_id', $companies);
             }
             if ($keyword) {
-                $query->where('name', 'like', $keyword);
+                $query->where('name', 'like', '%' . $keyword . '%');
             }
         })->paginate(
             $pageSize,
