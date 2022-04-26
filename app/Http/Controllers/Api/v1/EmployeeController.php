@@ -100,26 +100,20 @@ class EmployeeController extends Controller
         $candidate = Candidate::where('id', $request->candidate_id)->where('status', 5)->firstOrFail();
         $employee = Employee::where('user_id', $candidate->user_id)
             ->where('position_id', $request->position_id)
-            ->withTrashed()
             ->first();
-        if (!$employee || $employee->deleted_at) {
+        if (!$employee) {
             $position = Position::findOrFail($request->position_id);
-            if ($position->remaining_slot <= 0) {
+            if ($position->remaining_slot > 0) {
                 $employeeArray = $request->all();
                 unset($employeeArray['candidate_id']);
                 unset($employeeArray['salary_types']);
                 $employeeArray['user_id'] = $candidate->user_id;
-                if ($employee->deleted_at) {
-                    $employee->update($employeeArray);
-                } else {
-                    $employee = Employee::create($employeeArray);
-                }
-                $newSalaryTypeIds = [];
+
+                $employee = Employee::create($employeeArray);
                 $newSalaryTypes = [];
                 $salaryTypes = $request->salary_types;
                 foreach ($salaryTypes as $salaryType) {
                     $salaryType = collect($salaryType);
-                    $newSalaryTypeIds[] = $salaryType['id'];
                     SalaryType::findOrFail($salaryType['id']);
                     $newSalaryTypeIds[] = $salaryType['id'];
                     $newSalaryTypes[] = [
@@ -128,22 +122,17 @@ class EmployeeController extends Controller
                         'amount' => $salaryType['amount'],
                     ];
                 }
-                if ($employee->deleted_at) {
-                    $employee->restore();
-                    $employee->refresh();
-                    $this->updateDeleteSalaries($newSalaryTypeIds, $employee, $newSalaryTypes);
-                    return $this->showOne($employee->toArrayEmployee());
-                }
                 $candidate->status = Candidate::ACCEPTED;
+                $candidate->save();
                 EmployeeSalaryType::insert($newSalaryTypes);
                 $position->remaining_slot -= 1;
                 $position->save();
                 return $this->showOne($employee->toArrayEmployee());
             } else {
-                return $this->errorResponse('the selected position is full, Please select another Positions', 422, 42201);
+                return $this->errorResponse('The selected Position is full, please select another Position', 422, 42201);
             }
         } else {
-            return $this->errorResponse('candidate already pick Positions please choose another one', 422, 42202);
+            return $this->errorResponse('Candidate already pick this Position, please choose another one', 422, 42202);
         }
     }
 

@@ -80,14 +80,13 @@ class Employee extends Authenticatable implements Auditable
         if(count($salaries)){
             $salaries = $salaries->map(function ($item){
                 return [
-                    'id' => $item->id,
-                    'salary_type' => $item->salaryType->id,
+                    'salary_type_id' => $item->salaryType->id,
+                    'name' => $item->salaryType->name,
                     'amount' => $item->amount,
                 ];
             });
         }
-
-
+        
         return $salaries;
     }
 
@@ -164,7 +163,6 @@ class Employee extends Authenticatable implements Auditable
     //     $shifts = $this->hasMany(ShiftPositions::class, 'position_id', 'position_id');
     //     $specialShifts = $this->hasMany(ShiftEmployee::class,'employee_id','id');
     //     $attendanceTypes = AttendanceType::all();
-    //     $attendances = $this->hasMany(Attendance::class,)
     //     for ($date = $startedAt; $date <= $endedAt; $date->modify('+1 day')) {
     //         $data['date'] = $date->format('Y-m-d\TH:i:s.v\Z');
     //         $data['clock_in'] = '';
