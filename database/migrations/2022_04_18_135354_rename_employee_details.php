@@ -33,8 +33,8 @@ return new class extends Migration
 
         Schema::table('employees', function (Blueprint $table) {
             $table->dropColumn('salary');
-            $table->bigInteger('employment_type_id')->unsigned()->nullable();
-            $table->foreign(['employment_type_id'])->references('id')->on('employment_types')->after('position_id');
+            $table->bigInteger('employment_type_id')->unsigned()->after('position_id')->nullable();
+            $table->foreign(['employment_type_id'])->references('id')->on('employment_types');
             $table->foreign(['position_id'])->references('id')->on('positions');;
         });
 
