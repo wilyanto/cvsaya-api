@@ -58,6 +58,7 @@ Request description:
 
 > | Name      | Type    | Description                   | nullable |
 > | --------- | ------- | ----------------------------- | -------- |
+> | keyword   | string  | get department by name        | yes      |
 > | companies | array   | list primary key of companies | yes      |
 > | page      | integer | page to                       | no       |
 > | page_size | integer | size list every page          | no       |
@@ -290,6 +291,7 @@ Request description:
 
 > | Name      | Type    | Description                   | nullable |
 > | --------- | ------- | ----------------------------- | -------- |
+> | keyword   | string  | get level by name             | yes      |
 > | companys  | array   | list primary key of companies | yes      |
 > | page      | integer | page to                       | no       |
 > | page_size | integer | size list every page          | no       |
@@ -521,6 +523,7 @@ Request description:
 > | ----------- | ------- | ------------------------------------- | -------- |
 > | companies   | array   | list primary key of companies         | yes      |
 > | departments | array   | list primary key on table departments | yes      |
+> | keyword     | string  | get Position by name                  | yes      |
 > | levels      | array   | list primary ky on table levels       | yes      |
 > | page        | integer | page to                               | no       |
 > | page_size   | integer | size list every page                  | no       |
