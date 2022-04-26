@@ -28,6 +28,10 @@ class Employee extends Authenticatable implements Auditable
 
     public $connection = 'mysql';
 
+    protected $dates = [
+        'joined_at',
+    ];
+
     public $fillable = [
         'user_id',
         'position_id',
@@ -75,7 +79,6 @@ class Employee extends Authenticatable implements Auditable
     }
 
     public function typeOfSalary(){
-        // $salaries = EmployeeSalaryType::where('employee_id',$this->id)->get();
         $salaries = $this->salaryType;
         if(count($salaries)){
             $salaries = $salaries->map(function ($item){
@@ -86,7 +89,7 @@ class Employee extends Authenticatable implements Auditable
                 ];
             });
         }
-        
+
         return $salaries;
     }
 
@@ -131,14 +134,13 @@ class Employee extends Authenticatable implements Auditable
             'salary' => $this->salary,
         ];
     }
-
     public function toArrayEmployee()
     {
         return [
             'id' => $this->id,
             'name' => $this->profileDetail->first_name.' '.$this->profileDetail->last_name,
             'employment_type' => $this->employmentType,
-            'salary_types' => $this->typeOfSalary(),
+            // 'salary_types' => $this->typeOfSalary(),
             'company' => $this->company,
             'department' => $this->department->onlyNameAndId(),
             'level' => $this->level->onlyNameAndId(),

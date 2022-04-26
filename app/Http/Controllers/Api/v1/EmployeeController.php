@@ -149,6 +149,13 @@ class EmployeeController extends Controller
         return $this->showOne($employeeDetail->toArrayEmployee());
     }
 
+    public function showSalaryOnly($id)
+    {
+        $employeeDetail = Employee::findOrFail($id);
+
+        return $this->showOne($employeeDetail->typeOfSalary());
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -215,7 +222,7 @@ class EmployeeController extends Controller
 
         $employee = $employee->refresh();
 
-        return $this->showOne($employee->toArrayEmployee());
+        return $this->showOne($employee->typeOfSalary());
     }
 
     public static function updateDeleteSalaries(array $newSalaryTypesId, Employee $employee, array $salaryTypes)

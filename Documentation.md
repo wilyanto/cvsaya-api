@@ -921,7 +921,9 @@ Request Example 1:
     "company_id" : "KADA",
     "position_id" : "position-1",
     "department_id" : "dept-1",
-    "level_id" : "lv-1"
+    "level_id" : "lv-1",
+    "page" : 1,
+    "page_size" : 10
 }
 ```
 
@@ -959,18 +961,6 @@ Response Example 1:
                 "id" : "et-1",
                 "name" : "Full-Time",
             },
-            "salary_types" : [
-                {
-                    "id" : "st-1",
-                    "name" : "Gaji Pokok"
-                    "amount" : 1000000
-                },
-                {
-                    "id" : "st-1",
-                    "name" : "Tunjangan Makan"
-                    "amount" : 5000
-                },
-            ],
             "deleted_at" : null
         }
     ]
@@ -1042,6 +1032,41 @@ Response Example:
     }
 }
 
+```
+
+## [Show Employees Salary](#show-employees-salary)
+this api show Employee by requested id
+
+```
+GET /api/v1/employees/{id}/salaries
+```
+Response Description:
+
+> | Name | Type        | Description                     |
+> | ---- | ----------- | ------------------------------- |
+> | id   | primary key | primary key of table employee salary |
+
+Response Example :
+```
+{
+	"meta": {
+		"success": true,
+		"code": 20000,
+		"message": "Request success"
+	},
+	"data": [
+		{
+			"salary_type_id": 1,
+			"name": "Gaji Pokok",
+			"amount": 1000000
+		},
+		{
+			"salary_type_id": 2,
+			"name": "Tunjangan Harian",
+			"amount": 100000
+		}
+	]
+}
 ```
 
 ## [Create Employees](#create-employees)

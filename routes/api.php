@@ -277,6 +277,7 @@ Route::prefix('v1')->group(function () {
                     Route::get('/', 'index');
                     Route::group(['middleware' => ['permission:manage-candidate']], function () {
                         Route::post('/', 'store');
+                        Route::get('/{id}/salaries', 'showSalaryOnly');
                         Route::PATCH('/{id}/salaries', 'updateSalary');
                         Route::PUT('/{id}', 'update');
                         Route::delete('/{id}', 'destroy');
