@@ -15,12 +15,21 @@ class AttendanceType extends Model implements Auditable
 
     protected $table = 'attendance_types';
 
-    protected $dates = [
-        'name'
+
+    protected $cast = [
+        'name' => 'string'
     ];
 
     public $fillable = [
         'id',
         'name'
     ];
+
+    public const CLOCKIN = 'clock_in';
+
+    public const CLOCKOUT = 'clock_out';
+
+    public const BREAKSTARTEDAT = 'break_started_at';
+
+    public const BREAKENDEDAT = 'break_ended_at';
 }

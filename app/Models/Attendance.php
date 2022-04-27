@@ -16,12 +16,14 @@ class Attendance extends Model implements Auditable
 
     protected $dates = [
         'checked_at',
+        'duty_at',
         'validated_at'
     ];
 
     public $fillable = [
         'id',
         'checked_at',
+        'duty_at',
         'validated_at',
         'employee_id',
         'attendance_type_id'

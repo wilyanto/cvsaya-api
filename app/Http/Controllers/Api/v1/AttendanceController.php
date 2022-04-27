@@ -4,14 +4,13 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Models\Attendance;
 use Illuminate\Http\Request;
-use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
-use App\Models\ShiftEmployee;
-use Doctrine\DBAL\Schema\Schema;
+use App\Traits\ApiResponser;
 
 class AttendanceController extends Controller
 {
+    use ApiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -19,22 +18,28 @@ class AttendanceController extends Controller
      */
     public function index(Request $request)
     {
-        // $request->validate([
-        //     'started_at' => [
-        //         'date_format:Y-m-d\TH:i:s.v\Z',
-        //         'required'
-        //     ],
-        //     'updated_at' => [
-        //         'date_format:Y-m-d\TH:i:s.v\Z',
-        //         'required'
-        //     ],
-        // ]);
+        $request->validate([
+            'started_at' => [
+                'date_format:Y-m-d\TH:i:s.u\Z',
+                'required'
+            ],
+            'ended_at' => [
+                'date_format:Y-m-d\TH:i:s.u\Z',
+                'required'
+            ],
+        ]);
 
-        // $user = auth()->user();
+        $user = auth()->user();
+        // dump($user);
+        $employee = Employee::where('user_id',$user->id_kustomer)->firstOrfail();
+        $data = [];
+        $data['employee'] = [
+            'id' => $employee->id,
+            'name' => $employee->getUserName(),
+        ];
+        $data['attendances'] = $employee->getShifts($request->started_at,$request->ended_at);
 
-        // $employee = Employee::where('user_id',$user->id_kustomer)->firstOrfail();
-
-
+        return $this->showOne($data);
     }
 
     /**

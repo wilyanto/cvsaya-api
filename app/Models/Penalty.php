@@ -20,6 +20,7 @@ class Penalty extends Model implements Auditable
         'amount',
         'company_id',
         'passing_at',
+        'attendance_types_id'
     ];
 
     public function company()

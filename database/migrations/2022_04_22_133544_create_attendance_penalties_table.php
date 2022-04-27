@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('attendance_penalties', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('duty_at');
             $table->integer('amount');
             $table->bigInteger('attendance_id')->unsigned();
             $table->foreign('attendance_id')->references('id')->on('attendances');
