@@ -33,7 +33,7 @@ class CvEducationController extends Controller
 
     public function degreeList()
     {
-        $degrees = Degree::all();
+        $degrees = Degree::whereIn('id', [1,2,3,4,5,6])->get();
 
         return $this->showAll($degrees);
     }
