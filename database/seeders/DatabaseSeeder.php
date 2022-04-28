@@ -30,7 +30,8 @@ class DatabaseSeeder extends Seeder
             EmployeeSeeder::class,
             CuriculmVitaeSeeder::class,
             ShiftSeeder::class,
-            AttendanceTypeSeeder::class
+            AttendanceTypeSeeder::class,
+            PenaltySeeder::class,
         ]);
     }
 }

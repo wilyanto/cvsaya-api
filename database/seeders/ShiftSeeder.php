@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\DocumentType;
 use App\Models\Position;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -18,6 +19,10 @@ class ShiftSeeder extends Seeder
     public function run()
     {
         $names = ['Office'];
+        DocumentType::create([
+            'name' => 'attendances',
+        ]);
+
         foreach ($names as $name) {
             $shift = Shift::create([
                 'name' => $name,

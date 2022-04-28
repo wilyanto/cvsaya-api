@@ -11,6 +11,7 @@ use App\Models\DocumentType;
 use App\Models\Employee;
 use App\Models\Shift;
 use App\Models\ShiftEmployee;
+use App\Models\ShiftPositions;
 use App\Traits\ApiResponser;
 use DateInterval;
 use DateTime;
@@ -32,8 +33,8 @@ class AttendanceController extends Controller
                 'required'
             ],
             'ended_at' => [
-                'date_format:Y-m-d\TH:i:s.u\Z',
-                'required'
+                'nullable',
+                'date_format:Y-m-d\TH:i:s.u\Z'
             ],
         ]);
 
@@ -88,25 +89,24 @@ class AttendanceController extends Controller
         $documentType = DocumentType::where('name', 'attendances')->firstOrFail();
         $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
 
-        // $time = date('Y-m-d_H-i-s', time());
-        // $randomNumber =  CvDocumentController::random4Digits();
+        $time = date('Y-m-d_H-i-s', time());
+        $randomNumber =  CvDocumentController::random4Digits();
 
-        // $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        // $mimeType = $finfo->file($request->file('file')); // variable
-        // $extension = CvDocumentController::getExtension($mimeType);
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->file($request->file('file')); // variable
+        $extension = CvDocumentController::getExtension($mimeType);
 
-        // $filenameWithoutExtenstion = $time . '_' . $user->id_kustomer . '_' . $randomNumber;
-        // $filename = $filenameWithoutExtenstion . '.' . $extension;
+        $filenameWithoutExtenstion = $time . '_' . $user->id_kustomer . '_' . $randomNumber;
+        $filename = $filenameWithoutExtenstion . '.' . $extension;
 
-        // $request->file('file')->storeAs('public/attendances/' . $attendanceType->name, $filename);
-        // Document::create([
-        //     'file_name' => $filenameWithoutExtenstion,
-        //     'user_id' => $user->id_kustomer,
-        //     'mime_type' => $mimeType,
-        //     'type_id' => $documentType->id,
-        //     'original_file_name' => $request->file->getClientOriginalName(),
-        // ]);
-        // dump($attendanceType);
+        $request->file('file')->storeAs('public/attendances/' . $attendanceType->name, $filename);
+        Document::create([
+            'file_name' => $filenameWithoutExtenstion,
+            'user_id' => $user->id_kustomer,
+            'mime_type' => $mimeType,
+            'type_id' => $documentType->id,
+            'original_file_name' => $request->file->getClientOriginalName(),
+        ]);
         $time = new \DateTime("now", new DateTimeZone('Asia/Jakarta'));
         $date =  new \DateTime("today", new DateTimeZone('Asia/Jakarta'));
         $startDate = $date->format('Y-m-d\TH:i:s.u\Z');
@@ -119,6 +119,10 @@ class AttendanceController extends Controller
                 $endDate
             ]
         )->first();
+        if (!$shift) {
+            $getTodayDay = $time->format('N');
+            $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $employee->position->id)->first();
+        }
         $columnName = $attendanceType->name;
         $dutyAt = $shift->shift->$columnName;
         if ($columnName == 'break_ended_at') {
@@ -129,7 +133,7 @@ class AttendanceController extends Controller
                     $endDate
                 ]
             )->where('attendance_type_id', 2)->first();
-            if($attendance){
+            if ($attendance) {
                 $dutyAt = date('Y-m-d\TH:i:s.u\Z', strtotime($attendance->checked_at . ' +' . $shift->shift->break_duration . 'hour'));
             }
         }

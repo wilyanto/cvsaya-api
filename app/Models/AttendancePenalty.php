@@ -13,6 +13,8 @@ class AttendancePenalty extends Model implements Auditable
 
     protected $table = 'attendances_penalties';
 
+    public $timestamps = false;
+
     public $fillable = [
         'amount',
         'attendance_id',

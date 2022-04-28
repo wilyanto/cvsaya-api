@@ -203,9 +203,10 @@ class Employee extends Authenticatable implements Auditable
                 $attendance = $attendancesPerDays->where('attendance_type_id', $attendanceType->id)->first();
                 if (count($attendancesPerDays)) {
                     $checkedAt = $attendance ? new \DateTime($attendance->checked_at, new DateTimeZone('Asia/Jakarta')) : null;
+                    $dutyAt =  $attendance ? new \DateTime($attendance->duty_at, new DateTimeZone('Asia/Jakarta')) : null;
                     $data[$attendanceType->name] = [
                         'checked_at' => $checkedAt ? $checkedAt->format('Y-m-d\TH:i:s.u\Z') : null,
-                        'duty_at' => $attendance ? $attendance->duty_at : null,
+                        'duty_at' => $attendance ? $dutyAt->format('Y-m-d\TH:i:s.u\Z') : null,
                         'penalty' => $this->getPenaltiesValue(
                             $attendance,
                             $attendanceType,

@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('attendance_penalties', function (Blueprint $table) {
+        Schema::create('attendances_penalties', function (Blueprint $table) {
             $table->id();
             $table->integer('amount');
-            $table->bigInteger('attendance_id')->unsigned();
+            $table->bigInteger('attendance_id')->unsigned()->nullable();
             $table->foreign('attendance_id')->references('id')->on('attendances');
             $table->bigInteger('penalty_id')->unsigned();
             $table->foreign('penalty_id')->references('id')->on('penalties');
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('attendance_penalties');
+        Schema::dropIfExists('attendances_penalties');
     }
 };
