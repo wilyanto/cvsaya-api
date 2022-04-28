@@ -293,6 +293,10 @@ Route::prefix('v1')->group(function () {
             });
         });
 
+        Route::prefix('attendance-types')->group(function(){
+            Route::controller(AttendanceController::class)->group(function ())
+        });
+
         Route::group(['middleware' => ['permission:manage-employee']], function () {
             Route::prefix('/salary-types')->group(function () {
                 Route::controller(SalaryTypeController::class)->group(function () {

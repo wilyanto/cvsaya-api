@@ -1607,18 +1607,18 @@ POST /api/v1/attendances
 
 Request Description :
 
-> | Name | Type    | Description                                         | Nullable |
-> | ---- | ------- | --------------------------------------------------- | -------- |
-> | time | time    | time user attend                                    | no       |
-> | type | enum    | "clock_in", "clock_out", "start_break", "end_break" | no       |
-> | file | picture | upload file from camera                             | no       |
+> | Name | Type    | Description                          | Nullable |
+> | ---- | ------- | ------------------------------------ | -------- |
+> | time | time    | time user attend                     | no       |
+> | type | foreign | primary key of attendanceTypes Table | no       |
+> | file | picture | upload file from camera              | no       |
 
 Request Example :
 
 ```
 {
     "time" : 12:00,
-    "type" : "clock_in"
+    "type" : 1，
     "file" : file
 }
 ```
