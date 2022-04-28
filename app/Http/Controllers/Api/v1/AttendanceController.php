@@ -89,64 +89,82 @@ class AttendanceController extends Controller
         $documentType = DocumentType::where('name', 'attendances')->firstOrFail();
         $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
 
-        $time = date('Y-m-d_H-i-s', time());
-        $randomNumber =  CvDocumentController::random4Digits();
-
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo->file($request->file('file')); // variable
-        $extension = CvDocumentController::getExtension($mimeType);
-
-        $filenameWithoutExtenstion = $time . '_' . $user->id_kustomer . '_' . $randomNumber;
-        $filename = $filenameWithoutExtenstion . '.' . $extension;
-
-        $request->file('file')->storeAs('public/attendances/' . $attendanceType->name, $filename);
-        Document::create([
-            'file_name' => $filenameWithoutExtenstion,
-            'user_id' => $user->id_kustomer,
-            'mime_type' => $mimeType,
-            'type_id' => $documentType->id,
-            'original_file_name' => $request->file->getClientOriginalName(),
-        ]);
         $time = new \DateTime("now", new DateTimeZone('Asia/Jakarta'));
         $date =  new \DateTime("today", new DateTimeZone('Asia/Jakarta'));
         $startDate = $date->format('Y-m-d\TH:i:s.u\Z');
         $interval = DateInterval::createFromDateString('+23 hour +59 minute + 59 second');
         $endDate = $date->add($interval)->format('Y-m-d\TH:i:s.u\Z');
-        $shift = ShiftEmployee::whereBetween(
-            'date',
+        $attendance = Attendance::whereBetween(
+            'duty_at',
             [
                 $startDate,
                 $endDate
             ]
-        )->first();
-        if (!$shift) {
-            $getTodayDay = $time->format('N');
-            $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $employee->position->id)->first();
+        )->whereNotNull('validated_at')->get();
+        if ($attendanceType->id >= 2) {
+            if (!$attendance->where('attendance_type_id', 1)->first()) {
+                return $this->errorResponse('You have to attend clock_in first', 422, 42201);
+            }
         }
-        $columnName = $attendanceType->name;
-        $dutyAt = $shift->shift->$columnName;
-        if ($columnName == 'break_ended_at') {
-            $attendance = Attendance::whereBetween(
-                'duty_at',
+        if (!$attendance->where('attendance_type_id', $attendanceType->id)->first()) {
+
+            $timeDocument = date('Y-m-d_H-i-s', time());
+            $randomNumber =  CvDocumentController::random4Digits();
+
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $mimeType = $finfo->file($request->file('file')); // variable
+            $extension = CvDocumentController::getExtension($mimeType);
+
+            $filenameWithoutExtenstion = $timeDocument . '_' . $user->id_kustomer . '_' . $randomNumber;
+            $filename = $filenameWithoutExtenstion . '.' . $extension;
+
+            $request->file('file')->storeAs('public/attendances/' . $attendanceType->name, $filename);
+            Document::create([
+                'file_name' => $filenameWithoutExtenstion,
+                'user_id' => $user->id_kustomer,
+                'mime_type' => $mimeType,
+                'type_id' => $documentType->id,
+                'original_file_name' => $request->file->getClientOriginalName(),
+            ]);
+            $shift = ShiftEmployee::whereBetween(
+                'date',
                 [
                     $startDate,
                     $endDate
                 ]
-            )->where('attendance_type_id', 2)->first();
-            if ($attendance) {
-                $dutyAt = date('Y-m-d\TH:i:s.u\Z', strtotime($attendance->checked_at . ' +' . $shift->shift->break_duration . 'hour'));
+            )->first();
+            if (!$shift) {
+                $getTodayDay = $time->format('N');
+                $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $employee->position->id)->first();
             }
+
+            $columnName = $attendanceType->name;
+            $dutyAt = $shift->shift->$columnName;
+            if ($columnName == 'break_ended_at') {
+                $attendance = Attendance::whereBetween(
+                    'duty_at',
+                    [
+                        $startDate,
+                        $endDate
+                    ]
+                )->where('attendance_type_id', 2)->first();
+                if ($attendance) {
+                    $dutyAt = date('Y-m-d\TH:i:s.u\Z', strtotime($attendance->checked_at . ' +' . $shift->shift->break_duration . 'hour'));
+                }
+            }
+            Attendance::create([
+                'checked_at' => $time,
+                'duty_at' => $dutyAt,
+                'employee_id' => $employee->id,
+                'attendance_type_id' => $attendanceType->id,
+                'validated_at' => $attendanceType->name == AttendanceType::CLOCKIN ? null : time(),
+            ]);
+
+            $employee->getShifts($startDate, $endDate, $attendanceType->name);
+            return $this->showOne('Success');
+        } else {
+            return $this->errorResponse('You have attend ' . $attendanceType->name . ' already', 422, 42202);
         }
-        Attendance::create([
-            'checked_at' => $time,
-            'duty_at' => $dutyAt,
-            'employee_id' => $employee->id,
-            'attendance_type_id' => $attendanceType->id,
-            'validated_at' => $attendanceType->name == AttendanceType::CLOCKIN ? null : time(),
-        ]);
-        // $startDate = date('Y-m-d\TH:i:s.u\Z',strtotime($date. '-7 hour'));
-        // $endDate = date('Y-m-d\TH:i:s.u\Z',strtotime($endDayOfDate. '-7 hour'));
-        return $this->showOne($employee->getShifts($startDate, $endDate, $attendanceType->name));   
     }
 
     /**

@@ -173,7 +173,7 @@ class Employee extends Authenticatable implements Auditable
         return  $this->hasMany(ShiftEmployee::class, 'employee_id', 'id');
     }
 
-    public function getShifts($startedAt, $endedAt,$penaltyType = null)
+    public function getShifts($startedAt, $endedAt, $penaltyType = null)
     {
         $startedAt = new \DateTime($startedAt, new DateTimeZone('Asia/Jakarta'));
         $endedAt = new \DateTime($endedAt, new DateTimeZone('Asia/Jakarta'));
@@ -194,8 +194,8 @@ class Employee extends Authenticatable implements Auditable
             $attendancesPerDays = $attendancesFull->whereBetween(
                 'checked_at',
                 [
-                    date('Y-m-d\TH:i:s.u\Z',strtotime($startDayOfDate.'-14 hours')),
-                    date('Y-m-d\TH:i:s.u\Z',strtotime($endDayOfDate.'-14 hours'))
+                    date('Y-m-d\TH:i:s.u\Z', strtotime($startDayOfDate . '-14 hours')),
+                    date('Y-m-d\TH:i:s.u\Z', strtotime($endDayOfDate . '-14 hours'))
                 ]
             )->all();
             foreach ($attendanceTypes as $attendanceType) {
@@ -235,7 +235,7 @@ class Employee extends Authenticatable implements Auditable
         $penalties
     ) {
         if ($type->name == AttendanceType::CLOCKIN) {
-            if ($attendance) {
+            if ($attendance && $attendance->validated_at != null) {
                 $checkedAt = strtotime($attendance->checked_at);
                 if ($checkedAt > strtotime($attendance->duty_at)) {
                     $late = date('H:i:s', $checkedAt - strtotime($attendance->duty_at));
@@ -257,7 +257,7 @@ class Employee extends Authenticatable implements Auditable
                 $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
                 if ($penalty) {
 
-                    if ($isCreateNewPenalties && $penalty->amount) {
+                    if ($isCreateNewPenalties && $penalty->amount && $attendance->validated_at != null) {
                         AttendancePenalty::create([
                             'amount' => $penalty->amount,
                             'attendance_id' => null,
@@ -268,7 +268,7 @@ class Employee extends Authenticatable implements Auditable
                 }
             }
         } elseif ($type->name == AttendanceType::CLOCKOUT) {
-            if ($attendance) {
+            if ($attendance && $attendance->validated_at != null) {
                 $checkedAt = strtotime($attendance->checked_at);
                 if ($checkedAt < strtotime($attendance->duty_at)) {
                     $late =   date('H:i:s', strtotime($attendance->duty_at) - $checkedAt);
@@ -290,7 +290,7 @@ class Employee extends Authenticatable implements Auditable
             } else {
                 $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
                 if ($penalty) {
-                    if ($isCreateNewPenalties && $penalty->amount) {
+                    if ($isCreateNewPenalties && $penalty->amount && $attendance->validated_at != null) {
                         AttendancePenalty::create([
                             'amount' => $penalty->amount,
                             'attendance_id' => null,
@@ -301,7 +301,7 @@ class Employee extends Authenticatable implements Auditable
                 }
             }
         } elseif ($type->name == AttendanceType::BREAKSTARTEDAT) {
-            if ($attendance) {
+            if ($attendance && $attendance->validated_at != null) {
                 $checkedAt = strtotime($attendance->checked_at);
                 if ($checkedAt > strtotime($attendance->duty_at)) {
                     $late = date('H:i:s', $checkedAt - strtotime($attendance->duty_at));
@@ -322,7 +322,7 @@ class Employee extends Authenticatable implements Auditable
             } else {
                 $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
                 if ($penalty) {
-                    if ($isCreateNewPenalties && $penalty->amount) {
+                    if ($isCreateNewPenalties && $penalty->amount && $attendance->validated_at != null) {
                         AttendancePenalty::create([
                             'amount' => $penalty->amount,
                             'attendance_id' => null,
@@ -333,7 +333,7 @@ class Employee extends Authenticatable implements Auditable
                 }
             }
         } elseif ($type->name == AttendanceType::BREAKENDEDAT) {
-            if ($attendance) {
+            if ($attendance && $attendance->validated_at != null) {
                 $checkedAt = strtotime($attendance->checked_at);
                 if ($checkedAt > strtotime($attendance->duty_at)) {
                     $late = date('H:i:s', $checkedAt - strtotime($attendance->duty_at));
@@ -354,7 +354,7 @@ class Employee extends Authenticatable implements Auditable
             } else {
                 $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
                 if ($penalty) {
-                    if ($isCreateNewPenalties && $penalty->amount) {
+                    if ($isCreateNewPenalties && $penalty->amount && $attendance->validated_at != null) {
                         AttendancePenalty::create([
                             'amount' => $penalty->amount,
                             'attendance_id' => null,

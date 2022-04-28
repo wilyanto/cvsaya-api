@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreign('employee_id')->references('id')->on('employees');
             $table->bigInteger('attendance_type_id')->unsigned();
             $table->foreign('attendance_type_id')->references('id')->on('attendance_types');
-            $table->timestamp('validated_at');
+            $table->timestamp('validated_at')->nullable();
             $table->timestamps();
         });
     }
