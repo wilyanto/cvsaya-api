@@ -48,7 +48,17 @@ class ShiftController extends Controller
         ];
         foreach ($attendanceTypes as $attendanceType) {
             $columnName = $attendanceType->name;
-            $data[$attendanceType->name] = $shift->shift->$columnName;
+            $shift = $shift->shift->$columnName;
+            if ($attendanceType->name == AttendanceType::BREAKENDEDAT) {
+                $attendance = Attendance::whereBetween('date', [
+                    $startDate,
+                    $endDate
+                ])->first();
+                if ($attendance) {
+                    $shift = $attendance->checked_at;
+                }
+            }
+            $data[$attendanceType->name] = $shift;
         }
         return $this->showOne($data);
     }
