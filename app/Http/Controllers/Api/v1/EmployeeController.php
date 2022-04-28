@@ -28,6 +28,7 @@ class EmployeeController extends Controller
             'company_id' => 'nullable|exists:companies,id',
             'department_id' => 'nullable|exists:departments,id',
             'level_id' => 'nullable|exists:levels,id',
+            'keyword' => 'nullable|string',
         ]);
 
         $page = $request->page ? $request->page  : 1;
@@ -35,10 +36,11 @@ class EmployeeController extends Controller
         $position = $request->position_id;
         $department = $request->department_id;
         $level = $request->level_id;
+        $keyword = $request->keyword;
 
         $pageSize = $request->page_size ? $request->page_size : 10;
 
-        $employees = Employee::where(function ($query) use ($company, $position, $department, $level) {
+        $employees = Employee::where(function ($query) use ($company, $position, $department, $level, $keyword) {
             if ($company) {
                 $query->whereHas('company', function ($secondQuery) use ($company) {
                     $secondQuery->where('company_id', $company);
@@ -56,6 +58,9 @@ class EmployeeController extends Controller
                 $query->whereHas('level', function ($secondQuery) use ($level) {
                     $secondQuery->where('level_id', $level);
                 });
+            }
+            if ($keyword) {
+                $query->where('name', 'like', '%' . $keyword . '%');
             }
         })->paginate(
             $pageSize,
