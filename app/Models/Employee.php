@@ -213,11 +213,50 @@ class Employee extends Authenticatable implements Auditable
                         ),
                     ];
                 } else {
-                    $data[$attendanceType->name] = [
-                        'checked_at' => null,
-                        'duty_at' => null,
-                        'penalty' => null
-                    ];
+                    $shift = ShiftEmployee::whereBetween(
+                        'date',
+                        [
+                            $startDayOfDate,
+                            $endDayOfDate
+                        ]
+                    )->first();
+                    if (!$shift) {
+                        $getTodayDay = $date->format('N');
+                        $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $this->position->id)->first();
+                    }
+
+                    $columnName = $attendanceType->name;
+                    $dutyAt = $shift->shift->$columnName;
+                    if ($columnName == 'break_ended_at') {
+                        $attendanceTemp = Attendance::whereBetween(
+                            'duty_at',
+                            [
+                                $startDayOfDate,
+                                $endDayOfDate
+                            ]
+                        )->where('attendance_type_id', 2)->first();
+                        if ($attendanceTemp) {
+                            $dutyAt = date('Y-m-d\TH:i:s.u\Z', strtotime($attendance->checked_at . ' +' . $shift->shift->break_duration . 'hour'));
+                        }
+                    }
+                    if (time() <= strtotime($dutyAt)) {
+                        $data[$attendanceType->name] = [
+                            'checked_at' => null,
+                            'duty_at' => null,
+                            'penalty' => null
+                        ];
+                    } else {
+                        $data[$attendanceType->name] = [
+                            'checked_at' => null,
+                            'duty_at' => null,
+                            'penalty' =>  $this->getPenaltiesValue(
+                                $attendance,
+                                $attendanceType,
+                                $penaltyType == $attendanceType->name ? true : false,
+                                $penalties
+                            ),
+                        ];
+                    }
                 }
             }
 
