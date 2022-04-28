@@ -146,7 +146,7 @@ class AttendanceController extends Controller
         ]);
         // $startDate = date('Y-m-d\TH:i:s.u\Z',strtotime($date. '-7 hour'));
         // $endDate = date('Y-m-d\TH:i:s.u\Z',strtotime($endDayOfDate. '-7 hour'));
-        return $this->showOne($employee->getShifts($startDate, $endDate, true));
+        return $this->showOne($employee->getShifts($startDate, $endDate, $attendanceType->name));   
     }
 
     /**

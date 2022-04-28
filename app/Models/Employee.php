@@ -173,7 +173,7 @@ class Employee extends Authenticatable implements Auditable
         return  $this->hasMany(ShiftEmployee::class, 'employee_id', 'id');
     }
 
-    public function getShifts($startedAt, $endedAt, bool $isCreateNewPenalties = false)
+    public function getShifts($startedAt, $endedAt,$penaltyType = null)
     {
         $startedAt = new \DateTime($startedAt, new DateTimeZone('Asia/Jakarta'));
         $endedAt = new \DateTime($endedAt, new DateTimeZone('Asia/Jakarta'));
@@ -210,7 +210,7 @@ class Employee extends Authenticatable implements Auditable
                         'penalty' => $this->getPenaltiesValue(
                             $attendance,
                             $attendanceType,
-                            $isCreateNewPenalties,
+                            $penaltyType == $attendanceType->name ? true : false,
                             $penalties
                         ),
                     ];
@@ -242,7 +242,7 @@ class Employee extends Authenticatable implements Auditable
                     $penaltiesByTypes =  $penalties->where('attendance_types_id', $type->id)->sortByDesc('passing_at');
                     foreach ($penaltiesByTypes as $penalty) {
                         if (strtotime($penalty->passing_at) <= strtotime($late)) {
-                            if ($isCreateNewPenalties) {
+                            if ($isCreateNewPenalties && $penalty->amount) {
                                 AttendancePenalty::create([
                                     'amount' => $penalty->amount,
                                     'attendance_id' => $attendance->id,
@@ -257,7 +257,7 @@ class Employee extends Authenticatable implements Auditable
                 $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
                 if ($penalty) {
 
-                    if ($isCreateNewPenalties) {
+                    if ($isCreateNewPenalties && $penalty->amount) {
                         AttendancePenalty::create([
                             'amount' => $penalty->amount,
                             'attendance_id' => null,
@@ -276,7 +276,7 @@ class Employee extends Authenticatable implements Auditable
                     $penaltiesByTypes =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc']);
                     foreach ($penaltiesByTypes as $penalty) {
                         if (strtotime($penalty->passing_at) <= strtotime($late)) {
-                            if ($isCreateNewPenalties) {
+                            if ($isCreateNewPenalties && $penalty->amount) {
                                 AttendancePenalty::create([
                                     'amount' => $penalty->amount,
                                     'attendance_id' => $attendance->id,
@@ -290,7 +290,7 @@ class Employee extends Authenticatable implements Auditable
             } else {
                 $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
                 if ($penalty) {
-                    if ($isCreateNewPenalties) {
+                    if ($isCreateNewPenalties && $penalty->amount) {
                         AttendancePenalty::create([
                             'amount' => $penalty->amount,
                             'attendance_id' => null,
@@ -308,7 +308,7 @@ class Employee extends Authenticatable implements Auditable
                     $penaltiesByTypes =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc']);
                     foreach ($penaltiesByTypes as $penalty) {
                         if (strtotime($penalty->passing_at) <= strtotime($late)) {
-                            if ($isCreateNewPenalties) {
+                            if ($isCreateNewPenalties && $penalty->amount) {
                                 AttendancePenalty::create([
                                     'amount' => $penalty->amount,
                                     'attendance_id' => $attendance->id,
@@ -322,7 +322,7 @@ class Employee extends Authenticatable implements Auditable
             } else {
                 $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
                 if ($penalty) {
-                    if ($isCreateNewPenalties) {
+                    if ($isCreateNewPenalties && $penalty->amount) {
                         AttendancePenalty::create([
                             'amount' => $penalty->amount,
                             'attendance_id' => null,
@@ -340,7 +340,7 @@ class Employee extends Authenticatable implements Auditable
                     $penaltiesByTypes =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc']);
                     foreach ($penaltiesByTypes as $penalty) {
                         if (strtotime($penalty->passing_at) <= strtotime($late)) {
-                            if ($isCreateNewPenalties) {
+                            if ($isCreateNewPenalties && $penalty->amount) {
                                 AttendancePenalty::create([
                                     'amount' => $penalty->amount,
                                     'attendance_id' => $attendance->id,
@@ -354,7 +354,7 @@ class Employee extends Authenticatable implements Auditable
             } else {
                 $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
                 if ($penalty) {
-                    if ($isCreateNewPenalties) {
+                    if ($isCreateNewPenalties && $penalty->amount) {
                         AttendancePenalty::create([
                             'amount' => $penalty->amount,
                             'attendance_id' => null,
