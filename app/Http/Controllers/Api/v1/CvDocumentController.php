@@ -75,7 +75,7 @@ class CvDocumentController extends Controller
         return $this->showOne($cvDocument);
     }
 
-    public function random4Digits()
+    public static function random4Digits()
     {
         $digits = 4;
         $randomValue = rand(pow(10, $digits - 1), pow(10, $digits) - 1);

@@ -31,6 +31,6 @@ class ShiftEmployee extends Model implements Auditable
     }
 
     public function shift(){
-        return $this->hasOne(Shift::class,'id','shift_id');
+        return $this->hasOne(Shift::class,'id','shift_id')->withDefault();
     }
 }

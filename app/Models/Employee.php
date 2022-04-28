@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Position;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use DateInterval;
 use DateTime;
+use DateTimeZone;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -171,52 +173,43 @@ class Employee extends Authenticatable implements Auditable
         return  $this->hasMany(ShiftEmployee::class, 'employee_id', 'id');
     }
 
-    public function getShifts($startedAt, $endedAt)
+    public function getShifts($startedAt, $endedAt, bool $isCreateNewPenalties = false)
     {
-        $startedAt = new \DateTime($startedAt);
-        $endedAt = new \DateTime($endedAt);
+        $startedAt = new \DateTime($startedAt, new DateTimeZone('Asia/Jakarta'));
+        $endedAt = new \DateTime($endedAt, new DateTimeZone('Asia/Jakarta'));
         $shifts = [];
         $data = [];
-        $shiftsByPosition = $this->shiftPositions;
-        $shiftsByEmployee = $this->shiftEmployees;
         $attendanceTypes = AttendanceType::all();
         $penalties = Penalty::all();
         $attendancesFull = Attendance::where('employee_id', $this->id)->get();
         for ($date = $startedAt; $date <= $endedAt; $date->modify('+1 day')) {
-            $startDayOfDate =  date('Y-m-d\TH:i:s.u\Z', strtotime($date->format('Y-m-d\TH:i:s.v\Z')));
+            $startDayOfDate =  $date->format('Y-m-d\TH:i:s.u\Z');
+            $tempDate = new \DateTime($date->format('Y-m-d\TH:i:s.u\Z'), new DateTimeZone('Asia/Jakarta'));
             $data = [];
             $data['date'] = $startDayOfDate;
-            $endDayOfDate =  date('Y-m-d\TH:i:s.u\Z', strtotime($date->format('Y-m-d\TH:i:s.v\Z') . '+23 hour +59 minute + 59 second'));
-            $shift = $shiftsByEmployee->whereBetween(
-                'date',
-                [
-                    $startDayOfDate,
-                    $endDayOfDate
-                ]
-            )->first();
-            if (!$shift) {
-                $getTodayDay = date('N', strtotime($startDayOfDate));
-                $shift = $shiftsByPosition->where('day', $getTodayDay)->where('position_id', $this->position->id)->first();
-            }
+            $interval = DateInterval::createFromDateString('+23 hour +59 minute + 59 second');
+            $endDayOfDate =  $tempDate->add($interval)->format('Y-m-d\TH:i:s.u\Z');
+            // dump($startDayOfDate);
+            // dump(date('Y-m-d\TH:i:s.u\Z',strtotime($startDayOfDate.'-14 hours')));
             $attendancesPerDays = $attendancesFull->whereBetween(
                 'checked_at',
                 [
-                    $startDayOfDate,
-                    $endDayOfDate
+                    date('Y-m-d\TH:i:s.u\Z',strtotime($startDayOfDate.'-14 hours')),
+                    date('Y-m-d\TH:i:s.u\Z',strtotime($endDayOfDate.'-14 hours'))
                 ]
             )->all();
             foreach ($attendanceTypes as $attendanceType) {
                 $attendancesPerDays = collect($attendancesPerDays);
                 $attendance = $attendancesPerDays->where('attendance_type_id', $attendanceType->id)->first();
                 if (count($attendancesPerDays)) {
+                    $checkedAt = $attendance ? new \DateTime($attendance->checked_at, new DateTimeZone('Asia/Jakarta')) : null;
                     $data[$attendanceType->name] = [
-                        'checked_at' => $attendance ? $attendance->checked_at : null,
+                        'checked_at' => $checkedAt ? $checkedAt->format('Y-m-d\TH:i:s.u\Z') : null,
                         'duty_at' => $attendance ? $attendance->duty_at : null,
                         'penalty' => $this->getPenaltiesValue(
                             $attendance,
-                            $shift->shift,
                             $attendanceType,
-                            false,
+                            $isCreateNewPenalties,
                             $penalties
                         ),
                     ];
@@ -236,7 +229,6 @@ class Employee extends Authenticatable implements Auditable
 
     public static function getPenaltiesValue(
         $attendance,
-        Shift $shift,
         AttendanceType $type,
         bool $isCreateNewPenalties,
         $penalties
