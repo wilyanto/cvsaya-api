@@ -295,7 +295,9 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('attendance-types')->group(function(){
-            Route::controller(AttendanceController::class)->group(function ())
+            Route::controller(AttendanceController::class)->group(function (){
+                Route::get('/','indexAttendanceType');
+            });
         });
 
         Route::group(['middleware' => ['permission:manage-employee']], function () {
