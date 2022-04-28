@@ -122,7 +122,6 @@ class Candidate extends Model implements Auditable
                 $status = 4;
             }
         }
-        $value = $this->label();
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,

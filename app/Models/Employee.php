@@ -189,8 +189,6 @@ class Employee extends Authenticatable implements Auditable
             $data['date'] = $startDayOfDate;
             $interval = DateInterval::createFromDateString('+23 hour +59 minute + 59 second');
             $endDayOfDate =  $tempDate->add($interval)->format('Y-m-d\TH:i:s.u\Z');
-            // dump($startDayOfDate);
-            // dump(date('Y-m-d\TH:i:s.u\Z',strtotime($startDayOfDate.'-14 hours')));
             $attendancesPerDays = $attendancesFull->whereBetween(
                 'checked_at',
                 [
@@ -201,7 +199,7 @@ class Employee extends Authenticatable implements Auditable
             foreach ($attendanceTypes as $attendanceType) {
                 $attendancesPerDays = collect($attendancesPerDays);
                 $attendance = $attendancesPerDays->where('attendance_type_id', $attendanceType->id)->first();
-                if (count($attendancesPerDays)) {
+                if ($attendance) {
                     $checkedAt = $attendance ? new \DateTime($attendance->checked_at, new DateTimeZone('Asia/Jakarta')) : null;
                     $dutyAt =  $attendance ? new \DateTime($attendance->duty_at, new DateTimeZone('Asia/Jakarta')) : null;
                     $data[$attendanceType->name] = [
