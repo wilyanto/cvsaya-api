@@ -1035,18 +1035,21 @@ Response Example:
 ```
 
 ## [Show Employees Salary](#show-employees-salary)
+
 this api show Employee by requested id
 
 ```
 GET /api/v1/employees/{id}/salaries
 ```
+
 Response Description:
 
-> | Name | Type        | Description                     |
-> | ---- | ----------- | ------------------------------- |
+> | Name | Type        | Description                          |
+> | ---- | ----------- | ------------------------------------ |
 > | id   | primary key | primary key of table employee salary |
 
 Response Example :
+
 ```
 {
 	"meta": {
@@ -1634,7 +1637,6 @@ Request Description :
 
 > | Name | Type    | Description                          | Nullable |
 > | ---- | ------- | ------------------------------------ | -------- |
-> | time | time    | time user attend                     | no       |
 > | type | foreign | primary key of attendanceTypes Table | no       |
 > | file | picture | upload file from camera              | no       |
 
@@ -1642,7 +1644,6 @@ Request Example :
 
 ```
 {
-    "time" : 12:00,
     "type" : 1，
     "file" : file
 }
@@ -1657,27 +1658,52 @@ Response Example :
         "code" : 200000,
         "message" : request success"
     },
-    data :{
-        "employee" : {
-            "id" : "employee-2",
-            "name" : "Victor Yansen",
-        }
-        attendances : [
-            {
-                "date" : "2022-04-09T00:00:00.000000Z",
-                "attendance" : {
-                    "clock_in" : {
-                        "checked_at" : "12:00:00",
-                        "duty_at" : "07:45:00",
-                        "penalty" : -75000,
-                    },
-                    "start_break" : null,
-                    "end_break" : null,
-                    "clock_out" : null
-                }
-            }
-        ]
-    }
+    data : "success",
+}
+```
+
+# [Attendance-Types](#attendance-types)
+Add new or update attendance
+
+```
+Get /api/v1/attendance-types
+```
+
+Response Example :
+
+```
+{
+     "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data : [
+        {
+			"id": 1,
+			"name": "clock_in",
+			"created_at": "2022-04-28T05:20:31.000000Z",
+			"updated_at": "2022-04-28T05:20:31.000000Z"
+		},
+		{
+			"id": 2,
+			"name": "clock_out",
+			"created_at": "2022-04-28T05:20:31.000000Z",
+			"updated_at": "2022-04-28T05:20:31.000000Z"
+		},
+		{
+			"id": 3,
+			"name": "break_started_at",
+			"created_at": "2022-04-28T05:20:31.000000Z",
+			"updated_at": "2022-04-28T05:20:31.000000Z"
+		},
+		{
+			"id": 4,
+			"name": "break_ended_at",
+			"created_at": "2022-04-28T05:20:31.000000Z",
+			"updated_at": "2022-04-28T05:20:31.000000Z"
+		}
+    ]
 }
 ```
 
