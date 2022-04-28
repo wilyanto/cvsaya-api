@@ -84,6 +84,7 @@ class AttendanceController extends Controller
                 'integer',
                 'exists:App\Models\AttendanceType,id',
             ],
+            'note' => 'string|nullable',
         ]);
         $attendanceType = AttendanceType::findOrFail($request->type);
         $documentType = DocumentType::where('name', 'attendances')->firstOrFail();
@@ -158,6 +159,7 @@ class AttendanceController extends Controller
                 'employee_id' => $employee->id,
                 'attendance_type_id' => $attendanceType->id,
                 'validated_at' => $attendanceType->name == AttendanceType::CLOCKIN ? null : time(),
+                'note' => $request->note,
             ]);
 
             $employee->getShifts($startDate, $endDate, $attendanceType->name);

@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\v1\ReligionController;
 use App\Http\Controllers\Api\v1\MarriageStatusController;
 use App\Http\Controllers\Api\v1\SalaryTypeController;
 use App\Http\Controllers\Api\v1\AttendanceController;
+use App\Http\Controllers\Api\v1\ShiftController;
 use App\Models\Certifications;
 use App\Models\CvProfileDetail;
 use App\Models\EmploymentType;
@@ -298,6 +299,12 @@ Route::prefix('v1')->group(function () {
         Route::prefix('attendance-types')->group(function () {
             Route::controller(AttendanceController::class)->group(function () {
                 Route::get('/', 'indexAttendanceType');
+            });
+        });
+
+        Route::prefix('shifts')->group(function () {
+            Route::controller(ShiftController::class)->group(function () {
+                Route::get('/', 'index');
             });
         });
 

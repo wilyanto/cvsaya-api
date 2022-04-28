@@ -1635,17 +1635,19 @@ POST /api/v1/attendances
 
 Request Description :
 
-> | Name | Type    | Description                          | Nullable |
-> | ---- | ------- | ------------------------------------ | -------- |
-> | type | foreign | primary key of attendanceTypes Table | no       |
-> | file | picture | upload file from camera              | no       |
+> | Name | Type     | Description                          | Nullable |
+> | ---- | -------- | ------------------------------------ | -------- |
+> | type | foreign  | primary key of attendanceTypes Table | no       |
+> | file | picture  | upload file from camera              | no       |
+> | note | longText | Long Text of file                    | yes      |
 
 Request Example :
-
+    
 ```
 {
     "type" : 1，
-    "file" : file
+    "file" : file,
+    "note" : "habis bensin"
 }
 ```
 
@@ -1663,6 +1665,7 @@ Response Example :
 ```
 
 # [Attendance-Types](#attendance-types)
+
 Add new or update attendance
 
 ```
