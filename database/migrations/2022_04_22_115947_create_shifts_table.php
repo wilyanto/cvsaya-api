@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('shifts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->time('started_at');
-            $table->time('ended_at');
+            $table->time('clock_in');
+            $table->time('clock_out');
             $table->time('break_started_at')->nullable();
             $table->time('break_ended_at')->nullable();
             $table->integer('break_duration')->nullable();

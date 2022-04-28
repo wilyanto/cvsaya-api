@@ -12,7 +12,7 @@ class ShiftEmployee extends Model implements Auditable
 
     use \OwenIt\Auditing\Auditable;
 
-    protected $table = 'shifts-employees';
+    protected $table = 'shift_employees';
 
     protected $dates = [
         'date'

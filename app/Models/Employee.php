@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Position;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use DateTime;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -65,8 +66,9 @@ class Employee extends Authenticatable implements Auditable
         return $this->hasOneThrough(Department::class, Position::class, 'id', 'id', 'position_id', 'department_id')->withDefault();
     }
 
-    public function employmentType(){
-        return $this->hasOne(EmploymentType::class,'id','employment_type_id')->withDefault();
+    public function employmentType()
+    {
+        return $this->hasOne(EmploymentType::class, 'id', 'employment_type_id')->withDefault();
     }
 
     public function user()
@@ -74,14 +76,17 @@ class Employee extends Authenticatable implements Auditable
         return $this->belongsTo(User::class, 'user_id', 'id_kustomer')->withDefault();
     }
 
-    public function salaryType(){
+    public function salaryType()
+    {
         return $this->hasMany(EmployeeSalaryType::class);
     }
 
-    public function typeOfSalary(){
+    public function typeOfSalary()
+    {
+        // $salaries = EmployeeSalaryType::where('employee_id',$this->id)->get();
         $salaries = $this->salaryType;
-        if(count($salaries)){
-            $salaries = $salaries->map(function ($item){
+        if (count($salaries)) {
+            $salaries = $salaries->map(function ($item) {
                 return [
                     'salary_type_id' => $item->salaryType->id,
                     'name' => $item->salaryType->name,
@@ -138,7 +143,7 @@ class Employee extends Authenticatable implements Auditable
     {
         return [
             'id' => $this->id,
-            'name' => $this->profileDetail->first_name.' '.$this->profileDetail->last_name,
+            'name' => $this->profileDetail->first_name . ' ' . $this->profileDetail->last_name,
             'employment_type' => $this->employmentType,
             // 'salary_types' => $this->typeOfSalary(),
             'company' => $this->company,
@@ -148,7 +153,7 @@ class Employee extends Authenticatable implements Auditable
             'parent_id' => $this->parent_id,
             'joined_at' => $this->joined_at,
             'created_at' => $this->created_at,
-            'updated_at' =>$this->updated_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 
@@ -156,21 +161,217 @@ class Employee extends Authenticatable implements Auditable
     //    if()
     // }
 
-    // public function getShifts($startedAt, $endedAt)
-    // {
-    //     $startedAt = new \DateTime($startedAt);
-    //     $endedAt = new \DateTime($endedAt);
-    //     $shifts = [];
-    //     $data = [];
-    //     $shifts = $this->hasMany(ShiftPositions::class, 'position_id', 'position_id');
-    //     $specialShifts = $this->hasMany(ShiftEmployee::class,'employee_id','id');
-    //     $attendanceTypes = AttendanceType::all();
-    //     for ($date = $startedAt; $date <= $endedAt; $date->modify('+1 day')) {
-    //         $data['date'] = $date->format('Y-m-d\TH:i:s.v\Z');
-    //         $data['clock_in'] = '';
-    //         $data['start_break'] = '';
-    //         $data['end_break'] = '';
-    //         $data['clock_out'] = '';
-    //     }
-    // }
+    public function shiftPositions()
+    {
+        return $this->hasMany(ShiftPositions::class, 'position_id', 'position_id');
+    }
+
+    public function shiftEmployees()
+    {
+        return  $this->hasMany(ShiftEmployee::class, 'employee_id', 'id');
+    }
+
+    public function getShifts($startedAt, $endedAt)
+    {
+        $startedAt = new \DateTime($startedAt);
+        $endedAt = new \DateTime($endedAt);
+        $shifts = [];
+        $data = [];
+        $shiftsByPosition = $this->shiftPositions;
+        $shiftsByEmployee = $this->shiftEmployees;
+        $attendanceTypes = AttendanceType::all();
+        $penalties = Penalty::all();
+        $attendancesFull = Attendance::where('employee_id', $this->id)->get();
+        for ($date = $startedAt; $date <= $endedAt; $date->modify('+1 day')) {
+            $startDayOfDate =  date('Y-m-d\TH:i:s.u\Z', strtotime($date->format('Y-m-d\TH:i:s.v\Z')));
+            $data = [];
+            $data['date'] = $startDayOfDate;
+            $endDayOfDate =  date('Y-m-d\TH:i:s.u\Z', strtotime($date->format('Y-m-d\TH:i:s.v\Z') . '+23 hour +59 minute + 59 second'));
+            $shift = $shiftsByEmployee->whereBetween(
+                'date',
+                [
+                    $startDayOfDate,
+                    $endDayOfDate
+                ]
+            )->first();
+            if (!$shift) {
+                $getTodayDay = date('N', strtotime($startDayOfDate));
+                $shift = $shiftsByPosition->where('day', $getTodayDay)->where('position_id', $this->position->id)->first();
+            }
+            $attendancesPerDays = $attendancesFull->whereBetween(
+                'checked_at',
+                [
+                    $startDayOfDate,
+                    $endDayOfDate
+                ]
+            )->all();
+            foreach ($attendanceTypes as $attendanceType) {
+                $attendancesPerDays = collect($attendancesPerDays);
+                $attendance = $attendancesPerDays->where('attendance_type_id', $attendanceType->id)->first();
+                if (count($attendancesPerDays)) {
+                    $data[$attendanceType->name] = [
+                        'checked_at' => $attendance ? $attendance->checked_at : null,
+                        'duty_at' => $attendance ? $attendance->duty_at : null,
+                        'penalty' => $this->getPenaltiesValue(
+                            $attendance,
+                            $shift->shift,
+                            $attendanceType,
+                            false,
+                            $penalties
+                        ),
+                    ];
+                } else {
+                    $data[$attendanceType->name] = [
+                        'checked_at' => null,
+                        'duty_at' => null,
+                        'penalty' => null
+                    ];
+                }
+            }
+
+            $shifts[] = $data;
+        }
+        return $shifts;
+    }
+
+    public static function getPenaltiesValue(
+        $attendance,
+        Shift $shift,
+        AttendanceType $type,
+        bool $isCreateNewPenalties,
+        $penalties
+    ) {
+        if ($type->name == AttendanceType::CLOCKIN) {
+            if ($attendance) {
+                $checkedAt = strtotime($attendance->checked_at);
+                if ($checkedAt > strtotime($attendance->duty_at)) {
+                    $late = date('H:i:s', $checkedAt - strtotime($attendance->duty_at));
+                    $penaltiesByTypes =  $penalties->where('attendance_types_id', $type->id)->sortByDesc('passing_at');
+                    foreach ($penaltiesByTypes as $penalty) {
+                        if (strtotime($penalty->passing_at) <= strtotime($late)) {
+                            if ($isCreateNewPenalties) {
+                                AttendancePenalty::create([
+                                    'amount' => $penalty->amount,
+                                    'attendance_id' => $attendance->id,
+                                    'penalty_id' => $penalty->id,
+                                ]);
+                            }
+                            return $penalty->amount;
+                        }
+                    }
+                }
+            } else {
+                $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
+                if ($penalty) {
+
+                    if ($isCreateNewPenalties) {
+                        AttendancePenalty::create([
+                            'amount' => $penalty->amount,
+                            'attendance_id' => null,
+                            'penalty_id' => $penalty->id,
+                        ]);
+                    }
+                    return $penalty->amount;
+                }
+            }
+        } elseif ($type->name == AttendanceType::CLOCKOUT) {
+            if ($attendance) {
+                $checkedAt = strtotime($attendance->checked_at);
+                if ($checkedAt < strtotime($attendance->duty_at)) {
+                    $late =   date('H:i:s', strtotime($attendance->duty_at) - $checkedAt);
+                    // dump($late);
+                    $penaltiesByTypes =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc']);
+                    foreach ($penaltiesByTypes as $penalty) {
+                        if (strtotime($penalty->passing_at) <= strtotime($late)) {
+                            if ($isCreateNewPenalties) {
+                                AttendancePenalty::create([
+                                    'amount' => $penalty->amount,
+                                    'attendance_id' => $attendance->id,
+                                    'penalty_id' => $penalty->id,
+                                ]);
+                            }
+                            return $penalty->amount;
+                        }
+                    }
+                }
+            } else {
+                $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
+                if ($penalty) {
+                    if ($isCreateNewPenalties) {
+                        AttendancePenalty::create([
+                            'amount' => $penalty->amount,
+                            'attendance_id' => null,
+                            'penalty_id' => $penalty->id,
+                        ]);
+                    }
+                    return $penalty->amount;
+                }
+            }
+        } elseif ($type->name == AttendanceType::BREAKSTARTEDAT) {
+            if ($attendance) {
+                $checkedAt = strtotime($attendance->checked_at);
+                if ($checkedAt > strtotime($attendance->duty_at)) {
+                    $late = date('H:i:s', $checkedAt - strtotime($attendance->duty_at));
+                    $penaltiesByTypes =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc']);
+                    foreach ($penaltiesByTypes as $penalty) {
+                        if (strtotime($penalty->passing_at) <= strtotime($late)) {
+                            if ($isCreateNewPenalties) {
+                                AttendancePenalty::create([
+                                    'amount' => $penalty->amount,
+                                    'attendance_id' => $attendance->id,
+                                    'penalty_id' => $penalty->id,
+                                ]);
+                            }
+                            return $penalty->amount;
+                        }
+                    }
+                }
+            } else {
+                $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
+                if ($penalty) {
+                    if ($isCreateNewPenalties) {
+                        AttendancePenalty::create([
+                            'amount' => $penalty->amount,
+                            'attendance_id' => null,
+                            'penalty_id' => $penalty->id,
+                        ]);
+                    }
+                    return $penalty->amount;
+                }
+            }
+        } elseif ($type->name == AttendanceType::BREAKENDEDAT) {
+            if ($attendance) {
+                $checkedAt = strtotime($attendance->checked_at);
+                if ($checkedAt > strtotime($attendance->duty_at)) {
+                    $late = date('H:i:s', $checkedAt - strtotime($attendance->duty_at));
+                    $penaltiesByTypes =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc']);
+                    foreach ($penaltiesByTypes as $penalty) {
+                        if (strtotime($penalty->passing_at) <= strtotime($late)) {
+                            if ($isCreateNewPenalties) {
+                                AttendancePenalty::create([
+                                    'amount' => $penalty->amount,
+                                    'attendance_id' => $attendance->id,
+                                    'penalty_id' => $penalty->id,
+                                ]);
+                            }
+                            return $penalty->amount;
+                        }
+                    }
+                }
+            } else {
+                $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
+                if ($penalty) {
+                    if ($isCreateNewPenalties) {
+                        AttendancePenalty::create([
+                            'amount' => $penalty->amount,
+                            'attendance_id' => null,
+                            'penalty_id' => $penalty->id,
+                        ]);
+                    }
+                    return $penalty->amount;
+                }
+            }
+        }
+        return 0;
+    }
 }

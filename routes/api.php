@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\v1\PermissionController;
 use App\Http\Controllers\Api\v1\ReligionController;
 use App\Http\Controllers\Api\v1\MarriageStatusController;
 use App\Http\Controllers\Api\v1\SalaryTypeController;
+use App\Http\Controllers\Api\v1\AttendanceController    ;
 use App\Models\Certifications;
 use App\Models\CvProfileDetail;
 use App\Models\EmploymentType;
@@ -285,6 +286,16 @@ Route::prefix('v1')->group(function () {
                     Route::get('/', 'index');
                 });
             });
+        });
+
+        Route::prefix('attendances')->group(function(){
+            Route::controller(AttendanceController::class)->group(function () {
+                Route::get('/', 'index');
+            });
+        });
+
+        Route::prefix('attendance-types')->group(function(){
+            Route::controller(AttendanceController::class)->group(function ())
         });
 
         Route::group(['middleware' => ['permission:manage-employee']], function () {

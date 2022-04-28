@@ -12,7 +12,7 @@ class ShiftPositions extends Model implements Auditable
 
     use \OwenIt\Auditing\Auditable;
 
-    protected $table = 'shifts-positions';
+    protected $table = 'shift_positions';
 
 
     public $fillable = [
