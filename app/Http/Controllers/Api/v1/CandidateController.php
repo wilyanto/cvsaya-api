@@ -87,10 +87,10 @@ class CandidateController extends Controller
             }
         })->orderBy('updated_at', $orderBy)
             ->paginate(
-                $perpage = $request->page_size,
-                $columns =  ['*'],
-                $pageName = 'page',
-                $pageBody = $request->page
+                $pageSize,
+                ['*'],
+                'page',
+                $page
             );
         $data = [];
         foreach ($candidates as $candidate) {
@@ -170,10 +170,10 @@ class CandidateController extends Controller
             }
         })->orderBy('name', 'desc')->whereNotNull('validated_at')
             ->paginate(
-                $request->page_size,
+                $pageSize,
                 ['*'],
                 'page',
-                $request->page
+                $page
             );
         foreach ($positions as $position) {
             $result[] = [
