@@ -101,9 +101,9 @@ class AttendanceController extends Controller
                 $startDate,
                 $endDate
             ]
-        )->where('employee_id',$user->id_kustomer)->whereNotNull('validated_at')->get();
+        )->whereNotNull('validated_at')->get();
         if ($attendanceType->id >= AttendanceType::CLOCKOUTID) {
-            if (!$attendances->where('attendance_type_id', AttendanceType::CLOCKIN)->first()) {
+            if ($attendances->where('attendance_type_id', AttendanceType::CLOCKIN)->first() != null) {
                 return $this->errorResponse('You have to attend clock_in first', 422, 42201);
             }
         }
