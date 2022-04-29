@@ -28,8 +28,8 @@ class CandidateController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'page' => 'required|numeric|gt:0',
-            'page_size' => 'required|numeric|gt:0',
+            'page' => 'nullable|numeric|gt:0',
+            'page_size' => 'nullable|numeric|gt:0',
             'name' => 'nullable|string',
             'status' => 'nullable|integer',
             'country_id' => 'nullable',
@@ -41,6 +41,9 @@ class CandidateController extends Controller
                 Rule::in(['DESC', 'ASC']),
             ],
         ]);
+
+        $page = $request->page ? $request->page  : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
         $name = $request->name;
         $status = $request->status;
         $countryId = $request->country_id;
@@ -153,9 +156,12 @@ class CandidateController extends Controller
     {
         $request->validate([
             'keyword' => 'nullable',
-            'page' => 'required|numeric|gt:0',
-            'page_size' => 'required|numeric|gt:0'
+            'page' => 'nullable|numeric|gt:0',
+            'page_size' => 'nullable|numeric|gt:0'
         ]);
+
+        $page = $request->page ? $request->page  : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
         $keyword = $request->keyword;
         $result = [];
         $positions = CandidatePosition::where(function ($query) use ($keyword) {

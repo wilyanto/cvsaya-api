@@ -21,8 +21,8 @@ class CompanyController extends Controller
             'keyword' => [
                 'string',
             ],
-            'page' => 'required|numeric|gt:0',
-            'page_size' => 'required|numeric|gt:0'
+            'page' => 'nullable|numeric|gt:0',
+            'page_size' => 'nullable|numeric|gt:0'
         ]);
 
         $page = $request->page ? $request->page  : 1;
