@@ -13,6 +13,7 @@ use App\Models\ShiftEmployee;
 use App\Models\ShiftPositions;
 use App\Traits\ApiResponser;
 use DateInterval;
+use DateTime;
 use DateTimeZone;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,7 +21,7 @@ class ShiftController extends Controller
 {
     use ApiResponser;
 
-    public function index()
+    public function index(Request $request)
     {
         $data = [];
         $user = auth()->user();
@@ -28,8 +29,14 @@ class ShiftController extends Controller
         $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
 
         $attendanceTypes = AttendanceType::all();
+        $request->validate([
+            'date' => 'date_format:Y-m-d\TH:i:s.u\Z|nullable',
+        ]);
 
         $date =  new \DateTime("today", new DateTimeZone('Asia/Jakarta'));
+        if ($request->date) {
+            $date = new \DateTime($request->date, new DateTimeZone('Asia/Jakarta'));
+        }
         $startDate = $date->format('Y-m-d\TH:i:s.u\Z');
         $interval = DateInterval::createFromDateString('+23 hour +59 minute + 59 second');
         $endDate = $date->add($interval)->format('Y-m-d\TH:i:s.u\Z');
@@ -43,8 +50,8 @@ class ShiftController extends Controller
         if (!$shift) {
             $getTodayDay = $date->format('N');
             $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $employee->position->id)->first();
-            if(!$shift){
-                return $this->errorResponse('Your Shift Not Found',422,42201);
+            if (!$shift) {
+                return $this->errorResponse('Your Shift Not Found', 422, 42201);
             }
         }
         $data['employee'] = [
@@ -60,7 +67,8 @@ class ShiftController extends Controller
                     $endDate
                 ])->first();
                 if ($attendance) {
-                    $shiftByColumn = $attendance->checked_at;
+                    $time = new \DateTime($attendance->checked_at, new DateTimeZone('Asia/Jakarta'));;
+                    $shiftByColumn = $time->format('H:i:s');
                 }
             }
             $data[$attendanceType->name] = $shiftByColumn;
