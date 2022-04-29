@@ -60,15 +60,20 @@ class ShiftController extends Controller
         ];
         foreach ($attendanceTypes as $attendanceType) {
             $columnName = $attendanceType->name;
-            $shiftByColumn = $shift->shift->$columnName;
+            if($shift->shift->$columnName){
+                // dump(strtotime($startDate) + strtotime($shift->shift->$columnName));
+                $shiftByColumn = date('Y-m-d\TH:i:s.u\Z', strtotime($shift->shift->$columnName));
+            }else{
+               $shiftByColumn= $shift->shift->$columnName;
+            }
             if ($attendanceType->name == AttendanceType::BREAKENDEDAT) {
                 $attendance = Attendance::whereBetween('duty_at', [
                     $startDate,
                     $endDate
-                ])->first();
+                ])->where('attendance_type_id', $attendanceType->id)->first();
                 if ($attendance) {
                     $time = new \DateTime($attendance->checked_at, new DateTimeZone('Asia/Jakarta'));;
-                    $shiftByColumn = $time->format('H:i:s');
+                    $shiftByColumn = $time->format('Y-m-d\TH:i:s.u\Z');
                 }
             }
             $data[$attendanceType->name] = $shiftByColumn;
@@ -118,25 +123,61 @@ class ShiftController extends Controller
         return $this->showOne($shift);
     }
 
-    // public function attachShiftPosition(Request $request,$id){
-    //     $rule = [
-    //         "shifts" => [
-    //             'array',
-    //             'required'
-    //         ]
-    //     ];
+    public function attachShiftPosition(Request $request, $id)
+    {
+        $rule = [
+            "shifts" => [
+                'array',
+                'required'
+            ]
+        ];
 
-    //     $request->validate($rule);
+        $request->validate($rule);
+        $shift = Shift::findOrFail($id);
+        foreach ($request->shifts as $newShift) {
+            $position = Position::findOrFail($newShift->position_id);
+            $exisitShift = ShiftPositions::where('position_id', $position->id)->whereIn('day', [$newShift->day])->get();
+            if (count($exisitShift)) {
+                return $this->errorResponse('founded antoher shift, please delete old one', 422, 42202);
+            }
+            $position = Position::findOrFail($newShift->position);
+            foreach ($newShift->days as $day) {
 
-    //     foreach($request->positions as $positionId){
-    //         $position = Position::findOrFail($id);
-    //         if(!ShiftPositions::where('shift_id',$shift->id)->where('position_id',$position->id)->first()){
-    //             $data[] = [
-    //                 'shift_id' => $shift->id,
-    //                 'position_id' => $position->id,
-    //                 // 'day' =>
-    //             ]
-    //         }
-    //     }
-    // }
+                $data[] = [
+                    'shift_id' => $shift->id,
+                    'position_id' => $position->id,
+                    'day' => $day,
+                ];
+            }
+        }
+
+        ShiftPositions::insert($data);
+        return $this->showOne('Success');
+    }
+
+    public function attachShiftEmployee(Request $request, $id)
+    {
+        $rule = [
+            "shifts" => [
+                'array',
+                'required'
+            ]
+        ];
+
+        $request->validate($rule);
+        $shift = Shift::findOrFail($id);
+        foreach ($request->shifts as $newShift) {
+            $employee = Employee::findOrFail($newShift->position);
+            foreach ($newShift->days as $day) {
+                $data[] = [
+                    'shift_id' => $shift->id,
+                    'employee_id' => $employee->id,
+                    'day' => $day,
+                ];
+            }
+        }
+
+        ShiftPositions::insert($data);
+        return $this->showOne('Success');
+    }
 }

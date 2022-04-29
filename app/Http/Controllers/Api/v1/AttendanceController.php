@@ -102,8 +102,35 @@ class AttendanceController extends Controller
                 $endDate
             ]
         )->whereNotNull('validated_at')->get();
+        $shift = ShiftEmployee::whereBetween(
+            'date',
+            [
+                $startDate,
+                $endDate
+            ]
+        )->first();
+        if (!$shift) {
+            $getTodayDay = $time->format('N');
+            $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $employee->position->id)->first();
+        }
+
+        $columnName = $attendanceType->name;
+        $dutyAt = $shift->shift->$columnName;
+        if ($columnName == 'break_ended_at') {
+            $attendance = Attendance::whereBetween(
+                'duty_at',
+                [
+                    $startDate,
+                    $endDate
+                ]
+            )->where('attendance_type_id', 2)->first();
+            if ($attendance) {
+                $dutyAt = date('Y-m-d\TH:i:s.u\Z', strtotime($attendance->checked_at . ' +' . $shift->shift->break_duration . 'hour'));
+            }
+        }
+
         if ($attendanceType->id >= AttendanceType::CLOCKOUTID) {
-            if ($attendances->where('attendance_type_id', AttendanceType::CLOCKIN)->first() != null) {
+            if ($attendances->where('attendance_type_id', AttendanceType::CLOCKIN)->first() != null && $dutyAt) {
                 return $this->errorResponse('You have to attend clock_in first', 422, 42201);
             }
         }
@@ -127,32 +154,6 @@ class AttendanceController extends Controller
                 'type_id' => $documentType->id,
                 'original_file_name' => $request->file->getClientOriginalName(),
             ]);
-            $shift = ShiftEmployee::whereBetween(
-                'date',
-                [
-                    $startDate,
-                    $endDate
-                ]
-            )->first();
-            if (!$shift) {
-                $getTodayDay = $time->format('N');
-                $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $employee->position->id)->first();
-            }
-
-            $columnName = $attendanceType->name;
-            $dutyAt = $shift->shift->$columnName;
-            if ($columnName == 'break_ended_at') {
-                $attendance = Attendance::whereBetween(
-                    'duty_at',
-                    [
-                        $startDate,
-                        $endDate
-                    ]
-                )->where('attendance_type_id', 2)->first();
-                if ($attendance) {
-                    $dutyAt = date('Y-m-d\TH:i:s.u\Z', strtotime($attendance->checked_at . ' +' . $shift->shift->break_duration . 'hour'));
-                }
-            }
             Attendance::create([
                 'checked_at' => $time,
                 'duty_at' => $dutyAt,
