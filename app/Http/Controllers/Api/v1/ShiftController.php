@@ -54,10 +54,8 @@ class ShiftController extends Controller
                 return $this->errorResponse('Your Shift Not Found', 422, 42201);
             }
         }
-        $data['employee'] = [
-            'id' => $employee->id,
-            'name' => $employee->getUserName(),
-        ];
+        $data['name'] = $shift->shift->name;
+        $data['break_duration'] = $shift->shift->break_duration;
         foreach ($attendanceTypes as $attendanceType) {
             $columnName = $attendanceType->name;
             if($shift->shift->$columnName){
