@@ -35,7 +35,7 @@ class PositionController extends Controller
             ],
 
             'keyword' => [
-                'string',
+                'string','nullable'
             ],
             'page' => 'nullable|numeric|gt:0',
             'page_size' => 'nullable|numeric|gt:0'
