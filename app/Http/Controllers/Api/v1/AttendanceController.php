@@ -95,19 +95,19 @@ class AttendanceController extends Controller
         $startDate = $date->format('Y-m-d\TH:i:s.u\Z');
         $interval = DateInterval::createFromDateString('+23 hour +59 minute + 59 second');
         $endDate = $date->add($interval)->format('Y-m-d\TH:i:s.u\Z');
-        $attendance = Attendance::whereBetween(
+        $attendances = Attendance::whereBetween(
             'duty_at',
             [
                 $startDate,
                 $endDate
             ]
-        )->whereNotNull('validated_at')->get();
-        if ($attendanceType->id >= 2) {
-            if (!$attendance->where('attendance_type_id', 1)->first()) {
+        )->where('employee_id',$user->id_kustomer)->whereNotNull('validated_at')->get();
+        if ($attendanceType->id >= AttendanceType::CLOCKOUTID) {
+            if (!$attendances->where('attendance_type_id', AttendanceType::CLOCKIN)->first()) {
                 return $this->errorResponse('You have to attend clock_in first', 422, 42201);
             }
         }
-        if (!$attendance->where('attendance_type_id', $attendanceType->id)->first()) {
+        if (!$attendances->where('attendance_type_id', $attendanceType->id)->first()) {
 
             $timeDocument = date('Y-m-d_H-i-s', time());
             $randomNumber =  CvDocumentController::random4Digits();
