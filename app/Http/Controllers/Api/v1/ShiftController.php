@@ -55,7 +55,7 @@ class ShiftController extends Controller
             $columnName = $attendanceType->name;
             $shiftByColumn = $shift->shift->$columnName;
             if ($attendanceType->name == AttendanceType::BREAKENDEDAT) {
-                $attendance = Attendance::whereBetween('date', [
+                $attendance = Attendance::whereBetween('duty_at', [
                     $startDate,
                     $endDate
                 ])->first();
