@@ -43,7 +43,7 @@ class ShiftController extends Controller
         if (!$shift) {
             $getTodayDay = $date->format('N');
             $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $employee->position->id)->first();
-            if($shift){
+            if(!$shift){
                 return $this->errorResponse('Your Shift Not Found',422,42201);
             }
         }
@@ -53,17 +53,17 @@ class ShiftController extends Controller
         ];
         foreach ($attendanceTypes as $attendanceType) {
             $columnName = $attendanceType->name;
-            $shift = $shift->shift->$columnName;
+            $shiftByColumn = $shift->shift->$columnName;
             if ($attendanceType->name == AttendanceType::BREAKENDEDAT) {
                 $attendance = Attendance::whereBetween('date', [
                     $startDate,
                     $endDate
                 ])->first();
                 if ($attendance) {
-                    $shift = $attendance->checked_at;
+                    $shiftByColumn = $attendance->checked_at;
                 }
             }
-            $data[$attendanceType->name] = $shift;
+            $data[$attendanceType->name] = $shiftByColumn;
         }
         return $this->showOne($data);
     }
