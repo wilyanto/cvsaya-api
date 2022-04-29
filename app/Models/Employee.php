@@ -295,7 +295,7 @@ class Employee extends Authenticatable implements Auditable
                 $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
                 if ($penalty) {
 
-                    if ($isCreateNewPenalties && $penalty->amount && $attendance->validated_at != null) {
+                    if ($isCreateNewPenalties && $penalty->amount) {
                         AttendancePenalty::create([
                             'amount' => $penalty->amount,
                             'attendance_id' => null,
@@ -328,7 +328,7 @@ class Employee extends Authenticatable implements Auditable
             } else {
                 $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
                 if ($penalty) {
-                    if ($isCreateNewPenalties && $penalty->amount && $attendance->validated_at != null) {
+                    if ($isCreateNewPenalties && $penalty->amount) {
                         AttendancePenalty::create([
                             'amount' => $penalty->amount,
                             'attendance_id' => null,
@@ -360,7 +360,7 @@ class Employee extends Authenticatable implements Auditable
             } else {
                 $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
                 if ($penalty) {
-                    if ($isCreateNewPenalties && $penalty->amount && $attendance->validated_at != null) {
+                    if ($isCreateNewPenalties && $penalty->amount) {
                         AttendancePenalty::create([
                             'amount' => $penalty->amount,
                             'attendance_id' => null,
@@ -392,7 +392,7 @@ class Employee extends Authenticatable implements Auditable
             } else {
                 $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
                 if ($penalty) {
-                    if ($isCreateNewPenalties && $penalty->amount && $attendance->validated_at != null) {
+                    if ($isCreateNewPenalties && $penalty->amount) {
                         AttendancePenalty::create([
                             'amount' => $penalty->amount,
                             'attendance_id' => null,
