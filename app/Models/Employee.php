@@ -78,7 +78,7 @@ class Employee extends Authenticatable implements Auditable
         return $this->belongsTo(User::class, 'user_id', 'id_kustomer')->withDefault();
     }
 
-    public function salaryType()
+    public function salaryTypes()
     {
         return $this->hasMany(EmployeeSalaryType::class);
     }
@@ -86,7 +86,7 @@ class Employee extends Authenticatable implements Auditable
     public function typeOfSalary()
     {
         // $salaries = EmployeeSalaryType::where('employee_id',$this->id)->get();
-        $salaries = $this->salaryType;
+        $salaries = $this->salaryTypes;
         if (count($salaries)) {
             $salaries = $salaries->map(function ($item) {
                 return [
@@ -195,7 +195,7 @@ class Employee extends Authenticatable implements Auditable
                     date('Y-m-d\TH:i:s.u\Z', strtotime($startDayOfDate . '-14 hours')),
                     date('Y-m-d\TH:i:s.u\Z', strtotime($endDayOfDate . '-14 hours'))
                 ]
-            )->all();
+            )->where('employee_id', $this->id)->all();
             foreach ($attendanceTypes as $attendanceType) {
                 $attendancesPerDays = collect($attendancesPerDays);
                 $attendance = $attendancesPerDays->where('attendance_type_id', $attendanceType->id)->first();
@@ -246,13 +246,14 @@ class Employee extends Authenticatable implements Auditable
                             'penalty' => null
                         ];
                     } else {
+                        $isCreateNewPenalties =  $penaltyType == $attendanceType->name ? true : false;
                         $data[$attendanceType->name] = [
                             'checked_at' => null,
                             'duty_at' => null,
                             'penalty' =>  $this->getPenaltiesValue(
                                 $attendance,
                                 $attendanceType,
-                                $penaltyType == $attendanceType->name ? true : false,
+                                $penaltyType == $isCreateNewPenalties,
                                 $penalties
                             ),
                         ];
