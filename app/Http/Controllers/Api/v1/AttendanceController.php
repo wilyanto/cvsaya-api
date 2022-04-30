@@ -29,12 +29,12 @@ class AttendanceController extends Controller
     {
         $request->validate([
             'started_at' => [
-                'date_format:Y-m-d\TH:i:s.u\Z',
+                'date_format:Y-m-d\TH:i:s.v\Z',
                 'required'
             ],
             'ended_at' => [
                 'nullable',
-                'date_format:Y-m-d\TH:i:s.u\Z'
+                'date_format:Y-m-d\TH:i:s.v\Z'
             ],
         ]);
 
@@ -92,9 +92,9 @@ class AttendanceController extends Controller
 
         $time = new \DateTime("now", new DateTimeZone('Asia/Jakarta'));
         $date =  new \DateTime("today", new DateTimeZone('Asia/Jakarta'));
-        $startDate = $date->format('Y-m-d\TH:i:s.u\Z');
+        $startDate = $date->format('Y-m-d\TH:i:s.v\Z');
         $interval = DateInterval::createFromDateString('+23 hour +59 minute + 59 second');
-        $endDate = $date->add($interval)->format('Y-m-d\TH:i:s.u\Z');
+        $endDate = $date->add($interval)->format('Y-m-d\TH:i:s.v\Z');
         $attendances = Attendance::whereBetween(
             'duty_at',
             [
@@ -125,7 +125,7 @@ class AttendanceController extends Controller
                 ]
             )->where('attendance_type_id', 2)->first();
             if ($attendance) {
-                $dutyAt = date('Y-m-d\TH:i:s.u\Z', strtotime($attendance->checked_at . ' +' . $shift->shift->break_duration . 'hour'));
+                $dutyAt = date('Y-m-d\TH:i:s.v\Z', strtotime($attendance->checked_at . ' +' . $shift->shift->break_duration . 'hour'));
             }
         }
 

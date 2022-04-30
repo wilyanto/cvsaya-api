@@ -30,16 +30,16 @@ class ShiftController extends Controller
 
         $attendanceTypes = AttendanceType::all();
         $request->validate([
-            'date' => 'date_format:Y-m-d\TH:i:s.u\Z|nullable',
+            'date' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
         ]);
 
         $date =  new \DateTime("today", new DateTimeZone('Asia/Jakarta'));
         if ($request->date) {
             $date = new \DateTime($request->date, new DateTimeZone('Asia/Jakarta'));
         }
-        $startDate = $date->format('Y-m-d\TH:i:s.u\Z');
+        $startDate = $date->format('Y-m-d\TH:i:s.v\Z');
         $interval = DateInterval::createFromDateString('+23 hour +59 minute + 59 second');
-        $endDate = $date->add($interval)->format('Y-m-d\TH:i:s.u\Z');
+        $endDate = $date->add($interval)->format('Y-m-d\TH:i:s.v\Z');
         $shift = ShiftEmployee::whereBetween(
             'date',
             [
@@ -71,7 +71,7 @@ class ShiftController extends Controller
                 ])->where('attendance_type_id', $attendanceType->id)->first();
                 if ($attendance) {
                     $time = new \DateTime($attendance->checked_at, new DateTimeZone('Asia/Jakarta'));;
-                    $shiftByColumn = $time->format('Y-m-d\TH:i:s.u\Z');
+                    $shiftByColumn = $time->format('Y-m-d\TH:i:s.v\Z');
                 }
             }
             $data[$attendanceType->name] = $shiftByColumn;

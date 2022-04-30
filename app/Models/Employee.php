@@ -183,17 +183,17 @@ class Employee extends Authenticatable implements Auditable
         $penalties = Penalty::all();
         $attendancesFull = Attendance::where('employee_id', $this->id)->get();
         for ($date = $startedAt; $date <= $endedAt; $date->modify('+1 day')) {
-            $startDayOfDate =  $date->format('Y-m-d\TH:i:s.u\Z');
-            $tempDate = new \DateTime($date->format('Y-m-d\TH:i:s.u\Z'), new DateTimeZone('Asia/Jakarta'));
+            $startDayOfDate =  $date->format('Y-m-d\TH:i:s.v\Z');
+            $tempDate = new \DateTime($date->format('Y-m-d\TH:i:s.v\Z'), new DateTimeZone('Asia/Jakarta'));
             $data = [];
             $data['date'] = $startDayOfDate;
             $interval = DateInterval::createFromDateString('+23 hour +59 minute + 59 second');
-            $endDayOfDate =  $tempDate->add($interval)->format('Y-m-d\TH:i:s.u\Z');
+            $endDayOfDate =  $tempDate->add($interval)->format('Y-m-d\TH:i:s.v\Z');
             $attendancesPerDays = $attendancesFull->whereBetween(
                 'checked_at',
                 [
-                    date('Y-m-d\TH:i:s.u\Z', strtotime($startDayOfDate . '-14 hours')),
-                    date('Y-m-d\TH:i:s.u\Z', strtotime($endDayOfDate . '-14 hours'))
+                    date('Y-m-d\TH:i:s.v\Z', strtotime($startDayOfDate . '-14 hours')),
+                    date('Y-m-d\TH:i:s.v\Z', strtotime($endDayOfDate . '-14 hours'))
                 ]
             )->where('employee_id', $this->id)->all();
             foreach ($attendanceTypes as $attendanceType) {
@@ -203,8 +203,8 @@ class Employee extends Authenticatable implements Auditable
                     $checkedAt = $attendance ? new \DateTime($attendance->checked_at, new DateTimeZone('Asia/Jakarta')) : null;
                     $dutyAt =  $attendance ? new \DateTime($attendance->duty_at, new DateTimeZone('Asia/Jakarta')) : null;
                     $data[$attendanceType->name] = [
-                        'checked_at' => $checkedAt ? $checkedAt->format('Y-m-d\TH:i:s.u\Z') : null,
-                        'duty_at' => $attendance ? $dutyAt->format('Y-m-d\TH:i:s.u\Z') : null,
+                        'checked_at' => $checkedAt ? $checkedAt->format('Y-m-d\TH:i:s.v\Z') : null,
+                        'duty_at' => $attendance ? $dutyAt->format('Y-m-d\TH:i:s.v\Z') : null,
                         'penalty' => $this->getPenaltiesValue(
                             $attendance,
                             $attendanceType,
@@ -236,7 +236,7 @@ class Employee extends Authenticatable implements Auditable
                             ]
                         )->where('attendance_type_id', 2)->first();
                         if ($attendanceTemp) {
-                            $dutyAt = date('Y-m-d\TH:i:s.u\Z', strtotime($attendance->checked_at . ' +' . $shift->shift->break_duration . 'hour'));
+                            $dutyAt = date('Y-m-d\TH:i:s.v\Z', strtotime($attendance->checked_at . ' +' . $shift->shift->break_duration . 'hour'));
                         }
                     }
                     if (time() <= strtotime($dutyAt)) {
