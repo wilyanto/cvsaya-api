@@ -61,6 +61,7 @@ Route::prefix('v1')->group(function () {
                 });
             });
 
+
             Route::prefix('users')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
                     Route::get('/{id}/profile',  'indexDetail');
@@ -103,6 +104,13 @@ Route::prefix('v1')->group(function () {
             });
             Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                 Route::get('/interviewers', 'indexInterviewer');
+            });
+
+            Route::prefix('candidates')->group(function () {
+                Route::controller(CandidateController::class)->group(function () {
+                    Route::post('/{id}/notes', 'createNote');
+                    Route::get('/notes', 'getOwnNotes');
+                });
             });
 
             Route::group(['middleware' => ['permission:manage-candidate']], function () {

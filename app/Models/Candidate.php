@@ -183,4 +183,12 @@ class Candidate extends Model implements Auditable
             'updated_at' => $this->updated_at,
         ];
     }
+
+    public function nameOnly(){
+        return [
+            'id' => $this->id,
+            'first_name' => $this->profile->first_name,
+            'last_name' => $this->profile->last_name,
+        ];
+    }
 }
