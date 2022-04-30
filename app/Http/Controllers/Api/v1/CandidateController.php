@@ -6,13 +6,11 @@ use App\Models\Candidate;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\EmployeeDetail;
+use App\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Models\CandidateLogEmployee;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CandidatePosition;
 use App\Models\CandidateInterviewSchedule;
-use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use App\Models\InterviewResult;
 
@@ -129,7 +127,7 @@ class CandidateController extends Controller
             'phone_number' => 'integer|required',
         ]);
 
-        $posistion = EmployeeDetail::where('user_id', $user->id_kustomer)->first();
+        $posistion = Employee::where('user_id', $user->id_kustomer)->first();
         if (!$posistion) {
             return $this->errorResponse('Tidak bisa melanjutkan karena bukan Empolyee', 409, 40901);
         }
@@ -236,7 +234,7 @@ class CandidateController extends Controller
         if ($request->status == Candidate::INTERVIEW) {
             $request->validate([
                 'interviewed_at' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
-                'interviewed_by' => 'integer|exists:employee_details,id',
+                'interviewed_by' => 'integer|exists:employees,id',
             ]);
 
             $candidateController = new CvProfileDetailController;
@@ -261,7 +259,7 @@ class CandidateController extends Controller
             }
             $data['candidate_id'] = $id;
 
-            $candidateEmpolyeeSchedule = CandidateInterviewSchedule::create($data);
+            CandidateInterviewSchedule::create($data);
         }
 
         $candidate->status = $request->status;
@@ -278,7 +276,7 @@ class CandidateController extends Controller
         ]);
 
         $candidate = Candidate::where('id', $id)->firstOrFail();
-        $employee = EmployeeDetail::where('id', $request->interviewed_by)->firstOrFail();
+        $employee = Employee::where('id', $request->interviewed_by)->firstOrFail();
         if ($employee->user_id == $candidate->user_id) {
             return $this->errorResponse('Candidate cannot set own Interviewer', 422, 42201);
         }

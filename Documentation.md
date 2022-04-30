@@ -56,15 +56,20 @@ GET "/api/v1/departments"
 
 Request description:
 
-> | Name      | Type  | Description                   | nullable |
-> | --------- | ----- | ----------------------------- | -------- |
-> | companies | array | list primary key of companies | yes      |
+> | Name      | Type    | Description                   | nullable |
+> | --------- | ------- | ----------------------------- | -------- |
+> | keyword   | string  | get department by name        | yes      |
+> | companies | array   | list primary key of companies | yes      |
+> | page      | integer | page to                       | no       |
+> | page_size | integer | size list every page          | no       |
 
 Request Example :
 
 ```
 {
-    "company_id" : ["kada"]
+    "companies" : ["kada"],
+    "page" : 1,
+    "page_size" : 10,
 }
 ```
 
@@ -78,25 +83,32 @@ Response Example:
         "message" : request success"
     },
     data :[
-        {
-            "id" : "dept-1",
-            "name" : "Human Resource",
-            "total_employees" : 8,
-             "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
+        departments: [
+            {
+                "id" : "dept-1",
+                "name" : "Human Resource",
+                "total_employees" : 8,
+                "company" : {
+                    "id" : "comp-1",
+                    "name" : "KADA",
+                },
+                "total" : 8
             },
-            "total" : 8
-        },
-        {
-            "id" : "dept-2",
-            "name" : "Human Resource",
-            "total_employees" : 8,
-            "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
-            },
-        }
+            {
+                "id" : "dept-2",
+                "name" : "Human Resource",
+                "total_employees" : 8,
+                "company" : {
+                    "id" : "comp-1",
+                    "name" : "KADA",
+                },
+            }
+        ],
+        "page_info": {
+			"last_page": 1,
+			"current_page": 1,
+			"path": "http://dev-cvsaya.x5.com.au/api/v1/departments"
+		}
     ]
 }
 ```
@@ -279,15 +291,20 @@ GET /api/v1/levels
 
 Request description:
 
-> | Name     | Type  | Description                   | nullable |
-> | -------- | ----- | ----------------------------- | -------- |
-> | companys | array | list primary key of companies | yes      |
+> | Name      | Type    | Description                   | nullable |
+> | --------- | ------- | ----------------------------- | -------- |
+> | keyword   | string  | get level by name             | yes      |
+> | companys  | array   | list primary key of companies | yes      |
+> | page      | integer | page to                       | no       |
+> | page_size | integer | size list every page          | no       |
 
 Request Example:
 
 ```
 {
-    "companys" : ["KADA"]
+    "companys" : ["KADA"],
+    "page" : 1,
+    "page_size" : 10,
 }
 ```
 
@@ -301,24 +318,31 @@ Response Example:
         "message" : request success"
     },
     data :[
-        {
-            "id" : "Lv-1",
-            "name" : "Level - C",
-            "total_employees" : 8,
-            "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
+        levels : [
+            {
+                "id" : "Lv-1",
+                "name" : "Level - C",
+                "total_employees" : 8,
+                "company" : {
+                    "id" : "comp-1",
+                    "name" : "KADA",
+                },
             },
-        },
-        {
-            "id" : "Lv-2",
-            "name" : "Level - Staff",
-            "total_employees" : 8,
-            "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
-            },
-        }
+            {
+                "id" : "Lv-2",
+                "name" : "Level - Staff",
+                "total_employees" : 8,
+                "company" : {
+                    "id" : "comp-1",
+                    "name" : "KADA",
+                },
+            }
+        ],
+        "page_info": {
+			"last_page": 1,
+			"current_page": 1,
+			"path": "http://dev-cvsaya.x5.com.au/api/v1/levels"
+		}
     ]
 }
 ```
@@ -499,11 +523,14 @@ GET /api/v1/positions
 
 Request description:
 
-> | Name        | Type  | Description                           | nullable |
-> | ----------- | ----- | ------------------------------------- | -------- |
-> | companies   | array | list primary key of companies         | yes      |
-> | departments | array | list primary key on table departments | yes      |
-> | levels      | array | list primary ky on table levels       | yes      |
+> | Name        | Type    | Description                           | nullable |
+> | ----------- | ------- | ------------------------------------- | -------- |
+> | companies   | array   | list primary key of companies         | yes      |
+> | departments | array   | list primary key on table departments | yes      |
+> | keyword     | string  | get Position by name                  | yes      |
+> | levels      | array   | list primary ky on table levels       | yes      |
+> | page        | integer | page to                               | no       |
+> | page_size   | integer | size list every page                  | no       |
 
 Request Example:
 
@@ -511,7 +538,9 @@ Request Example:
 {
     "companies" : ["KADA"]
     "department_id" : ["dept-1"],
-    "level_id : ["lv-1"]
+    "level_id : ["lv-1"],
+    "page" : 1,
+    "page_size" : 10,
 }
 ```
 
@@ -525,46 +554,62 @@ Response Example:
         "message" : request success"
     },
     data :[
-        {
-            "id" : "position-1",
-            "name" : "HRD",
-            "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
+        positions : [
+
+            {
+                "id" : "position-1",
+                "name" : "HRD",
+                "company" : {
+                    "id" : "comp-1",
+                    "name" : "KADA",
+                },
+                "parent_id" : {
+                    "id" : "position-0",
+                    "name" : "CEO"
+                },
+                "department" : {
+                    "id" : "dept-1",
+                    "name" : "Human Resource",
+                },
+                "level" : {
+                    "id" : "lv-1",
+                    "name" : "Level - C"
+                },
+                "priorty" : 0,
+                "min_salary" : 1000,
+                "max_salary" : 100000,
+                "remaining_slot" : 100,
             },
-            "department" : {
-                "id" : "dept-1",
-                "name" : "Human Resource",
-            },
-            "level" : {
-                "id" : "lv-1",
-                "name" : "Level - C"
-            },
-            "priorty" : 0,
-            "min_salary" : 1000,
-            "max_salary" : 100000,
-            "remaining_slot" : 100,
-        },
-        {
-            "id" : "position-4",
-            "name" : "IT",
-            "company" : {
-                "id" : "comp-1",
-                "name" : "KADA",
-            },
-            "department" : {
-                "id" : "dept-2,
+            {
+                "id" : "position-4",
                 "name" : "IT",
-            },
-            "level" : {
-                "id" : "lv-1",
-                "name" : "Level - C"
-            },
-            "priorty" : 0,
-            "min_salary" : 1000,
-            "max_salary" : 100000,
-            "remaining_slot" : 100,
-        }
+                "company" : {
+                    "id" : "comp-1",
+                    "name" : "KADA",
+                },
+                "parent_id" : {
+                    "id" : "position-0",
+                    "name" : "CEO"
+                },
+                "department" : {
+                    "id" : "dept-2,
+                    "name" : "IT",
+                },
+                "level" : {
+                    "id" : "lv-1",
+                    "name" : "Level - C"
+                },
+                "priorty" : 0,
+                "min_salary" : 1000,
+                "max_salary" : 100000,
+                "remaining_slot" : 100,
+            }
+        ],
+        "page_info": {
+			"last_page": 1,
+			"current_page": 1,
+			"path": "http://dev-cvsaya.x5.com.au/api/v1/departments"
+		}
     ]
 }
 ```
@@ -597,6 +642,10 @@ Response Example:
             "company" : {
                 "id" : "comp-1",
                 "name" : "KADA",
+            },
+            "parent_id" : {
+                "id" : "position-0",
+                "name" : "CEO"
             },
             "department" : {
                 "id" : "dept-2,
@@ -668,6 +717,10 @@ Response Example :
                 "id" : "comp-1",
                 "name" : "KADA",
             },
+            "parent_id" : {
+                "id" : "position-0",
+                "name" : "CEO"
+            },
             "department" : {
                 "id" : "dept-2,
                 "name" : "IT",
@@ -715,7 +768,7 @@ Request Example :
     "company_id" : "comp-1",
     "parent_id" : "positions-0",
     "department_id" : "dept-2",
-    "level" : "lv-1",
+    "level_id" : "lv-1",
     "priorty" : 0,
     "min_salary" : 1000,
     "max_salary" : 100000,
@@ -738,6 +791,10 @@ Response Example:
             "company" : {
                 "id" : "comp-1",
                 "name" : "KADA",
+            },
+            "parent_id" : {
+                "id" : "position-0",
+                "name" : "CEO"
             },
             "department" : {
                 "id" : "dept-2,
@@ -812,25 +869,6 @@ Response Index Positions Example:
             "min_salary" : 1000,
             "max_salary" : 100000,
             "remaining_slot" : 100,
-            "parent" : [
-                {
-                    "id" : "positions-2",
-                    "name" : "anggota HRD",
-                    "department" : {
-                        "id" : "dept-1",
-                        "name" : "Human Resource",
-                    },
-                    "level" : {
-                        "id" : "lv-2",
-                        "name" : "Level - Staff",
-                    },
-                    "priorty" : 0,
-                    "min_salary" : 1000,
-                    "max_salary" : 100000,
-                    "remaining_slot" : 100,
-                    "parent" : null,
-                }
-            ]
         },
        {
             "id" : "position-4",
@@ -851,21 +889,6 @@ Response Index Positions Example:
             "min_salary" : 1000,
             "max_salary" : 100000,
             "remaining_slot" : 100,
-            "parent" : [
-                {
-                    "id" : "positions-5",
-                    "name" : "anggota IT",
-                    "department" : {
-                        "id" : "dept-2",
-                        "name" : "IT",
-                    },
-                    "level" : {
-                        "id" : "lv-2",
-                        "name" : "Level - Staff",
-                    },
-                    "parent" : null,
-                },
-            ]
         }
     ]
 ```
@@ -882,12 +905,14 @@ GET /api/v1/employees
 
 Request description:
 
-> | Name          | Type        | Description                      |
-> | ------------- | ----------- | -------------------------------- |
-> | company_id    | primary key | company_id                       |
-> | position_id   | primary key | primary key of table positions   |
-> | department_id | primary key | primary key of table departments |
-> | level_id      | primary key | primary key of table levels      |
+> | Name          | Type        | Description                      | nullable |
+> | ------------- | ----------- | -------------------------------- | -------- |
+> | company_id    | primary key | company_id                       | yes      |
+> | position_id   | primary key | primary key of table positions   | yes      |
+> | department_id | primary key | primary key of table departments | yes      |
+> | level_id      | primary key | primary key of table levels      | yes      |
+> | page          | integer     | page to                          | no       |
+> | page_size     | integer     | size list every page             | no       |
 
 Request Example 1:
 
@@ -896,7 +921,9 @@ Request Example 1:
     "company_id" : "KADA",
     "position_id" : "position-1",
     "department_id" : "dept-1",
-    "level_id" : "lv-1"
+    "level_id" : "lv-1",
+    "page" : 1,
+    "page_size" : 10
 }
 ```
 
@@ -934,11 +961,6 @@ Response Example 1:
                 "id" : "et-1",
                 "name" : "Full-Time",
             },
-            "salary_type_id" : {
-                "id" : "st-1",
-                "name" : "full-time"
-            }
-            "amount" : 1000000,
             "deleted_at" : null
         }
     ]
@@ -994,15 +1016,60 @@ Response Example:
             "id" : "et-1",
             "name" : "Full-Time",
         },
-        "salary_type_id" : {
-            "id" : "st-1",
-            "name" : "full-time"
-        }
-        "amount" : 1000000,
+        "salary_types" : [
+                {
+                    "id" : "st-1",
+                    "name" : "Gaji Pokok"
+                    "amount" : 1000000
+                },
+                {
+                    "id" : "st-1",
+                    "name" : "Tunjangan Makan"
+                    "amount" : 5000
+                },
+            ],
         "deleted_at" : null
     }
 }
 
+```
+
+## [Show Employees Salary](#show-employees-salary)
+
+this api show Employee by requested id
+
+```
+GET /api/v1/employees/{id}/salaries
+```
+
+Response Description:
+
+> | Name | Type        | Description                          |
+> | ---- | ----------- | ------------------------------------ |
+> | id   | primary key | primary key of table employee salary |
+
+Response Example :
+
+```
+{
+	"meta": {
+		"success": true,
+		"code": 20000,
+		"message": "Request success"
+	},
+	"data": [
+		{
+			"salary_type_id": 1,
+			"name": "Gaji Pokok",
+			"amount": 1000000
+		},
+		{
+			"salary_type_id": 2,
+			"name": "Tunjangan Harian",
+			"amount": 100000
+		}
+	]
+}
 ```
 
 ## [Create Employees](#create-employees)
@@ -1010,19 +1077,20 @@ Response Example:
 Create new Employees, to create new employees candidate finish all prosedure in interview
 
 ```
-POST "/api/v1/Employees"
+POST "/api/v1/employees"
 ```
 
 Request Description:
 
-> | Name            | Type          | Description                             | nullable |
-> | --------------- | ------------- | --------------------------------------- | -------- |
-> | candidate_id    | foreign_key   | primary key on table candidates         | no       |
-> | position_id     | foreign_key   | primary key on table positions          | no       |
-> | employment_type | foreign_key   | primary key on table employment_types   | no       |
-> | joined_at       | timestamp iso | time when employee will join at company | no       |
-> | salary_type_id  | foreign_key   | primary key on table salary_types       | no       |
-> | salary_amount   | integer       | amount salary of employee               | no       |
+> | Name                | Type          | Description                             | nullable |
+> | ------------------- | ------------- | --------------------------------------- | -------- |
+> | candidate_id        | foreign_key   | primary key on table candidates         | no       |
+> | position_id         | foreign_key   | primary key on table positions          | no       |
+> | employment_type_id  | foreign_key   | primary key on table employment_types   | no       |
+> | joined_at           | timestamp iso | time when employee will join at company | no       |
+> | salary_types        | array         | array of list Salary Types              | no       |
+> | salary_types.id     | foreign_key   | primary key on table salary_types       | no       |
+> | salary_types.amount | integer       | amount of salary will be used           | no       |
 
 Request Example :
 
@@ -1032,8 +1100,17 @@ Request Example :
     "position_id" : "position-1",
     "employment_type" : "et-1",
     "joined_at" : "2022-04-05T00:00:00.000000Z",
-    "salary_type_id" : "st_id",
-    "amount" : 1000000,
+    "salary_types" : [
+        {
+            "id" :"st_id",
+            "amount" : 10000000,
+        },
+        {
+            "id" :"st_id",
+            "amount" : 100000,
+        }
+
+    ],
 }
 ```
 
@@ -1070,29 +1147,19 @@ Response Example :
             "id" : "et-1",
             "name" : "Full-Time",
         },
-        "salary_type_id" : {
-            "id" : "st-1",
-            "name" : "Harian"
-        }
-        "amount" : 1000000,
-        "deleted_at" : null,
-        "teams" : [
-            {
-                "leader" : {
-                    "id" : "employee-2",
-                    "name" : "Victor Yansen",
+        "salary_types" : [
+                {
+                    "id" : "st-1",
+                    "name" : "Gaji Pokok"
+                    "amount" : 1000000
                 },
-                "project : CvSaya,
-                "pathner-employees": [
-                    {
-                    "id" : "employee-3",
-                    "name" : "Ricky",
-                    },
-                ],
-                "created_at" : "2022-04-05T00:00:00.000000Z",
-                "updated_at" : "2022-04-05T00:00:00.000000Z",
-            },
-        ]
+                {
+                    "id" : "st-1",
+                    "name" : "Tunjangan Makan"
+                    "amount" : 5000
+                },
+            ],
+        "deleted_at" : null,
     }
 }
 ```
@@ -1102,7 +1169,7 @@ Response Example :
 Update Employees By Id
 
 ```
-PUT "/api/v1/Employees/{id}"
+PUT "/api/v1/employees/{id}"
 ```
 
 Request Description :
@@ -1110,23 +1177,17 @@ Request Description :
 > | Name            | Type          | Description                             | nullable |
 > | --------------- | ------------- | --------------------------------------- | -------- |
 > | id              | primary key   | primary key of employee                 | no       |
-> | candidate_id    | foreign_key   | primary key on table candidates         | no       |
 > | position_id     | foreign_key   | primary key on table positions          | no       |
 > | employment_type | foreign_key   | primary key on table employment_types   | no       |
 > | joined_at       | timestamp iso | time when employee will join at company | no       |
-> | salary_type_id  | foreign_key   | primary key on table salary_types       | no       |
-> | salary_amount   | integer       | amount salary of employee               | no       |
 
 Request Example :
 
 ```
 {
-    "candidate_id" : "candidate-1",
     "position_id" : "position-1",
     "employment_type" : "et-2",
     "joined_at" : "2022-04-05T00:00:00.000000Z",
-    "salary_type_id" : "st_id",
-    "amount" : 1000000,
 }
 ```
 
@@ -1163,19 +1224,46 @@ Response Example:
             "id" : "et-2",
             "name" : "Full-Time",
         },
-        "salary_type_id" : {
-            "id" : "st-1",
-            "name" : "Bulanan"
-        }
-        "amount" : 1000000,
         "deleted_at" : null,
     }
 }
 ```
 
+## [Update Salary Employee](#update-salary-employee)
+
+Update Employees Salary Value if there are five salary types connected with target employee you can update to four salary types only you can delete the employee for the array this will replace all old salary types
+
+```
+PATCH "/api/v1/employees/{id}/salaries"
+```
+
+> | Name                | Type        | Description                       | nullable |
+> | ------------------- | ----------- | --------------------------------- | -------- |
+> | id                  | primary key | primary key of employee           | no       |
+> | salary_types        | array       | array of list Salary Types        | no       |
+> | salary_types.id     | foreign_key | primary key on table salary_types | no       |
+> | salary_types.amount | integer     | amount of salary will be used     | no       |
+
+Request Example :
+
+```
+{
+    "salary_types" : [
+        {
+            "id" : "st-1",
+            "amount" : 1000000
+        },
+        {
+            "id" : "st-2",
+            "amount" : 100000
+        }
+    ],
+}
+```
+
 ## [Delete Employees](#delete-employees)
 
-Employee Resign, by input new employee_id all team has old employees id will be replace with new employees
+Employee Resign
 
 ```
 DELETE api/v1/levels/{id}
@@ -1187,14 +1275,6 @@ Request description :
 > | ---- | --------------------- | --------------------- | -------- |
 > | id   | Primary Key (integer) | primary key of levels | no       |
 
-Request Example:
-
-```
-{
-    "employee_id" : "employee-1",
-}
-```
-
 Response Example:
 
 ```
@@ -1205,51 +1285,6 @@ Response Example:
         "message" : request success"
     },
     "data" : null
-}
-```
-
-Response Index Employee after Delete Example:
-
-```
-
-{
-     "meta" :{
-        "success" : true,
-        "code" : 200000,
-        "message" : request success"
-    },
-    data :[
-        {
-        "id" : "employee-1",
-        "first-name" : "Wilyanto",
-        "company" : {
-            "id" : "comp-1",
-            "name" : "KADA",
-        },
-        "positions" : {
-            "id" : "position-1",
-            "name" : "HRD"
-        }
-        "department" : {
-            "id" : "dept-1",
-            "name" : "Human Resource"
-        },
-        "level" : {
-            "id" : "lv-1",
-            "name" : "level-c"
-        },
-        "joined_at" : "2022-04-05T00:00:00.000000Z",
-        "employment_type" : {
-            "id" : "et-1",
-            "name" : "Full-Time",
-        },
-        "salary_type_id" : {
-            "id" : "st-1",
-            "name" : "full-time"
-        }
-        "amount" : 1000000,
-        "deleted_at" : null,
-    }
 }
 ```
 
@@ -1370,99 +1405,6 @@ Response Example :
 }
 ```
 
-## [Index Salary Employee](#index-salary-employee)
-
-List salary Every Employee
-
-```
-GET /api/v1/employees/salary
-```
-
-Response Example :
-
-```
-{
-    "meta" :{
-        "success" : true,
-        "code" : 200000,
-        "message" : request success"
-    },
-    data :[
-        {
-            "id" : "employee-1",
-            "name" : "wilyanto",
-            "company_id" : "Kada",
-            "salary_types" : [
-                {
-                    "id" : "est-1",
-                    "salary_type" : {
-                        "id" : "ST-1",
-                        "name" : "Gaji Pokok",
-                    },
-                    "amoung" : 1000000,
-                },
-                {
-                    "id" : "est-2",
-                    "salary_type" : {
-                        "id" : "ST-2",
-                        "name" : "Tujangan Transportasi",
-                    },
-                    "amoung" : 50000,
-                }
-            ]
-        }
-    ]
-}
-```
-
-## [Show Salary Employee](#show-salary-employee)
-
-List salary Every Employee
-
-```
-GET /api/v1/employees/{id}/salary
-```
-
-> | Name | Type                  | Description             | Nullable |
-> | ---- | --------------------- | ----------------------- | -------- |
-> | id   | Primary Key (integer) | primary key of employee | no       |
-
-Response Example :
-
-```
-{
-    "meta" :{
-        "success" : true,
-        "code" : 200000,
-        "message" : request success"
-    },
-    data :[
-        {
-            "id" : "employee-1",
-            "name" : "wilyanto",
-            "salary_types" : [
-                {
-                    "id" : "est-1",
-                    "salary_type" : {
-                        "id" : "ST-1",
-                        "name" : "Gaji Pokok",
-                    },
-                    "amoung" : 1000000,
-                },
-                {
-                    "id" : "est-2",
-                    "salary_type" : {
-                        "id" : "ST-2",
-                        "name" : "Tujangan Transportasi",
-                    },
-                    "amoung" : 50000,
-                }
-            ]
-        }
-    ]
-}
-```
-
 # [Shifts/Attendance](#shiftsattendance)
 
 ## [Index Shifts Mobile](#index-shifts-mobile)
@@ -1506,7 +1448,8 @@ Response Example :
             "started_at" : "07:45",
             "ended_at" : "17:00",
             "break_started_at" : "12:00",
-            "break_ended_at" : "13:00"
+            "break_ended_at" : "13:00",
+            "break_duration" : 1
         }
     }
 ]
@@ -1692,19 +1635,19 @@ POST /api/v1/attendances
 
 Request Description :
 
-> | Name | Type    | Description                                         | Nullable |
-> | ---- | ------- | --------------------------------------------------- | -------- |
-> | time | time    | time user attend                                    | no       |
-> | type | enum    | "clock_in", "clock_out", "start_break", "end_break" | no       |
-> | file | picture | upload file from camera                             | no       |
+> | Name | Type     | Description                          | Nullable |
+> | ---- | -------- | ------------------------------------ | -------- |
+> | type | foreign  | primary key of attendanceTypes Table | no       |
+> | file | picture  | upload file from camera              | no       |
+> | note | longText | Long Text of file                    | yes      |
 
 Request Example :
-
+    
 ```
 {
-    "time" : 12:00,
-    "type" : "clock_in"
-    "file" : file
+    "type" : 1，
+    "file" : file,
+    "note" : "habis bensin"
 }
 ```
 
@@ -1717,27 +1660,53 @@ Response Example :
         "code" : 200000,
         "message" : request success"
     },
-    data :{
-        "employee" : {
-            "id" : "employee-2",
-            "name" : "Victor Yansen",
-        }
-        attendances : [
-            {
-                "date" : "2022-04-09T00:00:00.000000Z",
-                "attendance" : {
-                    "clock_in" : {
-                        "checked_at" : "12:00:00",
-                        "duty_at" : "07:45:00",
-                        "penalty" : -75000,
-                    },
-                    "start_break" : null,
-                    "end_break" : null,
-                    "clock_out" : null
-                }
-            }
-        ]
-    }
+    data : "success",
+}
+```
+
+# [Attendance-Types](#attendance-types)
+
+Add new or update attendance
+
+```
+Get /api/v1/attendance-types
+```
+
+Response Example :
+
+```
+{
+     "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data : [
+        {
+			"id": 1,
+			"name": "clock_in",
+			"created_at": "2022-04-28T05:20:31.000000Z",
+			"updated_at": "2022-04-28T05:20:31.000000Z"
+		},
+		{
+			"id": 2,
+			"name": "clock_out",
+			"created_at": "2022-04-28T05:20:31.000000Z",
+			"updated_at": "2022-04-28T05:20:31.000000Z"
+		},
+		{
+			"id": 3,
+			"name": "break_started_at",
+			"created_at": "2022-04-28T05:20:31.000000Z",
+			"updated_at": "2022-04-28T05:20:31.000000Z"
+		},
+		{
+			"id": 4,
+			"name": "break_ended_at",
+			"created_at": "2022-04-28T05:20:31.000000Z",
+			"updated_at": "2022-04-28T05:20:31.000000Z"
+		}
+    ]
 }
 ```
 
@@ -1953,3 +1922,28 @@ Response Example :
     }
 }
 ```
+
+## [Index Permission Type](#index-permission-type)
+
+index permission type
+
+```
+GET /api/v1/attendances/permission-type
+```
+
+> | Name    | Type   | Description     | Nullable |
+> | ------- | ------ | --------------- | -------- |
+> | keyword | string | keyword of name | no       |
+
+Request Example :
+
+```
+{
+    "keyword" : "test",
+}
+```
+
+Response Example :
+{
+
+}

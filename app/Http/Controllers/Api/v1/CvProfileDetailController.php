@@ -15,7 +15,7 @@ use App\Models\CvExperience;
 use App\Models\CvDocument;
 use App\Models\CvExpectedJob;
 use Illuminate\Http\Request;
-use App\Models\EmployeeDetail;
+use App\Models\Employee;
 use App\Models\Religion;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
@@ -179,7 +179,7 @@ class CvProfileDetailController extends Controller
             'last_name' => $userProfileDetail->last_name,
         ];
 
-        $employee = EmployeeDetail::where('user_id', $id)->first();
+        $employee = Employee::where('user_id', $id)->first();
         if ($employee) {
             $result['is_employee'] = true;
             $position = [
@@ -258,7 +258,7 @@ class CvProfileDetailController extends Controller
     {
         $user = auth()->user();
 
-        $employee = EmployeeDetail::where('user_id', $user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('user_id',$user->id_kustomer)->firstOrFail();
 
         $data = [
             'profile' => $employee->profileDetail,

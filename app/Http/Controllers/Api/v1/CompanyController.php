@@ -15,13 +15,35 @@ class CompanyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $user = auth()->user();
+        $request->validate([
+            'keyword' => [
+                'string',
+            ],
+            'page' => 'required|numeric|gt:0',
+            'page_size' => 'required|numeric|gt:0'
+        ]);
 
-        $getCompanyData = Company::all();
+        $page = $request->page ? $request->page  : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
+        $keyword = $request->keyword;
+        $companies = Company::where(function ($query) use ($keyword) {
+            if ($keyword) {
+                $query->where('name', 'like', '%' . $keyword . '%');
+            }
+        })->paginate(
+            $pageSize,
+            ['*'],
+            'page',
+            $page
+        );
 
-        return $this->showAll($getCompanyData);
+        $data = $companies->map(function ($item) {
+            return $item;
+        });
+
+        return $this->showPaginate('companies', collect($data), collect($companies));
     }
 
     /**

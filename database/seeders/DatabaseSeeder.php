@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\AttendanceType;
+use App\Models\Shift;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -23,11 +25,13 @@ class DatabaseSeeder extends Seeder
             DocumentTypeSeeder::class,
             DegreeSeeder::class,
             CandidatePositions::class,
-            // CvProfileDetailSeeder::class,
-            // CvExpectedJobSeeder::class,
-            // EmployeeSeeder::class,
-            // CuriculmVitaeSeeder::class,
-            // CandidateInterviewSchedulesSeeder::class,
+            CvProfileDetailSeeder::class,
+            CvExpectedJobSeeder::class,
+            EmployeeSeeder::class,
+            CuriculmVitaeSeeder::class,
+            ShiftSeeder::class,
+            AttendanceTypeSeeder::class,
+            PenaltySeeder::class,
         ]);
     }
 }

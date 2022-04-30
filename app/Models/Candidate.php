@@ -62,7 +62,7 @@ class Candidate extends Model implements Auditable
 
     public function suggestBy()
     {
-        return $this->hasOne(EmployeeDetail::class, 'id', 'suggested_by')->withDefault();
+        return $this->hasOne(Employee::class, 'id', 'suggested_by')->withDefault();
     }
 
     public function schedules()
@@ -122,7 +122,6 @@ class Candidate extends Model implements Auditable
                 $status = 4;
             }
         }
-        $value = $this->label();
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,

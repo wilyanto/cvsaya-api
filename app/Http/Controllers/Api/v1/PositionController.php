@@ -18,10 +18,64 @@ class PositionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $getListPosition = Position::all();
-        return $this->showAll($getListPosition);
+        $request->validate([
+            'companies' => [
+                'array',
+                'nullable'
+            ],
+            'departments' => [
+                'array',
+                'nullable'
+            ],
+            'levels' => [
+                'array',
+                'nullable'
+            ],
+
+            'keyword' => [
+                'string',
+            ],
+            'page' => 'required|numeric|gt:0',
+            'page_size' => 'required|numeric|gt:0'
+        ]);
+        $page = $request->page ? $request->page  : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
+        $companies = $request->companies;
+        $departments = $request->departments;
+        $keyword = $request->keyword;
+        $levels = $request->levels;
+        $positions = Position::where(function ($query) use ($companies, $departments, $levels, $keyword) {
+            if ($companies) {
+                $query->whereIn('company_id', $companies);
+            }
+            if ($departments) {
+                $query->whereIn('department_id', $departments);
+            }
+            if ($levels) {
+                $query->whereIn('level_id', $levels);
+            }
+            if ($keyword) {
+                $query->where('name', 'like', '%' . $keyword . '%');
+            }
+        })->paginate(
+            $pageSize,
+            ['*'],
+            'page',
+            $page
+        );
+        $data = $positions->map(function ($item) {
+            return $item->toArrayDefault();
+        });
+        return $this->showPaginate('positions', collect($data), collect($positions));
+    }
+
+    public function show($id)
+    {
+        $getPosition = Position::findOrFail($id);
+
+        return $this->showOne($getPosition->toArrayDefault());
     }
 
     /**
@@ -42,32 +96,20 @@ class PositionController extends Controller
      */
     public function store(Request $request)
     {
-        $user = auth()->user();
         $request->validate([
             'name' => 'required|string',
-            'department_id' => 'required|integer',
-            'level_id' => 'required|integer',
-            'priority'=> 'nullable|string',
-            'parent_id' => 'nullable|integer',
-            'remaining_slot'=> 'nullable|string',
-            'company_id'=> 'nullable|string',
+            'department_id' => 'required|exists:departments,id',
+            'level_id' => 'required|exists:levels,id',
+            'parent_id' => 'nullable|exists:positions,id',
+            'remaining_slot' => 'nullable|integer',
+            'company_id' => 'nullable|exists:companies,id',
+            'min_salary' => 'nullable|integer',
+            'max_salary' => 'nullable|integer',
         ]);
-
-        $getDepartment = Department::where('id',$request->department_id)->first();
-        if(!$getDepartment){
-            return $this->errorResponse('department_id not found',404,40401);
-        }
-
-        $getLevel = Level::where('id',$request->level_id)->first();
-        if(!$getLevel){
-            return $this->errorResponse('level_id not found',404,40401);
-        }
 
         $create = Position::create($request->all());
 
-
-        return $this->showOne($create);
-
+        return $this->showOne($create->toArrayDefault());
     }
 
     /**
@@ -76,27 +118,6 @@ class PositionController extends Controller
      * @param  \App\Models\CvSayaPositions  $cvSayaPositions
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
-    {
-       $user =  auth()->user();
-
-       $list = Position::where('parent_id',null)->get();
-    //    dd($list);
-       $data = [];
-       foreach($list as $item => $object){
-            $data[] = [
-                'id' => $object->id,
-                'name' => $object->name,
-                'department_id' => $object->departments,
-                'level' => $object->levels,
-                'company_id'=> $object->departments->company_id,
-                'children' => $object->getAllChildren(),
-            ];
-       }
-       $data = collect($data);
-
-       return $this->showAll($data);
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -116,9 +137,23 @@ class PositionController extends Controller
      * @param  \App\Models\CvSayaPositions  $cvSayaPositions
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Position $cvSayaPositions)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string',
+            'department_id' => 'required|exists:departments,id',
+            'level_id' => 'required|exists:levels,id',
+            'parent_id' => 'nullable|exists:positions,id',
+            'remaining_slot' => 'nullable|integer',
+            'company_id' => 'nullable|exists:companies,id',
+            'min_salary' => 'nullable|integer',
+            'max_salary' => 'nullable|integer',
+        ]);
+        $request = $request->all();
+        $update = Position::findOrFail($id);
+        $update->update($request);
+        $update = $update->refresh();
+        return $this->showOne($update);
     }
 
     /**
@@ -129,6 +164,5 @@ class PositionController extends Controller
      */
     public function destroy(Position $cvSayaPositions)
     {
-
     }
 }

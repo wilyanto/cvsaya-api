@@ -21,6 +21,7 @@ class Position extends Model implements Auditable
         'department_id',
         'level_id',
         'parent_id',
+        'remaining_slot',
         'min_salary',
         'max_salary',
         'company_id'
@@ -69,29 +70,52 @@ class Position extends Model implements Auditable
 
     public function company()
     {
-        return $this->hasOne(Company::class, 'id', 'company_id')->withDefault();
+        return $this->hasOne(Company::class, 'id', 'company_id');
+    }
+
+    public function totalEmployee()
+    {
+        return count($this->all());
     }
 
     public function toCandidate()
     {
         return [
             'id' => $this->id,
-            'name' => $this->name
+            'name' => $this->name,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 
-    public function toArray()
+    public function toArrayDefault()
     {
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'department' => $this->departments,
-            'level_id' => $this->levels,
-            'parent_id' => $this->parent_id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'department' => $this->departments->onlyNameAndId(),
+            'level' => $this->levels->onlyNameAndId(),
+            'parent' => $this->parent ?  $this->parent->toCandidate()  : null,
+            'company' => $this->company,
             'min_salary' => $this->min_salary,
             'max_salary' => $this->max_salary,
+            'remaining_slot' => $this->remaining_slot,
+        ];
+    }
+
+    public function employees()
+    {
+        return $this->hasMany(Employee::class, 'position_id', 'id');
+    }
+
+    public function toArrayEmployee()
+    {
+        return [
+            'id' => $this->id,
+            'parent_id' => $this->parent_id,
+            'name' => $this->name,
+            'department' => $this->departments,
+            'level' => $this->departments,
             'company' => $this->company,
         ];
     }

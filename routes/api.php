@@ -14,13 +14,16 @@ use App\Http\Controllers\Api\v1\DepartmentController;
 use App\Http\Controllers\Api\v1\LevelController;
 use App\Http\Controllers\Api\v1\PositionController;
 use App\Http\Controllers\Api\v1\CandidateController;
-use App\Http\Controllers\Api\v1\EmployeeDetailsController;
+use App\Http\Controllers\Api\v1\EmployeeController;
 use App\Http\Controllers\Api\v1\CandidateInterviewScheduleController;
 use App\Http\Controllers\Api\v1\CompanyController;
 use App\Http\Controllers\Api\v1\EmploymentTypeController;
 use App\Http\Controllers\Api\v1\PermissionController;
 use App\Http\Controllers\Api\v1\ReligionController;
 use App\Http\Controllers\Api\v1\MarriageStatusController;
+use App\Http\Controllers\Api\v1\SalaryTypeController;
+use App\Http\Controllers\Api\v1\AttendanceController;
+use App\Http\Controllers\Api\v1\ShiftController;
 use App\Models\Certifications;
 use App\Models\CvProfileDetail;
 use App\Models\EmploymentType;
@@ -114,14 +117,14 @@ Route::prefix('v1')->group(function () {
 
                     });
                 });
-                Route::prefix('candidate-positions')->group(function (){
+                Route::prefix('candidate-positions')->group(function () {
                     Route::controller(CandidateController::class)->group(function () {
                         Route::get('/statistic', 'getPosition');
-
                     });
                 });
             });
         });
+
 
         Route::prefix('documents')->group(function () {
             Route::controller(CvDocumentController::class)->group(function () {
@@ -227,33 +230,35 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-
-
-
         Route::prefix('departments')->group(function () {
             Route::controller(DepartmentController::class)->group(function () {
+                Route::get('/{id}', 'show');
+                Route::put('/{id}', 'update');
+                Route::delete('/{id}', 'destroy');
                 Route::get('/', 'index');
                 Route::post('/', 'create');
-                Route::put('/{id}', 'update');
             });
         });
 
 
         Route::prefix('levels')->group(function () {
             Route::controller(LevelController::class)->group(function () {
+                Route::get('/{id}', 'show');
+                Route::put('/{id}', 'update');
+                Route::delete('/{id}', 'destroy');
                 Route::get('/', 'index');
                 Route::post('/', 'create');
-                Route::put('/{id}', 'update');
             });
         });
 
 
         Route::prefix('positions')->group(function () {
             Route::controller(PositionController::class)->group(function () {
+                Route::get('/{id}', 'show');
+                Route::put('/{id}', 'update');
                 Route::get('/', 'index');
                 Route::post('/', 'store');
-                Route::get('/structure-organization', 'show');
-                Route::post('/{id}', 'update');
+                // Route::get('/structure-organization', 'show');
             });
         });
 
@@ -268,11 +273,52 @@ Route::prefix('v1')->group(function () {
             Route::controller(EmploymentTypeController::class)->group(function () {
                 Route::get('/types', 'index');
             });
-            Route::controller(EmployeeDetailsController::class)->group(function () {
+            Route::controller(EmployeeController::class)->group(function () {
                 Route::get('/{id}', 'show');
+                Route::group(['middleware' => ['permission:manage-employee']], function () {
+                    Route::get('/', 'index');
+                    Route::group(['middleware' => ['permission:manage-candidate']], function () {
+                        Route::post('/', 'store');
+                        Route::get('/{id}/salaries', 'showSalaryOnly');
+                        Route::PATCH('/{id}/salaries', 'updateSalary');
+                        Route::PUT('/{id}', 'update');
+                        Route::delete('/{id}', 'destroy');
+                    });
+                    Route::get('/', 'index');
+                });
+            });
+        });
+
+        Route::prefix('attendances')->group(function () {
+            Route::controller(AttendanceController::class)->group(function () {
+                Route::get('/', 'index');
+                Route::post('/', 'store');
+            });
+        });
+
+        Route::prefix('attendance-types')->group(function () {
+            Route::controller(AttendanceController::class)->group(function () {
+                Route::get('/', 'indexAttendanceType');
+            });
+        });
+
+        Route::prefix('shifts')->group(function () {
+            Route::controller(ShiftController::class)->group(function () {
                 Route::get('/', 'index');
             });
         });
+
+        Route::group(['middleware' => ['permission:manage-employee']], function () {
+            Route::prefix('/salary-types')->group(function () {
+                Route::controller(SalaryTypeController::class)->group(function () {
+                    Route::get('/{id}', 'index');
+                    Route::get('/', 'index');
+                    Route::post('/', 'store');
+                    Route::put('/{id}', 'update');
+                });
+            });
+        });
+
         Route::prefix('candidate-positions')->group(function () {
             Route::controller(CvExpectedJobController::class)->group(function () {
                 Route::get('/', 'getListCandidatePositionsWithPaginate');
@@ -286,6 +332,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('religions')->group(function () {
             Route::controller(ReligionController::class)->group(function () {
                 Route::get('/', 'index');
+                Route::post('/', 'index');
             });
         });
 

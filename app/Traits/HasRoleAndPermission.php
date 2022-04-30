@@ -2,14 +2,14 @@
 
 namespace App\Traits;
 
-use App\Models\EmployeeDetail;
+use App\Models\Employee;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 
 trait HasRoleAndPermission
 {
     protected function hasRole(Array $roles,$idKustomer){
-        $employee = EmployeeDetail::where('user_id',$idKustomer)->first();
+        $employee = Employee::where('user_id',$idKustomer)->first();
         if(!$employee){
             return false;
         }
@@ -19,7 +19,7 @@ trait HasRoleAndPermission
     }
 
     protected function hasPermission(Array $permissions,$idKustomer){
-        $employee = EmployeeDetail::where('user_id',$idKustomer)->first();
+        $employee = Employee::where('user_id',$idKustomer)->first();
         if(!$employee){
             return false;
         }

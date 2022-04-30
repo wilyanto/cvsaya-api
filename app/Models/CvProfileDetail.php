@@ -46,9 +46,9 @@ class CvProfileDetail extends Model implements Auditable
         return $this->hasOne(CvSosmed::class, 'user_id', 'user_id')->withDefault();
     }
 
-    public function employeeDetails()
+    public function employee()
     {
-        return $this->belongsToMany(EmployeeDetails::class, 'user_id', 'user_id')->withDefault();
+        return $this->belongsToMany(Employee::class, 'user_id', 'user_id')->withDefault();
     }
 
     public function religion()

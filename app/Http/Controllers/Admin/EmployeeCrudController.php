@@ -9,7 +9,7 @@ use App\Http\Requests\EmployeeUpdateCrudRequest as UpdateRequest;
 use Illuminate\Support\Facades\Hash;
 use App\Request\UserUpdateCrudRequest;
 use SebastianBergmann\CodeCoverage\Report\Xml\Tests;
-use App\Models\EmployeeDetail;
+use App\Models\Employee;
 
 class EmployeeCrudController extends CrudController
 {
@@ -20,7 +20,7 @@ class EmployeeCrudController extends CrudController
 
     public function setup()
     {
-        $this->crud->setModel('App\Models\EmployeeDetail');
+        $this->crud->setModel('App\Models\Employee');
         $this->crud->setEntityNameStrings('employees','employees');
         $this->crud->setRoute('admin/employee');
     }
