@@ -36,4 +36,8 @@ class Attendance extends Model implements Auditable
     public function attendanceType(){
         return $this->hasOne(AttendanceType::class,'id','attendance_type_id');
     }
+
+    public function attendancePenalty(){
+        return $this->hasOne(AttendancePenalty::class,'attendance_id','id');
+    }
 }

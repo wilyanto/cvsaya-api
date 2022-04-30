@@ -173,7 +173,7 @@ class Employee extends Authenticatable implements Auditable
         return  $this->hasMany(ShiftEmployee::class, 'employee_id', 'id');
     }
 
-    public function getShifts($startedAt, $endedAt, $penaltyType = null)
+    public function getShiftsOne($startedAt, $endedAt, $penaltyType = null)
     {
         $startedAt = new \DateTime($startedAt, new DateTimeZone('Asia/Jakarta'));
         $endedAt = new \DateTime($endedAt, new DateTimeZone('Asia/Jakarta'));
@@ -266,143 +266,67 @@ class Employee extends Authenticatable implements Auditable
         return $shifts;
     }
 
-    public static function getPenaltiesValue(
-        $attendance,
-        AttendanceType $type,
-        bool $isCreateNewPenalties,
-        $penalties
-    ) {
-        if ($type->name == AttendanceType::CLOCKIN) {
-            if ($attendance && $attendance->validated_at != null) {
-                $checkedAt = strtotime($attendance->checked_at);
-                if ($checkedAt > strtotime($attendance->duty_at)) {
-                    $late = date('H:i:s', $checkedAt - strtotime($attendance->duty_at));
-                    $penaltiesByTypes =  $penalties->where('attendance_types_id', $type->id)->sortByDesc('passing_at');
-                    foreach ($penaltiesByTypes as $penalty) {
-                        if (strtotime($penalty->passing_at) <= strtotime($late)) {
-                            if ($isCreateNewPenalties && $penalty->amount) {
-                                AttendancePenalty::create([
-                                    'amount' => $penalty->amount,
-                                    'attendance_id' => $attendance->id,
-                                    'penalty_id' => $penalty->id,
-                                ]);
-                            }
-                            return $penalty->amount;
-                        }
-                    }
-                }
-            } else {
-                $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
-                if ($penalty) {
 
-                    if ($isCreateNewPenalties && $penalty->amount && $attendance->validated_at != null) {
-                        AttendancePenalty::create([
-                            'amount' => $penalty->amount,
-                            'attendance_id' => null,
-                            'penalty_id' => $penalty->id,
-                        ]);
-                    }
-                    return $penalty->amount;
-                }
+    public function getShift($date)
+    {
+        $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
+        $shift =  ShiftEmployee::whereDate('date', $date->format(' '))->first();
+        if (!$shift) {
+            $getTodayDay = $date->format('N');
+            $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $this->position->id)->first();
+            if (!$shift) {
+                return null;
             }
-        } elseif ($type->name == AttendanceType::CLOCKOUT) {
-            if ($attendance && $attendance->validated_at != null) {
-                $checkedAt = strtotime($attendance->checked_at);
-                if ($checkedAt < strtotime($attendance->duty_at)) {
-                    $late =   date('H:i:s', strtotime($attendance->duty_at) - $checkedAt);
-                    // dump($late);
-                    $penaltiesByTypes =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc']);
-                    foreach ($penaltiesByTypes as $penalty) {
-                        if (strtotime($penalty->passing_at) <= strtotime($late)) {
-                            if ($isCreateNewPenalties && $penalty->amount) {
-                                AttendancePenalty::create([
-                                    'amount' => $penalty->amount,
-                                    'attendance_id' => $attendance->id,
-                                    'penalty_id' => $penalty->id,
-                                ]);
-                            }
-                            return $penalty->amount;
-                        }
-                    }
-                }
-            } else {
-                $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
-                if ($penalty) {
-                    if ($isCreateNewPenalties && $penalty->amount && $attendance->validated_at != null) {
-                        AttendancePenalty::create([
-                            'amount' => $penalty->amount,
-                            'attendance_id' => null,
-                            'penalty_id' => $penalty->id,
-                        ]);
-                    }
-                    return $penalty->amount;
-                }
-            }
-        } elseif ($type->name == AttendanceType::BREAKSTARTEDAT) {
-            if ($attendance && $attendance->validated_at != null) {
-                $checkedAt = strtotime($attendance->checked_at);
-                if ($checkedAt > strtotime($attendance->duty_at)) {
-                    $late = date('H:i:s', $checkedAt - strtotime($attendance->duty_at));
-                    $penaltiesByTypes =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc']);
-                    foreach ($penaltiesByTypes as $penalty) {
-                        if (strtotime($penalty->passing_at) <= strtotime($late)) {
-                            if ($isCreateNewPenalties && $penalty->amount) {
-                                AttendancePenalty::create([
-                                    'amount' => $penalty->amount,
-                                    'attendance_id' => $attendance->id,
-                                    'penalty_id' => $penalty->id,
-                                ]);
-                            }
-                            return $penalty->amount;
-                        }
-                    }
-                }
-            } else {
-                $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
-                if ($penalty) {
-                    if ($isCreateNewPenalties && $penalty->amount && $attendance->validated_at != null) {
-                        AttendancePenalty::create([
-                            'amount' => $penalty->amount,
-                            'attendance_id' => null,
-                            'penalty_id' => $penalty->id,
-                        ]);
-                    }
-                    return $penalty->amount;
-                }
-            }
-        } elseif ($type->name == AttendanceType::BREAKENDEDAT) {
-            if ($attendance && $attendance->validated_at != null) {
-                $checkedAt = strtotime($attendance->checked_at);
-                if ($checkedAt > strtotime($attendance->duty_at)) {
-                    $late = date('H:i:s', $checkedAt - strtotime($attendance->duty_at));
-                    $penaltiesByTypes =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc']);
-                    foreach ($penaltiesByTypes as $penalty) {
-                        if (strtotime($penalty->passing_at) <= strtotime($late)) {
-                            if ($isCreateNewPenalties && $penalty->amount) {
-                                AttendancePenalty::create([
-                                    'amount' => $penalty->amount,
-                                    'attendance_id' => $attendance->id,
-                                    'penalty_id' => $penalty->id,
-                                ]);
-                            }
-                            return $penalty->amount;
-                        }
-                    }
-                }
-            } else {
-                $penalty =  $penalties->where('attendance_types_id', $type->id)->sortBy(['passing_at', 'desc'])->first();
-                if ($penalty) {
-                    if ($isCreateNewPenalties && $penalty->amount && $attendance->validated_at != null) {
-                        AttendancePenalty::create([
-                            'amount' => $penalty->amount,
-                            'attendance_id' => null,
-                            'penalty_id' => $penalty->id,
-                        ]);
-                    }
-                    return $penalty->amount;
-                }
-            }
+        };
+        return $shift;
+    }
+
+    public function isWorkToday($date)
+    {
+        $isWorkToday = false;
+        $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
+        $tempDate = new \DateTime($date->format('Y-m-d\TH:i:s.u\Z'), new DateTimeZone('Asia/Jakarta'));
+        $interval = DateInterval::createFromDateString('+23 hour +59 minute + 59 second');
+        $endDayOfDate =  $tempDate->add($interval)->format('Y-m-d\TH:i:s.u\Z');
+        if ($this->getShift($date->format('Y-m-d\TH:i:s.u\Z')) == null) {
+            $isWorkToday = true;
+            return $isWorkToday;
         }
-        return 0;
+        $attendances = Attendance::whereBetween(
+            'duty_at',
+            [
+                $date->format('Y-m-d\TH:i:s.u\Z'),
+                $endDayOfDate
+            ]
+        )->where('attendance_type_id', AttendanceType::CLOCK_IN_ID)
+            ->where('employee_id', $this->id)
+            ->whereNotNull('validated_at')
+            ->first();
+        if ($attendances) {
+            $isWorkToday = true;
+        }
+        return $isWorkToday;
+    }
+
+    public function getAllPenalty($startDate, $untilDate, AttendanceType $penaltyType = null)
+    {
+        $penalty = 0;
+
+        $startDate = new \DateTime($startDate, new DateTimeZone('Asia/Jakarta'));
+        $untilDate = new \DateTime($untilDate, new DateTimeZone('Asia/Jakarta'));
+        $attendances = Attendance::whereBetween('checked_at', [
+            $startDate->format('Y-m-d\TH:i:s.u\Z'),
+            $untilDate->format('Y-m-d\TH:i:s.u\Z')
+        ])->where('employee_id', $this->id)
+            ->where(function ($query) use ($penaltyType) {
+                if ($penaltyType) {
+                    $query->where('attendance_type_id', $penaltyType->id);
+                }
+            })->get();
+
+        foreach ($attendances as $attendance) {
+            $penalty += $attendance->penalty->amount;
+        }
+        return $penalty;
     }
 }

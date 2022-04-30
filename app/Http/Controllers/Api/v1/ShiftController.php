@@ -4,18 +4,12 @@ namespace App\Http\Controllers\Api\v1;;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Attendance;
-use App\Models\AttendanceType;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\Shift;
-use App\Models\ShiftEmployee;
 use App\Models\ShiftPositions;
 use App\Traits\ApiResponser;
-use DateInterval;
-use DateTime;
 use DateTimeZone;
-use Illuminate\Support\Facades\Auth;
 
 class ShiftController extends Controller
 {
@@ -28,7 +22,6 @@ class ShiftController extends Controller
 
         $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
 
-        $attendanceTypes = AttendanceType::all();
         $request->validate([
             'date' => 'date_format:Y-m-d\TH:i:s.u\Z|nullable',
         ]);
@@ -37,45 +30,23 @@ class ShiftController extends Controller
         if ($request->date) {
             $date = new \DateTime($request->date, new DateTimeZone('Asia/Jakarta'));
         }
-        $startDate = $date->format('Y-m-d\TH:i:s.u\Z');
-        $interval = DateInterval::createFromDateString('+23 hour +59 minute + 59 second');
-        $endDate = $date->add($interval)->format('Y-m-d\TH:i:s.u\Z');
-        $shift = ShiftEmployee::whereBetween(
-            'date',
-            [
-                $startDate,
-                $endDate
-            ]
-        )->first();
-        if (!$shift) {
-            $getTodayDay = $date->format('N');
-            $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $employee->position->id)->first();
-            if (!$shift) {
-                return $this->errorResponse('Your Shift Not Found', 422, 42201);
-            }
-        }
-        $data['name'] = $shift->shift->name;
-        $data['break_duration'] = $shift->shift->break_duration;
-        foreach ($attendanceTypes as $attendanceType) {
-            $columnName = $attendanceType->name;
-            if($shift->shift->$columnName){
-                // dump(strtotime($startDate) + strtotime($shift->shift->$columnName));
-                $shiftByColumn = date('Y-m-d\TH:i:s.u\Z', strtotime($shift->shift->$columnName));
-            }else{
-               $shiftByColumn= $shift->shift->$columnName;
-            }
-            if ($attendanceType->name == AttendanceType::BREAKENDEDAT) {
-                $attendance = Attendance::whereBetween('duty_at', [
-                    $startDate,
-                    $endDate
-                ])->where('attendance_type_id', $attendanceType->id)->first();
-                if ($attendance) {
-                    $time = new \DateTime($attendance->checked_at, new DateTimeZone('Asia/Jakarta'));;
-                    $shiftByColumn = $time->format('Y-m-d\TH:i:s.u\Z');
-                }
-            }
-            $data[$attendanceType->name] = $shiftByColumn;
-        }
+        $employee = $employee->getShift($date->format('Y-m-d\TH:i:s.u\Z'));
+        $employee = $employee->shift;
+        $data = [
+            'id' => $employee->id,
+            'name' => $employee->name,
+            'clock_in' => date('Y-m-d\TH:i:s.v\Z', strtotime($date->format('Y-m-d') . ' ' . $employee->clock_in)),
+            'clock_out' => date('Y-m-d\TH:i:s.v\Z', strtotime($date->format('Y-m-d') . ' ' . $employee->clock_out)),
+            'break_started_at' => $employee->break_started_at
+                ? date('Y-m-d\TH:i:s.v\Z', strtotime($date->format('Y-m-d') . ' ' . $employee->break_started_at))
+                : null,
+            'break_ended_at' =>  $employee->break_ended_at
+                ? date('Y-m-d\TH:i:s.v\Z', strtotime($date->format('Y-m-d') . ' ' . $employee->break_ended_at))
+                : null,
+            'break_duration' => $employee->break_duration,
+            'created_at' => date('Y-m-d\TH:i:s.v\Z',strtotime($employee->created_at)),
+            'updated_at' => date('Y-m-d\TH:i:s.v\Z',strtotime($employee->updated_at)),
+        ];
         return $this->showOne($data);
     }
 

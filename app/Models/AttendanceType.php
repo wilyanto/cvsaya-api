@@ -25,20 +25,20 @@ class AttendanceType extends Model implements Auditable
         'name'
     ];
 
-    public const CLOCKIN = 'clock_in';
+    public const CLOCK_IN = 'clock_in';
 
-    public const CLOCKOUT = 'clock_out';
+    public const CLOCK_OUT = 'clock_out';
 
-    public const BREAKSTARTEDAT = 'break_started_at';
+    public const BREAK_STARTED_AT = 'break_started_at';
 
-    public const BREAKENDEDAT = 'break_ended_at';
+    public const BREAK_ENDED_AT = 'break_ended_at';
 
-    public const CLOCKINID = 1;
+    public const CLOCK_IN_ID = 1;
 
-    public const CLOCKOUTID = 2;
+    public const CLOCK_OUT_ID = 2;
 
-    public const BREAKSTARTEDATID = 3;
+    public const BREAK_STARTED_AT_ID = 3;
 
-    public const BREAKENDEDATID = 4;
+    public const BREAK_ENDED_AT_ID = 4;
 
 }
