@@ -14,7 +14,7 @@ use App\Models\CandidateInterviewSchedule;
 use App\Models\CandidateNote;
 use Illuminate\Validation\Rule;
 use App\Models\InterviewResult;
-
+use App\Models\User;
 
 class CandidateController extends Controller
 {
@@ -161,7 +161,8 @@ class CandidateController extends Controller
         ]);
 
         $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
-        $candidate = Candidate::findOrFail($id);
+        $candidateUser = User::where('id_kustomer', $id)->firstOrFail();
+        $candidate = Candidate::where('user_id', $candidateUser->id)->firstOrFail();
 
         CandidateNote::create([
             'note' => $request->note,
