@@ -108,6 +108,7 @@ Route::prefix('v1')->group(function () {
 
             Route::prefix('candidates')->group(function () {
                 Route::controller(CandidateController::class)->group(function () {
+                    Route::get('/{id}/notes', 'getCandidateNotes');
                     Route::post('/{id}/notes', 'createNote');
                     Route::get('/notes', 'getOwnNotes');
                 });

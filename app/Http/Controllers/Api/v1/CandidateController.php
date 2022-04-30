@@ -173,6 +173,26 @@ class CandidateController extends Controller
     }
 
 
+    public function getCandidateNotes(Request $request, $id)
+    {
+        $user = auth()->user();
+        $request->validate([
+            'keyword' => 'nullable|string'
+        ]);
+        $keyword = $request->keyword;
+        $candidate = Candidate::findOrFail($id);
+        if ($candidate->user_id == $user->id_kustomer) {
+            return $this->errorResponse('employee cannot see own note candidate', 422, 42201);
+        }
+        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
+        $notes = CandidateNote::where(function ($query) use ($keyword) {
+            if ($keyword) {
+                $query->where('note', 'like', '%' . $keyword . '%');
+            }
+        })->where('employee_id', $employee->id)->where('candidate_id', $candidate->id)->get();
+        return $this->showAll($notes);
+    }
+
     public function getOwnNotes(Request $request)
     {
         $user = auth()->user();
