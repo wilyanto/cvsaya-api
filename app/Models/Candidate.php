@@ -41,7 +41,7 @@ class Candidate extends Model implements Auditable
     protected $primaryKey = 'id';
 
     protected $dates = [
-        'register_date',
+        'registered_at',
     ];
 
     public $fillable = [
@@ -51,7 +51,7 @@ class Candidate extends Model implements Auditable
         'user_id',
         'status',
         'suggested_by',
-        'register_date',
+        'registered_at',
     ];
 
     public function domicile()
@@ -128,7 +128,7 @@ class Candidate extends Model implements Auditable
             'name' => $this->name,
             'phone_number' => $this->phone_number,
             'country_code' => $this->country_code,
-            'registered_at' => $this->register_at,
+            'registered_at' => $this->registered_at,
             'status' => $status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
@@ -181,6 +181,14 @@ class Candidate extends Model implements Auditable
             'registered_at' => $this->registered_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+        ];
+    }
+
+    public function nameOnly(){
+        return [
+            'id' => $this->id,
+            'first_name' => $this->profile->first_name,
+            'last_name' => $this->profile->last_name,
         ];
     }
 }
