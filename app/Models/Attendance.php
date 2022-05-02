@@ -65,8 +65,4 @@ class Attendance extends Model implements Auditable
             return $date->format('Y-m-d\TH:i:s.v\Z');
         }
     }
-
-    public function attendancePenalty(){
-        return $this->hasOne(AttendancePenalty::class,'attendance_id','id');
-    }
 }
