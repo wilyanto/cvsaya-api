@@ -12,8 +12,6 @@ use App\Models\DocumentType;
 use App\Models\Employee;
 use App\Models\Penalty;
 use App\Models\Shift;
-use App\Models\ShiftEmployee;
-use App\Models\ShiftPositions;
 use App\Traits\ApiResponser;
 use DateInterval;
 use DateTime;
