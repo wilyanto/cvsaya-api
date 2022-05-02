@@ -125,7 +125,6 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-
         Route::prefix('documents')->group(function () {
             Route::controller(CvDocumentController::class)->group(function () {
                 Route::get('/type', 'getDocumentByID');
@@ -295,6 +294,13 @@ Route::prefix('v1')->group(function () {
                 Route::post('/', 'store');
             });
         });
+
+        Route::prefix('attendance-securities')->group(function () {
+            Route::controller(AttendanceController::class)->group(function () {
+                Route::patch('/', 'validationBySecurity');
+            });
+        });
+
 
         Route::prefix('attendance-types')->group(function () {
             Route::controller(AttendanceController::class)->group(function () {
