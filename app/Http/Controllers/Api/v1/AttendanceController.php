@@ -364,23 +364,6 @@ class AttendanceController extends Controller
 
         return $this->showOne('Success');
     }
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Attendance  $attendance
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Attendance $attendance)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Attendance  $attendance
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Attendance $attendance)
     {
         //
