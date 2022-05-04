@@ -22,8 +22,8 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'page' => 'required|numeric|gt:0',
-            'page_size' => 'required|numeric|gt:0',
+            'page' => 'nullable|numeric|gt:0',
+            'page_size' => 'nullable|numeric|gt:0',
             'position_id' => 'nullable|exists:positions,id',
             'company_id' => 'nullable|exists:companies,id',
             'department_id' => 'nullable|exists:departments,id',

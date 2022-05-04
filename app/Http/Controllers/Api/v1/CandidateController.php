@@ -11,9 +11,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CandidatePosition;
 use App\Models\CandidateInterviewSchedule;
+use App\Models\CandidateNote;
 use Illuminate\Validation\Rule;
 use App\Models\InterviewResult;
-
+use App\Models\User;
 
 class CandidateController extends Controller
 {
@@ -28,8 +29,8 @@ class CandidateController extends Controller
     {
         $user = auth()->user();
         $request->validate([
-            'page' => 'required|numeric|gt:0',
-            'page_size' => 'required|numeric|gt:0',
+            'page' => 'nullable|numeric|gt:0',
+            'page_size' => 'nullable|numeric|gt:0',
             'name' => 'nullable|string',
             'status' => 'nullable|integer',
             'country_id' => 'nullable',
@@ -41,6 +42,9 @@ class CandidateController extends Controller
                 Rule::in(['DESC', 'ASC']),
             ],
         ]);
+
+        $page = $request->page ? $request->page  : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
         $name = $request->name;
         $status = $request->status;
         $countryId = $request->country_id;
@@ -84,10 +88,10 @@ class CandidateController extends Controller
             }
         })->orderBy('updated_at', $orderBy)
             ->paginate(
-                $perpage = $request->page_size,
-                $columns =  ['*'],
-                $pageName = 'page',
-                $pageBody = $request->page
+                $pageSize,
+                ['*'],
+                'page',
+                $page
             );
         $data = [];
         foreach ($candidates as $candidate) {
@@ -149,13 +153,73 @@ class CandidateController extends Controller
     }
 
 
+    public function createNote(Request $request, $id)
+    {
+        $user = auth()->user();
+        $request->validate([
+            'note' => 'required|string',
+        ]);
+
+        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
+        $candidateUser = User::where('id_kustomer', $id)->firstOrFail();
+        $candidate = Candidate::where('user_id', $candidateUser->id)->firstOrFail();
+
+        CandidateNote::create([
+            'note' => $request->note,
+            'employee_id' => $employee->id,
+            'candidate_id' => $candidate->id
+        ]);
+
+        return $this->showOne('Success');
+    }
+
+
+    public function getCandidateNotes(Request $request, $id)
+    {
+        $user = auth()->user();
+        $request->validate([
+            'keyword' => 'nullable|string'
+        ]);
+        $keyword = $request->keyword;
+        $candidate = Candidate::findOrFail($id);
+        if ($candidate->user_id == $user->id_kustomer) {
+            return $this->errorResponse('employee cannot see own note candidate', 422, 42201);
+        }
+        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
+        $notes = CandidateNote::where(function ($query) use ($keyword) {
+            if ($keyword) {
+                $query->where('note', 'like', '%' . $keyword . '%');
+            }
+        })->where('employee_id', $employee->id)->where('candidate_id', $candidate->id)->get();
+        return $this->showAll($notes);
+    }
+
+    public function getOwnNotes(Request $request)
+    {
+        $user = auth()->user();
+        $request->validate([
+            'keyword' => 'nullable|string'
+        ]);
+        $keyword = $request->keyword;
+        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
+        $notes = CandidateNote::where(function ($query) use ($keyword) {
+            if ($keyword) {
+                $query->where('note', 'like', '%' . $keyword . '%');
+            }
+        })->where('employee_id', $employee->id)->get();
+        return $this->showAll($notes);
+    }
+
     public function getPosition(Request $request)
     {
         $request->validate([
             'keyword' => 'nullable',
-            'page' => 'required|numeric|gt:0',
-            'page_size' => 'required|numeric|gt:0'
+            'page' => 'nullable|numeric|gt:0',
+            'page_size' => 'nullable|numeric|gt:0'
         ]);
+
+        $page = $request->page ? $request->page  : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
         $keyword = $request->keyword;
         $result = [];
         $positions = CandidatePosition::where(function ($query) use ($keyword) {
@@ -164,10 +228,10 @@ class CandidateController extends Controller
             }
         })->orderBy('name', 'desc')->whereNotNull('validated_at')
             ->paginate(
-                $request->page_size,
+                $pageSize,
                 ['*'],
                 'page',
-                $request->page
+                $page
             );
         foreach ($positions as $position) {
             $result[] = [

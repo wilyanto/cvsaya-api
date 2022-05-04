@@ -1625,6 +1625,108 @@ Response Example :
 }
 ```
 
+## [Attach Shift Position](#attach-shift-position)
+
+Attach position with shifts
+
+```
+POST /api/v1/shifts/{id}/position
+```
+
+Request Description :
+
+> | Name               | Type        | Description                   | Nullable |
+> | ------------------ | ----------- | ----------------------------- | -------- |
+> | id                 | primary key | primary key of shifts         | no       |
+> | shifts             | array       | list of new shifts            | no       |
+> | shifts.position_id | foreign     | primary key of position Table | no       |
+> | shifts.days        | integer     | day of targeted shifts        | no       |
+
+Request Example :
+
+```
+{
+    "shifts" : [
+        {
+            "position_id" : "post-1",
+            "days" : [
+                1,2,3,4,5,6
+            ]
+        },
+        {
+            "position_id" : "post-2",
+            "days" : [
+                1,2,3,4,5,6
+            ]
+        }
+    ]
+}
+```
+
+Response Example :
+
+```
+{
+     "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data : "success",
+}
+```
+
+## [Attach Shift Employee](#attach-shift-employee)
+
+Attach position with shifts
+
+```
+POST /api/v1/shifts/{id}/employee
+```
+
+Request Description :
+
+> | Name               | Type        | Description                   | Nullable |
+> | ------------------ | ----------- | ----------------------------- | -------- |
+> | id                 | primary key | primary key of shifts         | no       |
+> | shifts             | array       | list of new shifts            | no       |
+> | shifts.employee_id | foreign     | primary key of employee Table | no       |
+> | shifts.days        | integer     | day of targeted shifts        | no       |
+
+Request Example :
+
+```
+{
+    "shifts" : [
+        {
+            "employee_id" : "post-1",
+            "days" : [
+                1,2,3,4,5,6
+            ]
+        },
+        {
+            "employee_id" : "post-2",
+            "days" : [
+                1,2,3,4,5,6
+            ]
+        }
+    ]
+}
+```
+
+Response Example :
+
+```
+{
+     "meta" :{
+        "success" : true,
+        "code" : 200000,
+        "message" : request success"
+    },
+    data : "success",
+}
+```
+
 ## [Add Attendance](#add-attendance)
 
 Add new or update attendance
@@ -1642,7 +1744,7 @@ Request Description :
 > | note | longText | Long Text of file                    | yes      |
 
 Request Example :
-    
+
 ```
 {
     "type" : 1，
