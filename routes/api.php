@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\v1\ReligionController;
 use App\Http\Controllers\Api\v1\MarriageStatusController;
 use App\Http\Controllers\Api\v1\SalaryTypeController;
 use App\Http\Controllers\Api\v1\AttendanceController;
+use App\Http\Controllers\Api\v1\CandidateNoteController;
 use App\Http\Controllers\Api\v1\ShiftController;
 use App\Models\Certifications;
 use App\Models\CvProfileDetail;
@@ -55,7 +56,6 @@ Route::prefix('v1')->group(function () {
 
         Route::group(['middleware' => ['permission:manage-candidate|manage-schedule']], function () {
             Route::prefix('admin')->group(function () {
-
                 Route::controller(CvProfileDetailController::class)->group(function () {
                     Route::get('/profile', 'show');
                 });
@@ -65,30 +65,24 @@ Route::prefix('v1')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
                     Route::get('/{id}/profile',  'indexDetail');
                 });
-
                 Route::controller(CvExpectedJobController::class)->group(function () {
                     Route::get('/{id}/expected-job', 'show'); // path user/id/expected-jobs
                 });
-
                 Route::controller(CvProfileDetailController::class)->group(function () {
                     Route::get('/{id}/curriculum-vitae', 'cvDetailByID'); // path user/id/cv
                 });
-
                 Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                     Route::get('/{id}/interview-notes', 'showNote'); // path user/id/cv
                 });
-
                 Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                     Route::get('/{id}/interviews', 'getDetail'); // path user/id/cv
                 });
-
                 Route::controller(CvDocumentController::class)->group(function () {
                     Route::get('/{id}/documents', 'show'); // path user/id/cv
                 });
-
                 Route::group(['middleware' => ['permission:manage-candidate']], function () {
-                    Route::controller(CandidateController::class)->group(function () {
-                        Route::get('/{id}/notes', 'getCandidateNotes');
+                    Route::controller(CandidateNoteController::class)->group(function () {
+                        Route::get('/{id}/candidate-notes', 'getCandidateNotes');
                     });
                 });
             });
