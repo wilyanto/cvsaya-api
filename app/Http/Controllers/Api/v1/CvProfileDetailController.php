@@ -36,7 +36,8 @@ class CvProfileDetailController extends Controller
     public function indexDetail($id)
     {
         $array = [];
-        $userProfileDetail = CvProfileDetail::where('user_id', $id)->firstOrFail();
+        $candidate = Candidate::findOrFail($id);
+        $userProfileDetail = CvProfileDetail::where('user_id', $candidate->user_id)->firstOrFail();
         $userAddress = CvDomicile::where('user_id', $id)->firstOrFail();
         $userSosmed = CvSosmed::where('user_id', $id)->firstOrFail();
 
@@ -104,7 +105,8 @@ class CvProfileDetailController extends Controller
     {
         $user = auth()->user();
         if (!$id) {
-            $id = $user->id_kustomer;
+            $candidate = Candidate::findOrFail($id);
+            $id = $candidate->user_id;
         }
         $education = CvEducation::where('user_id', $id)
             ->orderBy('started_at', 'DESC')
@@ -258,7 +260,7 @@ class CvProfileDetailController extends Controller
     {
         $user = auth()->user();
 
-        $employee = Employee::where('user_id',$user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
 
         $data = [
             'profile' => $employee->profileDetail,
