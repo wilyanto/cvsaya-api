@@ -61,7 +61,6 @@ Route::prefix('v1')->group(function () {
                 });
             });
 
-
             Route::prefix('candidates')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
                     Route::get('/{id}/profile',  'indexDetail');
