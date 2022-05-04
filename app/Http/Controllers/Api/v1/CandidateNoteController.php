@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCandidateNoteRequest;
 use App\Models\Candidate;
 use App\Models\CandidateNote;
-use App\Models\Employee;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 
@@ -13,7 +13,7 @@ class CandidateNoteController extends Controller
 {
     use ApiResponser;
 
-    public function getCandidateNotes(Request $request, $candidateId)
+    public function getCandidateNotes($candidateId)
     {
         $userId = auth()->user()->id_kustomer;
         $candidate = Candidate::findOrFail($candidateId);
@@ -30,11 +30,30 @@ class CandidateNoteController extends Controller
                     ->where('employee_id', $userId);
             })
             ->with('employeeProfileDetail', function ($query) {
-                $query->select('first_name', 'last_name');
+                $query->select(['first_name', 'last_name']);
             })
             ->get();
 
         return $this->showAll($candidateNotes);
+    }
+
+    public function storeCandidateNotes(StoreCandidateNoteRequest $request, $candidateId)
+    {
+        $userId = auth()->user()->id_kustomer;
+        $candidate = Candidate::findOrFail($candidateId);
+
+        if ($userId == $candidate->id) {
+            return $this->errorResponse('Can\'t perform this action', 409, 40900);
+        }
+
+        $candidateNote = CandidateNote::create([
+            'note' => $request->note,
+            'employee_id' => $userId,
+            'candidate_id' => $candidateId,
+            'visibility' => $request->visibility,
+        ]);
+
+        return $this->showOne($candidateNote);
     }
 
     /**

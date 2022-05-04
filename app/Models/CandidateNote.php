@@ -38,7 +38,7 @@ class CandidateNote extends Model implements Auditable
             Employee::class,
             'id',
             'user_id',
-            'id',
+            'employee_id',
             'user_id',
         );
     }

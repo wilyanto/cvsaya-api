@@ -82,6 +82,7 @@ Route::prefix('v1')->group(function () {
                 });
                 Route::group(['middleware' => ['permission:manage-candidate']], function () {
                     Route::controller(CandidateNoteController::class)->group(function () {
+                        Route::post('/{id}/candidate-notes', 'storeCandidateNotes');
                         Route::get('/{id}/candidate-notes', 'getCandidateNotes');
                     });
                 });
