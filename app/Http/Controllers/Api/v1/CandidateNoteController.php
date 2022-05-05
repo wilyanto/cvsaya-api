@@ -57,7 +57,7 @@ class CandidateNoteController extends Controller
             return $this->errorResponse('Can\'t perform this action', 409, 40900);
         }
 
-        $employee = Employee::where('user_id', $userId)->first();
+        $employee = Employee::where('user_id', $userId)->firstOrFail();
 
         $candidateNote = CandidateNote::create([
             'note' => $request->note,
