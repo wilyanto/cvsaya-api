@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Enums\CandidateNoteVisibility;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCandidateNoteRequest;
 use App\Models\Candidate;
@@ -19,7 +20,7 @@ class CandidateNoteController extends Controller
         $page = $request->page ? $request->page : 1;
         $pageSize = $request->page_size ? $request->page_size : 10;
         $userId = auth()->user()->id_kustomer;
-        
+
         $candidate = Candidate::findOrFail($candidateId);
         $employee = Employee::where('user_id', $userId)->firstOrFail();
 
@@ -27,16 +28,27 @@ class CandidateNoteController extends Controller
             return $this->errorResponse('Data not found', 404, 40400);
         }
 
-        $candidateNotes = CandidateNote::where('candidate_id', $candidateId)
-            ->where('visibility', 'public')
-            ->orWhere(function ($query) use ($employee, $candidateId) {
-                $query->where('visibility', 'private')
-                    ->where('candidate_id', $candidateId)
-                    ->where('employee_id', $employee->id);
-            })
+        $candidateNoteQuery = CandidateNote::where('candidate_id', $candidateId);
+
+        if ($request->visibility == null) {
+            $candidateNoteQuery->where('visibility', 'public')
+                ->orWhere(function ($query) use ($employee, $candidateId) {
+                    $query->where('visibility', CandidateNoteVisibility::private())
+                        ->where('candidate_id', $candidateId)
+                        ->where('employee_id', $employee->id);
+                });
+        } else {
+            if ($request->visibility == CandidateNoteVisibility::private()) {
+                $candidateNoteQuery->where('employee_id', $employee->id);
+            }
+            $candidateNoteQuery->where('visibility', $request->visibility);
+        }
+
+        $candidateNotes = $candidateNoteQuery
             ->with('employeeProfileDetail', function ($query) {
                 $query->select(['first_name', 'last_name']);
             })
+            ->orderBy('created_at', 'desc')
             ->paginate(
                 $pageSize,
                 ['*'],
