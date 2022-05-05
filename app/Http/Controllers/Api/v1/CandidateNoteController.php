@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCandidateNoteRequest;
 use App\Models\Candidate;
 use App\Models\CandidateNote;
+use App\Models\Employee;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 
@@ -13,10 +14,12 @@ class CandidateNoteController extends Controller
 {
     use ApiResponser;
 
-    public function getCandidateNotes($candidateId)
+    public function getCandidateNotes(Request $request, $candidateId)
     {
         $userId = auth()->user()->id_kustomer;
         $candidate = Candidate::findOrFail($candidateId);
+        $page = $request->page ? $request->page : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
 
         if ($userId == $candidate->id) {
             return $this->errorResponse('Data not found', 404, 40400);
@@ -32,9 +35,17 @@ class CandidateNoteController extends Controller
             ->with('employeeProfileDetail', function ($query) {
                 $query->select(['first_name', 'last_name']);
             })
-            ->get();
+            ->paginate(
+                $pageSize,
+                ['*'],
+                'page',
+                $page
+            );
 
-        return $this->showAll($candidateNotes);
+        return $this->showPagination(
+            'candidate_notes',
+            $candidateNotes,
+        );
     }
 
     public function storeCandidateNotes(StoreCandidateNoteRequest $request, $candidateId)
@@ -46,9 +57,11 @@ class CandidateNoteController extends Controller
             return $this->errorResponse('Can\'t perform this action', 409, 40900);
         }
 
+        $employee = Employee::where('user_id', $userId)->first();
+
         $candidateNote = CandidateNote::create([
             'note' => $request->note,
-            'employee_id' => $userId,
+            'employee_id' => $employee->id,
             'candidate_id' => $candidateId,
             'visibility' => $request->visibility,
         ]);

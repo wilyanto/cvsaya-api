@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 trait ApiResponser
@@ -54,8 +55,9 @@ trait ApiResponser
         );
     }
 
-    protected function showPaginate($resultKey,Collection $resultValues, Collection $paginateCollection, $statusCode = null, $metaMessage = null)
+    protected function showPaginate($resultKey, Collection $resultValues, Collection $paginateCollection, $statusCode = null, $metaMessage = null)
     {
+        dd($paginateCollection);
         return response()->json(
             [
                 'meta' => [
@@ -73,6 +75,27 @@ trait ApiResponser
                 ]
             ],
             $statusCode ?? 200
+        );
+    }
+
+    protected function showPagination($resultKey, LengthAwarePaginator $resultValues, $metaMessage = null)
+    {
+        return response()->json(
+            [
+                'meta' => [
+                    'success' => true,
+                    'code' => 20000,
+                    'message' => $metaMessage ?? 'Request success',
+                ],
+                'data' => [
+                    $resultKey => $resultValues->items(),
+                    'page_info' => [
+                        'last_page' => $resultValues->lastPage(),
+                        'current_page' => $resultValues->currentPage(),
+                        'path' => $resultValues->path(),
+                    ]
+                ]
+            ]
         );
     }
 }

@@ -151,44 +151,7 @@ class CandidateController extends Controller
 
         return $this->showOne($candidates);
     }
-
-
-    public function createNote(Request $request, $id)
-    {
-        $user = auth()->user();
-        $request->validate([
-            'note' => 'required|string',
-        ]);
-
-        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
-        $candidateUser = User::where('id_kustomer', $id)->firstOrFail();
-        $candidate = Candidate::where('user_id', $candidateUser->id)->firstOrFail();
-
-        CandidateNote::create([
-            'note' => $request->note,
-            'employee_id' => $employee->id,
-            'candidate_id' => $candidate->id
-        ]);
-
-        return $this->showOne('Success');
-    }
-
-    public function getOwnNotes(Request $request)
-    {
-        $user = auth()->user();
-        $request->validate([
-            'keyword' => 'nullable|string'
-        ]);
-        $keyword = $request->keyword;
-        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
-        $notes = CandidateNote::where(function ($query) use ($keyword) {
-            if ($keyword) {
-                $query->where('note', 'like', '%' . $keyword . '%');
-            }
-        })->where('employee_id', $employee->id)->get();
-        return $this->showAll($notes);
-    }
-
+    
     public function getPosition(Request $request)
     {
         $request->validate([

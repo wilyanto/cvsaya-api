@@ -106,13 +106,6 @@ Route::prefix('v1')->group(function () {
                 Route::get('/interviewers', 'indexInterviewer');
             });
 
-            Route::prefix()->group(function () {
-                Route::controller(CandidateController::class)->group(function () {
-                    Route::post('/{id}/candidates/notes', 'createNote');
-                    Route::get('/candidates/notes', 'getOwnNotes');
-                });
-            });
-
             Route::group(['middleware' => ['permission:manage-candidate']], function () {
                 Route::prefix('candidates')->group(function () {
                     Route::controller(CandidateController::class)->group(function () {
