@@ -105,7 +105,7 @@ class CvProfileDetailController extends Controller
     {
         $candidate = Candidate::findOrFail($id);
         $candidateId = $candidate->user_id;
-        
+
         $education = CvEducation::where('user_id', $candidateId)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
@@ -127,10 +127,10 @@ class CvProfileDetailController extends Controller
             ->get();
         $data['certifications'] = $certifications;
 
-        $specialities = CvSpeciality::where('user_id', $id)->get();
+        $specialities = CvSpeciality::where('user_id', $candidateId)->get();
         $data['specialities'] = $specialities;
 
-        $hobbies = CvHobby::where('user_id', $id)->get();
+        $hobbies = CvHobby::where('user_id', $candidateId)->get();
         $data['hobbies'] = $hobbies;
 
         return $this->showOne($data);
