@@ -25,9 +25,6 @@ use App\Http\Controllers\Api\v1\SalaryTypeController;
 use App\Http\Controllers\Api\v1\AttendanceController;
 use App\Http\Controllers\Api\v1\CandidateNoteController;
 use App\Http\Controllers\Api\v1\ShiftController;
-use App\Models\Certifications;
-use App\Models\CvProfileDetail;
-use App\Models\EmploymentType;
 
 /*
 |--------------------------------------------------------------------------
@@ -102,6 +99,7 @@ Route::prefix('v1')->group(function () {
                     Route::put('/{id}/reject', 'rejectInterview');
                 });
             });
+
             Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                 Route::get('/interviewers', 'indexInterviewer');
             });
