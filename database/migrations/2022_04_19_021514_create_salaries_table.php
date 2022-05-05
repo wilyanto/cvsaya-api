@@ -40,7 +40,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::drop('employees_salary_types');
-        Schema::drop('salary_types');
+        Schema::dropIfExists('employees_salary_types');
+        Schema::dropIfExists('salary_types');
     }
 };

@@ -20,10 +20,11 @@ return new class extends Migration
             $table->time('clock_out');
             $table->time('break_started_at')->nullable();
             $table->time('break_ended_at')->nullable();
-            $table->integer('break_duration')->nullable();
+            $table->unsignedSmallInteger('break_duration')->nullable()->comment('in minute');
             $table->string('company_id');
-            $table->foreign('company_id')->references('id')->on('companies');
             $table->timestamps();
+            
+            $table->foreign('company_id')->references('id')->on('companies');
         });
     }
     /**
