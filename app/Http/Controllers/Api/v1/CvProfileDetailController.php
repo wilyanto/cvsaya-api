@@ -101,28 +101,26 @@ class CvProfileDetailController extends Controller
         return $this->showOne(collect($data));
     }
 
-    public function cvDetailByID($id)
+    public function getCandidateCv($id)
     {
-        $user = auth()->user();
-        if (!$id) {
-            $candidate = Candidate::findOrFail($id);
-            $id = $candidate->user_id;
-        }
-        $education = CvEducation::where('user_id', $id)
+        $candidate = Candidate::findOrFail($id);
+        $candidateId = $candidate->user_id;
+        
+        $education = CvEducation::where('user_id', $candidateId)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC')
             ->get();
         $data['educations'] = $education;
 
-        $experience = CvExperience::where('user_id', $id)
+        $experience = CvExperience::where('user_id', $candidateId)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC')
             ->get();
         $data['experiences'] = $experience;
 
-        $certifications = CvCertification::where('user_id', $id)
+        $certifications = CvCertification::where('user_id', $candidateId)
             ->orderBy('issued_at', 'DESC')
             ->orderByRaw("CASE WHEN expired_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('expired_at', 'DESC')
@@ -135,9 +133,7 @@ class CvProfileDetailController extends Controller
         $hobbies = CvHobby::where('user_id', $id)->get();
         $data['hobbies'] = $hobbies;
 
-        $data = (object)$data;
-
-        return $this->showOne(collect($data));
+        return $this->showOne($data);
     }
 
     public function status()

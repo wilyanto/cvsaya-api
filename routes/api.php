@@ -66,7 +66,7 @@ Route::prefix('v1')->group(function () {
                     Route::get('/{id}/expected-job', 'show'); // path user/id/expected-jobs
                 });
                 Route::controller(CvProfileDetailController::class)->group(function () {
-                    Route::get('/{id}/curriculum-vitae', 'cvDetailByID'); // path user/id/cv
+                    Route::get('/{id}/curriculum-vitae', 'getCandidateCv'); // path user/id/cv
                 });
                 Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                     Route::get('/{id}/interview-notes', 'showNote'); // path user/id/cv
