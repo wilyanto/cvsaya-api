@@ -16,10 +16,12 @@ class CandidateNoteController extends Controller
 
     public function getCandidateNotes(Request $request, $candidateId)
     {
-        $userId = auth()->user()->id_kustomer;
-        $candidate = Candidate::findOrFail($candidateId);
         $page = $request->page ? $request->page : 1;
         $pageSize = $request->page_size ? $request->page_size : 10;
+        $userId = auth()->user()->id_kustomer;
+        
+        $candidate = Candidate::findOrFail($candidateId);
+        $employee = Employee::where('user_id', $userId)->firstOrFail();
 
         if ($userId == $candidate->id) {
             return $this->errorResponse('Data not found', 404, 40400);
@@ -27,10 +29,10 @@ class CandidateNoteController extends Controller
 
         $candidateNotes = CandidateNote::where('candidate_id', $candidateId)
             ->where('visibility', 'public')
-            ->orWhere(function ($query) use ($userId, $candidateId) {
+            ->orWhere(function ($query) use ($employee, $candidateId) {
                 $query->where('visibility', 'private')
                     ->where('candidate_id', $candidateId)
-                    ->where('employee_id', $userId);
+                    ->where('employee_id', $employee->id);
             })
             ->with('employeeProfileDetail', function ($query) {
                 $query->select(['first_name', 'last_name']);
