@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('attendance_type');
-            $table->timestamp('attended_at');
-            $table->timestamp('scheduled_at');
+            $table->timestamp('attended_at')->useCurrent();
+            $table->timestamp('scheduled_at')->useCurrent();
             $table->uuid('attendance_qr_code_id');
             $table->uuid('image');
             $table->decimal('longitude', 14, 6)->nullable();
