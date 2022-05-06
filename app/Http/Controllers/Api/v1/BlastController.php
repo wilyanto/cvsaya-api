@@ -39,7 +39,7 @@ Atas perhatiannya saya ucapkan terima kasih.
 
 *Mohon balas pesan ini dengan "YA" untuk melanjutkan proses.';
 
-        $response = Http::asForm()->withHeaders(['Authorization' => '3bbY2axTv3VNXfbQ4S6w'])->post('https://md.fonnte.com/api/send_message.php', [
+        $response = Http::asForm()->withHeaders(['Authorization' => config('blast.authorization_token')])->post('https://md.fonnte.com/api/send_message.php', [
             'phone' => $request->country_code . $request->phone_number,
             'type' => 'text',
             'text' => $message,
@@ -50,7 +50,7 @@ Atas perhatiannya saya ucapkan terima kasih.
             'email' => $request->email,
             'gender' => $request->gender,
             'sender_country_code' => '62',
-            'sender_phone_number' => '85272722719',
+            'sender_phone_number' => config('blast.phone_number'),
             'recipient_country_code' => $request->country_code,
             'recipient_phone_number' => $request->phone_number,
             'message' => $message,
