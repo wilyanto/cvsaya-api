@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Candidate;
 use App\Models\CvExpectedJob;
 use App\Models\CandidatePosition;
 use Illuminate\Http\Request;
@@ -19,7 +20,8 @@ class CvExpectedJobController extends Controller
      */
     public function show($id)
     {
-        $expectedSalaries = CvExpectedJob::where('user_id', $id)->orderBy('updated_at', 'DESC')->firstOrFail();
+        $candidate = Candidate::findOrFail($id);
+        $expectedSalaries = CvExpectedJob::where('user_id', $candidate->user_id)->orderBy('updated_at', 'DESC')->firstOrFail();
 
         return $this->showOne($expectedSalaries);
     }

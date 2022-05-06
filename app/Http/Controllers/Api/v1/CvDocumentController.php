@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Models\CvDocument;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Candidate;
 use App\Models\DocumentType;
 use App\Models\Document;
 use App\Traits\ApiResponser;
@@ -28,7 +29,8 @@ class CvDocumentController extends Controller
     }
 
     public function show($id){
-        $getDocuments = CvDocument::where('user_id', $id)->firstOrFail();
+        $candidate = Candidate::findOrFail($id);
+        $getDocuments = CvDocument::where('user_id', $candidate->user_id)->firstOrFail();
         return $this->showOne($getDocuments);
     }
 

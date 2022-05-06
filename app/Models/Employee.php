@@ -130,17 +130,18 @@ class Employee extends Authenticatable implements Auditable
         ];
     }
 
-    public function toArray()
-    {
-        return [
-            'id' => $this->id,
-            'user_id' => $this->user_id,
-            'position' => $this->position->toArrayEmployee(),
-            'first_name' => $this->profileDetail->first_name,
-            'last_name' => $this->profileDetail->last_name,
-            'salary' => $this->salary,
-        ];
-    }
+    // public function toArray()
+    // {
+    //     return [
+    //         'id' => $this->id,
+    //         'user_id' => $this->user_id,
+    //         'position' => $this->position->toArrayEmployee(),
+    //         'first_name' => $this->profileDetail->first_name,
+    //         'last_name' => $this->profileDetail->last_name,
+    //         'salary' => $this->salary,
+    //     ];
+    // }
+
     public function toArrayEmployee()
     {
         return [

@@ -55,8 +55,7 @@ class CandidateInterviewScheduleController extends Controller
 
     public function getDetail($id)
     {
-        $candidate = Candidate::where('user_id', $id)->firstOrFail();
-
+        $candidate = Candidate::findOrFail($id);
         $schedules = CandidateInterviewSchedule::where('candidate_id', $candidate->id)->get();
 
         return $this->showAll($schedules);
@@ -168,7 +167,7 @@ class CandidateInterviewScheduleController extends Controller
 
     public function showNote($id)
     {
-        $candidate = Candidate::where('user_id', $id)->firstOrFail();
+        $candidate = Candidate::findOrFail($id);
 
         return $this->showOne($candidate->toArrayByNote());
     }

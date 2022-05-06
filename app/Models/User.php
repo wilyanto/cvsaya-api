@@ -38,7 +38,7 @@ class User extends Authenticatable implements Auditable
      */
 
     protected $fillable = [
-        'telpon', 'nama_lengkap', 'email', 'password', 'NIK', 'tgl_lahir','jam_slot', 'jeniskelamin', 'ID_perusahaan', 'alamat', 'diskon'
+        'telpon', 'nama_lengkap', 'email', 'password', 'NIK', 'tgl_lahir', 'jam_slot', 'jeniskelamin', 'ID_perusahaan', 'alamat', 'diskon'
     ];
 
     protected $auditInclude = [
@@ -67,7 +67,7 @@ class User extends Authenticatable implements Auditable
 
     public function voucherClaim()
     {
-       return $this->hasMany(VoucherClaim::class, 'id_kustomer', 'id_kustomer');
+        return $this->hasMany(VoucherClaim::class, 'id_kustomer', 'id_kustomer');
     }
 
     public function ordersPayment()
@@ -85,11 +85,13 @@ class User extends Authenticatable implements Auditable
         return $this->hasMany(BeautyTreatmentCart::class, 'user_id', 'id_kustomer');
     }
 
-    public function accessTokens(){
+    public function accessTokens()
+    {
         return $this->hasMany(OauthAccessToken::class);
     }
 
-    public function getAuthIdentifier(){
+    public function getAuthIdentifier()
+    {
         return $this->id_kustomer;
     }
 }
