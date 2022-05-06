@@ -361,5 +361,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', 'index');
             });
         });
+
+        Route::post('blast', [BlastController::class, 'blast']);
     });
 });
