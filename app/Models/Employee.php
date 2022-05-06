@@ -23,14 +23,6 @@ class Employee extends Authenticatable implements Auditable
 
     use \OwenIt\Auditing\Auditable;
 
-    protected $table = 'employees';
-
-    protected $guard = 'id';
-
-    protected $primaryKey = 'id';
-
-    public $connection = 'mysql';
-
     protected $dates = [
         'joined_at',
     ];
@@ -39,8 +31,13 @@ class Employee extends Authenticatable implements Auditable
         'user_id',
         'position_id',
         'joined_at',
-        'employment_type_id',
+        'type',
+        'is_default',
         'salary_type_id',
+    ];
+
+    public $casts = [
+        'is_default' => 'boolean',
     ];
 
     public function position()

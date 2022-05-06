@@ -19,15 +19,15 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::table('positions',function(Blueprint $table){
+        Schema::table('positions', function (Blueprint $table) {
             $table->foreign('company_id')->references('id')->on('companies');
         });
 
-        Schema::table('departments',function(Blueprint $table){
+        Schema::table('departments', function (Blueprint $table) {
             $table->foreign('company_id')->references('id')->on('companies');
         });
 
-        Schema::table('levels',function(Blueprint $table){
+        Schema::table('levels', function (Blueprint $table) {
             $table->foreign('company_id')->references('id')->on('companies');
         });
     }
@@ -39,15 +39,15 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('levels',function(Blueprint $table){
+        Schema::table('levels', function (Blueprint $table) {
             $table->dropForeign(['company_id']);
         });
 
-        Schema::table('departments',function(Blueprint $table){
+        Schema::table('departments', function (Blueprint $table) {
             $table->dropForeign(['company_id']);
         });
 
-        Schema::table('positions',function(Blueprint $table){
+        Schema::table('positions', function (Blueprint $table) {
             $table->dropForeign(['company_id']);
         });
 
