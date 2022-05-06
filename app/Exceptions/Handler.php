@@ -52,10 +52,9 @@ class Handler extends ExceptionHandler
 
 public function render($request, Throwable $e)
     {
-        // Log the user's ID if has authentication
-        // if ($request->user()) {
-        //     Log::debug('User ID: ' . $request->user()->id);
-        // }
+        Log::error($request->all(), [
+            'url' => $request->url(),
+        ]);
 
         if ($e instanceof ValidationException) {
             Log::debug($e->validator->errors()->getMessages());

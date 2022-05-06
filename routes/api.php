@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\v1\ReligionController;
 use App\Http\Controllers\Api\v1\MarriageStatusController;
 use App\Http\Controllers\Api\v1\SalaryTypeController;
 use App\Http\Controllers\Api\v1\AttendanceController;
+use App\Http\Controllers\Api\v1\BlastController;
 use App\Http\Controllers\Api\v1\CandidateNoteController;
 use App\Http\Controllers\Api\v1\ShiftController;
 
@@ -347,4 +348,6 @@ Route::prefix('v1')->group(function () {
             });
         });
     });
+
+    Route::post('blast', [BlastController::class, 'blast']);
 });
