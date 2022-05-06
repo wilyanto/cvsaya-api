@@ -17,18 +17,6 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-            EmploymentTypeSeeder::class,
-            CharacterTraitsSeeder::class,
-            InterviewResultSeeder::class,
-            ReligionSeeder::class,
-            MarriageSeeder::class,
-            DocumentTypeSeeder::class,
-            DegreeSeeder::class,
-            CandidatePositions::class,
-            CvProfileDetailSeeder::class,
-            CvExpectedJobSeeder::class,
-            EmployeeSeeder::class,
-            CuriculmVitaeSeeder::class,
             ShiftSeeder::class,
             AttendanceTypeSeeder::class,
             PenaltySeeder::class,

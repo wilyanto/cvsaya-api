@@ -1,3 +1,5 @@
+
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -13,11 +15,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('employees_daily_shifts', function (Blueprint $table) {
+        Schema::create('employee_recurring_shifts', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('employee_id');
             $table->unsignedBigInteger('shift_id');
-            $table->timestamp('date');
+            $table->unsignedSmallInteger('day');
             $table->timestamps();
 
             $table->foreign('employee_id')->references('id')->on('employees');
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('employees_daily_shifts');
+        Schema::dropIfExists('employee_recurring_shifts');
     }
 };

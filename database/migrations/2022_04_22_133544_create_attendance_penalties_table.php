@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('attendances_penalties', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('attendance_id')->nullable();
-            $table->unsignedBigInteger('penalty_id')->unsigned();
+            $table->unsignedBigInteger('attendance_employee_id');
+            $table->unsignedBigInteger('penalty_id');
             $table->string('penalty_name');
             $table->integer('penalty_amount');
             $table->timestamp('created_at');
 
-            $table->foreign('attendance_id')->references('id')->on('attendances');
+            $table->foreign('attendance_employee_id')->references('id')->on('attendances_employees');
             $table->foreign('penalty_id')->references('id')->on('penalties');
         });
     }
