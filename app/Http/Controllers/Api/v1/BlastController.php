@@ -45,11 +45,7 @@ Atas perhatiannya saya ucapkan terima kasih.
             'text' => $message,
         ]);
 
-        if ($response->failed()) {
-            return $this->errorResponse('Something went wrong, please try again.', 502, 50200);
-        }
-
-        BlastLog::create([
+        $newBlastLogRecord = [
             'name' => $request->name,
             'email' => $request->email,
             'gender' => $request->gender,
@@ -59,7 +55,17 @@ Atas perhatiannya saya ucapkan terima kasih.
             'recipient_phone_number' => $request->phone_number,
             'message' => $message,
             'source' => $request->source
-        ]);
+        ];
+
+        if ($response->failed()) {
+            $newBlastLogRecord['status'] = 'fail';
+            BlastLog::create($newBlastLogRecord);
+
+            return $this->errorResponse('Something went wrong, please try again.', 502, 50200);
+        }
+
+        $newBlastLogRecord['status'] = 'success';
+        BlastLog::create($newBlastLogRecord);
 
         return $this->showOne($response);
     }
