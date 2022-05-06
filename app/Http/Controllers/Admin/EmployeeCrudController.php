@@ -10,18 +10,21 @@ use Illuminate\Support\Facades\Hash;
 use App\Request\UserUpdateCrudRequest;
 use SebastianBergmann\CodeCoverage\Report\Xml\Tests;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Log;
 
 class EmployeeCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     // use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation { store as traitStore; }
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation { update as traitUpdate; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation {
+        update as traitUpdate;
+    }
     // use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 
     public function setup()
     {
         $this->crud->setModel('App\Models\Employee');
-        $this->crud->setEntityNameStrings('employees','employees');
+        $this->crud->setEntityNameStrings('employees', 'employees');
         $this->crud->setRoute('admin/employee');
     }
 
@@ -40,6 +43,19 @@ class EmployeeCrudController extends CrudController
                 'type'  => 'model_function',
                 'name'  => 'name',
                 'function_name' => 'getUserName',
+                // 'searchLogic' => function ($query, $column, $searchTerm) {
+                // $query->leftJoin('cv_profile_details', 'employees.user_id', '=', 'cv_profile_details.user_id');
+                // ->where('', 'like', '%' . $searchTerm . '%');
+                // ->whereHas('profile_detail', function ($q) use ($column, $searchTerm) {
+                //     $q->where('name', 'like', '%' . $searchTerm . '%');
+                // });
+                // },
+                // 'orderable' => true,
+                // 'orderLogic' => function ($query, $column, $columnDirection) {
+                //     $query->leftJoin('cv_profile_details', 'employees.user_id', '=', 'cv_profile_details.user_id')
+                //         ->orderBy('cv_profile_details.first_name', $columnDirection)
+                //         ->select('employees.*');
+                // }
             ],
             [
                 'label' => 'No Telepon',
@@ -216,7 +232,7 @@ class EmployeeCrudController extends CrudController
                 'entity' => 'Company',
                 'attribute' => 'name',
                 'model' => 'App\Models\Company',
-                'subfields' => [],'attributes' => [
+                'subfields' => [], 'attributes' => [
                     'readonly'    => 'readonly',
                     'disabled'    => 'disabled',
                 ]
