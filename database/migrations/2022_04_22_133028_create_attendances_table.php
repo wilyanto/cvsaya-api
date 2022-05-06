@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('attendances', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id');
             $table->unsignedBigInteger('employee_id');
             $table->string('attendance_type');
             $table->timestamp('attended_at');
