@@ -27,7 +27,6 @@ class CandidateController extends Controller
 
     public function index(Request $request)
     {
-        $user = auth()->user();
         $request->validate([
             'page' => 'nullable|numeric|gt:0',
             'page_size' => 'nullable|numeric|gt:0',
@@ -113,7 +112,7 @@ class CandidateController extends Controller
                 $data[] = $candidate->listDefaultCandidate();
             }
         }
-        return $this->showPaginate('candidates', collect($data), collect($candidates));
+        return $this->showPagination('candidates', $candidates);
     }
 
     public function indexDetail(Request $request, $id)
@@ -151,7 +150,7 @@ class CandidateController extends Controller
 
         return $this->showOne($candidates);
     }
-    
+
     public function getPosition(Request $request)
     {
         $request->validate([

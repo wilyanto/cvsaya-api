@@ -46,10 +46,7 @@ class LevelController extends Controller
             'page',
             $page
         );
-        $data = $levels->map(function ($item) {
-            return $item->toArrayIndex();
-        });
-        return $this->showPaginate('levels', collect($data), collect($levels));
+        return $this->showPagination('levels', $levels);
     }
 
     /**
