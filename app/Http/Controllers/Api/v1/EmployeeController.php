@@ -60,8 +60,8 @@ class EmployeeController extends Controller
                 });
             }
             if ($keyword) {
-                $query->whereHas('profileDetail',function($secondQuery)use ($keyword){
-                    $secondQuery->where('first_name','like','%'.$keyword.'%')->orWhere('last_name','like','%'.$keyword.'%');
+                $query->whereHas('profileDetail', function ($secondQuery) use ($keyword) {
+                    $secondQuery->where('first_name', 'like', '%' . $keyword . '%')->orWhere('last_name', 'like', '%' . $keyword . '%');
                 });
             }
         })->paginate(
