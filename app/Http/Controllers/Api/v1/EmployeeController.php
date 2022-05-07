@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Enums\EmployeeType;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
@@ -10,6 +11,8 @@ use App\Models\Position;
 use App\Models\Candidate;
 use App\Models\EmployeeSalaryType;
 use App\Models\SalaryType;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class EmployeeController extends Controller
 {
@@ -60,8 +63,8 @@ class EmployeeController extends Controller
                 });
             }
             if ($keyword) {
-                $query->whereHas('profileDetail',function($secondQuery)use ($keyword){
-                    $secondQuery->where('first_name','like','%'.$keyword.'%')->orWhere('last_name','like','%'.$keyword.'%');
+                $query->whereHas('profileDetail', function ($secondQuery) use ($keyword) {
+                    $secondQuery->where('first_name', 'like', '%' . $keyword . '%')->orWhere('last_name', 'like', '%' . $keyword . '%');
                 });
             }
         })->paginate(
@@ -85,53 +88,62 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        $rule = [
+        $request->merge([
+            'type' => strtolower($request->type)
+        ]);
+        $request->validate([
             'candidate_id' => 'required|exists:candidates,id',
             'position_id' => 'required|exists:positions,id',
-            'employment_type_id' => 'required|exists:employment_types,id',
-            'joined_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z|nullable',
-            'salary_types' => 'required|array',
-        ];
+            'company_id' => 'required|exists:companies,id',
+            'joined_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
+            'type' => ['required', Rule::in([EmployeeType::Daily->value, EmployeeType::Monthly->value])],
+            'salary_types.*.id' => 'required|numeric|exists:salary_types,id',
+            'salary_types.*.amount' => 'required|numeric'
+        ]);
 
-        $request->validate($rule);
+        $position = Position::findOrFail($request->position_id);
 
-        $candidate = Candidate::where('id', $request->candidate_id)->where('status', 5)->firstOrFail();
-        $employee = Employee::where('user_id', $candidate->user_id)
-            ->where('position_id', $request->position_id)
-            ->first();
-        if (!$employee) {
-            $position = Position::findOrFail($request->position_id);
-            if ($position->remaining_slot > 0) {
-                $employeeArray = $request->all();
-                unset($employeeArray['candidate_id']);
-                unset($employeeArray['salary_types']);
-                $employeeArray['user_id'] = $candidate->user_id;
+        if ($position->remaining_slot === 0) return $this->errorResponse('The selected position is full, please select another position', 422, 42201);
 
-                $employee = Employee::create($employeeArray);
-                $newSalaryTypes = [];
-                $salaryTypes = $request->salary_types;
-                foreach ($salaryTypes as $salaryType) {
-                    $salaryType = collect($salaryType);
-                    SalaryType::findOrFail($salaryType['id']);
-                    $newSalaryTypeIds[] = $salaryType['id'];
-                    $newSalaryTypes[] = [
-                        'employee_id' => $employee->id,
-                        'salary_type_id' => $salaryType['id'],
-                        'amount' => $salaryType['amount'],
-                    ];
-                }
-                $candidate->status = Candidate::ACCEPTED;
-                $candidate->save();
-                EmployeeSalaryType::insert($newSalaryTypes);
-                $position->remaining_slot -= 1;
-                $position->save();
-                return $this->showOne($employee->toArrayEmployee());
-            } else {
-                return $this->errorResponse('The selected Position is full, please select another Position', 422, 42201);
+        $candidate = Candidate::where('id', $request->candidate_id)->whereIn('status', [Candidate::STANDBY, Candidate::CONSIDER, Candidate::ACCEPTED])->firstOrFail();
+        $employees = Employee::where('user_id', $candidate->user_id)
+            ->get();
+
+        if ($employees->first(function ($employee) use ($request) {
+            return $employee->position_id === $request->position_id;
+        })) return $this->errorResponse('Candidate already pick this position, please choose another one', 422, 42202);
+
+        $candidate->status = Candidate::ACCEPTED;
+        $position->remaining_slot -= 1;
+
+        $response = DB::transaction(function () use ($request, $employees, $candidate, $position) {
+            $candidate->save();
+            $position->save();
+
+            $employee = Employee::create([
+                'user_id' => $candidate->user_id,
+                'position_id' => $request->position_id,
+                'type' => $request->type,
+                'is_default' => $employees->isEmpty(),
+                'joined_at' => $request->joined_at
+            ]);
+
+            $employeesSalaryTypes = [];
+
+            foreach ($request->salary_types as $salaryType) {
+                $employeesSalaryTypes[] = [
+                    'employee_id' => $employee->id,
+                    'salary_type_id' => $salaryType['id'],
+                    'amount' => $salaryType['amount'],
+                ];
             }
-        } else {
-            return $this->errorResponse('Candidate already pick this Position, please choose another one', 422, 42202);
-        }
+
+            EmployeeSalaryType::insert($employeesSalaryTypes);
+
+            return $this->showOne($employee->toArrayEmployee());
+        });
+
+        return $response;
     }
 
     /**
@@ -142,16 +154,16 @@ class EmployeeController extends Controller
      */
     public function show($id)
     {
-        $employeeDetail = Employee::findOrFail($id);
+        $employee = Employee::findOrFail($id);
 
-        return $this->showOne($employeeDetail->toArrayEmployee());
+        return $this->showOne($employee->toArrayEmployee());
     }
 
     public function showSalaryOnly($id)
     {
-        $employeeDetail = Employee::findOrFail($id);
+        $employee = Employee::findOrFail($id);
 
-        return $this->showOne($employeeDetail->typeOfSalary());
+        return $this->showOne($employee->typeOfSalary());
     }
 
     /**

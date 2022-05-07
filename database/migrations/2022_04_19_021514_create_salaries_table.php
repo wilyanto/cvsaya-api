@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('company_id');
             $table->timestamps();
-            
+
             $table->foreign('company_id')->references('id')->on('companies');
         });
 
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->bigInteger('salary_type_id')->unsigned()->nullable();
             $table->foreign(['salary_type_id'])->references('id')->on('salary_types');
             $table->integer('amount');
-            $table->timestamp('created_at');
+            $table->timestamps();
             $table->softDeletes();
         });
     }

@@ -3,34 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class EmployeeSalaryType extends Model
+class EmployeeSalaryType extends Pivot
 {
-    use HasFactory;
-
-    use SoftDeletes;
-
-    protected $guard = 'id';
-
-    public $connection = 'mysql';
+    use HasFactory, SoftDeletes;
 
     protected $table = 'employees_salary_types';
 
-    protected $primaryKey = 'id';
-
-    public $fillable = [
+    protected $fillable = [
         'employee_id',
         'amount',
         'salary_type_id',
     ];
 
-    public $timestamps = false;
-
-
-    public function salaryType(){
-        return $this->hasOne(SalaryType::class,'id','salary_type_id');
+    public function salaryType()
+    {
+        return $this->hasOne(SalaryType::class);
     }
-
 }
