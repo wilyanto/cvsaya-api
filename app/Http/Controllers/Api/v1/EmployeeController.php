@@ -74,7 +74,7 @@ class EmployeeController extends Controller
             return $item->toArrayEmployee();
         });
 
-        return $this->showPaginate('employees', collect($data), collect($employees));
+        return $this->showPagination('employees', $employees);
     }
 
     /**
