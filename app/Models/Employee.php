@@ -14,9 +14,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class Employee extends Authenticatable implements Auditable
 {
-    use HasFactory, SoftDeletes;
-    use CrudTrait;
-    use HasRoles;
+    use HasFactory, SoftDeletes, CrudTrait, HasRoles;
 
     use \OwenIt\Auditing\Auditable;
 
@@ -24,7 +22,7 @@ class Employee extends Authenticatable implements Auditable
         'joined_at',
     ];
 
-    public $fillable = [
+    protected $fillable = [
         'user_id',
         'position_id',
         'joined_at',
@@ -39,37 +37,32 @@ class Employee extends Authenticatable implements Auditable
 
     public function position()
     {
-        return $this->hasOne(Position::class, 'id', 'position_id')->withDefault();
+        return $this->hasOne(Position::class);
     }
 
     public function profileDetail()
     {
-        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id');
     }
 
     public function company()
     {
-        return $this->hasOneThrough(Company::class, Position::class, 'id', 'id', 'position_id', 'company_id')->withDefault();
+        return $this->hasOneThrough(Company::class, Position::class);
     }
 
     public function level()
     {
-        return $this->hasOneThrough(Level::class, Position::class, 'id', 'id', 'position_id', 'level_id')->withDefault();
+        return $this->hasOneThrough(Level::class, Position::class);
     }
 
     public function department()
     {
-        return $this->hasOneThrough(Department::class, Position::class, 'id', 'id', 'position_id', 'department_id')->withDefault();
-    }
-
-    public function employmentType()
-    {
-        return $this->hasOne(EmploymentType::class, 'id', 'employment_type_id')->withDefault();
+        return $this->hasOneThrough(Department::class, Position::class);
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id_kustomer')->withDefault();
+        return $this->belongsTo(User::class, 'user_id', 'id_kustomer');
     }
 
     public function salaryTypes()
@@ -141,7 +134,6 @@ class Employee extends Authenticatable implements Auditable
         return [
             'id' => $this->id,
             'name' => $this->profileDetail->first_name . ' ' . $this->profileDetail->last_name,
-            'employment_type' => $this->employmentType,
             // 'salary_types' => $this->typeOfSalary(),
             'company' => $this->company,
             'department' => $this->department->onlyNameAndId(),

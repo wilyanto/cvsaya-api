@@ -19,6 +19,7 @@ use Illuminate\Support\Str;
 class EmployeeController extends Controller
 {
     use ApiResponser;
+
     /**
      * Display a listing of the resource.
      *
@@ -36,50 +37,38 @@ class EmployeeController extends Controller
             'keyword' => 'nullable|string',
         ]);
 
-        $page = $request->page ? $request->page  : 1;
-        $company = $request->company_id;
-        $position = $request->position_id;
-        $department = $request->department_id;
-        $level = $request->level_id;
-        $keyword = $request->keyword;
+        $employees = Employee::where(function ($query) use ($request) {
+            if ($request->company_id)
+                $query->whereHas('company', function ($query) use ($request) {
+                    $query->where('company_id', $request->company_id);
+                });
 
-        $pageSize = $request->page_size ? $request->page_size : 10;
+            if ($request->position_id)
+                $query->where('position_id', $request->position_id);
 
-        $employees = Employee::where(function ($query) use ($company, $position, $department, $level, $keyword) {
-            if ($company) {
-                $query->whereHas('company', function ($secondQuery) use ($company) {
-                    $secondQuery->where('company_id', $company);
+            if ($request->department_id)
+                $query->whereHas('department', function ($query) use ($request) {
+                    $query->where('department_id', $request->department_id);
                 });
-            }
-            if ($position) {
-                $query->where('position_id', $position);
-            }
-            if ($department) {
-                $query->whereHas('department', function ($secondQuery) use ($department) {
-                    $secondQuery->where('department_id', $department);
+
+            if ($request->level_id)
+                $query->whereHas('level', function ($query) use ($request) {
+                    $query->where('level_id', $request->level_id);
                 });
-            }
-            if ($level) {
-                $query->whereHas('level', function ($secondQuery) use ($level) {
-                    $secondQuery->where('level_id', $level);
+
+            if ($request->keyword)
+                $query->whereHas('profileDetail', function ($query) use ($request) {
+                    $query->where('first_name', 'like', '%' . $request->keyword . '%')
+                        ->orWhere('last_name', 'like', '%' . $request->keyword . '%');
                 });
-            }
-            if ($keyword) {
-                $query->whereHas('profileDetail', function ($secondQuery) use ($keyword) {
-                    $secondQuery->where('first_name', 'like', '%' . $keyword . '%')->orWhere('last_name', 'like', '%' . $keyword . '%');
-                });
-            }
         })->paginate(
-            $pageSize,
+            $request->input('page_size', 10),
             ['*'],
             'page',
-            $page
+            $request->input('page', 1)
         );
-        $data = $employees->map(function ($item) {
-            return $item->toArrayEmployee();
-        });
 
-        return $this->showPaginate('employees', collect($data), collect($employees));
+        return $this->showPagination('employees', $employees);
     }
 
     /**

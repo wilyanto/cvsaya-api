@@ -57,7 +57,6 @@ trait ApiResponser
 
     protected function showPaginate($resultKey, Collection $resultValues, Collection $paginateCollection, $statusCode = null, $metaMessage = null)
     {
-        dd($paginateCollection);
         return response()->json(
             [
                 'meta' => [
