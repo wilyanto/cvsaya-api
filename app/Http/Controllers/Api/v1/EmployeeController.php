@@ -100,7 +100,7 @@ class EmployeeController extends Controller
             'joined_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
             'type' => ['required', Rule::in([EmployeeType::Daily->value, EmployeeType::Monthly->value])],
             'salary_types.*.id' => 'required|numeric|exists:salary_types,id',
-            'salary_types.*.amount' => 'required|numeric'
+            'salary_types.*.amount' => 'required|numeric|gt:0'
         ]);
 
         $position = Position::findOrFail($request->position_id);
