@@ -19,9 +19,8 @@ class DatabaseSeeder extends Seeder
             // DepartmentSeeder::class,
             // LevelSeeder::class,
             // PositionSeeder::class,
-            ShiftSeeder::class,
-            // AttendanceTypeSeeder::class,
-            // PenaltySeeder::class,
+            // ShiftSeeder::class,
+            PenaltySeeder::class,
         ]);
     }
 }

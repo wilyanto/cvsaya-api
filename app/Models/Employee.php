@@ -174,7 +174,7 @@ class Employee extends Authenticatable implements Auditable
     public function getShift($date)
     {
         $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
-        $shift =  ShiftEmployee::whereDate('date', $date->format(' '))->first();
+        $shift =  EmployeeOneTimeShift::whereDate('date', $date->format(' '))->first();
         if (!$shift) {
             $getTodayDay = $date->format('N');
             $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $this->position->id)->first();

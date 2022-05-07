@@ -6,22 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class ShiftEmployee extends Model implements Auditable
+class EmployeeOneTimeShift extends Model implements Auditable
 {
     use HasFactory;
 
     use \OwenIt\Auditing\Auditable;
-
-    protected $table = 'shift_employees';
 
     protected $dates = [
         'date'
     ];
 
     public $fillable = [
-        'id',
-        'shift_id',
         'employee_id',
+        'shift_id',
         'date',
     ];
 
@@ -30,7 +27,8 @@ class ShiftEmployee extends Model implements Auditable
         return $this->hasOne(employee::class, 'id', 'employee_id');
     }
 
-    public function shift(){
-        return $this->hasOne(Shift::class,'id','shift_id')->withDefault();
+    public function shift()
+    {
+        return $this->hasOne(Shift::class, 'id', 'shift_id')->withDefault();
     }
 }
