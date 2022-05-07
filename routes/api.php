@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\v1\AttendanceController;
 use App\Http\Controllers\Api\v1\BlastController;
 use App\Http\Controllers\Api\v1\CandidateNoteController;
 use App\Http\Controllers\Api\v1\ShiftController;
+use App\Http\Controllers\Api\v1\CandidatePositionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -325,12 +326,13 @@ Route::prefix('v1')->group(function () {
             });
         });
 
+        Route::apiResource('candidate-positions', CandidatePositionController::class)->only(['index', 'store', 'update']);
         Route::prefix('candidate-positions')->group(function () {
             Route::controller(CvExpectedJobController::class)->group(function () {
-                Route::get('/', 'getListCandidatePositionsWithPaginate');
-                Route::post('/', 'createCandidatePositions');
+                // Route::get('/', 'getListCandidatePositionsWithPaginate');
+                // Route::post('/', 'createCandidatePositions');
                 Route::put('/{id}/verified', 'verifiedCandidatePositions');
-                Route::put('/{id}', 'update');
+                // Route::put('/{id}', 'update');
                 Route::delete('/{id}/verified', 'deleteVerifiedCandidatePositions');
             });
         });

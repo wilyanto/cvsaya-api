@@ -14,13 +14,9 @@ class CandidatePosition extends Model implements Auditable
 
     use \OwenIt\Auditing\Auditable;
 
-    protected $table = 'candidate_positions';
-
-    protected $primaryKey = 'id';
-
     public $fillable = [
-        'validated_at',
         'name',
+        'validated_at',
         'inserted_by'
     ];
 
