@@ -11,8 +11,10 @@ use App\Models\Position;
 use App\Models\Candidate;
 use App\Models\EmployeeSalaryType;
 use App\Models\SalaryType;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class EmployeeController extends Controller
 {
@@ -89,7 +91,7 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $request->merge([
-            'type' => strtolower($request->type)
+            'type' => Str::lower($request->type)
         ]);
         $request->validate([
             'candidate_id' => 'required|exists:candidates,id',
@@ -103,7 +105,7 @@ class EmployeeController extends Controller
 
         $position = Position::findOrFail($request->position_id);
 
-        if ($position->remaining_slot === 0) return $this->errorResponse('The selected position is full, please select another position', 422, 42201);
+        if ($position->remaining_slot === 0) return $this->errorResponse('There\'s no remaining slot for the specified position.', 422, 42201);
 
         $candidate = Candidate::where('id', $request->candidate_id)->whereIn('status', [Candidate::STANDBY, Candidate::CONSIDER, Candidate::ACCEPTED])->firstOrFail();
         $employees = Employee::where('user_id', $candidate->user_id)
@@ -111,7 +113,11 @@ class EmployeeController extends Controller
 
         if ($employees->first(function ($employee) use ($request) {
             return $employee->position_id === $request->position_id;
-        })) return $this->errorResponse('Candidate already pick this position, please choose another one', 422, 42202);
+        })) return $this->errorResponse('Candidate is already assigned to the specified position.', 422, 42202);
+
+        $salaryTypesId = Arr::pluck($request->salary_types, 'id');
+        $salaryTypes = SalaryType::where('company_id', $request->company_id)->whereIn('id', $salaryTypesId)->get();
+        if ($salaryTypes->count() !== count($request->salary_types)) return $this->errorResponse('One (or more) salary type(s) doesn\'t exist.', 422, 42203);
 
         $candidate->status = Candidate::ACCEPTED;
         $position->remaining_slot -= 1;
