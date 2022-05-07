@@ -2,15 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Enums\AttendanceType as EnumsAttendanceType;
-use App\Enums\AttendanceTypeEnum;
-use App\Enums\EnumPenaltyType;
-use App\Models\Attendance;
-use App\Models\AttendanceType;
 use App\Models\Company;
 use App\Models\Penalty;
-use Doctrine\DBAL\Schema\Schema;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Enums\EnumPenaltyType;
 use Illuminate\Database\Seeder;
 
 class PenaltySeeder extends Seeder
@@ -28,43 +22,43 @@ class PenaltySeeder extends Seeder
                 'name' => 'Telat 1 menit',
                 'amount' => 5000,
                 'lateness' => 1,
-                'attendance_type' => EnumPenaltyType::clockIn(),
+                'attendance_type' => EnumPenaltyType::ClockIn->value,
             ],
             [
                 'name' => 'Telat 5 menit',
                 'amount' => 10000,
                 'lateness' => 5,
-                'attendance_type' => EnumPenaltyType::clockIn(),
+                'attendance_type' => EnumPenaltyType::ClockIn->value,
             ],
             [
                 'name' => 'Telat 10 menit',
                 'amount' => 15000,
                 'lateness' => 10,
-                'attendance_type' => EnumPenaltyType::clockIn(),
+                'attendance_type' => EnumPenaltyType::ClockIn->value,
             ],
             [
                 'name' => 'Telat 20 menit',
                 'amount' => 25000,
                 'lateness' => 20,
-                'attendance_type' => EnumPenaltyType::clockIn(),
+                'attendance_type' => EnumPenaltyType::ClockIn->value,
             ],
             [
                 'name' => 'Tidak logout',
                 'amount' => 70000,
                 'lateness' => null,
-                'attendance_type' => EnumPenaltyType::clockOut(),
+                'attendance_type' => EnumPenaltyType::ClockOut->value,
             ],
             [
                 'name' => 'Tidak Absensi Makan',
                 'amount' => 15000,
                 'lateness' => null,
-                'attendance_type' => EnumPenaltyType::breakTime(),
+                'attendance_type' => EnumPenaltyType::BreakTime->value,
             ],
             [
                 'name' => 'Lewat Jam makan',
                 'amount' => 15000,
                 'lateness' => 1,
-                'attendance_type' => EnumPenaltyType::breakTime(),
+                'attendance_type' => EnumPenaltyType::BreakTime->value,
             ],
         ];
 

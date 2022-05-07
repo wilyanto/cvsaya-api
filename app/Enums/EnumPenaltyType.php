@@ -2,18 +2,9 @@
 
 namespace App\Enums;
 
-use Spatie\Enum\Enum;
-
-/**
- * @method static self clockIn()
- * @method static self clockOut()
- * @method static self breakTime()
- */
-class EnumPenaltyType extends Enum
+enum EnumPenaltyType: string
 {
-    const MAP_VALUE = [
-        'clockIn' => 'clock_in',
-        'clockOut' => 'clock_out',
-        'breakTime' => 'break_time',
-    ];
+    case ClockIn = 'clock_in';
+    case ClockOut = 'clock_out';
+    case BreakTime = 'break_time';
 }
