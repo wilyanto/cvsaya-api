@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAttendanceQrCodeRequest extends FormRequest
+class StoreShiftRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,13 @@ class StoreAttendanceQrCodeRequest extends FormRequest
     public function rules()
     {
         return [
-            'location_name' => 'required|max:255',
-            'longitude' => 'required|numeric|between:-180,180',
-            'latitude' => 'required|numeric|between:-90,90',
-            'radius' => 'nullable|numeric',
-            'is_geo_strict' => 'nullable|boolean',
+            'name' => 'required|string',
+            'clock_in' => 'required|date_format:H:i:s',
+            'clock_out' => 'required|date_format:H:i:s',
+            'break_started_at' => 'nullable|date_format:H:i:s',
+            'break_ended_at' => 'nullable|date_format:H:i:s',
+            'break_duration' => 'nullable|integer',
+            'company_id' => 'required|exists:App\Models\Company,id',
         ];
     }
 }

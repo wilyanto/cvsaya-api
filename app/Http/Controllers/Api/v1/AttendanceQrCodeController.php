@@ -16,11 +16,11 @@ class AttendanceQrCodeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $attendanceQrCodes = AttendanceQrCode::all();
+        $attendanceQrCodes = AttendanceQrCode::paginate($request->input('size', 10));
 
-        return $this->showAll($attendanceQrCodes);
+        return $this->showPagination('attendance_qr_codes', $attendanceQrCodes);
     }
 
     /**
@@ -44,7 +44,9 @@ class AttendanceQrCodeController extends Controller
      */
     public function show(AttendanceQrCode $attendanceQrCode)
     {
-        //
+        $attendanceQrCode = AttendanceQrCode::findOrFail($attendanceQrCode->id);
+
+        return $this->showOne($attendanceQrCode);
     }
 
     /**

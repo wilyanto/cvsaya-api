@@ -23,6 +23,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('break_duration')->nullable()->comment('in minute');
             $table->string('company_id');
             $table->timestamps();
+            $table->softDeletes();
             
             $table->foreign('company_id')->references('id')->on('companies');
         });

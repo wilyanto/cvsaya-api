@@ -47,6 +47,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::prefix('v1')->group(function () {
     Route::apiResource('attendance-qr-codes', AttendanceQrCodeController::class);
+    Route::apiResource('shifts', ShiftController::class);
     Route::middleware('auth:api')->group(function () {
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {
@@ -312,11 +313,11 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('shifts')->group(function () {
-            Route::controller(ShiftController::class)->group(function () {
-                Route::get('/', 'index');
-            });
-        });
+        // Route::prefix('shifts')->group(function () {
+        //     Route::controller(ShiftController::class)->group(function () {
+        //         Route::get('/', 'index');
+        //     });
+        // });
 
         Route::group(['middleware' => ['permission:manage-employee']], function () {
             Route::prefix('/salary-types')->group(function () {

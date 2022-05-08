@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreShiftRequest;
 use App\Models\Employee;
 use App\Models\Position;
 use App\Models\Shift;
@@ -17,51 +18,43 @@ class ShiftController extends Controller
 
     public function index(Request $request)
     {
-        $data = [];
-        $user = auth()->user();
+        $shifts = Shift::paginate($request->input('size', 10));
 
-        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
+        return $this->showPagination('shifts', $shifts);
+        // $data = [];
+        // $user = auth()->user();
 
-        $request->validate([
-            'date' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
-        ]);
+        // $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
 
-        $date =  new \DateTime("today", new DateTimeZone('Asia/Jakarta'));
-        if ($request->date) {
-            $date = new \DateTime($request->date, new DateTimeZone('Asia/Jakarta'));
-        }
-        $employee = $employee->getShift($date->format('Y-m-d\TH:i:s.u\Z'));
-        $employee = $employee->shift;
-        $data = [
-            'id' => $employee->id,
-            'name' => $employee->name,
-            'clock_in' => $employee->clock_in,
-            'clock_out' => $employee->clock_out,
-            'break_started_at' => $employee->break_started_at,
-            'break_ended_at' =>  $employee->break_ended_at,
-            'break_duration' => $employee->break_duration,
-            'created_at' => $employee->created_at,
-            'updated_at' => $employee->updated_at,
-        ];
-        return $this->showOne($data);
+        // $request->validate([
+        //     'date' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
+        // ]);
+
+        // $date =  new \DateTime("today", new DateTimeZone('Asia/Jakarta'));
+        // if ($request->date) {
+        //     $date = new \DateTime($request->date, new DateTimeZone('Asia/Jakarta'));
+        // }
+        // $employee = $employee->getShift($date->format('Y-m-d\TH:i:s.u\Z'));
+        // $employee = $employee->shift;
+        // $data = [
+        //     'id' => $employee->id,
+        //     'name' => $employee->name,
+        //     'clock_in' => $employee->clock_in,
+        //     'clock_out' => $employee->clock_out,
+        //     'break_started_at' => $employee->break_started_at,
+        //     'break_ended_at' =>  $employee->break_ended_at,
+        //     'break_duration' => $employee->break_duration,
+        //     'created_at' => $employee->created_at,
+        //     'updated_at' => $employee->updated_at,
+        // ];
+        // return $this->showOne($data);
     }
 
-    public function store(Request $request)
+    public function store(StoreShiftRequest $request)
     {
-        $rule = [
-            'name' => 'required|string',
-            'clock_in' => 'required|date_format:H:i:s',
-            'clock_out' => 'required|date_format:H:i:s.u',
-            'break_started_at' => 'required|date_format:H:i:s',
-            'break_duration' => 'required|integer',
-            'company_id' => 'required',
-        ];
+        $shift = Shift::create($request->all());
 
-        $request->validation($rule);
-
-        $shifts = Shift::create($request->all());
-
-        return $this->showOne($shifts);
+        return $this->showOne($shift);
     }
 
     public function update(Request $request, $id)

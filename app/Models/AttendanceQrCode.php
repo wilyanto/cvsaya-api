@@ -18,5 +18,6 @@ class AttendanceQrCode extends Model
         'longitude',
         'latitude',
         'radius',
+        'is_geo_strict',
     ];
 }
