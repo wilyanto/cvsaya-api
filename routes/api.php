@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\v1\BlastController;
 use App\Http\Controllers\Api\v1\CandidateNoteController;
 use App\Http\Controllers\Api\v1\ShiftController;
 use App\Http\Controllers\Api\v1\CandidatePositionController;
+use App\Http\Controllers\Api\v1\AttendanceQrCodeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,7 +44,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
 Route::prefix('v1')->group(function () {
+    Route::apiResource('attendance-qr-codes', AttendanceQrCodeController::class);
     Route::middleware('auth:api')->group(function () {
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {
