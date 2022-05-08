@@ -17,10 +17,10 @@ class ShiftSeeder extends Seeder
      * @return void
      */
     public function run()
-    {
+    { 
         $names = ['Office'];
         DocumentType::create([
-            'name' => 'attendances',
+            'name' => 'attendance',
         ]);
 
         foreach ($names as $name) {

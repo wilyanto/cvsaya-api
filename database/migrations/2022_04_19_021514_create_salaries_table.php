@@ -17,8 +17,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('company_id');
-            $table->foreign('company_id')->references('id')->on('companies');
             $table->timestamps();
+            
+            $table->foreign('company_id')->references('id')->on('companies');
         });
 
         Schema::create('employees_salary_types', function (Blueprint $table) {
@@ -40,7 +41,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::drop('employees_salary_types');
-        Schema::drop('salary_types');
+        Schema::dropIfExists('employees_salary_types');
+        Schema::dropIfExists('salary_types');
     }
 };

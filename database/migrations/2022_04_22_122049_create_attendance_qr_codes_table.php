@@ -13,20 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('attendances', function (Blueprint $table) {
+        Schema::create('attendance_qr_codes', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('attendance_type');
-            $table->timestamp('attended_at')->useCurrent();
-            $table->timestamp('scheduled_at')->useCurrent();
-            $table->uuid('attendance_qr_code_id');
-            $table->uuid('image');
+            $table->string('location_name');
             $table->decimal('longitude', 14, 6)->nullable();
             $table->decimal('latitude', 14, 6)->nullable();
-            $table->string('ip');
+            $table->unsignedInteger('radius')->nullable()->comment('in meter');
+            $table->boolean('is_geo_strict')->default(1);
             $table->timestamps();
-
-            $table->foreign('attendance_qr_code_id')->references('id')->on('attendance_qr_codes');
-            $table->foreign('image')->references('id')->on('documents');
+            $table->softDeletes();
         });
     }
 
@@ -37,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('attendances');
+        Schema::dropIfExists('attendance_qr_codes');
     }
 };

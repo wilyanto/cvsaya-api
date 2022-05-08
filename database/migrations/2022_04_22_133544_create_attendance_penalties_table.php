@@ -13,14 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('attendances_penalties', function (Blueprint $table) {
+        Schema::create('attendance_penalties', function (Blueprint $table) {
             $table->id();
-            $table->integer('amount');
-            $table->bigInteger('attendance_id')->unsigned()->nullable();
-            $table->foreign('attendance_id')->references('id')->on('attendances');
-            $table->bigInteger('penalty_id')->unsigned();
-            $table->foreign('penalty_id')->references('id')->on('penalties');
+            $table->unsignedBigInteger('attendance_employee_id');
+            $table->unsignedBigInteger('penalty_id');
+            $table->string('penalty_name');
+            $table->integer('penalty_amount');
             $table->timestamp('created_at');
+
+            $table->foreign('attendance_employee_id')->references('id')->on('attendances_employees');
+            $table->foreign('penalty_id')->references('id')->on('penalties');
         });
     }
 
@@ -31,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('attendances_penalties');
+        Schema::dropIfExists('attendance_penalties');
     }
 };

@@ -17,12 +17,13 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('amount');
-            $table->bigInteger('attendance_types_id')->unsigned();
-            $table->foreign('attendance_types_id')->references('id')->on('attendance_types');
+            $table->unsignedInteger('lateness')->nullable()->comment('in minute');
+            $table->string('attendance_type');
             $table->string('company_id');
-            $table->foreign('company_id')->references('id')->on('companies');
-            $table->time('passing_at');
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('company_id')->references('id')->on('companies');
         });
     }
 
