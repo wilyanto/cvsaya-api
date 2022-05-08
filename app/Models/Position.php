@@ -13,10 +13,7 @@ class Position extends Model implements Auditable
 
     use \OwenIt\Auditing\Auditable;
 
-    protected $table = 'positions';
-
-    public $fillable = [
-        'id',
+    protected $fillable = [
         'name',
         'department_id',
         'level_id',
@@ -26,10 +23,6 @@ class Position extends Model implements Auditable
         'max_salary',
         'company_id'
     ];
-    protected $guard = 'id';
-
-    protected $priamryKey = 'id';
-
 
     public function children()
     {
@@ -105,7 +98,7 @@ class Position extends Model implements Auditable
 
     public function employees()
     {
-        return $this->hasMany(Employee::class, 'position_id', 'id');
+        return $this->hasMany(Employee::class);
     }
 
     public function toArrayEmployee()

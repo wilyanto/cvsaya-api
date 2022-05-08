@@ -37,7 +37,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function position()
     {
-        return $this->hasOne(Position::class);
+        return $this->hasOne(Position::class, 'id', 'position_id');
     }
 
     public function profileDetail()
@@ -47,17 +47,17 @@ class Employee extends Authenticatable implements Auditable
 
     public function company()
     {
-        return $this->hasOneThrough(Company::class, Position::class);
+        return $this->hasOneThrough(Company::class, Position::class, 'id', 'id', 'position_id', 'company_id');
     }
 
     public function level()
     {
-        return $this->hasOneThrough(Level::class, Position::class);
+        return $this->hasOneThrough(Level::class, Position::class, 'id', 'id', 'position_id', 'level_id');
     }
 
     public function department()
     {
-        return $this->hasOneThrough(Department::class, Position::class);
+        return $this->hasOneThrough(Department::class, Position::class, 'id', 'id', 'position_id', 'department_id');
     }
 
     public function user()
@@ -134,12 +134,12 @@ class Employee extends Authenticatable implements Auditable
         return [
             'id' => $this->id,
             'name' => $this->profileDetail->first_name . ' ' . $this->profileDetail->last_name,
-            // 'salary_types' => $this->typeOfSalary(),
+            'salary_types' => $this->typeOfSalary(),
             'company' => $this->company,
             'department' => $this->department->onlyNameAndId(),
             'level' => $this->level->onlyNameAndId(),
             'position' => $this->position->toCandidate(),
-            'parent_id' => $this->parent_id,
+            'parent_id' => $this->position->parent_id,
             'joined_at' => $this->joined_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
