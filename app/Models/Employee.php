@@ -72,19 +72,16 @@ class Employee extends Authenticatable implements Auditable
 
     public function typeOfSalary()
     {
-        // $salaries = EmployeeSalaryType::where('employee_id',$this->id)->get();
-        $salaries = $this->salaryTypes;
-        if (count($salaries)) {
-            $salaries = $salaries->map(function ($item) {
+        $employeeSalaryTypes = $this->salaryTypes;
+        if ($employeeSalaryTypes->isNotEmpty()) {
+            return $employeeSalaryTypes->map(function ($employeeSalaryType) {
                 return [
-                    'salary_type_id' => $item->salaryType->id,
-                    'name' => $item->salaryType->name,
-                    'amount' => $item->amount,
+                    'salary_type_id' => $employeeSalaryType->salaryType->id,
+                    'name' => $employeeSalaryType->salaryType->name,
+                    'amount' => $employeeSalaryType->amount,
                 ];
             });
         }
-
-        return $salaries;
     }
 
     public function getCompanyName()
