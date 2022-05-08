@@ -91,7 +91,14 @@ class Candidate extends Model implements Auditable
 
     public function results()
     {
-        return $this->hasManyThrough(InterviewResult::class, CandidateInterviewSchedule::class,  'candidate_id', 'id', 'id', 'result_id')->withDefault();
+        return $this->hasManyThrough(
+            InterviewResult::class,
+            CandidateInterviewSchedule::class,
+            'candidate_id',
+            'id',
+            'id',
+            'result_id'
+        )->withDefault();
     }
 
     public function label()
@@ -184,7 +191,8 @@ class Candidate extends Model implements Auditable
         ];
     }
 
-    public function nameOnly(){
+    public function nameOnly()
+    {
         return [
             'id' => $this->id,
             'first_name' => $this->profile->first_name,

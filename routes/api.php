@@ -327,14 +327,9 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::apiResource('candidate-positions', CandidatePositionController::class)->only(['index', 'store', 'update']);
-        Route::prefix('candidate-positions')->group(function () {
-            Route::controller(CvExpectedJobController::class)->group(function () {
-                // Route::get('/', 'getListCandidatePositionsWithPaginate');
-                // Route::post('/', 'createCandidatePositions');
-                Route::put('/{id}/verified', 'verifiedCandidatePositions');
-                // Route::put('/{id}', 'update');
-                Route::delete('/{id}/verified', 'deleteVerifiedCandidatePositions');
-            });
+        Route::prefix('candidate-positions')->controller(CandidatePositionController::class)->group(function () {
+            Route::put('/{id}/verified', 'verified');
+            Route::delete('/{id}/verified', 'unverified');
         });
 
         Route::prefix('religions')->group(function () {

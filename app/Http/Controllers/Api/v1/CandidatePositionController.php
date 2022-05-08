@@ -99,6 +99,24 @@ class CandidatePositionController extends Controller
         return $this->showOne(null);
     }
 
+    public function verified($id)
+    {
+        $validate = CandidatePosition::findOrFail($id);
+        $validate->validated_at = Carbon::now();
+        $validate->save();
+
+        return $this->showOne($validate);
+    }
+
+    public function unverified($id)
+    {
+        $validate = CandidatePosition::findOrFail($id);
+        $validate->validated_at = null;
+        $validate->save();
+
+        return $this->showOne($validate);
+    }
+
     /**
      * Remove the specified resource from storage.
      *
