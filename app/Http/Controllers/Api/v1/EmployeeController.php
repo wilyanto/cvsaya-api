@@ -91,7 +91,7 @@ class EmployeeController extends Controller
             'salary_types.*.amount' => 'required|numeric|gt:0'
         ]);
 
-        $position = Position::select('id', 'company_id', 'remaining_slot')->findOrFail($request->position_id)->dd();
+        $position = Position::select('id', 'company_id', 'remaining_slot')->findOrFail($request->position_id);
 
         if ($position->remaining_slot === 0) return $this->errorResponse('There\'s no remaining slot for the specified position.', 422, 42201);
 
