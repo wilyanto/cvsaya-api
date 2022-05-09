@@ -25,7 +25,7 @@ class DepartmentController extends Controller
                 'nullable'
             ],
             'keyword' => [
-                'string','nullable'
+                'string', 'nullable'
             ],
             'page' => 'nullable|numeric|gt:0',
             'page_size' => 'nullable|numeric|gt:0'
@@ -47,10 +47,8 @@ class DepartmentController extends Controller
             'page',
             $page
         );
-        $data = $departments->map(function ($item) {
-            return $item->toArrayIndex();
-        });
-        return $this->showPaginate('departments', collect($data), collect($departments));
+        
+        return $this->showPagination('departments', $departments);
     }
 
     /**

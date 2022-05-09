@@ -43,7 +43,7 @@ class CompanyController extends Controller
             return $item;
         });
 
-        return $this->showPaginate('companies', collect($data), collect($companies));
+        return $this->showPagination('companies', $companies);
     }
 
     /**

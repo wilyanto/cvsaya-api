@@ -35,7 +35,7 @@ class PositionController extends Controller
             ],
 
             'keyword' => [
-                'string','nullable'
+                'string', 'nullable'
             ],
             'page' => 'nullable|numeric|gt:0',
             'page_size' => 'nullable|numeric|gt:0'
@@ -65,10 +65,7 @@ class PositionController extends Controller
             'page',
             $page
         );
-        $data = $positions->map(function ($item) {
-            return $item->toArrayDefault();
-        });
-        return $this->showPaginate('positions', collect($data), collect($positions));
+        return $this->showPagination('positions', $positions);
     }
 
     public function show($id)

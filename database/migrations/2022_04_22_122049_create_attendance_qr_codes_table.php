@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('longitude', 14, 6)->nullable();
             $table->decimal('latitude', 14, 6)->nullable();
             $table->unsignedInteger('radius')->nullable()->comment('in meter');
+            $table->boolean('is_geo_strict')->default(1);
             $table->timestamps();
             $table->softDeletes();
         });

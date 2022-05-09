@@ -23,8 +23,11 @@ use App\Http\Controllers\Api\v1\ReligionController;
 use App\Http\Controllers\Api\v1\MarriageStatusController;
 use App\Http\Controllers\Api\v1\SalaryTypeController;
 use App\Http\Controllers\Api\v1\AttendanceController;
+use App\Http\Controllers\Api\v1\BlastController;
 use App\Http\Controllers\Api\v1\CandidateNoteController;
 use App\Http\Controllers\Api\v1\ShiftController;
+use App\Http\Controllers\Api\v1\CandidatePositionController;
+use App\Http\Controllers\Api\v1\AttendanceQrCodeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +44,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
 Route::prefix('v1')->group(function () {
+    Route::apiResource('attendance-qr-codes', AttendanceQrCodeController::class);
+    Route::apiResource('shifts', ShiftController::class);
     Route::middleware('auth:api')->group(function () {
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {
@@ -307,11 +313,11 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('shifts')->group(function () {
-            Route::controller(ShiftController::class)->group(function () {
-                Route::get('/', 'index');
-            });
-        });
+        // Route::prefix('shifts')->group(function () {
+        //     Route::controller(ShiftController::class)->group(function () {
+        //         Route::get('/', 'index');
+        //     });
+        // });
 
         Route::group(['middleware' => ['permission:manage-employee']], function () {
             Route::prefix('/salary-types')->group(function () {
@@ -324,14 +330,10 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('candidate-positions')->group(function () {
-            Route::controller(CvExpectedJobController::class)->group(function () {
-                Route::get('/', 'getListCandidatePositionsWithPaginate');
-                Route::post('/', 'createCandidatePositions');
-                Route::put('/{id}/verified', 'verifiedCandidatePositions');
-                Route::put('/{id}', 'update');
-                Route::delete('/{id}/verified', 'deleteVerifiedCandidatePositions');
-            });
+        Route::apiResource('candidate-positions', CandidatePositionController::class)->only(['index', 'store', 'update']);
+        Route::prefix('candidate-positions')->controller(CandidatePositionController::class)->group(function () {
+            Route::put('/{id}/verified', 'verified');
+            Route::delete('/{id}/verified', 'unverified');
         });
 
         Route::prefix('religions')->group(function () {
@@ -347,4 +349,6 @@ Route::prefix('v1')->group(function () {
             });
         });
     });
+
+    Route::post('blast', [BlastController::class, 'blast']);
 });
