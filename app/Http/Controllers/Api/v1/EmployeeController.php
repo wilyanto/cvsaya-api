@@ -253,6 +253,6 @@ class EmployeeController extends Controller
 
         $employee->delete();
 
-        return $this->showOne(null);
+        return $this->showOne(null, 204);
     }
 }
