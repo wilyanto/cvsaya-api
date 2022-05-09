@@ -50,6 +50,13 @@ class ShiftController extends Controller
         // return $this->showOne($data);
     }
 
+    public function show($id)
+    {
+        $shift = Shift::findOrFail($id);
+
+        return $this->showOne($shift);
+    }
+
     public function store(StoreShiftRequest $request)
     {
         $shift = Shift::create($request->all());
