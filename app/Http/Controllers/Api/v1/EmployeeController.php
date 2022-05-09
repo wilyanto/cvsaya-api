@@ -85,35 +85,30 @@ class EmployeeController extends Controller
         $request->validate([
             'candidate_id' => 'required|exists:candidates,id',
             'position_id' => 'required|exists:positions,id',
-            'company_id' => 'required|exists:companies,id',
             'joined_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
             'type' => ['required', Rule::in([EmployeeType::Daily->value, EmployeeType::Monthly->value])],
             'salary_types.*.id' => 'required|numeric|exists:salary_types,id',
             'salary_types.*.amount' => 'required|numeric|gt:0'
         ]);
 
-        $position = Position::where('company_id', $request->company_id)->findOrFail($request->position_id);
+        $position = Position::select('id', 'company_id', 'remaining_slot')->findOrFail($request->position_id)->dd();
 
         if ($position->remaining_slot === 0) return $this->errorResponse('There\'s no remaining slot for the specified position.', 422, 42201);
 
-        $candidate = Candidate::where('id', $request->candidate_id)->whereIn('status', [Candidate::STANDBY, Candidate::CONSIDER, Candidate::ACCEPTED])->firstOrFail();
-        $employees = Employee::where('user_id', $candidate->user_id)
-            ->get();
+        $candidate = Candidate::select('id', 'user_id')->where('id', $request->candidate_id)->whereIn('status', [Candidate::STANDBY, Candidate::CONSIDER, Candidate::ACCEPTED])->firstOrFail();
+        $employees = Employee::where('user_id', $candidate->user_id)->get(['id', 'position_id']);
 
         if ($employees->first(function ($employee) use ($request) {
             return $employee->position_id === $request->position_id;
         })) return $this->errorResponse('Candidate is already assigned to the specified position.', 422, 42202);
 
         $salaryTypesId = Arr::pluck($request->salary_types, 'id');
-        $salaryTypes = SalaryType::where('company_id', $request->company_id)->whereIn('id', $salaryTypesId)->get();
+        $salaryTypes = SalaryType::where('company_id', $position->company_id)->whereIn('id', $salaryTypesId)->get();
         if ($salaryTypes->count() !== count($request->salary_types)) return $this->errorResponse('One (or more) salary type(s) doesn\'t exist.', 422, 42203);
 
-        $candidate->status = Candidate::ACCEPTED;
-        $position->remaining_slot -= 1;
-
         $response = DB::transaction(function () use ($request, $employees, $candidate, $position) {
-            $candidate->save();
-            $position->save();
+            $candidate->update(['status' => Candidate::ACCEPTED]);
+            $position->decrement('remaining_slot');
 
             $employee = Employee::create([
                 'user_id' => $candidate->user_id,
