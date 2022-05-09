@@ -82,6 +82,8 @@ class Employee extends Authenticatable implements Auditable
                 ];
             });
         }
+
+        return [];
     }
 
     public function getCompanyName()
