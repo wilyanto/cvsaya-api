@@ -30,37 +30,13 @@ class Shift extends Model implements Auditable
         'updated_at'
     ];
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     public function breakEndedAt($breakStartedAt)
     {
         return date('H:i:s', strtotime($breakStartedAt, ' +' . $this->break_duration . 'hours'));
-    }
-
-    public function getClockInAttribute($date)
-    {
-        if ($date) {
-            $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
-            return $date->format('Y-m-d\TH:i:s.v\Z');
-        }
-    }
-    public function getClockOutAttribute($date)
-    {
-        if ($date) {
-            $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
-            return $date->format('Y-m-d\TH:i:s.v\Z');
-        }
-    }
-    public function getBreakStartedAtAttribute($date)
-    {
-        if ($date) {
-            $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
-            return $date->format('Y-m-d\TH:i:s.v\Z');
-        }
-    }
-    public function getBreakEndedAtAttribute($date)
-    {
-        if ($date) {
-            $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
-            return $date->format('Y-m-d\TH:i:s.v\Z');
-        }
     }
 }

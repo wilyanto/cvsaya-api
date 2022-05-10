@@ -18,7 +18,12 @@ class ShiftController extends Controller
 
     public function index(Request $request)
     {
-        $shifts = Shift::paginate($request->input('size', 10));
+        $companyId = $request->company_id;
+        $shifts = Shift::when($companyId, function ($query, $companyId) {
+            $query->where('company_id', $companyId);
+        })
+            ->with('company')
+            ->paginate($request->input('page_size', 10));
 
         return $this->showPagination('shifts', $shifts);
         // $data = [];
@@ -66,26 +71,25 @@ class ShiftController extends Controller
 
     public function update(Request $request, $id)
     {
-        $rule = [
-            'name' => 'required|string',
-            'clock_in' => 'required|date_format:H:i:s',
-            'clock_out' => 'required|date_format:H:i:s.u',
-            'break_started_at' => 'required|date_format:H:i:s',
-            'break_duration' => 'required|integer',
-            'company_id' => 'required',
-        ];
+        $request->validate([
+            'name' => 'nullable|string',
+            'clock_in' => 'nullable|date_format:H:i',
+            'clock_out' => 'nullable|date_format:H:i',
+            'break_started_at' => 'nullable|date_format:H:i',
+            'break_ended_at' => 'nullable|date_format:H:i',
+            'break_duration' => 'nullable|integer',
+        ]);
 
-        $request->validation($rule);
-
-        $shift = Shift::findOrFail($id);
-
-        $shift = $shift->fill($request->all());
-        if ($shift->isDirty()) {
-            $shift->update($request->all());
-            $shift->restore();
-        }
+        $shift = Shift::findOrFail($id)->update($request->all());
 
         return $this->showOne($shift);
+    }
+
+    public function destroy(Shift $shift)
+    {
+        $shift->delete();
+
+        return $this->showOne(null);
     }
 
     public function attachShiftPosition(Request $request, $id)
