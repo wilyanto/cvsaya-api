@@ -18,7 +18,6 @@ class Shift extends Model implements Auditable
     protected $table = 'shifts';
 
     public $fillable = [
-        'id',
         'name',
         'clock_in',
         'clock_out',

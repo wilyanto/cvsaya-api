@@ -16,4 +16,14 @@ class EmployeeRecurringShift extends Model implements Auditable
         'shift_id',
         'day',
     ];
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
 }
