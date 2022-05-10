@@ -36,16 +36,11 @@ class Candidate extends Model implements Auditable
 
     protected $table = 'candidates';
 
-    protected $guard = 'id';
-
-    protected $primaryKey = 'id';
-
     protected $dates = [
         'registered_at',
     ];
 
-    public $fillable = [
-        'id',
+    protected $fillable = [
         'name',
         'phone_number',
         'user_id',
@@ -56,7 +51,6 @@ class Candidate extends Model implements Auditable
 
     public function domicile()
     {
-        // dd($)
         return $this->hasOne(CvDomicile::class, 'user_id', 'user_id')->withDefault();
     }
 

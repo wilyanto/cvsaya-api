@@ -2,18 +2,28 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Enums\EmployeeType;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
 use App\Models\Position;
 use App\Models\Candidate;
+use App\Models\EmployeeOneTimeShift;
+use App\Models\EmployeeRecurringShift;
 use App\Models\EmployeeSalaryType;
 use App\Models\SalaryType;
+use App\Models\Shift;
+use Carbon\Carbon;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Enum;
 
 class EmployeeController extends Controller
 {
     use ApiResponser;
+
     /**
      * Display a listing of the resource.
      *
@@ -31,61 +41,35 @@ class EmployeeController extends Controller
             'keyword' => 'nullable|string',
         ]);
 
-        $page = $request->page ? $request->page  : 1;
-        $company = $request->company_id;
-        $position = $request->position_id;
-        $department = $request->department_id;
-        $level = $request->level_id;
-        $keyword = $request->keyword;
+        $employees = Employee::where(function ($query) use ($request) {
+            if ($request->company_id)
+                $query->whereHas('company', function ($query) use ($request) {
+                    $query->where('company_id', $request->company_id);
+                });
 
-        $pageSize = $request->page_size ? $request->page_size : 10;
+            if ($request->position_id)
+                $query->where('position_id', $request->position_id);
 
-        $employees = Employee::where(function ($query) use ($company, $position, $department, $level, $keyword) {
-            if ($company) {
-                $query->whereHas('company', function ($secondQuery) use ($company) {
-                    $secondQuery->where('company_id', $company);
+            if ($request->department_id)
+                $query->whereHas('department', function ($query) use ($request) {
+                    $query->where('department_id', $request->department_id);
                 });
-            }
-            if ($position) {
-                $query->where('position_id', $position);
-            }
-            if ($department) {
-                $query->whereHas('department', function ($secondQuery) use ($department) {
-                    $secondQuery->where('department_id', $department);
+
+            if ($request->level_id)
+                $query->whereHas('level', function ($query) use ($request) {
+                    $query->where('level_id', $request->level_id);
                 });
-            }
-            if ($level) {
-                $query->whereHas('level', function ($secondQuery) use ($level) {
-                    $secondQuery->where('level_id', $level);
+
+            if ($request->keyword)
+                $query->whereHas('profileDetail', function ($query) use ($request) {
+                    $query->where('first_name', 'like', '%' . $request->keyword . '%')
+                        ->orWhere('last_name', 'like', '%' . $request->keyword . '%');
                 });
-            }
-            if ($keyword) {
-                $query->whereHas('profileDetail', function ($secondQuery) use ($keyword) {
-                    $secondQuery->where('first_name', 'like', '%' . $keyword . '%')->orWhere('last_name', 'like', '%' . $keyword . '%');
-                });
-            }
         })
             ->with('profileDetail')
-            ->paginate(
-                $pageSize,
-                ['*'],
-                'page',
-                $page
-            );
-        $data = $employees->map(function ($item) {
-            return $item->toArrayEmployee();
-        });
+            ->paginate($request->input('page_size', 10));
 
         return $this->showPagination('employees', $employees);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
     }
 
     /**
@@ -96,53 +80,109 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        $rule = [
+        $request->merge([
+            'type' => Str::lower($request->type)
+        ]);
+        $request->validate([
             'candidate_id' => 'required|exists:candidates,id',
             'position_id' => 'required|exists:positions,id',
-            'employment_type_id' => 'required|exists:employment_types,id',
-            'joined_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z|nullable',
+            'joined_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
+            'type' => ['required', new Enum(EmployeeType::class)],
             'salary_types' => 'required|array',
-        ];
+            'salary_types.*.id' => 'required|numeric|exists:salary_types,id',
+            'salary_types.*.amount' => 'required|numeric|gt:0',
+            'one_time_shifts' => 'required|array',
+            'one_time_shifts.*.shift_id' => 'required|exists:shifts,id',
+            'one_time_shifts.*.date' => 'required|date_format:Y-m-d',
+            'recurring_shifts' => 'required|array',
+            'recurring_shifts.*.shift_id' => 'required|exists:shifts,id',
+            'recurring_shifts.*.days' => 'required|array',
+            'recurring_shifts.*.days.*' => 'required|numeric|between:0,6'
+        ]);
 
-        $request->validate($rule);
+        $position = Position::select('id', 'company_id', 'remaining_slot')->findOrFail($request->position_id);
 
-        $candidate = Candidate::where('id', $request->candidate_id)->where('status', 5)->firstOrFail();
-        $employee = Employee::where('user_id', $candidate->user_id)
-            ->where('position_id', $request->position_id)
-            ->first();
-        if (!$employee) {
-            $position = Position::findOrFail($request->position_id);
-            if ($position->remaining_slot > 0) {
-                $employeeArray = $request->all();
-                unset($employeeArray['candidate_id']);
-                unset($employeeArray['salary_types']);
-                $employeeArray['user_id'] = $candidate->user_id;
+        if ($position->remaining_slot === 0) return $this->errorResponse('There\'s no remaining slot for the specified position.', 422, 42201);
 
-                $employee = Employee::create($employeeArray);
-                $newSalaryTypes = [];
-                $salaryTypes = $request->salary_types;
-                foreach ($salaryTypes as $salaryType) {
-                    $salaryType = collect($salaryType);
-                    SalaryType::findOrFail($salaryType['id']);
-                    $newSalaryTypeIds[] = $salaryType['id'];
-                    $newSalaryTypes[] = [
+        $candidate = Candidate::select('id', 'user_id')->where('id', $request->candidate_id)->whereIn('status', [Candidate::STANDBY, Candidate::CONSIDER, Candidate::ACCEPTED])->firstOrFail();
+        $employees = Employee::where('user_id', $candidate->user_id)->get(['id', 'position_id']);
+
+        if ($employees->first(function ($employee) use ($request) {
+            return $employee->position_id === $request->position_id;
+        })) return $this->errorResponse('Candidate is already assigned to the specified position.', 422, 42202);
+
+        $salaryTypeIds = Arr::pluck($request->salary_types, 'id');
+        $salaryTypes = SalaryType::where('company_id', $position->company_id)->whereIn('id', $salaryTypeIds)->get('id');
+        if ($salaryTypes->count() !== count($request->salary_types)) return $this->errorResponse('One (or more) salary type(s) doesn\'t exist.', 422, 42203);
+
+        $oneTimeShiftIds = Arr::pluck($request->one_time_shifts, 'shift_id');
+        $oneTimeShifts = Shift::where('company_id', $position->company_id)->whereIn('id', $oneTimeShiftIds)->get('id');
+        if ($oneTimeShifts->count() !== count($request->one_time_shifts)) return $this->errorResponse('One (or more) one time shift(s) doesn\'t exist.', 422, 42204);
+
+        $recurringShiftIds = Arr::pluck($request->recurring_shifts, 'shift_id');
+        $recurringShifts = Shift::where('company_id', $position->company_id)->whereIn('id', $recurringShiftIds)->get('id');
+        if ($recurringShifts->count() !== count($request->recurring_shifts)) return $this->errorResponse('One (or more) recurring shift(s) doesn\'t exist.', 422, 42205);
+
+        $response = DB::transaction(function () use ($request, $employees, $candidate, $position) {
+            $candidate->update(['status' => Candidate::ACCEPTED]);
+            $position->decrement('remaining_slot');
+
+            $employee = Employee::create([
+                'user_id' => $candidate->user_id,
+                'position_id' => $request->position_id,
+                'type' => $request->type,
+                'is_default' => $employees->isEmpty(),
+                'joined_at' => $request->joined_at
+            ]);
+
+            $employeesSalaryTypes = [];
+
+            foreach ($request->salary_types as $salaryType) {
+                $employeesSalaryTypes[] = [
+                    'employee_id' => $employee->id,
+                    'salary_type_id' => $salaryType['id'],
+                    'amount' => $salaryType['amount'],
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
+
+            EmployeeSalaryType::insert($employeesSalaryTypes);
+
+            $employeeOneTimeShifts = [];
+
+            foreach ($request->one_time_shifts as $employeeOneTimeShift) {
+                $employeeOneTimeShifts[] = [
+                    'employee_id' => $employee->id,
+                    'shift_id' => $employeeOneTimeShift['shift_id'],
+                    'date' => $employeeOneTimeShift['date'],
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
+
+            EmployeeOneTimeShift::insert($employeeOneTimeShifts);
+
+            $employeeRecurringShifts = [];
+
+            foreach ($request->recurring_shifts as $employeeRecurringShift) {
+                foreach ($employeeRecurringShift['days'] as $day) {
+                    $employeeRecurringShifts[] = [
                         'employee_id' => $employee->id,
-                        'salary_type_id' => $salaryType['id'],
-                        'amount' => $salaryType['amount'],
+                        'shift_id' => $employeeRecurringShift['shift_id'],
+                        'day' => $day,
+                        'created_at' => now(),
+                        'updated_at' => now()
                     ];
                 }
-                $candidate->status = Candidate::ACCEPTED;
-                $candidate->save();
-                EmployeeSalaryType::insert($newSalaryTypes);
-                $position->remaining_slot -= 1;
-                $position->save();
-                return $this->showOne($employee->toArrayEmployee());
-            } else {
-                return $this->errorResponse('The selected Position is full, please select another Position', 422, 42201);
             }
-        } else {
-            return $this->errorResponse('Candidate already pick this Position, please choose another one', 422, 42202);
-        }
+
+            EmployeeRecurringShift::insert($employeeRecurringShifts);
+
+            return $this->showOne($employee->toArrayEmployee());
+        });
+
+        return $response;
     }
 
     /**
@@ -153,27 +193,16 @@ class EmployeeController extends Controller
      */
     public function show($id)
     {
-        $employeeDetail = Employee::findOrFail($id);
+        $employee = Employee::findOrFail($id);
 
-        return $this->showOne($employeeDetail->toArrayEmployee());
+        return $this->showOne($employee->toArrayEmployee());
     }
 
     public function showSalaryOnly($id)
     {
-        $employeeDetail = Employee::findOrFail($id);
+        $employee = Employee::findOrFail($id);
 
-        return $this->showOne($employeeDetail->typeOfSalary());
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\EmployeeDetails  $employeeDetails
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Employee $employees)
-    {
-        //
+        return $this->showOne($employee->typeOfSalary());
     }
 
     /**
@@ -273,6 +302,6 @@ class EmployeeController extends Controller
 
         $employee->delete();
 
-        return $this->showOne(null);
+        return $this->showOne(null, 204);
     }
 }

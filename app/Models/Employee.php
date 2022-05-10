@@ -3,78 +3,76 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Position;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use DateInterval;
-use DateTime;
 use DateTimeZone;
 use Spatie\Permission\Traits\HasRoles;
-use Spatie\Permission\Models\Permission;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class Employee extends Authenticatable implements Auditable
 {
-    use HasFactory, SoftDeletes;
-    use CrudTrait;
-    use HasRoles;
+    use HasFactory, SoftDeletes, CrudTrait, HasRoles;
 
     use \OwenIt\Auditing\Auditable;
-
-    protected $table = 'employees';
-
-    protected $guard = 'id';
-
-    protected $primaryKey = 'id';
-
-    public $connection = 'mysql';
 
     protected $dates = [
         'joined_at',
     ];
 
-    public $fillable = [
+    protected $fillable = [
         'user_id',
         'position_id',
         'joined_at',
+        'type',
+        'is_default',
         'salary_type_id',
+    ];
+
+    public $casts = [
+        'is_default' => 'boolean',
     ];
 
     public function position()
     {
-        return $this->hasOne(Position::class, 'id', 'position_id')->withDefault();
+        return $this->belongsTo(Position::class);
     }
 
     public function profileDetail()
     {
-        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id');
     }
 
     public function company()
     {
-        return $this->hasOneThrough(Company::class, Position::class, 'id', 'id', 'position_id', 'company_id')->withDefault();
+        return $this->hasOneThrough(Company::class, Position::class, 'id', 'id', 'position_id', 'company_id');
     }
 
     public function level()
     {
-        return $this->hasOneThrough(Level::class, Position::class, 'id', 'id', 'position_id', 'level_id')->withDefault();
+        return $this->hasOneThrough(Level::class, Position::class, 'id', 'id', 'position_id', 'level_id');
     }
 
     public function department()
     {
-        return $this->hasOneThrough(Department::class, Position::class, 'id', 'id', 'position_id', 'department_id')->withDefault();
+        return $this->hasOneThrough(Department::class, Position::class, 'id', 'id', 'position_id', 'department_id');
     }
 
-    public function employmentType()
+    public function oneTimeShifts()
     {
-        return $this->hasOne(EmploymentType::class, 'id', 'employment_type_id')->withDefault();
+        return $this->hasMany(EmployeeOneTimeShift::class);
+    }
+
+    public function recurringShifts()
+    {
+        return $this->hasMany(EmployeeRecurringShift::class);
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id_kustomer')->withDefault();
+        return $this->belongsTo(User::class, 'user_id', 'id_kustomer');
     }
 
     public function salaryTypes()
@@ -84,19 +82,18 @@ class Employee extends Authenticatable implements Auditable
 
     public function typeOfSalary()
     {
-        // $salaries = EmployeeSalaryType::where('employee_id',$this->id)->get();
-        $salaries = $this->salaryTypes;
-        if (count($salaries)) {
-            $salaries = $salaries->map(function ($item) {
+        $employeeSalaryTypes = $this->salaryTypes;
+        if ($employeeSalaryTypes->isNotEmpty()) {
+            return $employeeSalaryTypes->map(function ($employeeSalaryType) {
                 return [
-                    'salary_type_id' => $item->salaryType->id,
-                    'name' => $item->salaryType->name,
-                    'amount' => $item->amount,
+                    'salary_type_id' => $employeeSalaryType->salaryType->id,
+                    'name' => $employeeSalaryType->salaryType->name,
+                    'amount' => $employeeSalaryType->amount,
                 ];
             });
         }
 
-        return $salaries;
+        return [];
     }
 
     public function getCompanyName()
@@ -146,16 +143,17 @@ class Employee extends Authenticatable implements Auditable
         return [
             'id' => $this->id,
             'name' => $this->profileDetail->first_name . ' ' . $this->profileDetail->last_name,
-            'employment_type' => $this->employmentType,
-            // 'salary_types' => $this->typeOfSalary(),
+            'salary_types' => $this->typeOfSalary(),
             'company' => $this->company,
             'department' => $this->department->onlyNameAndId(),
             'level' => $this->level->onlyNameAndId(),
             'position' => $this->position->toCandidate(),
-            'parent_id' => $this->parent_id,
+            'parent_id' => $this->position->parent_id,
             'joined_at' => $this->joined_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'one_time_shifts' => $this->oneTimeShifts,
+            'recurring_shifts' => $this->recurringShifts
         ];
     }
 
@@ -176,7 +174,7 @@ class Employee extends Authenticatable implements Auditable
     public function getShift($date)
     {
         $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
-        $shift =  ShiftEmployee::whereDate('date', $date->format(' '))->first();
+        $shift =  EmployeeOneTimeShift::whereDate('date', $date->format(' '))->first();
         if (!$shift) {
             $getTodayDay = $date->format('N');
             $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $this->position->id)->first();

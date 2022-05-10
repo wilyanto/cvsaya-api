@@ -13,9 +13,7 @@ class Department extends Model implements Auditable
 
     use \OwenIt\Auditing\Auditable;
 
-    protected $table = 'departments';
-
-    public $fillable = [
+    protected $fillable = [
         'id',
         'name',
         'company_id',
@@ -43,7 +41,8 @@ class Department extends Model implements Auditable
         ];
     }
 
-    public function onlyNameAndId(){
+    public function onlyNameAndId()
+    {
         return [
             'id' => $this->id,
             'name' => $this->name,
