@@ -37,7 +37,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function position()
     {
-        return $this->hasOne(Position::class, 'id', 'position_id');
+        return $this->belongsTo(Position::class);
     }
 
     public function profileDetail()
@@ -58,6 +58,16 @@ class Employee extends Authenticatable implements Auditable
     public function department()
     {
         return $this->hasOneThrough(Department::class, Position::class, 'id', 'id', 'position_id', 'department_id');
+    }
+
+    public function oneTimeShifts()
+    {
+        return $this->hasMany(EmployeeOneTimeShift::class);
+    }
+
+    public function recurringShifts()
+    {
+        return $this->hasMany(EmployeeRecurringShift::class);
     }
 
     public function user()
@@ -142,6 +152,8 @@ class Employee extends Authenticatable implements Auditable
             'joined_at' => $this->joined_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'one_time_shifts' => $this->oneTimeShifts,
+            'recurring_shifts' => $this->recurringShifts
         ];
     }
 

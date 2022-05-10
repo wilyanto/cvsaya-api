@@ -12,11 +12,11 @@ class EmployeeOneTimeShift extends Model implements Auditable
 
     use \OwenIt\Auditing\Auditable;
 
-    protected $dates = [
-        'date'
+    protected $casts = [
+        'date' => 'date'
     ];
 
-    public $fillable = [
+    protected $fillable = [
         'employee_id',
         'shift_id',
         'date',
@@ -24,11 +24,11 @@ class EmployeeOneTimeShift extends Model implements Auditable
 
     public function employee()
     {
-        return $this->hasOne(employee::class, 'id', 'employee_id');
+        return $this->belongsTo(Employee::class);
     }
 
     public function shift()
     {
-        return $this->hasOne(Shift::class, 'id', 'shift_id')->withDefault();
+        return $this->belongsTo(Shift::class);
     }
 }

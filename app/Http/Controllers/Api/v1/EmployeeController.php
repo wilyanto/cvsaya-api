@@ -9,12 +9,16 @@ use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
 use App\Models\Position;
 use App\Models\Candidate;
+use App\Models\EmployeeOneTimeShift;
+use App\Models\EmployeeRecurringShift;
 use App\Models\EmployeeSalaryType;
 use App\Models\SalaryType;
+use App\Models\Shift;
+use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Enum;
 
 class EmployeeController extends Controller
 {
@@ -86,9 +90,17 @@ class EmployeeController extends Controller
             'candidate_id' => 'required|exists:candidates,id',
             'position_id' => 'required|exists:positions,id',
             'joined_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
-            'type' => ['required', Rule::in([EmployeeType::Daily->value, EmployeeType::Monthly->value])],
+            'type' => ['required', new Enum(EmployeeType::class)],
+            'salary_types' => 'required|array',
             'salary_types.*.id' => 'required|numeric|exists:salary_types,id',
-            'salary_types.*.amount' => 'required|numeric|gt:0'
+            'salary_types.*.amount' => 'required|numeric|gt:0',
+            'one_time_shifts' => 'required|array',
+            'one_time_shifts.*.shift_id' => 'required|exists:shifts,id',
+            'one_time_shifts.*.date' => 'required|date_format:Y-m-d',
+            'recurring_shifts' => 'required|array',
+            'recurring_shifts.*.shift_id' => 'required|exists:shifts,id',
+            'recurring_shifts.*.days' => 'required|array',
+            'recurring_shifts.*.days.*' => 'required|numeric|between:0,6'
         ]);
 
         $position = Position::select('id', 'company_id', 'remaining_slot')->findOrFail($request->position_id);
@@ -102,9 +114,17 @@ class EmployeeController extends Controller
             return $employee->position_id === $request->position_id;
         })) return $this->errorResponse('Candidate is already assigned to the specified position.', 422, 42202);
 
-        $salaryTypesId = Arr::pluck($request->salary_types, 'id');
-        $salaryTypes = SalaryType::where('company_id', $position->company_id)->whereIn('id', $salaryTypesId)->get();
+        $salaryTypeIds = Arr::pluck($request->salary_types, 'id');
+        $salaryTypes = SalaryType::where('company_id', $position->company_id)->whereIn('id', $salaryTypeIds)->get('id');
         if ($salaryTypes->count() !== count($request->salary_types)) return $this->errorResponse('One (or more) salary type(s) doesn\'t exist.', 422, 42203);
+
+        $oneTimeShiftIds = Arr::pluck($request->one_time_shifts, 'shift_id');
+        $oneTimeShifts = Shift::where('company_id', $position->company_id)->whereIn('id', $oneTimeShiftIds)->get('id');
+        if ($oneTimeShifts->count() !== count($request->one_time_shifts)) return $this->errorResponse('One (or more) one time shift(s) doesn\'t exist.', 422, 42204);
+
+        $recurringShiftIds = Arr::pluck($request->recurring_shifts, 'shift_id');
+        $recurringShifts = Shift::where('company_id', $position->company_id)->whereIn('id', $recurringShiftIds)->get('id');
+        if ($recurringShifts->count() !== count($request->recurring_shifts)) return $this->errorResponse('One (or more) recurring shift(s) doesn\'t exist.', 422, 42205);
 
         $response = DB::transaction(function () use ($request, $employees, $candidate, $position) {
             $candidate->update(['status' => Candidate::ACCEPTED]);
@@ -125,10 +145,42 @@ class EmployeeController extends Controller
                     'employee_id' => $employee->id,
                     'salary_type_id' => $salaryType['id'],
                     'amount' => $salaryType['amount'],
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ];
             }
 
             EmployeeSalaryType::insert($employeesSalaryTypes);
+
+            $employeeOneTimeShifts = [];
+
+            foreach ($request->one_time_shifts as $employeeOneTimeShift) {
+                $employeeOneTimeShifts[] = [
+                    'employee_id' => $employee->id,
+                    'shift_id' => $employeeOneTimeShift['shift_id'],
+                    'date' => $employeeOneTimeShift['date'],
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
+
+            EmployeeOneTimeShift::insert($employeeOneTimeShifts);
+
+            $employeeRecurringShifts = [];
+
+            foreach ($request->recurring_shifts as $employeeRecurringShift) {
+                foreach ($employeeRecurringShift['days'] as $day) {
+                    $employeeRecurringShifts[] = [
+                        'employee_id' => $employee->id,
+                        'shift_id' => $employeeRecurringShift['shift_id'],
+                        'day' => $day,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                }
+            }
+
+            EmployeeRecurringShift::insert($employeeRecurringShifts);
 
             return $this->showOne($employee->toArrayEmployee());
         });
