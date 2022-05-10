@@ -33,7 +33,6 @@ class PositionController extends Controller
                 'array',
                 'nullable'
             ],
-
             'keyword' => [
                 'string', 'nullable'
             ],
