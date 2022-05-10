@@ -18,7 +18,7 @@ class ShiftController extends Controller
 
     public function index(Request $request)
     {
-        $shifts = Shift::paginate($request->input('size', 10));
+        $shifts = Shift::paginate($request->input('page_size', 10));
 
         return $this->showPagination('shifts', $shifts);
         // $data = [];
