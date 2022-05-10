@@ -64,24 +64,16 @@ class ShiftController extends Controller
 
     public function update(Request $request, $id)
     {
-        $rule = [
-            'name' => 'required|string',
-            'clock_in' => 'required|date_format:H:i:s',
-            'clock_out' => 'required|date_format:H:i:s.u',
-            'break_started_at' => 'required|date_format:H:i:s',
-            'break_duration' => 'required|integer',
-            'company_id' => 'required',
-        ];
+        $request->validate([
+            'name' => 'nullable|string',
+            'clock_in' => 'nullable|date_format:H:i:s',
+            'clock_out' => 'nullable|date_format:H:i:s',
+            'break_started_at' => 'nullable|date_format:H:i:s',
+            'break_ended_at' => 'nullable|date_format:H:i:s',
+            'break_duration' => 'nullable|integer',
+        ]);
 
-        $request->validation($rule);
-
-        $shift = Shift::findOrFail($id);
-
-        $shift = $shift->fill($request->all());
-        if ($shift->isDirty()) {
-            $shift->update($request->all());
-            $shift->restore();
-        }
+        $shift = Shift::findOrFail($id)->update($request->all());
 
         return $this->showOne($shift);
     }
