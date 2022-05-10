@@ -30,6 +30,11 @@ class Shift extends Model implements Auditable
         'updated_at'
     ];
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     public function breakEndedAt($breakStartedAt)
     {
         return date('H:i:s', strtotime($breakStartedAt, ' +' . $this->break_duration . 'hours'));
