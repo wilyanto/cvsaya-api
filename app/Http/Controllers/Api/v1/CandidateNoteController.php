@@ -49,12 +49,7 @@ class CandidateNoteController extends Controller
                 $query->select(['first_name', 'last_name']);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(
-                $pageSize,
-                ['*'],
-                'page',
-                $page
-            );
+            ->paginate($pageSize);
 
         return $this->showPagination(
             'candidate_notes',

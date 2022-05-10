@@ -65,12 +65,9 @@ class EmployeeController extends Controller
                     $query->where('first_name', 'like', '%' . $request->keyword . '%')
                         ->orWhere('last_name', 'like', '%' . $request->keyword . '%');
                 });
-        })->paginate(
-            $request->input('page_size', 10),
-            ['*'],
-            'page',
-            $request->input('page', 1)
-        );
+        })
+            ->with('position', 'profileDetail')
+            ->paginate($request->input('page_size', 10));
 
         return $this->showPagination('employees', $employees);
     }
