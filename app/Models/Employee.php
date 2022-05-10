@@ -39,7 +39,6 @@ class Employee extends Authenticatable implements Auditable
         'user_id',
         'position_id',
         'joined_at',
-        'employment_type_id',
         'salary_type_id',
     ];
 

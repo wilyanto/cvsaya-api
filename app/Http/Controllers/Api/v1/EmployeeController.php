@@ -64,12 +64,14 @@ class EmployeeController extends Controller
                     $secondQuery->where('first_name', 'like', '%' . $keyword . '%')->orWhere('last_name', 'like', '%' . $keyword . '%');
                 });
             }
-        })->paginate(
-            $pageSize,
-            ['*'],
-            'page',
-            $page
-        );
+        })
+            ->with('profileDetail')
+            ->paginate(
+                $pageSize,
+                ['*'],
+                'page',
+                $page
+            );
         $data = $employees->map(function ($item) {
             return $item->toArrayEmployee();
         });
