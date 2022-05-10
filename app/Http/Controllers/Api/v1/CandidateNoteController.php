@@ -31,14 +31,14 @@ class CandidateNoteController extends Controller
         $candidateNoteQuery = CandidateNote::where('candidate_id', $candidateId);
 
         if ($request->visibility == null) {
-            $candidateNoteQuery->where('visibility', CandidateNoteVisibility::Public->value)
+            $candidateNoteQuery->where('visibility', CandidateNoteVisibility::public())
                 ->orWhere(function ($query) use ($employee, $candidateId) {
-                    $query->where('visibility', CandidateNoteVisibility::Private->value)
+                    $query->where('visibility', CandidateNoteVisibility::private())
                         ->where('candidate_id', $candidateId)
                         ->where('employee_id', $employee->id);
                 });
         } else {
-            if ($request->visibility == CandidateNoteVisibility::Private->value) {
+            if ($request->visibility == CandidateNoteVisibility::private()) {
                 $candidateNoteQuery->where('employee_id', $employee->id);
             }
             $candidateNoteQuery->where('visibility', $request->visibility);

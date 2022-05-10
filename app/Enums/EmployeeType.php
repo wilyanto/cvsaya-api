@@ -2,8 +2,17 @@
 
 namespace App\Enums;
 
-enum EmployeeType: string
+use Spatie\Enum\Enum;
+
+/**
+ * @method static self private()
+ * @method static self public()
+ */
+
+class EmployeeType extends Enum
 {
-    case Daily = 'daily';
-    case Monthly = 'monthly';
+    const MAP_VALUE = [
+        'daily' => 'daily',
+        'monthly' => 'monthly',
+    ];
 }

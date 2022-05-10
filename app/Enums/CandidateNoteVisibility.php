@@ -2,8 +2,17 @@
 
 namespace App\Enums;
 
-enum CandidateNoteVisibility: string
+use Spatie\Enum\Enum;
+
+/**
+ * @method static self private()
+ * @method static self public()
+ */
+
+class CandidateNoteVisibility extends Enum
 {
-    case Public = 'public';
-    case Private = 'private';
+    const MAP_VALUE = [
+        'private' => 'private',
+        'public' => 'public',
+    ];
 }
