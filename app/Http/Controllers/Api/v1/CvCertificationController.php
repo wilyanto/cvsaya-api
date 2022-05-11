@@ -54,7 +54,6 @@ class CvCertificationController extends Controller
             $data['expired_at'] = null;
         }
         $certification = CvCertification::create($data);
-
         return $this->showOne($certification);
     }
 

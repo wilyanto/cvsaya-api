@@ -59,7 +59,9 @@ class CvExperienceController extends Controller
         }
         $data['position_id'] = $position->id;
         $data['started_at'] = date('Y-m-d', strtotime($request->started_at));
-        $data['ended_at'] = $request->ended_at ? date('Y-m-d', strtotime($request->ended_at)) : null;
+        if (!$request->ended_at) {
+            $data['ended_at'] = null;
+        }
         $data['payslip'] = $document;
         unset($data['position']);
         $experience = CvExperience::create($data);

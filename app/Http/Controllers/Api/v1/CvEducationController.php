@@ -33,7 +33,7 @@ class CvEducationController extends Controller
 
     public function degreeList()
     {
-        $degrees = Degree::whereIn('id', [1,2,3,4,5,6])->get();
+        $degrees = Degree::whereIn('id', [1, 2, 3, 4, 5, 6])->get();
 
         return $this->showAll($degrees);
     }
@@ -57,10 +57,7 @@ class CvEducationController extends Controller
 
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $data['started_at'] = date('Y-m-d', strtotime($data['started_at']));
-        if ($request->ended_at == null) {
-            $data['ended_at'] = date('Y-m-d', strtotime($data['ended_at']));
-        } else {
+        if (!$request->ended_at) {
             $data['ended_at'] = null;
         }
         $educations = CvEducation::create($data);
