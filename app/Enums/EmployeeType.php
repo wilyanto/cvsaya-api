@@ -5,8 +5,8 @@ namespace App\Enums;
 use Spatie\Enum\Enum;
 
 /**
- * @method static self private()
- * @method static self public()
+ * @method static self daily()
+ * @method static self monthly()
  */
 
 class EmployeeType extends Enum

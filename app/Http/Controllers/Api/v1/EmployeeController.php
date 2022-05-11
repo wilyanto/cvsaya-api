@@ -17,7 +17,7 @@ use App\Models\Shift;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Enum;
+use Spatie\Enum\Laravel\Rules\EnumRule;
 
 class EmployeeController extends Controller
 {
@@ -82,11 +82,14 @@ class EmployeeController extends Controller
         $request->merge([
             'type' => Str::lower($request->type)
         ]);
+
+        // dd(new EnumRule(EmployeeType::class));
+
         $request->validate([
             'candidate_id' => 'required|exists:candidates,id',
             'position_id' => 'required|exists:positions,id',
             'joined_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
-            'type' => ['required', new Enum(EmployeeType::class)],
+            'type' => ['required', new EnumRule(EmployeeType::class)],
             'salary_types' => 'required|array',
             'salary_types.*.id' => 'required|numeric|exists:salary_types,id',
             'salary_types.*.amount' => 'required|numeric|gt:0',
@@ -98,6 +101,8 @@ class EmployeeController extends Controller
             'recurring_shifts.*.days' => 'required|array',
             'recurring_shifts.*.days.*' => 'required|numeric|between:0,6'
         ]);
+
+        dd(1);
 
         $position = Position::select('id', 'company_id', 'remaining_slot')->findOrFail($request->position_id);
 
