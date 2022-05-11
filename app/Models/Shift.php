@@ -7,58 +7,35 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Shift extends Model implements Auditable
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     use \OwenIt\Auditing\Auditable;
 
     protected $table = 'shifts';
 
     public $fillable = [
-        'id',
         'name',
         'clock_in',
         'clock_out',
         'break_started_at',
         'break_ended_at',
         'break_duration',
+        'company_id',
         'created_at',
         'updated_at'
     ];
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
     public function breakEndedAt($breakStartedAt)
     {
         return date('H:i:s', strtotime($breakStartedAt, ' +' . $this->break_duration . 'hours'));
-    }
-
-    public function getClockInAttribute($date)
-    {
-        if ($date) {
-            $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
-            return $date->format('Y-m-d\TH:i:s.v\Z');
-        }
-    }
-    public function getClockOutAttribute($date)
-    {
-        if ($date) {
-            $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
-            return $date->format('Y-m-d\TH:i:s.v\Z');
-        }
-    }
-    public function getBreakStartedAtAttribute($date)
-    {
-        if ($date) {
-            $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
-            return $date->format('Y-m-d\TH:i:s.v\Z');
-        }
-    }
-    public function getBreakEndedAtAttribute($date)
-    {
-        if ($date) {
-            $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
-            return $date->format('Y-m-d\TH:i:s.v\Z');
-        }
     }
 }

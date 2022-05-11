@@ -15,9 +15,9 @@ class CharacterTraitsSeeder extends Seeder
      */
     public function run()
     {
-        $characterTraits= ['ability','communication','Serious'];
+        $characterTraits = ['ability', 'communication', 'Serious'];
 
-        foreach($characterTraits as $characterTrait){
+        foreach ($characterTraits as $characterTrait) {
             CharacterTrait::create([
                 'name' => $characterTrait,
             ]);

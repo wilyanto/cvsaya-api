@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\AttendanceType;
-use App\Models\Shift;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,20 +15,11 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-            EmploymentTypeSeeder::class,
-            CharacterTraitsSeeder::class,
-            InterviewResultSeeder::class,
-            ReligionSeeder::class,
-            MarriageSeeder::class,
-            DocumentTypeSeeder::class,
-            DegreeSeeder::class,
-            CandidatePositions::class,
-            CvProfileDetailSeeder::class,
-            CvExpectedJobSeeder::class,
-            EmployeeSeeder::class,
-            CuriculmVitaeSeeder::class,
-            ShiftSeeder::class,
-            AttendanceTypeSeeder::class,
+            // CompanySeeder::class,
+            // DepartmentSeeder::class,
+            // LevelSeeder::class,
+            // PositionSeeder::class,
+            // ShiftSeeder::class,
             PenaltySeeder::class,
         ]);
     }

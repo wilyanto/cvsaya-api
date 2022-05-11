@@ -50,7 +50,7 @@ class Handler extends ExceptionHandler
         return $this->errorResponse('Unauthenticated.', 401, 40100);
     }
 
-    public function render($request, Throwable $e)
+public function render($request, Throwable $e)
     {
         Log::error($request->all(), [
             'url' => $request->url(),

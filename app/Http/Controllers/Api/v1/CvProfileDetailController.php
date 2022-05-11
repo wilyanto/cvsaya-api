@@ -36,7 +36,8 @@ class CvProfileDetailController extends Controller
     public function indexDetail($id)
     {
         $array = [];
-        $userProfileDetail = CvProfileDetail::where('user_id', $id)->firstOrFail();
+        $candidate = Candidate::findOrFail($id);
+        $userProfileDetail = CvProfileDetail::where('user_id', $candidate->user_id)->firstOrFail();
         $userAddress = CvDomicile::where('user_id', $id)->firstOrFail();
         $userSosmed = CvSosmed::where('user_id', $id)->firstOrFail();
 
@@ -100,42 +101,39 @@ class CvProfileDetailController extends Controller
         return $this->showOne(collect($data));
     }
 
-    public function cvDetailByID($id)
+    public function getCandidateCv($id)
     {
-        $user = auth()->user();
-        if (!$id) {
-            $id = $user->id_kustomer;
-        }
-        $education = CvEducation::where('user_id', $id)
+        $candidate = Candidate::findOrFail($id);
+        $candidateId = $candidate->user_id;
+
+        $education = CvEducation::where('user_id', $candidateId)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC')
             ->get();
         $data['educations'] = $education;
 
-        $experience = CvExperience::where('user_id', $id)
+        $experience = CvExperience::where('user_id', $candidateId)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC')
             ->get();
         $data['experiences'] = $experience;
 
-        $certifications = CvCertification::where('user_id', $id)
+        $certifications = CvCertification::where('user_id', $candidateId)
             ->orderBy('issued_at', 'DESC')
             ->orderByRaw("CASE WHEN expired_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('expired_at', 'DESC')
             ->get();
         $data['certifications'] = $certifications;
 
-        $specialities = CvSpeciality::where('user_id', $id)->get();
+        $specialities = CvSpeciality::where('user_id', $candidateId)->get();
         $data['specialities'] = $specialities;
 
-        $hobbies = CvHobby::where('user_id', $id)->get();
+        $hobbies = CvHobby::where('user_id', $candidateId)->get();
         $data['hobbies'] = $hobbies;
 
-        $data = (object)$data;
-
-        return $this->showOne(collect($data));
+        return $this->showOne($data);
     }
 
     public function status()
@@ -258,7 +256,7 @@ class CvProfileDetailController extends Controller
     {
         $user = auth()->user();
 
-        $employee = Employee::where('user_id',$user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
 
         $data = [
             'profile' => $employee->profileDetail,

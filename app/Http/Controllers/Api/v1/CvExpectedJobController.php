@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Candidate;
 use App\Models\CvExpectedJob;
 use App\Models\CandidatePosition;
 use Illuminate\Http\Request;
@@ -19,7 +20,8 @@ class CvExpectedJobController extends Controller
      */
     public function show($id)
     {
-        $expectedSalaries = CvExpectedJob::where('user_id', $id)->orderBy('updated_at', 'DESC')->firstOrFail();
+        $candidate = Candidate::findOrFail($id);
+        $expectedSalaries = CvExpectedJob::where('user_id', $candidate->user_id)->orderBy('updated_at', 'DESC')->firstOrFail();
 
         return $this->showOne($expectedSalaries);
     }
@@ -82,48 +84,6 @@ class CvExpectedJobController extends Controller
         return $this->showOne($expectedSalaries);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\ExpectedSalaries  $expectedSalaries
-     * @return \Illuminate\Http\Response
-     */
-    public function getListCandidatePositionsWithPaginate(Request $request)
-    {
-        $request->validate([
-            'keyword' => 'string|nullable',
-            'is_verified' => 'nullable|boolean',
-            'page' => 'nullable|numeric|gt:0',
-            'page_size' => 'nullable|numeric|gt:0'
-        ]);
-        $keyword = $request->keyword;
-        $isVerified = $request->is_verified;
-        $page = $request->page ? $request->page  : 1;
-        $pageSize = $request->page_size ? $request->page_size : 10;
-        $specialities = CandidatePosition::where(function ($query) use ($keyword, $isVerified) {
-            if ($keyword != null) {
-                $query->where('name', 'LIKE', '%' . $keyword . '%');
-            }
-            if (isset($isVerified)) {
-                if ($isVerified) {
-                    $query->whereNotNull('validated_at');
-                } else {
-                    $query->whereNull('validated_at');
-                }
-            }
-        })->paginate(
-            $pageSize,
-            ['*'],
-            'page',
-            $page
-        );
-        $result = $specialities->map(function ($item) {
-            return $item->toArrayCategories();
-        });
-
-        return $this->showPaginate('candidate_positions', collect($result), collect($specialities));
-    }
-
     public function getListCandidatePositions(Request $request)
     {
         $request->validate([
@@ -146,20 +106,6 @@ class CvExpectedJobController extends Controller
         })->get();
 
         return $this->showAll($specialities);
-    }
-
-    public function createCandidatePositions(Request $request)
-    {
-
-        $request->validate([
-            'name' => 'string',
-        ]);
-
-        $data = $request->all();
-        $data['validated_at'] = true;
-        $position = CandidatePosition::create($data);
-
-        return $this->showOne($position);
     }
 
     /**

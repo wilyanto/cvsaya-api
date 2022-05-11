@@ -23,10 +23,12 @@ use App\Http\Controllers\Api\v1\ReligionController;
 use App\Http\Controllers\Api\v1\MarriageStatusController;
 use App\Http\Controllers\Api\v1\SalaryTypeController;
 use App\Http\Controllers\Api\v1\AttendanceController;
+use App\Http\Controllers\Api\v1\BlastController;
+use App\Http\Controllers\Api\v1\CandidateNoteController;
 use App\Http\Controllers\Api\v1\ShiftController;
-use App\Models\Certifications;
-use App\Models\CvProfileDetail;
-use App\Models\EmploymentType;
+use App\Http\Controllers\Api\v1\CandidatePositionController;
+use App\Http\Controllers\Api\v1\AttendanceQrCodeController;
+use App\Http\Controllers\Api\v1\EmployeeOneTimeShiftController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,7 +45,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
 Route::prefix('v1')->group(function () {
+    Route::apiResource('attendance-qr-codes', AttendanceQrCodeController::class);
+    Route::apiResource('shifts', ShiftController::class);
+    Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
+
     Route::middleware('auth:api')->group(function () {
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {
@@ -55,41 +62,34 @@ Route::prefix('v1')->group(function () {
 
         Route::group(['middleware' => ['permission:manage-candidate|manage-schedule']], function () {
             Route::prefix('admin')->group(function () {
-
                 Route::controller(CvProfileDetailController::class)->group(function () {
                     Route::get('/profile', 'show');
                 });
             });
 
-
-            Route::prefix('users')->group(function () {
+            Route::prefix('candidates')->group(function () {
                 Route::controller(CvProfileDetailController::class)->group(function () {
                     Route::get('/{id}/profile',  'indexDetail');
                 });
-
                 Route::controller(CvExpectedJobController::class)->group(function () {
                     Route::get('/{id}/expected-job', 'show'); // path user/id/expected-jobs
                 });
-
                 Route::controller(CvProfileDetailController::class)->group(function () {
-                    Route::get('/{id}/curriculum-vitae', 'cvDetailByID'); // path user/id/cv
+                    Route::get('/{id}/curriculum-vitae', 'getCandidateCv'); // path user/id/cv
                 });
-
                 Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                     Route::get('/{id}/interview-notes', 'showNote'); // path user/id/cv
                 });
-
                 Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                     Route::get('/{id}/interviews', 'getDetail'); // path user/id/cv
                 });
-
                 Route::controller(CvDocumentController::class)->group(function () {
                     Route::get('/{id}/documents', 'show'); // path user/id/cv
                 });
-
                 Route::group(['middleware' => ['permission:manage-candidate']], function () {
-                    Route::controller(CandidateController::class)->group(function () {
-                        Route::get('/{id}/candidates/notes', 'getCandidateNotes');
+                    Route::controller(CandidateNoteController::class)->group(function () {
+                        Route::post('/{id}/candidate-notes', 'storeCandidateNotes');
+                        Route::get('/{id}/candidate-notes', 'getCandidateNotes');
                     });
                 });
             });
@@ -108,15 +108,9 @@ Route::prefix('v1')->group(function () {
                     Route::put('/{id}/reject', 'rejectInterview');
                 });
             });
+
             Route::controller(CandidateInterviewScheduleController::class)->group(function () {
                 Route::get('/interviewers', 'indexInterviewer');
-            });
-
-            Route::prefix()->group(function () {
-                Route::controller(CandidateController::class)->group(function () {
-                    Route::post('/{id}/candidates/notes', 'createNote');
-                    Route::get('/candidates/notes', 'getOwnNotes');
-                });
             });
 
             Route::group(['middleware' => ['permission:manage-candidate']], function () {
@@ -322,11 +316,11 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('shifts')->group(function () {
-            Route::controller(ShiftController::class)->group(function () {
-                Route::get('/', 'index');
-            });
-        });
+        // Route::prefix('shifts')->group(function () {
+        //     Route::controller(ShiftController::class)->group(function () {
+        //         Route::get('/', 'index');
+        //     });
+        // });
 
         Route::group(['middleware' => ['permission:manage-employee']], function () {
             Route::prefix('/salary-types')->group(function () {
@@ -339,14 +333,10 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::prefix('candidate-positions')->group(function () {
-            Route::controller(CvExpectedJobController::class)->group(function () {
-                Route::get('/', 'getListCandidatePositionsWithPaginate');
-                Route::post('/', 'createCandidatePositions');
-                Route::put('/{id}/verified', 'verifiedCandidatePositions');
-                Route::put('/{id}', 'update');
-                Route::delete('/{id}/verified', 'deleteVerifiedCandidatePositions');
-            });
+        Route::apiResource('candidate-positions', CandidatePositionController::class)->only(['index', 'store', 'update']);
+        Route::prefix('candidate-positions')->controller(CandidatePositionController::class)->group(function () {
+            Route::put('/{id}/verified', 'verified');
+            Route::delete('/{id}/verified', 'unverified');
         });
 
         Route::prefix('religions')->group(function () {
@@ -361,5 +351,10 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', 'index');
             });
         });
+    });
+
+    Route::controller(BlastController::class)->group(function () {
+        Route::post('blast-wa', 'blastWhatsApp');
+        Route::post('blast', 'blast');
     });
 });

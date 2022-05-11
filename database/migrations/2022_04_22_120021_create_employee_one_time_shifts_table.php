@@ -13,14 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('shift_positions', function (Blueprint $table) {
+        Schema::create('employee_one_time_shifts', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('shift_id')->unsigned();
-            $table->foreign('shift_id')->references('id')->on('shifts');
-            $table->bigInteger('position_id')->unsigned();
-            $table->foreign('position_id')->references('id')->on('positions');
-            $table->integer('day');
+            $table->unsignedBigInteger('employee_id');
+            $table->unsignedBigInteger('shift_id');
+            $table->date('date');
             $table->timestamps();
+
+            $table->foreign('employee_id')->references('id')->on('employees');
+            $table->foreign('shift_id')->references('id')->on('shifts');
         });
     }
 
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('shift_positions');
+        Schema::dropIfExists('employee_one_time_shifts');
     }
 };

@@ -28,15 +28,15 @@ class Permission
             ? $permission
             : explode('|', $permission);
 
-        $employee = Employee::where('user_id',$authGuard->user()->id_kustomer)->firstOrFail();
+        $employee = Employee::where('user_id', $authGuard->user()->id_kustomer)->firstOrFail();
         $permissionsUser = collect($employee->getAllPermissions()->pluck('name'))->toArray();
-        $intersectPermission = array_intersect($permissionsUser,$permissions);
-        if(count($intersectPermission)){
+        $intersectPermission = array_intersect($permissionsUser, $permissions);
+        if (count($intersectPermission)) {
             return $next($request);
         }
 
         // foreach ($permissions as $permission) {
-            // dump(EmployeeDetail::with('role')->get());
+        // dump(EmployeeDetail::with('role')->get());
         //     if ($employee->can($permission)) {
         //         return $next($request);
         //     }

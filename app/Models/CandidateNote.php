@@ -18,7 +18,7 @@ class CandidateNote extends Model implements Auditable
         'note',
         'employee_id',
         'candidate_id',
-
+        'visibility',
     ];
 
     public function candidate()
@@ -26,14 +26,20 @@ class CandidateNote extends Model implements Auditable
         return $this->hasOne(Candidate::class, 'id', 'candidate_id');
     }
 
-    public function toArray()
+    public function employee()
     {
-        return [
-            'id' => $this->id,
-            'note' => $this->note,
-            'candidate' => $this->candidate->nameOnly(),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-        ];
+        return $this->hasOne(Employee::class, 'id', 'employee_id');
+    }
+
+    public function employeeProfileDetail()
+    {
+        return $this->hasOneThrough(
+            CvProfileDetail::class,
+            Employee::class,
+            'id',
+            'user_id',
+            'employee_id',
+            'user_id',
+        );
     }
 }

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Department;
 use App\Models\Level;
 use App\Traits\ApiResponser;
-
+    
 class PositionController extends Controller
 {
     use ApiResponser;
@@ -33,9 +33,8 @@ class PositionController extends Controller
                 'array',
                 'nullable'
             ],
-
             'keyword' => [
-                'string','nullable'
+                'string', 'nullable'
             ],
             'page' => 'nullable|numeric|gt:0',
             'page_size' => 'nullable|numeric|gt:0'
@@ -59,16 +58,9 @@ class PositionController extends Controller
             if ($keyword) {
                 $query->where('name', 'like', '%' . $keyword . '%');
             }
-        })->paginate(
-            $pageSize,
-            ['*'],
-            'page',
-            $page
-        );
-        $data = $positions->map(function ($item) {
-            return $item->toArrayDefault();
-        });
-        return $this->showPaginate('positions', collect($data), collect($positions));
+        })->paginate($pageSize);
+
+        return $this->showPagination('positions', $positions);
     }
 
     public function show($id)

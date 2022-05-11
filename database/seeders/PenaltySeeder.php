@@ -2,11 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Attendance;
-use App\Models\AttendanceType;
+use App\Models\Company;
 use App\Models\Penalty;
-use Doctrine\DBAL\Schema\Schema;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Enums\EnumPenaltyType;
 use Illuminate\Database\Seeder;
 
 class PenaltySeeder extends Seeder
@@ -18,16 +16,68 @@ class PenaltySeeder extends Seeder
      */
     public function run()
     {
-        $types = AttendanceType::all();
-
-        foreach($types as $type){
-            Penalty::create([
-                'name' => 'test '.$type->name ,
+        $companies = Company::all();
+        $penaltySchedules = [
+            [
+                'name' => 'Telat 1 menit',
                 'amount' => 5000,
-                'attendance_types_id' => $type->id,
-                'company_id' => 'KADA',
-                'passing_at' => date('H:i:s',strtotime('00:00:01')),
-            ]);
+                'lateness' => 1,
+                'attendance_type' => EnumPenaltyType::clockIn(),
+            ],
+            [
+                'name' => 'Telat 5 menit',
+                'amount' => 10000,
+                'lateness' => 5,
+                'attendance_type' => EnumPenaltyType::clockIn(),
+            ],
+            [
+                'name' => 'Telat 10 menit',
+                'amount' => 15000,
+                'lateness' => 10,
+                'attendance_type' => EnumPenaltyType::clockIn(),
+            ],
+            [
+                'name' => 'Telat 20 menit',
+                'amount' => 25000,
+                'lateness' => 20,
+                'attendance_type' => EnumPenaltyType::clockIn(),
+            ],
+            [
+                'name' => 'Tidak logout',
+                'amount' => 70000,
+                'lateness' => null,
+                'attendance_type' => EnumPenaltyType::clockOut(),
+            ],
+            [
+                'name' => 'Tidak Absensi Makan',
+                'amount' => 15000,
+                'lateness' => null,
+                'attendance_type' => EnumPenaltyType::breakTime(),
+            ],
+            [
+                'name' => 'Lewat Jam makan',
+                'amount' => 15000,
+                'lateness' => 1,
+                'attendance_type' => EnumPenaltyType::breakTime(),
+            ],
+        ];
+
+        $penalties = [];
+        foreach ($companies as $company) {
+            foreach ($penaltySchedules as $penaltySchedule) {
+                array_push(
+                    $penalties,
+                    [
+                        'name' => $penaltySchedule['name'],
+                        'amount' => $penaltySchedule['amount'],
+                        'lateness' => $penaltySchedule['lateness'],
+                        'attendance_type' => $penaltySchedule['attendance_type'],
+                        'company_id' => $company->id,
+                    ]
+                );
+            }
         }
+
+        Penalty::insert($penalties);
     }
 }

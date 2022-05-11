@@ -36,16 +36,11 @@ class Candidate extends Model implements Auditable
 
     protected $table = 'candidates';
 
-    protected $guard = 'id';
-
-    protected $primaryKey = 'id';
-
     protected $dates = [
         'registered_at',
     ];
 
-    public $fillable = [
-        'id',
+    protected $fillable = [
         'name',
         'phone_number',
         'user_id',
@@ -56,7 +51,6 @@ class Candidate extends Model implements Auditable
 
     public function domicile()
     {
-        // dd($)
         return $this->hasOne(CvDomicile::class, 'user_id', 'user_id')->withDefault();
     }
 
@@ -91,7 +85,14 @@ class Candidate extends Model implements Auditable
 
     public function results()
     {
-        return $this->hasManyThrough(InterviewResult::class, CandidateInterviewSchedule::class,  'candidate_id', 'id', 'id', 'result_id')->withDefault();
+        return $this->hasManyThrough(
+            InterviewResult::class,
+            CandidateInterviewSchedule::class,
+            'candidate_id',
+            'id',
+            'id',
+            'result_id'
+        )->withDefault();
     }
 
     public function label()
@@ -184,7 +185,8 @@ class Candidate extends Model implements Auditable
         ];
     }
 
-    public function nameOnly(){
+    public function nameOnly()
+    {
         return [
             'id' => $this->id,
             'first_name' => $this->profile->first_name,
