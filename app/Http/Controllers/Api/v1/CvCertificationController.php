@@ -31,11 +31,12 @@ class CvCertificationController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created resource in storage.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function store(Request $request)
     {
         $user = auth()->user();
         $request->validate([
@@ -46,29 +47,15 @@ class CvCertificationController extends Controller
             'credential_id' => 'string|nullable',
             'credential_url' => 'string|nullable',
         ]);
-        // dump($user);
+
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        $data['issued_at'] = date('Y-m-d', strtotime($request->issued_at));
-        if ($request->issued_at != null) {
-            $data['expired_at'] = date('Y-m-d', strtotime($request->expired_at));
-        } else {
+        if (!$request->issued_at) {
             $data['expired_at'] = null;
         }
-        $certifications = CvCertification::create($data);
+        $certification = CvCertification::create($data);
 
-        return $this->showOne($certifications);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        return $this->showOne($certification);
     }
 
     /**
@@ -78,17 +65,6 @@ class CvCertificationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show()
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Certifications  $certifications
-     * @return \Illuminate\Http\Response
-     */
-    public function edit()
     {
         //
     }

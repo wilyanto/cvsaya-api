@@ -191,7 +191,7 @@ Route::prefix('v1')->group(function () {
             Route::prefix('certificates')->group(function () {
                 Route::controller(CvCertificationController::class)->group(function () {
                     Route::get('/', 'index');
-                    Route::post('/', 'create');
+                    Route::post('/', 'store');
                     Route::put('/{id}', 'update');
                     Route::delete('/{id}', 'destroy');
                 });
