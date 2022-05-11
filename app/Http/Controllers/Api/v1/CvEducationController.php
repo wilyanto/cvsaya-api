@@ -37,12 +37,14 @@ class CvEducationController extends Controller
 
         return $this->showAll($degrees);
     }
+
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created resource in storage.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function add(Request $request)
+    public function store(Request $request)
     {
         $user = auth()->user();
         $request->validate([
@@ -65,34 +67,12 @@ class CvEducationController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  \App\Models\Educations  $educations
      * @return \Illuminate\Http\Response
      */
     public function show()
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Educations  $educations
-     * @return \Illuminate\Http\Response
-     */
-    public function edit()
     {
         //
     }
@@ -107,7 +87,6 @@ class CvEducationController extends Controller
     public function update(Request $request, $id)
     {
         $user = auth()->user();
-        // dump($request->input());
         $request->validate([
             'instance' => 'nullable|string',
             'degree_id' => 'exists:degrees,id|required',
@@ -119,24 +98,22 @@ class CvEducationController extends Controller
         ]);
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
-        if ($request->started_at != null) {
-            $data['started_at'] = date('Y-m-d', strtotime($data['started_at']));
-        } else {
+        if (!$request->started_at) {
             $data['started_at'] = null;
         }
         if ($request->ended_at != null) {
-            $data['ended_at'] = date('Y-m-d', strtotime($data['ended_at']));
-        } else {
             $data['ended_at'] = null;
         }
-        $educations = CvEducation::where('id', $id)->where('user_id', $user->id_kustomer)->first();
-        if (!$educations) {
+        $education = CvEducation::where('id', $id)
+            ->where('user_id', $user->id_kustomer)
+            ->first();
+        if (!$education) {
             return $this->errorResponse('id not found', 404, 40401);
         }
 
-        $educations->update($data);
+        $education->update($data);
 
-        return $this->showOne($educations);
+        return $this->showOne($education);
     }
 
     /**

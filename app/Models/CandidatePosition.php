@@ -24,12 +24,17 @@ class CandidatePosition extends Model implements Auditable
         'inserted_by'
     ];
 
+    public $dates = [
+        'validated_at',
+    ];
+
     public function candidates()
     {
         return $this->hasManyThrough(Candidate::class, CvExpectedJob::class, 'expected_position', 'user_id', 'id', 'user_id');
     }
 
-    public function toArrayCategories(){
+    public function toArrayCategories()
+    {
         return [
             'id' => $this->id,
             'name' => $this->name,

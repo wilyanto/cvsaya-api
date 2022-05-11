@@ -15,6 +15,8 @@ class Position extends Model implements Auditable
 
     protected $table = 'positions';
 
+    protected $guard = 'id';
+
     public $fillable = [
         'id',
         'name',
@@ -26,10 +28,10 @@ class Position extends Model implements Auditable
         'max_salary',
         'company_id'
     ];
-    protected $guard = 'id';
 
-    protected $priamryKey = 'id';
-
+    public $dates = [
+        'validated_at'
+    ];
 
     public function children()
     {
