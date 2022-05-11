@@ -79,10 +79,10 @@ class CvProfileDetail extends Model implements Auditable
             'gender' => $this->gender,
             'identity_number' => $this->identity_number,
             'marriage_status' => $this->marriageStatus,
+            'religion' => $this->religion,
             'reference' => $this->reference,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'religion' => $this->religion,
         ];
     }
 }

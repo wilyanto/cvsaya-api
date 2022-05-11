@@ -63,33 +63,45 @@ class CvDomicile extends Model implements Auditable
     }
     public function province()
     {
-        $url = env('KADA_URL') . "/v1/domicile/provinces/" . $this->province_id;
-        $this->requestDomicile($url);
-        $response = $this->requestDomicile($url);
-        return $response['message'];
+        if ($this->province_id) {
+            $url = env('KADA_URL') . "/v1/domicile/provinces/" . $this->province_id;
+            $this->requestDomicile($url);
+            $response = $this->requestDomicile($url);
+            return $response['message'];
+        }
+        return null;
     }
     public function city()
     {
-        $url = env('KADA_URL') . "/v1/domicile/cities/" . $this->city_id;
-        $this->requestDomicile($url);
-        $response = $this->requestDomicile($url);
+        if ($this->city_id) {
+            $url = env('KADA_URL') . "/v1/domicile/cities/" . $this->city_id;
+            $this->requestDomicile($url);
+            $response = $this->requestDomicile($url);
 
-        return $response['message'];
+            return $response['message'];
+        }
+        return null;
     }
     public function subDistrict()
     {
-        $url = env('KADA_URL') . "/v1/domicile/sub-districts/" . $this->subdistrict_id;
-        $this->requestDomicile($url);
-        $response = $this->requestDomicile($url);
-        return $response['message'];
+        if ($this->subdistrict_id) {
+            $url = env('KADA_URL') . "/v1/domicile/sub-districts/" . $this->subdistrict_id;
+            $this->requestDomicile($url);
+            $response = $this->requestDomicile($url);
+            return $response['message'];
+        }
+        return null;
     }
 
     public function village()
     {
-        $url = env('KADA_URL') . "/v1/domicile/villages/" . $this->village_id;
-        $this->requestDomicile($url);
-        $response = $this->requestDomicile($url);
-        return $response['message'];
+        if ($this->village_id) {
+            $url = env('KADA_URL') . "/v1/domicile/villages/" . $this->village_id;
+            $this->requestDomicile($url);
+            $response = $this->requestDomicile($url);
+            return $response['message'];
+        }
+        return null;
     }
 
 
@@ -104,8 +116,8 @@ class CvDomicile extends Model implements Auditable
             'subdistrict' => $this->subDistrict(),
             'village' => $this->village(),
             'address' => $this->address,
-            'created_at' => date('Y-m-d\TH:i:s.v\Z',strtotime($this->created_at)),
-            'updated_at' => date('Y-m-d\TH:i:s.v\Z',strtotime($this->updated_at)),
+            'created_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->created_at)),
+            'updated_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->updated_at)),
         ];
     }
 }
