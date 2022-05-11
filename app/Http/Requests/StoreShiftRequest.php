@@ -25,10 +25,10 @@ class StoreShiftRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'clock_in' => 'required|date_format:H:i',
-            'clock_out' => 'required|date_format:H:i',
-            'break_started_at' => 'nullable|date_format:H:i',
-            'break_ended_at' => 'nullable|date_format:H:i',
+            'clock_in' => 'required|date_format:H:i:s',
+            'clock_out' => 'required|date_format:H:i:s',
+            'break_started_at' => 'nullable|date_format:H:i:s',
+            'break_ended_at' => 'nullable|date_format:H:i:s',
             'break_duration' => 'nullable|integer',
             'company_id' => 'required|exists:App\Models\Company,id',
         ];
