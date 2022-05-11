@@ -194,16 +194,16 @@ Route::prefix('v1')->group(function () {
             Route::prefix('educations')->group(function () {
                 Route::controller(CvEducationController::class)->group(function () {
                     Route::get('/', 'index');
-                    Route::post('/', 'add');
-                    Route::delete('/{id}', 'destroy');
+                    Route::post('/', 'store');
                     Route::put('/{id}',  'update');
+                    Route::delete('/{id}', 'destroy');
                 });
             });
 
             Route::prefix('experiences')->group(function () {
                 Route::controller(CvExperienceController::class)->group(function () {
                     Route::get('/', 'index');
-                    Route::post('/', 'add');
+                    Route::post('/', 'store');
                     Route::put('/{id}', 'update');
                     Route::delete('/{id}',  'destroy');
                 });

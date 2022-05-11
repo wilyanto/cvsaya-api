@@ -13,7 +13,12 @@ class Position extends Model implements Auditable
 
     use \OwenIt\Auditing\Auditable;
 
-    protected $fillable = [
+    protected $table = 'positions';
+
+    protected $guard = 'id';
+
+    public $fillable = [
+        'id',
         'name',
         'department_id',
         'level_id',
@@ -22,6 +27,10 @@ class Position extends Model implements Auditable
         'min_salary',
         'max_salary',
         'company_id'
+    ];
+
+    public $dates = [
+        'validated_at'
     ];
 
     public function children()
