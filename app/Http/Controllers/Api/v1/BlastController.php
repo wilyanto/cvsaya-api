@@ -24,7 +24,7 @@ class BlastController extends Controller
             'end_id' => 'required|numeric',
         ]);
 
-        $jobstreets = Jobstreet::whereBetween('id', [(int) $request->start_id, (int) $request->end_id])->get(['id', 'phone', 'country_code', 'gender', 'email', 'name']);
+        $jobstreets = Jobstreet::whereBetween('id', [(int) $request->start_id, (int) $request->end_id])->get(['id', 'phone', 'country_code', 'gender', 'email', 'name', 'applied_position']);
 
         $blastLogs = BlastLog::whereIn('recipient_phone_number', $jobstreets->pluck('phone'))->get(['id', 'recipient_phone_number']);
 
@@ -50,6 +50,7 @@ class BlastController extends Controller
                 'gender' => $notRegisteredJobstreet->gender,
                 'email' => $notRegisteredJobstreet->email,
                 'name' => $notRegisteredJobstreet->name,
+                'applied_position' => $notRegisteredJobstreet->applied_position,
                 'source' => 'jobstreet'
             ];
 
@@ -82,9 +83,11 @@ class BlastController extends Controller
             'email' => 'required|email',
             'name' => 'required|string',
             'source' => 'required|in:jobstreet',
+            'applied_position' => 'required|string'
         ]);
 
-        $message = 'Salam Hangat,' . ($request->gender === 'male' || $request->gender === 'laki-laki' ? ' Pak' : ($request->gender === 'female' || $request->gender === 'perempuan' ? ' Bu' : '')) . ' ' . $request->name . '. Merespon lamaran Anda di PT Seluruh Indonesia Online via Jobstreet
+        $message = 'Salam Hangat,' . ($request->gender === 'male' || $request->gender === 'laki-laki' ? ' Pak' : ($request->gender === 'female' || $request->gender === 'perempuan' ? ' Bu' : '')) . ' ' . $request->name . '. 
+Merespon lamaran Anda di PT Seluruh Indonesia Online via Jobstreet sebagai ' . $request->applied_position . '.
 
 Kami akan melakukan seleksi awal secara otomatis oleh ATS kami melalui aplikasi Kada.
 
