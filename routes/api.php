@@ -50,7 +50,7 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('attendance-qr-codes', AttendanceQrCodeController::class);
     Route::apiResource('shifts', ShiftController::class);
     Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
-    
+
     Route::middleware('auth:api')->group(function () {
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {
@@ -353,5 +353,8 @@ Route::prefix('v1')->group(function () {
         });
     });
 
-    Route::post('blast', [BlastController::class, 'blast']);
+    Route::controller(BlastController::class)->group(function () {
+        Route::post('blast-wa', 'blastWhatsApp');
+        Route::post('blast', 'blast');
+    });
 });
