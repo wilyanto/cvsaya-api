@@ -66,23 +66,23 @@ class CvProfileDetail extends Model implements Auditable
         return $this->hasOne(Candidate::class, 'user_id', 'user_id')->withDefault();
     }
 
-    // public function toArray()
-    // {
-    //     return [
-    //         'id' => $this->id,
-    //         'user_id' => $this->user_id,
-    //         'first_name' => $this->first_name,
-    //         'last_name' => $this->last_name,
-    //         'phone_number' => $this->candidate->phone_number,
-    //         'birth_location' => $this->birth_location,
-    //         'birth_date' => $this->birth_date,
-    //         'gender' => $this->gender,
-    //         'identity_number' => $this->identity_number,
-    //         'marriage_status' => $this->marriageStatus,
-    //         'reference' => $this->reference,
-    //         'created_at' => $this->created_at,
-    //         'updated_at' => $this->updated_at,
-    //         'religion' => $this->religion,
-    //     ];
-    // }
+    public function toArray()
+    {
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'phone_number' => $this->candidate->phone_number,
+            'birth_location' => $this->birth_location,
+            'birth_date' => $this->birth_date,
+            'gender' => $this->gender,
+            'identity_number' => $this->identity_number,
+            'marriage_status' => $this->marriageStatus,
+            'religion' => $this->religion,
+            'reference' => $this->reference,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
 }
