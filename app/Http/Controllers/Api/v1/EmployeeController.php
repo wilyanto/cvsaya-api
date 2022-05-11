@@ -83,8 +83,6 @@ class EmployeeController extends Controller
             'type' => Str::lower($request->type)
         ]);
 
-        // dd(new EnumRule(EmployeeType::class));
-
         $request->validate([
             'candidate_id' => 'required|exists:candidates,id',
             'position_id' => 'required|exists:positions,id',
@@ -101,8 +99,6 @@ class EmployeeController extends Controller
             'recurring_shifts.*.days' => 'required|array',
             'recurring_shifts.*.days.*' => 'required|numeric|between:0,6'
         ]);
-
-        dd(1);
 
         $position = Position::select('id', 'company_id', 'remaining_slot')->findOrFail($request->position_id);
 
