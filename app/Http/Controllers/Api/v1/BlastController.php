@@ -61,6 +61,8 @@ class BlastController extends Controller
                 $datum['status'] = 'success';
             }
 
+            sleep(rand(3, 5));
+
             return $datum;
         });
 
