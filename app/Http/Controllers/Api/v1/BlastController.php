@@ -82,17 +82,12 @@ class BlastController extends Controller
             'source' => 'required|in:jobstreet',
         ]);
 
-        $message = 'Selamat pagi,' . ($request->gender === 'male' || $request->gender === 'laki-laki' ? ' Pak' : ($request->gender === 'female' || $request->gender === 'perempuan' ? ' Bu' : '')) . ' ' . $request->name . '. Diinformasikan kepada seluruh pendaftar CVsaya.id untuk memperbaharui data di Kada agar diseleksi secara otomatis oleh ATS kami.
+        $message = 'Salam Hangat,' . ($request->gender === 'male' || $request->gender === 'laki-laki' ? ' Pak' : ($request->gender === 'female' || $request->gender === 'perempuan' ? ' Bu' : '')) . ' ' . $request->name . '. Merespon lamaran Anda di PT Seluruh Indonesia Online via Jobstreet
 
-Untuk Kada dapat diunduh dari link di bawah ini:
-Android:
-https://play.google.com/store/apps/details?id=id.kada.mobileapp&hl=in&gl=US
-AppStore:
-https://apps.apple.com/id/app/kada-id/id1602215141
+Kami akan melakukan seleksi awal secara otomatis oleh ATS kami melalui aplikasi Kada.
 
-Atas perhatiannya saya ucapkan terima kasih.
-
-*Mohon balas pesan ini dengan "YA" untuk melanjutkan proses.';
+Mohon balas dengan "Ya" jika anda bersedia untuk melanjutkan proses seleksi.
+Terima Kasih.';
 
         $response = Http::asForm()->withHeaders(['Authorization' => config('blast.authorization_token')])->post('https://md.fonnte.com/api/send_message.php', [
             'phone' => $request->country_code . $request->phone_number,
