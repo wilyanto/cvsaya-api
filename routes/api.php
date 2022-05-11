@@ -28,6 +28,7 @@ use App\Http\Controllers\Api\v1\CandidateNoteController;
 use App\Http\Controllers\Api\v1\ShiftController;
 use App\Http\Controllers\Api\v1\CandidatePositionController;
 use App\Http\Controllers\Api\v1\AttendanceQrCodeController;
+use App\Http\Controllers\Api\v1\EmployeeOneTimeShiftController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +49,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('v1')->group(function () {
     Route::apiResource('attendance-qr-codes', AttendanceQrCodeController::class);
     Route::apiResource('shifts', ShiftController::class);
+    Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
+    
     Route::middleware('auth:api')->group(function () {
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {

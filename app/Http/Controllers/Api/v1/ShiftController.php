@@ -19,9 +19,13 @@ class ShiftController extends Controller
     public function index(Request $request)
     {
         $companyId = $request->company_id;
+        $name = $request->name;
         $shifts = Shift::when($companyId, function ($query, $companyId) {
             $query->where('company_id', $companyId);
         })
+            ->when($name, function ($query, $name) {
+                $query->where('name', 'LIKE', '%' . $name . '%');
+            })
             ->with('company')
             ->paginate($request->input('page_size', 10));
 
