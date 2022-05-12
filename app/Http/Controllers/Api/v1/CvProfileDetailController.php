@@ -38,8 +38,8 @@ class CvProfileDetailController extends Controller
         $array = [];
         $candidate = Candidate::findOrFail($id);
         $userProfileDetail = CvProfileDetail::where('user_id', $candidate->user_id)->firstOrFail();
-        $userAddress = CvDomicile::where('user_id', $id)->firstOrFail();
-        $userSosmed = CvSosmed::where('user_id', $id)->firstOrFail();
+        $userAddress = CvDomicile::where('user_id', $candidate->user_id)->firstOrFail();
+        $userSosmed = CvSosmed::where('user_id', $candidate->user_id)->firstOrFail();
 
         $array['profile_detail'] = $userProfileDetail;
         $array['domicile'] = $userAddress;
