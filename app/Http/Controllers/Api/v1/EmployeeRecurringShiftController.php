@@ -21,7 +21,11 @@ class EmployeeRecurringShiftController extends Controller
     {
         $employeeId = $request->employee_id;
         $day = $request->day;
-        $employeeRecurringShifts = EmployeeRecurringShift::with('shift')
+        $employeeRecurringShifts = EmployeeRecurringShift::with(
+            'shift',
+            'employee.position',
+            'employee.profileDetail',
+        )
             ->where(function ($query) use ($day) {
                 if ($day !== null) {
                     $query->where('day', $day);

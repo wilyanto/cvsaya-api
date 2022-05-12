@@ -30,6 +30,7 @@ use App\Http\Controllers\Api\v1\CandidatePositionController;
 use App\Http\Controllers\Api\v1\AttendanceQrCodeController;
 use App\Http\Controllers\Api\v1\EmployeeOneTimeShiftController;
 use App\Http\Controllers\Api\v1\EmployeeRecurringShiftController;
+use App\Http\Controllers\Api\v1\EmployeeShiftController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +64,7 @@ Route::prefix('v1')->group(function () {
         Route::group(['middleware' => ['permission:manage-employee']], function () {
             Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
             Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
+            Route::apiResource('employee-shifts', EmployeeShiftController::class);
         });
 
         Route::group(['middleware' => ['permission:manage-candidate|manage-schedule']], function () {
