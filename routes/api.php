@@ -52,7 +52,6 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('shifts', ShiftController::class);
 
     Route::middleware('auth:api')->group(function () {
-        Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {
                 Route::get('/', 'index');
@@ -60,10 +59,10 @@ Route::prefix('v1')->group(function () {
                 Route::put('/{id}', 'update');
             });
         });
-
-        Route::group(['middleware' => ['permission:manage-employeee']], function () {
+        
+        Route::group(['middleware' => ['permission:manage-employee']], function () {
             Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
-            // Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
+            Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
         });
 
         Route::group(['middleware' => ['permission:manage-candidate|manage-schedule']], function () {
