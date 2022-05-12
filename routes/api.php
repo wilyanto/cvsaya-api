@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\v1\ShiftController;
 use App\Http\Controllers\Api\v1\CandidatePositionController;
 use App\Http\Controllers\Api\v1\AttendanceQrCodeController;
 use App\Http\Controllers\Api\v1\EmployeeOneTimeShiftController;
+use App\Http\Controllers\Api\v1\EmployeeRecurringShiftController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,15 +50,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('v1')->group(function () {
     Route::apiResource('attendance-qr-codes', AttendanceQrCodeController::class);
     Route::apiResource('shifts', ShiftController::class);
-    Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
 
     Route::middleware('auth:api')->group(function () {
+        Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::post('/', 'store');
                 Route::put('/{id}', 'update');
             });
+        });
+
+        Route::group(['middleware' => ['permission:manage-employeee']], function () {
+            Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
+            // Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
         });
 
         Route::group(['middleware' => ['permission:manage-candidate|manage-schedule']], function () {
