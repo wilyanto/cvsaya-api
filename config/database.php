@@ -44,7 +44,7 @@ return [
         ],
 
         'mysql' => [
-            'driver' => env('DB_CONNECTION','mysql'),
+            'driver' => env('DB_CONNECTION', 'mysql'),
             'url' => env('DATABASE_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
@@ -63,8 +63,8 @@ return [
             ]) : [],
         ],
 
-        'cvsaya' => [
-            'driver' => env('DB_CONNECTION_3','mysql'),
+        'data_bank' => [
+            'driver' => env('DB_CONNECTION_3', 'mysql'),
             'url' => env('DATABASE_URL'),
             'host' => env('DB_HOST_3', '127.0.0.1'),
             'port' => env('DB_PORT_3', '3306'),
@@ -84,7 +84,7 @@ return [
         ],
 
         'kada' => [
-            'driver' => env('DB_CONNECTION_2','mysql'),
+            'driver' => env('DB_CONNECTION_2', 'mysql'),
             'url' => env('DATABASE_URL'),
             'host' => env('DB_HOST_2', '127.0.0.1'),
             'port' => env('DB_PORT_2', '3306'),
@@ -163,7 +163,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [

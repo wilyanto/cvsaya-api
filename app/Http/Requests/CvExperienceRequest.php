@@ -39,7 +39,7 @@ class CvExperienceRequest extends FormRequest
                 'required_with:ended_at',
             ],
             'reference' => 'nullable|string',
-            'previous_salary' => 'integer|required',
+            'previous_salary' => 'required|integer',
             'payslip' => 'nullable', 'exists:App\Models\Document,id',
         ];
     }

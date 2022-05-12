@@ -31,15 +31,13 @@ class CvExperienceController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created resource in storage.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-
-    public function add(CvExperienceRequest $request)
+    public function store(CvExperienceRequest $request)
     {
-        $request->validated();
-
         $user = auth()->user();
 
         $document = null;
@@ -58,23 +56,13 @@ class CvExperienceController extends Controller
             ]);
         }
         $data['position_id'] = $position->id;
-        $data['started_at'] = date('Y-m-d', strtotime($request->started_at));
-        $data['ended_at'] = $request->ended_at ? date('Y-m-d', strtotime($request->ended_at)) : null;
+        if (!$request->ended_at) {
+            $data['ended_at'] = null;
+        }
         $data['payslip'] = $document;
         unset($data['position']);
         $experience = CvExperience::create($data);
         return $this->showOne($experience);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
     }
 
     /**

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\BlastLog;
+use App\Models\Jobstreet;
+use App\Models\User;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -14,6 +16,62 @@ class BlastController extends Controller
 
     public function blast(Request $request)
     {
+        // * Soon will use timestamp instead of id
+        $request->validate([
+            // 'start_timestamp' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
+            // 'end_timestamp' => 'required|date_format:Y-m-d\TH:i:s.v\Z|after:start_timestamp',
+            'start_id' => 'required|numeric',
+            'end_id' => 'required|numeric',
+        ]);
+
+        $jobstreets = Jobstreet::whereBetween('id', [(int) $request->start_id, (int) $request->end_id])->get(['id', 'phone', 'country_code', 'gender', 'email', 'name', 'applied_position']);
+
+        $blastLogs = BlastLog::whereIn('recipient_phone_number', $jobstreets->pluck('phone'))->get(['id', 'recipient_phone_number']);
+
+        $notBlastedJobstreets = $jobstreets->reject(function ($jobstreet) use ($blastLogs) {
+            return $blastLogs->contains('recipient_phone_number', $jobstreet->phone);
+        });
+
+        $users = User::whereIn('telpon',  $notBlastedJobstreets->pluck('phone')->map(function ($notBlastedJobstreetPhone) {
+            return '0' . $notBlastedJobstreetPhone;
+        }))->get(['id_kustomer', 'telpon']);
+
+        $notRegisteredJobstreets = $notBlastedJobstreets->reject(function ($notBlastedJobstreet) use ($users) {
+            return $users->contains('telpon', '0' . $notBlastedJobstreet->phone);
+        });
+
+        $data = $notRegisteredJobstreets->map(function ($notRegisteredJobstreet) {
+            // * Will improve this by using maybe queue, job scheduler, etc.
+            set_time_limit(30);
+
+            $datum = [
+                'country_code' => '62',
+                'phone_number' => $notRegisteredJobstreet->phone,
+                'gender' => $notRegisteredJobstreet->gender,
+                'email' => $notRegisteredJobstreet->email,
+                'name' => $notRegisteredJobstreet->name,
+                'applied_position' => $notRegisteredJobstreet->applied_position,
+                'source' => 'jobstreet'
+            ];
+
+            $response = Http::post(config('app.url') . '/api/v1/blast-wa', $datum);
+
+            if ($response->failed()) {
+                $datum['status'] = 'fail';
+            } else {
+                $datum['status'] = 'success';
+            }
+
+            sleep(rand(3, 5));
+
+            return $datum;
+        });
+
+        return $this->showAll($data);
+    }
+
+    public function blastWhatsApp(Request $request)
+    {
         $request->merge([
             'gender' => strtolower($request->gender),
             'source' => strtolower($request->source),
@@ -21,23 +79,20 @@ class BlastController extends Controller
         $request->validate([
             'country_code' => 'required|string',
             'phone_number' => 'required|string|regex:/^\d{1,13}$/',
-            'gender' => 'nullable|string|in:male,female',
+            'gender' => 'nullable|string|in:male,female,laki-laki,perempuan',
             'email' => 'required|email',
             'name' => 'required|string',
             'source' => 'required|in:jobstreet',
+            'applied_position' => 'required|string'
         ]);
 
-        $message = 'Selamat pagi,' . ($request->gender === 'male' ? ' Pak' : ($request->gender === 'female' ? ' Bu' : '')) . ' ' . $request->name . '. Diinformasikan kepada seluruh pendaftar CVsaya.id untuk memperbaharui data di Kada agar diseleksi secara otomatis oleh ATS kami.
+        $message = 'Salam Hangat,' . ($request->gender === 'male' || $request->gender === 'laki-laki' ? ' Pak' : ($request->gender === 'female' || $request->gender === 'perempuan' ? ' Bu' : '')) . ' ' . $request->name . '. 
+Merespon lamaran Anda di PT Seluruh Indonesia Online via Jobstreet sebagai ' . $request->applied_position . '.
 
-Untuk Kada dapat diunduh dari link di bawah ini:
-Android:
-https://play.google.com/store/apps/details?id=id.kada.mobileapp&hl=in&gl=US
-AppStore:
-https://apps.apple.com/id/app/kada-id/id1602215141
+Kami akan melakukan seleksi awal secara otomatis oleh ATS kami melalui aplikasi Kada.
 
-Atas perhatiannya saya ucapkan terima kasih.
-
-*Mohon balas pesan ini dengan "YA" untuk melanjutkan proses.';
+Mohon balas dengan "Ya" jika anda bersedia untuk melanjutkan proses seleksi.
+Terima Kasih.';
 
         $response = Http::asForm()->withHeaders(['Authorization' => config('blast.authorization_token')])->post('https://md.fonnte.com/api/send_message.php', [
             'phone' => $request->country_code . $request->phone_number,

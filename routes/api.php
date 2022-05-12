@@ -50,7 +50,7 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('attendance-qr-codes', AttendanceQrCodeController::class);
     Route::apiResource('shifts', ShiftController::class);
     Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
-    
+
     Route::middleware('auth:api')->group(function () {
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {
@@ -185,7 +185,7 @@ Route::prefix('v1')->group(function () {
             Route::prefix('certificates')->group(function () {
                 Route::controller(CvCertificationController::class)->group(function () {
                     Route::get('/', 'index');
-                    Route::post('/', 'create');
+                    Route::post('/', 'store');
                     Route::put('/{id}', 'update');
                     Route::delete('/{id}', 'destroy');
                 });
@@ -194,16 +194,16 @@ Route::prefix('v1')->group(function () {
             Route::prefix('educations')->group(function () {
                 Route::controller(CvEducationController::class)->group(function () {
                     Route::get('/', 'index');
-                    Route::post('/', 'add');
-                    Route::delete('/{id}', 'destroy');
+                    Route::post('/', 'store');
                     Route::put('/{id}',  'update');
+                    Route::delete('/{id}', 'destroy');
                 });
             });
 
             Route::prefix('experiences')->group(function () {
                 Route::controller(CvExperienceController::class)->group(function () {
                     Route::get('/', 'index');
-                    Route::post('/', 'add');
+                    Route::post('/', 'store');
                     Route::put('/{id}', 'update');
                     Route::delete('/{id}',  'destroy');
                 });
@@ -353,5 +353,8 @@ Route::prefix('v1')->group(function () {
         });
     });
 
-    Route::post('blast', [BlastController::class, 'blast']);
+    Route::controller(BlastController::class)->group(function () {
+        Route::post('blast-wa', 'blastWhatsApp');
+        Route::post('blast', 'blast');
+    });
 });

@@ -313,7 +313,6 @@ class CvProfileDetailController extends Controller
 
     public function update(Request $request)
     {
-        // dump($request);
         $user = auth()->user();
 
         CvProfileDetail::where('user_id', $user->id_kustomer)->firstOrFail();
@@ -331,7 +330,7 @@ class CvProfileDetailController extends Controller
             'domicile.province_id' => 'integer|required',
             'domicile.city_id' => 'integer|required',
             'domicile.subdistrict_id' => 'integer|required',
-            'domicile.village_id' => 'integer|required',
+            'domicile.village_id' => 'integer|nullable',
             'domicile.address' => 'string|required',
 
             #Sosmed
