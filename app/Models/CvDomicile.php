@@ -13,14 +13,7 @@ class CvDomicile extends Model implements Auditable
 
     use \OwenIt\Auditing\Auditable;
 
-    protected $table = 'cv_domiciles';
-
-    protected $guard = 'id';
-
-    protected $primaryKey = 'id';
-
-    public $fillable = [
-        'id',
+    protected $fillable = [
         'user_id',
         'country_id',
         'province_id',
