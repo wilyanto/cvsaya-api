@@ -39,7 +39,8 @@ class EmployeeShiftController extends Controller
             })
             ->with([
                 'shift',
-                'employee.profileDetail'
+                'employee.position',
+                'employee.profileDetail',
             ])
             ->get();
 
@@ -52,7 +53,8 @@ class EmployeeShiftController extends Controller
             })
             ->with([
                 'shift',
-                'employee.profileDetail'
+                'employee.position',
+                'employee.profileDetail',
             ])
             ->get();
 

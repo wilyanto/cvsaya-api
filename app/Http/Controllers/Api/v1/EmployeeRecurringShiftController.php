@@ -87,4 +87,8 @@ class EmployeeRecurringShiftController extends Controller
         EmployeeRecurringShift::findOrFail($id)->delete();
         return $this->showOne(null, 204);
     }
+
+    public function getEmployeeRecurringShifts()
+    {
+    }
 }
