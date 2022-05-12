@@ -47,7 +47,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
 Route::prefix('v1')->group(function () {
     Route::apiResource('attendance-qr-codes', AttendanceQrCodeController::class);
     Route::apiResource('shifts', ShiftController::class);
@@ -64,7 +63,7 @@ Route::prefix('v1')->group(function () {
         Route::group(['middleware' => ['permission:manage-employee']], function () {
             Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
             Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
-            Route::controller(CompanyController::class)->group(function () {
+            Route::controller(EmployeeRecurringShiftController::class)->group(function () {
                 Route::get('employees/{employeeId}/recurring-shifts', 'getEmployeeRecurringShifts');
             });
             Route::apiResource('employee-shifts', EmployeeShiftController::class);

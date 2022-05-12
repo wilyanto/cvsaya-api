@@ -88,7 +88,12 @@ class EmployeeRecurringShiftController extends Controller
         return $this->showOne(null, 204);
     }
 
-    public function getEmployeeRecurringShifts()
+    public function getEmployeeRecurringShifts($employeeId)
     {
+        $employeeRecurringShifts = EmployeeRecurringShift::with('shift')
+            ->where('employee_id', $employeeId)
+            ->orderBy('day')
+            ->get();
+        return $this->showAll($employeeRecurringShifts);
     }
 }
