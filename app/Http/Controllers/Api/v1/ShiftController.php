@@ -161,17 +161,18 @@ class ShiftController extends Controller
         return $this->showOne('Success');
     }
 
-    public function getShift()
+    public function getShift(Request $request)
     {
+        $date = $request->date;
         $employee = Employee::where('user_id', auth()->id())->firstOrFail();
 
-        $employeeOneTimeShifts = $employee->getTodayOneTimeShifts();
+        $employeeOneTimeShifts = $employee->getCertainDateOneTimeShifts($date);
 
         if ($employeeOneTimeShifts->isNotEmpty()) {
             return $this->showAll($employeeOneTimeShifts);
         }
 
-        $employeeRecurringShifts = $employee->getTodayRecurringShifts();
+        $employeeRecurringShifts = $employee->getCertainDateRecurringShifts($date);
 
         if ($employeeRecurringShifts->isNotEmpty()) {
             return $this->showAll($employeeRecurringShifts);
