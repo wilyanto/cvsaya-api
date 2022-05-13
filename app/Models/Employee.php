@@ -233,4 +233,28 @@ class Employee extends Authenticatable implements Auditable
         }
         return $penalty;
     }
+
+    public function getTodayOneTimeShifts()
+    {
+        return $this->hasManyThrough(
+            Shift::class,
+            EmployeeOneTimeShift::class,
+            'employee_id',
+            'id',
+            'id',
+            'shift_id'
+        )->where('date', today())->get();
+    }
+
+    public function getTodayRecurringShifts()
+    {
+        return $this->hasManyThrough(
+            Shift::class,
+            EmployeeRecurringShift::class,
+            'employee_id',
+            'id',
+            'id',
+            'shift_id'
+        )->where('day', today()->dayOfWeek)->get();
+    }
 }
