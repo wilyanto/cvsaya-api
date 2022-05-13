@@ -237,6 +237,38 @@ class Employee extends Authenticatable implements Auditable
 
     public function getCertainDateOneTimeShifts($date)
     {
+        $shifts = $this->hasManyThrough(
+            Shift::class,
+            EmployeeOneTimeShift::class,
+            'employee_id',
+            'id',
+            'id',
+            'shift_id'
+        )->whereDate('date', $date)->get();
+
+        $formattedShifts = [];
+
+        foreach ($shifts as $shift) {
+            // $times = explode(':', $shift['clock_in']);
+            // dd(Carbon::createFromTime($times[0], $times[1], $times[2]));
+            // shift['clock_in'] = $this->getDateTimeFromTime($shift['clock_in'])->toIso8601String();
+            // shift['clock_in'] = $this->getDateTimeFromTime($shift['clock_in']);
+            array_push(
+                $formattedShifts,
+                [
+                    'clock_in' => $this->getDateTimeFromTime($shift['clock_in'])->toIso8601String(),
+                    'clock_out' => $this->getDateTimeFromTime($shift['clock_out'])->toIso8601String(),
+                    'clock_in' => $this->getDateTimeFromTime($shift['clock_in'])->toIso8601String(),
+                    'clock_in' => $this->getDateTimeFromTime($shift['clock_in'])->toIso8601String(),
+                ]
+            );
+        }
+
+        // $var['clock_in'] = Carbon::createFromTime('13:00:00');
+        // dd(Carbon::createFromTime(10, 10, 10));
+
+        dd($formattedShifts);
+        // return $formattedShifts;
         return $this->hasManyThrough(
             Shift::class,
             EmployeeOneTimeShift::class,
@@ -245,6 +277,12 @@ class Employee extends Authenticatable implements Auditable
             'id',
             'shift_id'
         )->whereDate('date', $date)->get();
+    }
+
+    public function getDateTimeFromTime($time)
+    {
+        $times = explode(':', $time);
+        return Carbon::createFromTime($times[0], $times[1], $times[2]);
     }
 
     public function getCertainDateRecurringShifts($date)

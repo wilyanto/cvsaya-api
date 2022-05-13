@@ -26,7 +26,7 @@ class StoreEmployeeOneTimeShift extends FormRequest
         return [
             'employee_id' => 'required|exists:employees,id',
             'shift_id' => 'required|exists:shifts,id',
-            'date' => 'required|date_format:Y-m-d',
+            'date' => 'required|date_format:d-m-Y',
         ];
     }
 }
