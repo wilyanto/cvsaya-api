@@ -32,15 +32,15 @@ class BlastController extends Controller
             return $blastLogs->contains('recipient_phone_number', $jobstreet->phone);
         });
 
-        $users = User::whereIn('telpon',  $notBlastedJobstreets->pluck('phone')->map(function ($notBlastedJobstreetPhone) {
-            return '0' . $notBlastedJobstreetPhone;
-        }))->get(['id_kustomer', 'telpon']);
+        // $users = User::whereIn('telpon',  $notBlastedJobstreets->pluck('phone')->map(function ($notBlastedJobstreetPhone) {
+        //     return '0' . $notBlastedJobstreetPhone;
+        // }))->get(['id_kustomer', 'telpon']);
 
-        $notRegisteredJobstreets = $notBlastedJobstreets->reject(function ($notBlastedJobstreet) use ($users) {
-            return $users->contains('telpon', '0' . $notBlastedJobstreet->phone);
-        });
+        // $notRegisteredJobstreets = $notBlastedJobstreets->reject(function ($notBlastedJobstreet) use ($users) {
+        //     return $users->contains('telpon', '0' . $notBlastedJobstreet->phone);
+        // });
 
-        $data = $notRegisteredJobstreets->map(function ($notRegisteredJobstreet) {
+        $data = $notBlastedJobstreets->map(function ($notRegisteredJobstreet) {
             // * Will improve this by using maybe queue, job scheduler, etc.
             set_time_limit(30);
 
