@@ -86,13 +86,22 @@ class BlastController extends Controller
             'applied_position' => 'required|string'
         ]);
 
-        $message = 'Salam Hangat,' . ($request->gender === 'male' || $request->gender === 'laki-laki' ? ' Pak' : ($request->gender === 'female' || $request->gender === 'perempuan' ? ' Bu' : '')) . ' ' . $request->name . '. 
-Merespon lamaran Anda di PT Seluruh Indonesia Online via Jobstreet sebagai ' . $request->applied_position . '.
+        $message = 'Salam Hangat,
+Mohon maaf atas ketidaknyamanan aplikasi kami sebelumnya.
+Utk melanjutkan proses seleksi. 
+Kandidat yang belum *MELENGKAPI* data via *aplikasi KADA*, harap agar dapat melengkapinya segera. 
 
-Kami akan melakukan seleksi awal secara otomatis oleh ATS kami melalui aplikasi Kada.
+*Bagi kandidat yang lulus seleksi* akan di hubungi lebih lanjut : 
+Untuk medan akan ada interview Face To Face 
+Luar Kota akan melalui interview online.';
 
-Mohon balas dengan "Ya" jika anda bersedia untuk melanjutkan proses seleksi.
-Terima Kasih.';
+//         $message = 'Salam Hangat,' . ($request->gender === 'male' || $request->gender === 'laki-laki' ? ' Pak' : ($request->gender === 'female' || $request->gender === 'perempuan' ? ' Bu' : '')) . ' ' . $request->name . '. 
+// Merespon lamaran Anda di PT Seluruh Indonesia Online via Jobstreet sebagai ' . $request->applied_position . '.
+
+// Kami akan melakukan seleksi awal secara otomatis oleh ATS kami melalui aplikasi Kada.
+
+// Mohon balas dengan "Ya" jika anda bersedia untuk melanjutkan proses seleksi.
+// Terima Kasih.';
 
         $response = Http::asForm()->withHeaders(['Authorization' => config('blast.authorization_token')])->post('https://md.fonnte.com/api/send_message.php', [
             'phone' => $request->country_code . $request->phone_number,
