@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeOneTimeShift;
 use App\Http\Requests\UpdateEmployeeOneTimeShift;
+use App\Models\Employee;
 use App\Models\EmployeeOneTimeShift;
 use App\Traits\ApiResponser;
+use Illuminate\Http\Request;
 
 class EmployeeOneTimeShiftController extends Controller
 {
@@ -16,9 +18,18 @@ class EmployeeOneTimeShiftController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $employeeOneTimeShifts = EmployeeOneTimeShift::all();
+        $employeeId = $request->employee_id;
+        $date = $request->date;
+        $employeeOneTimeShifts = EmployeeOneTimeShift::with('shift', 'employee')
+            ->when($date, function ($query, $date) {
+                $query->whereDate('date', $date);
+            })
+            ->when($employeeId, function ($query, $employeeId) {
+                $query->where('employee_id', $employeeId);
+            })
+            ->get();
 
         return $this->showAll($employeeOneTimeShifts);
     }
@@ -32,7 +43,6 @@ class EmployeeOneTimeShiftController extends Controller
     public function store(StoreEmployeeOneTimeShift $request)
     {
         $employeeOneTimeShift = EmployeeOneTimeShift::create($request->all());
-
         return $this->showOne($employeeOneTimeShift);
     }
 
@@ -58,7 +68,6 @@ class EmployeeOneTimeShiftController extends Controller
     {
         $updatedOneTimeShift = EmployeeOneTimeShift::findOrFail($id)
             ->update($request->all());
-
         return $this->showOne($updatedOneTimeShift);
     }
 
@@ -71,7 +80,6 @@ class EmployeeOneTimeShiftController extends Controller
     public function destroy($id)
     {
         EmployeeOneTimeShift::findOrFail($id)->delete();
-
         return $this->showOne(null, 204);
     }
 }

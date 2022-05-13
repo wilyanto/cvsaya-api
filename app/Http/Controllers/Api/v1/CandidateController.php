@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\v1;
 use App\Models\Candidate;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
@@ -28,8 +27,6 @@ class CandidateController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'page' => 'nullable|numeric|gt:0',
-            'page_size' => 'nullable|numeric|gt:0',
             'name' => 'nullable|string',
             'status' => 'nullable|integer',
             'country_id' => 'nullable',
@@ -50,9 +47,6 @@ class CandidateController extends Controller
         $provinceId = $request->province_id;
         $cityId = $request->city_id;
         $position = $request->position_id;
-        $orderBy = $request->order_by == null
-            ? 'DESC'
-            : $request->order_by;
 
         $candidates = Candidate::where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position) {
             if ($name != null) {
@@ -85,13 +79,10 @@ class CandidateController extends Controller
                     $query->where('status', $status);
                 }
             }
-        })->orderBy('updated_at', $orderBy)
-            ->paginate(
-                $pageSize,
-                ['*'],
-                'page',
-                $page
-            );
+        })
+            ->orderBy('updated_at', $request->input('order_by', 'desc'))
+            ->paginate($request->input('page_size', 10));
+
         $data = [];
         foreach ($candidates as $candidate) {
             if ($status == Candidate::READY_TO_INTERVIEW) {

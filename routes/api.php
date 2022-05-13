@@ -29,6 +29,8 @@ use App\Http\Controllers\Api\v1\ShiftController;
 use App\Http\Controllers\Api\v1\CandidatePositionController;
 use App\Http\Controllers\Api\v1\AttendanceQrCodeController;
 use App\Http\Controllers\Api\v1\EmployeeOneTimeShiftController;
+use App\Http\Controllers\Api\v1\EmployeeRecurringShiftController;
+use App\Http\Controllers\Api\v1\EmployeeShiftController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,19 +47,34 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
 Route::prefix('v1')->group(function () {
     Route::apiResource('attendance-qr-codes', AttendanceQrCodeController::class);
     Route::apiResource('shifts', ShiftController::class);
-    Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
 
     Route::middleware('auth:api')->group(function () {
+        Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
+        Route::get('me/shift', [ShiftController::class, 'getShift']);
+
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::post('/', 'store');
                 Route::put('/{id}', 'update');
             });
+            Route::controller(ShiftController::class)->group(function () {
+                Route::get('/{companyId}/shifts', 'getShiftByCompany');
+                // Route::post('/', 'store');
+                // Route::put('/{id}', 'update');
+            });
+        });
+
+        Route::group(['middleware' => ['permission:manage-employee']], function () {
+            Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
+            Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
+            Route::controller(EmployeeRecurringShiftController::class)->group(function () {
+                Route::get('employees/{employeeId}/recurring-shifts', 'getEmployeeRecurringShifts');
+            });
+            Route::apiResource('employee-shifts', EmployeeShiftController::class);
         });
 
         Route::group(['middleware' => ['permission:manage-candidate|manage-schedule']], function () {

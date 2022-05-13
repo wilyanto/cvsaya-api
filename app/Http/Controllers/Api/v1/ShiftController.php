@@ -6,11 +6,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreShiftRequest;
 use App\Models\Employee;
+use App\Models\EmployeeOneTimeShift;
+use App\Models\EmployeeRecurringShift;
 use App\Models\Position;
 use App\Models\Shift;
 use App\Models\ShiftPositions;
 use App\Traits\ApiResponser;
-use DateTimeZone;
 
 class ShiftController extends Controller
 {
@@ -96,6 +97,12 @@ class ShiftController extends Controller
         return $this->showOne(null);
     }
 
+    public function getShiftByCompany($companyId)
+    {
+        $shifts = Shift::where('company_id', $companyId)->get();
+        return $this->showAll($shifts);
+    }
+
     public function attachShiftPosition(Request $request, $id)
     {
         $rule = [
@@ -152,5 +159,24 @@ class ShiftController extends Controller
 
         ShiftPositions::insert($data);
         return $this->showOne('Success');
+    }
+
+    public function getShift()
+    {
+        $employee = Employee::where('user_id', auth()->id())->firstOrFail();
+
+        $employeeOneTimeShifts = $employee->getTodayOneTimeShifts();
+
+        if ($employeeOneTimeShifts->isNotEmpty()) {
+            return $this->showAll($employeeOneTimeShifts);
+        }
+
+        $employeeRecurringShifts = $employee->getTodayRecurringShifts();
+
+        if ($employeeRecurringShifts->isNotEmpty()) {
+            return $this->showAll($employeeRecurringShifts);
+        }
+
+        return $this->showAll(collect([]));
     }
 }
