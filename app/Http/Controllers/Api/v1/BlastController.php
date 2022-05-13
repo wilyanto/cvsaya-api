@@ -20,8 +20,8 @@ class BlastController extends Controller
         $request->validate([
             // 'start_timestamp' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
             // 'end_timestamp' => 'required|date_format:Y-m-d\TH:i:s.v\Z|after:start_timestamp',
-            'start_id' => 'required|numeric',
-            'end_id' => 'required|numeric',
+            'start_id' => 'required|numeric|gte:1',
+            'end_id' => 'required|numeric|after:start_id|gte:1',
         ]);
 
         $jobstreets = Jobstreet::whereBetween('id', [(int) $request->start_id, (int) $request->end_id])->get(['id', 'phone', 'country_code', 'gender', 'email', 'name', 'applied_position']);
@@ -32,15 +32,15 @@ class BlastController extends Controller
             return $blastLogs->contains('recipient_phone_number', $jobstreet->phone);
         });
 
-        // $users = User::whereIn('telpon',  $notBlastedJobstreets->pluck('phone')->map(function ($notBlastedJobstreetPhone) {
-        //     return '0' . $notBlastedJobstreetPhone;
-        // }))->get(['id_kustomer', 'telpon']);
+        $users = User::whereIn('telpon',  $notBlastedJobstreets->pluck('phone')->map(function ($notBlastedJobstreetPhone) {
+            return '0' . $notBlastedJobstreetPhone;
+        }))->get(['id_kustomer', 'telpon']);
 
-        // $notRegisteredJobstreets = $notBlastedJobstreets->reject(function ($notBlastedJobstreet) use ($users) {
-        //     return $users->contains('telpon', '0' . $notBlastedJobstreet->phone);
-        // });
+        $notRegisteredJobstreets = $notBlastedJobstreets->reject(function ($notBlastedJobstreet) use ($users) {
+            return $users->contains('telpon', '0' . $notBlastedJobstreet->phone);
+        });
 
-        $data = $notBlastedJobstreets->map(function ($notRegisteredJobstreet) {
+        $data = $notRegisteredJobstreets->map(function ($notRegisteredJobstreet) {
             // * Will improve this by using maybe queue, job scheduler, etc.
             set_time_limit(30);
 
@@ -86,26 +86,16 @@ class BlastController extends Controller
             'applied_position' => 'required|string'
         ]);
 
-        $message = 'Salam Hangat,
-Mohon maaf atas ketidaknyamanan aplikasi kami sebelumnya.
-Untuk melanjutkan proses seleksi. 
-Kandidat yang belum *MELENGKAPI* data via *aplikasi KADA*, harap agar dapat melengkapinya segera. 
+        $message = 'Salam Hangat,' . ($request->gender === 'male' || $request->gender === 'laki-laki' ? ' Pak' : ($request->gender === 'female' || $request->gender === 'perempuan' ? ' Bu' : '')) . ' ' . $request->name . '. 
+Merespon lamaran Anda di PT Seluruh Indonesia Online via Jobstreet sebagai ' . $request->applied_position . '.
 
-*Bagi kandidat yang lulus seleksi* akan di hubungi lebih lanjut: 
-Untuk Medan akan ada interview Face to Face 
-Luar Kota melalui interview online.
+Kami akan melakukan seleksi awal secara otomatis oleh ATS kami melalui aplikasi Kada.
 
-Terima kasih
+Mohon balas dengan "Ya" jika anda bersedia untuk melanjutkan proses seleksi.
+
+Terima Kasih
 Lisa,
-HR SPV';
-
-//         $message = 'Salam Hangat,' . ($request->gender === 'male' || $request->gender === 'laki-laki' ? ' Pak' : ($request->gender === 'female' || $request->gender === 'perempuan' ? ' Bu' : '')) . ' ' . $request->name . '. 
-// Merespon lamaran Anda di PT Seluruh Indonesia Online via Jobstreet sebagai ' . $request->applied_position . '.
-
-// Kami akan melakukan seleksi awal secara otomatis oleh ATS kami melalui aplikasi Kada.
-
-// Mohon balas dengan "Ya" jika anda bersedia untuk melanjutkan proses seleksi.
-// Terima Kasih.';
+HR Spv';
 
         $response = Http::asForm()->withHeaders(['Authorization' => config('blast.authorization_token')])->post('https://md.fonnte.com/api/send_message.php', [
             'phone' => $request->country_code . $request->phone_number,
