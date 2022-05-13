@@ -20,8 +20,8 @@ class BlastController extends Controller
         $request->validate([
             // 'start_timestamp' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
             // 'end_timestamp' => 'required|date_format:Y-m-d\TH:i:s.v\Z|after:start_timestamp',
-            'start_id' => 'required|numeric',
-            'end_id' => 'required|numeric',
+            'start_id' => 'required|numeric|gte:1',
+            'end_id' => 'required|numeric|after_or_equal:start_id',
         ]);
 
         $jobstreets = Jobstreet::whereBetween('id', [(int) $request->start_id, (int) $request->end_id])->get(['id', 'phone', 'country_code', 'gender', 'email', 'name', 'applied_position']);
@@ -62,7 +62,7 @@ class BlastController extends Controller
                 $datum['status'] = 'success';
             }
 
-            sleep(rand(3, 5));
+            sleep(rand(1, 3));
 
             return $datum;
         });
@@ -92,7 +92,10 @@ Merespon lamaran Anda di PT Seluruh Indonesia Online via Jobstreet sebagai ' . $
 Kami akan melakukan seleksi awal secara otomatis oleh ATS kami melalui aplikasi Kada.
 
 Mohon balas dengan "Ya" jika anda bersedia untuk melanjutkan proses seleksi.
-Terima Kasih.';
+
+Terima Kasih
+Lisa,
+HR Spv';
 
         $response = Http::asForm()->withHeaders(['Authorization' => config('blast.authorization_token')])->post('https://md.fonnte.com/api/send_message.php', [
             'phone' => $request->country_code . $request->phone_number,

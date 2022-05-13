@@ -17,7 +17,6 @@ class CandidatePosition extends Model implements Auditable
     public $fillable = [
         'name',
         'validated_at',
-        'inserted_by'
     ];
 
     public $dates = [
@@ -34,7 +33,6 @@ class CandidatePosition extends Model implements Auditable
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'inserted_by' => $this->inserted_by,
             'total_candidates' => $this->candidates->count(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at

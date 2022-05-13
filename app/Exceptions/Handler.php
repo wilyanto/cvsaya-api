@@ -54,6 +54,7 @@ public function render($request, Throwable $e)
     {
         Log::error($request->all(), [
             'url' => $request->url(),
+            'err' => $e,
         ]);
 
         if ($e instanceof ValidationException) {
