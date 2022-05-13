@@ -93,7 +93,11 @@ Kandidat yang belum *MELENGKAPI* data via *aplikasi KADA*, harap agar dapat mele
 
 *Bagi kandidat yang lulus seleksi* akan di hubungi lebih lanjut: 
 Untuk Medan akan ada interview Face to Face 
-Luar Kota akan melalui interview online.';
+Luar Kota melalui interview online.
+
+Terima kasih
+Lisa,
+HR SPV';
 
 //         $message = 'Salam Hangat,' . ($request->gender === 'male' || $request->gender === 'laki-laki' ? ' Pak' : ($request->gender === 'female' || $request->gender === 'perempuan' ? ' Bu' : '')) . ' ' . $request->name . '. 
 // Merespon lamaran Anda di PT Seluruh Indonesia Online via Jobstreet sebagai ' . $request->applied_position . '.
