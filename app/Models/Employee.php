@@ -237,7 +237,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function getCertainDateOneTimeShifts($date)
     {
-        $shifts = $this->hasManyThrough(
+        return $this->hasManyThrough(
             Shift::class,
             EmployeeOneTimeShift::class,
             'employee_id',
@@ -245,62 +245,10 @@ class Employee extends Authenticatable implements Auditable
             'id',
             'shift_id'
         )->whereDate('date', $date)->get();
-
-        $formattedShifts = [];
-        foreach ($shifts as $shift) {
-            array_push(
-                $formattedShifts,
-                [
-                    'id' => $shift->id,
-                    'name' => $shift->name,
-                    'clock_in' => $this->getDateTimeFromTime($shift['clock_in']),
-                    'clock_out' => $this->getDateTimeFromTime($shift['clock_out']),
-                    'break_in' => $this->getDateTimeFromTime($shift['break_in']),
-                    'break_out' => $this->getDateTimeFromTime($shift['break_out']),
-                    'break_duration' => $shift->duration,
-                ]
-            );
-        }
-        return collect($formattedShifts);
-    }
-
-    public function getDateTimeFromTime($time)
-    {
-        if ($time !== null) {
-            $times = explode(':', $time);
-            return Carbon::createFromTime($times[0], $times[1], $times[2])->toIso8601String();
-        }
-        return null;
     }
 
     public function getCertainDateRecurringShifts($date)
     {
-        $shifts = $this->hasManyThrough(
-            Shift::class,
-            EmployeeRecurringShift::class,
-            'employee_id',
-            'id',
-            'id',
-            'shift_id'
-        )->where('day', (new Carbon($date))->dayOfWeek)->get();
-
-        $formattedShifts = [];
-        foreach ($shifts as $shift) {
-            array_push(
-                $formattedShifts,
-                [
-                    'id' => $shift->id,
-                    'name' => $shift->name,
-                    'clock_in' => $this->getDateTimeFromTime($shift['clock_in']),
-                    'clock_out' => $this->getDateTimeFromTime($shift['clock_out']),
-                    'break_in' => $this->getDateTimeFromTime($shift['break_in']),
-                    'break_out' => $this->getDateTimeFromTime($shift['break_out']),
-                    'break_duration' => $shift->duration,
-                ]
-            );
-        }
-        return collect($formattedShifts);
-
         return $this->hasManyThrough(
             Shift::class,
             EmployeeRecurringShift::class,

@@ -18,6 +18,8 @@ class CvProfileDetail extends Model implements Auditable
         'selfie_picture' => 'array',
     ];
 
+    protected $guard = 'id';
+
     public $fillable = [
         'user_id',
         'first_name',
@@ -32,9 +34,6 @@ class CvProfileDetail extends Model implements Auditable
 
     protected $table = 'cv_profile_details';
 
-    protected $guard = 'id';
-
-    protected $primaryKey = 'id';
 
     public function addresses()
     {
@@ -64,6 +63,17 @@ class CvProfileDetail extends Model implements Auditable
     public function candidate()
     {
         return $this->hasOne(Candidate::class, 'user_id', 'user_id')->withDefault();
+    }
+
+    public function scopeWithName($query, $name)
+    {
+        $names = explode(" ", $name);
+
+        return $query
+            ->whereIn('first_name', $names)
+            ->orWhere(function ($query) use ($names) {
+                $query->whereIn('last_name', $names);
+            });
     }
 
     public function toArray()
