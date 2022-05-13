@@ -21,7 +21,7 @@ class BlastController extends Controller
             // 'start_timestamp' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
             // 'end_timestamp' => 'required|date_format:Y-m-d\TH:i:s.v\Z|after:start_timestamp',
             'start_id' => 'required|numeric|gte:1',
-            'end_id' => 'required|numeric|after:start_id|gte:1',
+            'end_id' => 'required|numeric|after_or_equal:start_id',
         ]);
 
         $jobstreets = Jobstreet::whereBetween('id', [(int) $request->start_id, (int) $request->end_id])->get(['id', 'phone', 'country_code', 'gender', 'email', 'name', 'applied_position']);
