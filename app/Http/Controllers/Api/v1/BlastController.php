@@ -88,11 +88,11 @@ class BlastController extends Controller
 
         $message = 'Salam Hangat,
 Mohon maaf atas ketidaknyamanan aplikasi kami sebelumnya.
-Utk melanjutkan proses seleksi. 
+Untuk melanjutkan proses seleksi. 
 Kandidat yang belum *MELENGKAPI* data via *aplikasi KADA*, harap agar dapat melengkapinya segera. 
 
-*Bagi kandidat yang lulus seleksi* akan di hubungi lebih lanjut : 
-Untuk medan akan ada interview Face To Face 
+*Bagi kandidat yang lulus seleksi* akan di hubungi lebih lanjut: 
+Untuk Medan akan ada interview Face to Face 
 Luar Kota akan melalui interview online.';
 
 //         $message = 'Salam Hangat,' . ($request->gender === 'male' || $request->gender === 'laki-laki' ? ' Pak' : ($request->gender === 'female' || $request->gender === 'perempuan' ? ' Bu' : '')) . ' ' . $request->name . '. 
