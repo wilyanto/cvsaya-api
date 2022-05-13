@@ -21,7 +21,11 @@ class EmployeeRecurringShiftController extends Controller
     {
         $employeeId = $request->employee_id;
         $day = $request->day;
-        $employeeRecurringShifts = EmployeeRecurringShift::with('shift')
+        $employeeRecurringShifts = EmployeeRecurringShift::with(
+            'shift',
+            'employee.position',
+            'employee.profileDetail',
+        )
             ->where(function ($query) use ($day) {
                 if ($day !== null) {
                     $query->where('day', $day);
@@ -82,5 +86,14 @@ class EmployeeRecurringShiftController extends Controller
     {
         EmployeeRecurringShift::findOrFail($id)->delete();
         return $this->showOne(null, 204);
+    }
+
+    public function getEmployeeRecurringShifts($employeeId)
+    {
+        $employeeRecurringShifts = EmployeeRecurringShift::with('shift')
+            ->where('employee_id', $employeeId)
+            ->orderBy('day')
+            ->get();
+        return $this->showAll($employeeRecurringShifts);
     }
 }

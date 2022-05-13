@@ -22,7 +22,7 @@ class EmployeeOneTimeShiftController extends Controller
     {
         $employeeId = $request->employee_id;
         $date = $request->date;
-        $employeeOneTimeShifts = EmployeeOneTimeShift::with('shift')
+        $employeeOneTimeShifts = EmployeeOneTimeShift::with('shift', 'employee')
             ->when($date, function ($query, $date) {
                 $query->whereDate('date', $date);
             })
