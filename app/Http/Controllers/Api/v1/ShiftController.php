@@ -97,7 +97,7 @@ class ShiftController extends Controller
         return $this->showOne(null);
     }
 
-    public function getShiftByCompany($companyId)
+    public function getShiftsByCompany($companyId)
     {
         $shifts = Shift::where('company_id', $companyId)->get();
         return $this->showAll($shifts);

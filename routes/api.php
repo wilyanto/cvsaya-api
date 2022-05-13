@@ -62,9 +62,10 @@ Route::prefix('v1')->group(function () {
                 Route::put('/{id}', 'update');
             });
             Route::controller(ShiftController::class)->group(function () {
-                Route::get('/{companyId}/shifts', 'getShiftByCompany');
-                // Route::post('/', 'store');
-                // Route::put('/{id}', 'update');
+                Route::get('/{companyId}/shifts', 'getShiftsByCompany');
+            });
+            Route::controller(PositionController::class)->group(function () {
+                Route::get('/{companyId}/positions', 'getPositionsByCompany');
             });
         });
 
