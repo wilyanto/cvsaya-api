@@ -305,10 +305,24 @@ class EmployeeController extends Controller
         return $this->showOne(null, 204);
     }
 
-    public function getEmployeesByCompany(Request $request) {
-        $employees = Employee::whereHas('position', function ($query) {
-            $query->where('company_id')->dd();
-        });
-        dd($employees);
+    public function getEmployeesByCompany(Request $request, $companyId)
+    {
+        $employees = Employee::whereHas('position', function ($positionQuery) use ($companyId) {
+            $positionQuery->whereHas('company', function ($companyQuery) use ($companyId) {
+                $companyQuery->where('id', $companyId);
+            });
+        })
+            ->with([
+                'profileDetail' => function ($query) {
+                    // TODO: selective fetch
+                    // $query->select('id', 'first_name', 'last_name');
+                },
+                'position' => function ($query) {
+                    $query->select('id', 'name');
+                },
+            ])
+            ->get(['id', 'user_id', 'position_id']);
+
+        return $this->showAll($employees);
     }
 }

@@ -25,7 +25,7 @@ class EmployeeShiftController extends Controller
         $dateTimestamp = strtotime($date);
         $day = date('w', $dateTimestamp);
 
-        // TODO: can be improve using scopeWith
+        // TODO: can be improved using scopeWith
         $withRelationships = [
             'shift' => function ($query) {
                 $query->select('id', 'name', 'clock_in', 'clock_out', 'break_started_at', 'break_ended_at', 'break_duration');

@@ -20,6 +20,8 @@ class CvProfileDetail extends Model implements Auditable
 
     protected $guard = 'id';
 
+    protected $append = ['full_name'];
+
     public $fillable = [
         'user_id',
         'first_name',
@@ -32,8 +34,17 @@ class CvProfileDetail extends Model implements Auditable
         'reference',
     ];
 
-    protected $table = 'cv_profile_details';
-
+    public function getFullNameAttribute()
+    {
+        $fullname = '';
+        if ($this->first_name) {
+            $fullname .= $this->first_name;
+        }
+        if ($this->last_name) {
+            $fullname .= $this->last_name;
+        }
+        return $fullname;
+    }
 
     public function addresses()
     {
@@ -81,6 +92,7 @@ class CvProfileDetail extends Model implements Auditable
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
+            'full_name' => $this->full_name,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'phone_number' => $this->candidate->phone_number,
