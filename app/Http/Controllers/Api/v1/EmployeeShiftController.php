@@ -25,6 +25,22 @@ class EmployeeShiftController extends Controller
         $dateTimestamp = strtotime($date);
         $day = date('w', $dateTimestamp);
 
+        // TODO: can be improve using scopeWith
+        $withRelationships = [
+            'shift' => function ($query) {
+                $query->select('id', 'name', 'clock_in', 'clock_out', 'break_started_at', 'break_ended_at', 'break_duration');
+            },
+            'employee' => function ($query) {
+                $query->select('id', 'user_id', 'position_id');
+            },
+            'employee.position' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'employee.profileDetail' => function ($query) {
+                $query->select('id', 'user_id', 'first_name', 'last_name');
+            },
+        ];
+
         $employeeOneTimeShifts = EmployeeOneTimeShift::whereDate('date', $date)
             ->whereHas('employee', function ($employeeQuery) use ($name, $companyId) {
                 $employeeQuery->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
@@ -35,20 +51,7 @@ class EmployeeShiftController extends Controller
                     });
                 });
             })
-            ->with([
-                'shift' => function ($query) {
-                    $query->select('id', 'name', 'clock_in', 'clock_out', 'break_started_at', 'break_ended_at', 'break_duration');
-                },
-                'employee' => function ($query) {
-                    $query->select('id', 'user_id', 'position_id');
-                },
-                'employee.position' => function ($query) {
-                    $query->select('id', 'name');
-                },
-                'employee.profileDetail' => function ($query) {
-                    $query->select('id', 'user_id', 'first_name', 'last_name');
-                },
-            ])
+            ->with($withRelationships)
             ->select('id', 'employee_id', 'shift_id', 'date')
             ->get();
 
@@ -62,20 +65,7 @@ class EmployeeShiftController extends Controller
                     });
                 });
             })
-            ->with([
-                'shift' => function ($query) {
-                    $query->select('id', 'name', 'clock_in', 'clock_out', 'break_started_at', 'break_ended_at', 'break_duration');
-                },
-                'employee' => function ($query) {
-                    $query->select('id', 'user_id', 'position_id');
-                },
-                'employee.position' => function ($query) {
-                    $query->select('id', 'name');
-                },
-                'employee.profileDetail' => function ($query) {
-                    $query->select('id', 'user_id', 'first_name', 'last_name');
-                },
-            ])
+            ->with($withRelationships)
             ->select('id', 'employee_id', 'shift_id', 'day')
             ->get();
 
