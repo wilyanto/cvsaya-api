@@ -225,7 +225,6 @@ class CvProfileDetailController extends Controller
         $data = $request->all();
         $data['user_id'] = $user->id_kustomer;
         $this->createCandidate($user, $request);
-        // dd($data);
         $userProfileDetail = CvProfileDetail::create($data);
         return $this->showOne($userProfileDetail);
     }
@@ -322,7 +321,7 @@ class CvProfileDetailController extends Controller
             'profile_detail.birth_location' => 'string|required',
             'profile_detail.birth_date' => 'date|required',
             'profile_detail.gender' => 'required|string',
-            'profile_detail.identity_number' => 'required|integer|min:5',
+            'profile_detail.identity_number' => 'required|min:5', // TODO: should be integer
             'profile_detail.marriage_status_id' => 'exists:marriage_statuses,id|required',
             'profile_detail.religion_id' => 'exists:religions,id|required',
 
