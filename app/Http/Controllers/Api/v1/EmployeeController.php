@@ -304,4 +304,11 @@ class EmployeeController extends Controller
 
         return $this->showOne(null, 204);
     }
+
+    public function getEmployeesByCompany(Request $request) {
+        $employees = Employee::whereHas('position', function ($query) {
+            $query->where('company_id')->dd();
+        });
+        dd($employees);
+    }
 }

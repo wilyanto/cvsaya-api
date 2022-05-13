@@ -67,6 +67,9 @@ Route::prefix('v1')->group(function () {
             Route::controller(PositionController::class)->group(function () {
                 Route::get('/{companyId}/positions', 'getPositionsByCompany');
             });
+            Route::controller(EmployeeController::class)->group(function () {
+                Route::get('/{companyId}/employees', 'getEmployeesByCompany');
+            });
         });
 
         Route::group(['middleware' => ['permission:manage-employee']], function () {
