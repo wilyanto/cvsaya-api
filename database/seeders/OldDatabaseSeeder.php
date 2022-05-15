@@ -33,41 +33,52 @@ class OldDatabaseSeeder extends Seeder
     public function run()
     {
         try {
+            $lowerBoundaryId = 1;
             $upperBoundaryId = 50;
             $users = User::whereRaw('LENGTH(telpon) > 7')->get();
             Log::info('Kustomer : ' . count($users));
-            $administrators = DB::connection('cvsaya')->table('administrator')->where('idlogin', '<=', $upperBoundaryId)->get([
+            $administrators = DB::connection('cvsaya')->table('administrator')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
                 'idlogin', 'username', 'id_ktp', 'nama_lengkap', 'no_telp', 'TglPost',
             ]);
             Log::info('Administrator : ' . count($administrators));
-            $oldEmployeeDetails = DB::connection('cvsaya')->table('1employeedetail')->where('idlogin', '<=', $upperBoundaryId)->get([
+            $oldEmployeeDetails = DB::connection('cvsaya')->table('1employeedetail')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
                 'idlogin', 'ttl', 'tpl', 'jk', 'referensi', 'TglPost',
             ]);
             Log::info('1employeedetail : ' . count($oldEmployeeDetails));
-            $employees = DB::connection('cvsaya')->table('1employee')->where('idlogin', '<=', $upperBoundaryId)->get([
+            $employees = DB::connection('cvsaya')->table('1employee')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
                 'inginposisi', 'gambar', 'alamat', 'TglPost',
             ]);
             Log::info('1employee : ' . count($employees));
-            $keinginanGajis = DB::connection('cvsaya')->table('1keinginangaji')->where('idlogin', '<=', $upperBoundaryId)->get([
+            $keinginanGajis = DB::connection('cvsaya')->table('1keinginangaji')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
                 'Desired', 'Ulasan',
             ]);
             Log::info('1keinginangaji : ' . count($keinginanGajis));
-            $pengalamansAll = DB::connection('cvsaya')->table('1pengalaman')->where('idlogin', '<=', $upperBoundaryId)->get([
+            $pengalamansAll = DB::connection('cvsaya')->table('1pengalaman')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
                 'sebagai', 'tahun', 'sampai', 'perusahaan', 'resign'
             ]);
             Log::info('1pengalaman : ' . count($pengalamansAll));
-            // $candidatePositions = collect(CandidatePosition::all());
-            // Log::info('Candidate : ' . count($candidatePositions));
-            // $pendidikansAll = DB::connection('cvsaya')->table('1pendidikan')->get();
-            // Log::info('1pendidikan : ' . count($pendidikansAll));
-            // $kualifikasisAll = DB::connection('cvsaya')->table('1kualifikasi')->get();
-            // Log::info('1kualifikasi : ' . count($kualifikasisAll));
-            // $hobiesAll = DB::connection('cvsaya')->table('1hoby')->get();
-            // Log::info('1hoby : ' . count($hobiesAll));
-            // $degrees = collect(Degree::all());
-            // Log::info('degree : ' . count($degrees));
-            // $recentCometsAll = DB::connection('cvsaya')->table('9Recentcomet')->get();
-            // Log::info('9Recentcomet : ' . count($recentCometsAll));
+            $candidatePositions = CandidatePosition::all([
+                'id', 'name',
+            ]);
+            Log::info('Candidate : ' . count($candidatePositions));
+            $pendidikansAll = DB::connection('cvsaya')->table('1pendidikan')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
+                'idlogin', 'Tahun', 'sampai', 'asal'
+            ]);
+            Log::info('1pendidikan : ' . count($pendidikansAll));
+            $kualifikasisAll = DB::connection('cvsaya')->table('1kualifikasi')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
+                'idlogin', 'kualifikasi', 'TglPost',
+            ]);
+            Log::info('1kualifikasi : ' . count($kualifikasisAll));
+            $hobiesAll = DB::connection('cvsaya')->table('1hoby')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
+                'idlogin', 'hoby',
+            ]);
+            Log::info('1hoby : ' . count($hobiesAll));
+            $degrees = Degree::all();
+            Log::info('degree : ' . count($degrees));
+            $recentCometsAll = DB::connection('cvsaya')->table('9Recentcomet')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
+                'idlogin', 'ulasan', 'TglPost'
+            ]);
+            Log::info('9Recentcomet : ' . count($recentCometsAll));
             // $cvEmployeeDetails = Employee::all();
             // $users = User::whereNotNull('telpon')->get();
             // dd($users);
