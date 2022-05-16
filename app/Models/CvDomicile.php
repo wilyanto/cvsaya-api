@@ -14,7 +14,7 @@ class CvDomicile extends Model implements Auditable
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = [
-        'user_id',
+        'candidate_id',
         'country_id',
         'province_id',
         'city_id',
