@@ -22,6 +22,7 @@ class EmployeeShiftController extends Controller
         $name = $request->name;
         $date = $request->date;
         $companyId = $request->company_id;
+        $positionId = $request->position_id;
         $dateTimestamp = strtotime($date);
         $day = date('w', $dateTimestamp);
 
@@ -42,11 +43,11 @@ class EmployeeShiftController extends Controller
         ];
 
         $employeeOneTimeShifts = EmployeeOneTimeShift::whereDate('date', $date)
-            ->whereHas('employee', function ($employeeQuery) use ($name, $companyId) {
+            ->whereHas('employee', function ($employeeQuery) use ($name, $companyId, $positionId) {
                 $employeeQuery->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
                     $profileDetailQuery->withName($name);
-                })->whereHas('position', function ($positionQuery) use ($companyId) {
-                    $positionQuery->when($companyId, function ($filteredPositionQuery, $companyId) {
+                })->whereHas('position', function ($positionQuery) use ($companyId, $positionId) {
+                    $positionQuery->where('id', $positionId)->when($companyId, function ($filteredPositionQuery, $companyId) {
                         $filteredPositionQuery->where('company_id', $companyId);
                     });
                 });
@@ -56,11 +57,11 @@ class EmployeeShiftController extends Controller
             ->get();
 
         $employeeRecurringShifts = EmployeeRecurringShift::whereDate('day', $day)
-            ->whereHas('employee', function ($employeeQuery) use ($name, $companyId) {
+            ->whereHas('employee', function ($employeeQuery) use ($name, $companyId, $positionId) {
                 $employeeQuery->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
                     $profileDetailQuery->withName($name);
-                })->whereHas('position', function ($positionQuery) use ($companyId) {
-                    $positionQuery->when($companyId, function ($filteredPositionQuery, $companyId) {
+                })->whereHas('position', function ($positionQuery) use ($companyId, $positionId) {
+                    $positionQuery->where('id', $positionId)->when($companyId, function ($filteredPositionQuery, $companyId) {
                         $filteredPositionQuery->where('company_id', $companyId);
                     });
                 });

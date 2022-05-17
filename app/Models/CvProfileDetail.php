@@ -80,11 +80,12 @@ class CvProfileDetail extends Model implements Auditable
     {
         $names = explode(" ", $name);
 
-        return $query
-            ->whereIn('first_name', $names)
-            ->orWhere(function ($query) use ($names) {
-                $query->whereIn('last_name', $names);
-            });
+        $query;
+        foreach ($names as $name) {
+            $query->where('first_name', 'LIKE', '%'.$name.'%')
+                ->orWhere('last_name', 'LIKE', '%'.$name.'%');
+        }
+        return $query;
     }
 
     public function toArray()
