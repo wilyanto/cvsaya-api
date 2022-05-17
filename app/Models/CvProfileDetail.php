@@ -19,7 +19,7 @@ class CvProfileDetail extends Model implements Auditable
     ];
 
     public $fillable = [
-        'user_id',
+        'candidate_id',
         'first_name',
         'last_name',
         'birth_location',

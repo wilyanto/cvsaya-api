@@ -33,13 +33,13 @@ class CandidatePositionOldSeeder extends Seeder
 
         $candidates = $pengalamans->map(function ($item) {
             if ($item !== null || $item !== '') {
-                return $item->sebagai;
+                return strtolower($item->sebagai);
             }
         });
 
         $employees = $employees->map(function ($item) {
             if ($item !== null || $item !== '') {
-                return $item->job;
+                return strtolower($item->job);
             }
         });
 
@@ -55,7 +55,7 @@ class CandidatePositionOldSeeder extends Seeder
                 array_push(
                     $candidatePositions,
                     [
-                        'name' => $candidatePositionName,
+                        'name' => ucwords($candidatePositionName),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Candidate;
 use App\Models\CandidateNote;
 use App\Models\CandidatePosition;
+use App\Models\CvDocument;
 use App\Models\CvDomicile;
 use App\Models\CvEducation;
 use App\Models\CvExpectedJob;
@@ -14,6 +15,7 @@ use App\Models\CvProfileDetail;
 use App\Models\CvSosmed;
 use App\Models\CvSpeciality;
 use App\Models\Degree;
+use App\Models\Document;
 use App\Models\Employee;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -22,6 +24,8 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+
 
 
 class OldDatabaseSeeder extends Seeder
@@ -34,13 +38,14 @@ class OldDatabaseSeeder extends Seeder
     public function run()
     {
         try {
-            $lowerBoundaryId = 1;
-            $upperBoundaryId = 10000;
+            $lowerBoundaryId = 30001;
+            $upperBoundaryId = 41000;
             $users = User::whereRaw('LENGTH(telpon) > 7')->get();
             Log::info('Kustomer : ' . count($users));
-            $administrators = DB::connection('cvsaya')->table('administrator')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
-                'idlogin', 'username', 'id_ktp', 'nama_lengkap', 'no_telp', 'TglPost',
-            ]);
+            $administrators = DB::connection('cvsaya')->table('administrator')->whereRaw('LENGTH(no_telp) > 7')
+                ->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
+                    'idlogin', 'username', 'id_ktp', 'nama_lengkap', 'no_telp', 'TglPost', 'IDprovinces'
+                ]);
             Log::info('Administrator : ' . count($administrators));
 
             // Filter intersected users
@@ -54,7 +59,7 @@ class OldDatabaseSeeder extends Seeder
             ]);
             Log::info('1employeedetail : ' . count($oldEmployeeDetails));
             $oldEmployees = DB::connection('cvsaya')->table('1employee')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
-                'idlogin', 'inginposisi', 'gambar', 'alamat', 'TglPost',
+                'idlogin', 'inginposisi', 'gambar', 'alamat', 'TglPost', 'job', 'gambar'
             ]);
             Log::info('1employee : ' . count($oldEmployees));
             $keinginanGajis = DB::connection('cvsaya')->table('1keinginangaji')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
@@ -62,7 +67,7 @@ class OldDatabaseSeeder extends Seeder
             ]);
             Log::info('1keinginangaji : ' . count($keinginanGajis));
             $pengalamansAll = DB::connection('cvsaya')->table('1pengalaman')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
-                'idlogin', 'sebagai', 'tahun', 'sampai', 'perusahaan', 'resign'
+                'idlogin', 'sebagai', 'tahun', 'sampai', 'perusahaan', 'resign', 'gaji'
             ]);
             Log::info('1pengalaman : ' . count($pengalamansAll));
             $candidatePositions = CandidatePosition::all([
@@ -70,7 +75,7 @@ class OldDatabaseSeeder extends Seeder
             ]);
             Log::info('Candidate : ' . count($candidatePositions));
             $pendidikansAll = DB::connection('cvsaya')->table('1pendidikan')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
-                'idlogin', 'Tahun', 'sampai', 'asal'
+                'idlogin', 'Tahun', 'sampai', 'asal', 'pendidikan'
             ]);
             Log::info('1pendidikan : ' . count($pendidikansAll));
             $kualifikasisAll = DB::connection('cvsaya')->table('1kualifikasi')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
@@ -101,21 +106,25 @@ class OldDatabaseSeeder extends Seeder
 
             // foreach (collect($administrators)->chunk(ceil(count(collect($administrators)) / 3))->all() as $index => $chunckedAdmins) {
 
+            $documents = [];
+            $cvDocuments = [];
             $profileDetails = [];
             $cvSpecialities = [];
             $cvExperiences = [];
-            $cvEducation = [];
+            $cvEducations = [];
             $candidates = [];
             $sosmeds = [];
             $domiciles = [];
             $expectedJobs = [];
             $cvHobbies = [];
+            $newCandidatePositions = [];
             $candidates = [];
             $candidateNotes = [];
 
             // Log::info(count($user2s));
             // if ($index == 1) {
-            $candidateId = 0;
+            $candidateId = Candidate::all()->count();
+            $lastCandidatePositionId = count($candidatePositions);
             foreach ($administrators as $admin) {
                 $kustomer = $filteredUsers->where('telpon', $admin->no_telp)->first();
                 $oldEmployeeDetail = $oldEmployeeDetails->where('idlogin', $admin->idlogin)->first();
@@ -128,7 +137,9 @@ class OldDatabaseSeeder extends Seeder
                     'country_code' => 62,
                     'phone_number' => substr($admin->no_telp, 1),
                     'status' => 3,
-                    'registered_at' => Carbon::createFromTimestamp($admin->TglPost),
+                    'registered_at' => Carbon::createFromTimestamp(strtotime($admin->TglPost)),
+                    'created_at' => Carbon::createFromTimestamp(strtotime($admin->TglPost)),
+                    'updated_at' => Carbon::createFromTimestamp(strtotime($admin->TglPost)),
                 ]);
 
                 if ($oldEmployeeDetail) {
@@ -137,12 +148,18 @@ class OldDatabaseSeeder extends Seeder
                     $fullname = ltrim($admin->nama_lengkap);
                     $names = explode(" ", $fullname);
                     // Insert profile details
+
+                    $birthDate = date('Y-m-d', strtotime($oldEmployeeDetail->ttl));
+                    if ($oldEmployeeDetail->ttl === '0000-00-00' || !$birthDate) {
+                        $birthDate = '1970-01-01';
+                    }
+
                     $profileDetail = [
-                        'user_id' => $kustomer != null ? $kustomer->id_kustomer : null,
+                        'candidate_id' => $candidateId,
                         'first_name' => $names[0],
                         'last_name' => substr($fullname, strlen($names[0]) + 1),
                         'birth_location' => $oldEmployeeDetail->tpl,
-                        'birth_date' => Carbon::createFromTimestamp($oldEmployeeDetail->ttl)->toDateTimeString(),
+                        'birth_date' => $birthDate,
                         'gender' => $oldEmployeeDetail->jk == 'P' ? 'P' : ($oldEmployeeDetail->jk == 'L' ? 'L' : 'M'),
                         'identity_number' => $admin->id_ktp,
                         'reference' => $oldEmployeeDetail->referensi ?? null,
@@ -180,33 +197,193 @@ class OldDatabaseSeeder extends Seeder
                         $domicile = [
                             'candidate_id' => $candidateId,
                             'country_id' => 62,
-                            'province_id' => $admin->IDprovinces,
-                            'city_id' => 0,
-                            'subdistrict_id' => 0,
-                            'village_id' => 0,
+                            'province_id' => $admin->IDprovinces === 0 ? null : $admin->IDprovinces,
+                            'city_id' => null,
+                            'subdistrict_id' => null,
+                            'village_id' => null,
                             'address' => $employee->alamat,
                             'created_at' => $admin->TglPost ?? now(),
-                            'updated_at' => $employee->TglPost ?? now(),
+                            'updated_at' => $admin->TglPost ?? now(),
                         ];
                         array_push($domiciles, $domicile);
-                        if ($keinginanGaji) {
+                        if ($keinginanGaji !== null && $employee->job !== '') {
                             $candidatePosition = $candidatePositions->where('name', $employee->job)->first();
-                            if (!$candidatePosition) {
-                                $candidatePosition = new CandidatePosition();
-                                $candidatePosition->name = $employee->job;
-                                $candidatePosition->save();
+                            if ($candidatePosition) {
+                                $candidatePositionId = $candidatePosition->id;
+                            } else {
+                                $lastCandidatePositionId++;
+                                array_push($newCandidatePositions, [
+                                    'id' => $lastCandidatePositionId,
+                                    'name' => ucwords($employee->job),
+                                    'created_at' => now(),
+                                    'updated_at' => now(),
+                                ]);
+                                $candidatePositionId = $lastCandidatePositionId;
                             }
                             $expectedJob = [
                                 'candidate_id' => $candidateId,
                                 'expected_salary' => $keinginanGaji->Desired,
-                                'expected_position' => $candidatePosition->id,
+                                'expected_position' => $candidatePositionId,
                                 'position_reason' => $employee->inginposisi,
                                 'salary_reason' => $keinginanGaji->Ulasan,
-                                'created_at' => $employee->TglPost ?? now(),
-                                'updated_at' => $employee->TglPost ?? now(),
+                                'created_at' => $employee->TglPost !== null && $employee->TglPost !== '0000-00-00 00:00:00' ? $employee->TglPost : now(),
+                                'updated_at' => $employee->TglPost !== null && $employee->TglPost !== '0000-00-00 00:00:00' ? $employee->TglPost : now(),
                             ];
                             array_push($expectedJobs, $expectedJob);
                         }
+
+                        if ($employee->gambar !== '' && $employee->gambar !== null) {
+                            $documentId = Str::uuid();
+
+                            array_push($documents, [
+                                'id' => $documentId,
+                                'user_id' => $kustomer != null ? $kustomer->id_kustomer : null,
+                                'file_name' => $employee->gambar,
+                                'original_file_name' => $employee->gambar,
+                                'mime_type' => 'image/jpeg',
+                                'type_id' => 2,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ]);
+
+                            array_push($cvDocuments, [
+                                'candidate_id' => $candidateId,
+                                'front_selfie' => $documentId,
+                                'created_at' => $employee->TglPost !== null && $employee->TglPost !== '0000-00-00 00:00:00' ? $employee->TglPost : now(),
+                                'updated_at' => $employee->TglPost !== null && $employee->TglPost !== '0000-00-00 00:00:00' ? $employee->TglPost : now(),
+                            ]);
+                        }
+                    }
+
+                    $pengalamans = $pengalamansAll->where('idlogin', $admin->idlogin)->all();
+                    foreach ($pengalamans as $pengalaman) {
+                        $candidatePosition = $candidatePositions->where('name', $pengalaman->sebagai)->first();
+                        if ($candidatePosition) {
+                            $candidatePositionId = $candidatePosition->id;
+                        } else {
+                            $candidatePositionFound = collect($newCandidatePositions)->where('name', $pengalaman->sebagai)->first();
+
+                            if (!$candidatePositionFound) {
+                                $lastCandidatePositionId++;
+                                array_push($newCandidatePositions, [
+                                    'id' => $lastCandidatePositionId,
+                                    'name' => ucwords($pengalaman->sebagai),
+                                    'created_at' => now(),
+                                    'updated_at' => now(),
+                                ]);
+                                $candidatePositionId = $lastCandidatePositionId;
+                            } else {
+                                // Log::info($candidatePositionFound['id']);
+                                $candidatePositionId = $candidatePositionFound['id'];
+                            }
+                        }
+                        $cvExperiences[] = [
+                            'candidate_id' => $candidateId,
+                            'employment_type_id' => null,
+                            'position_id' => $candidatePositionId,
+                            'company_name' => $pengalaman->perusahaan,
+                            'company_location' => null,
+                            'jobdesc' => $pengalaman->sebagai,
+                            'resign_reason' => $pengalaman->resign,
+                            'reference' => null,
+                            'previous_salary' => $pengalaman->gaji,
+                            'started_at' => Carbon::createFromTimestamp($pengalaman->tahun)->toDateString(),
+                            'ended_at' => Carbon::createFromTimestamp($pengalaman->sampai)->toDateString(),
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+
+                    $pendidikans = $pendidikansAll->where('idlogin', $admin->idlogin)->all();
+                    foreach ($pendidikans as $pendidikan) {
+                        $degreeId = null;
+                        if (
+                            str_contains(strtolower($pendidikan->pendidikan), 'sd')
+                            || str_contains(strtolower($pendidikan->asal), 'sd')
+                        ) {
+                            $degreeId = 1;
+                        } else if (
+                            str_contains(strtolower($pendidikan->pendidikan), 'smp')
+                            || str_contains(strtolower($pendidikan->asal), 'smp')
+                        ) {
+                            $degreeId = 2;
+                        } else if (
+                            str_contains(strtolower($pendidikan->pendidikan), 'sma')
+                            || str_contains(strtolower($pendidikan->asal), 'sma')
+                            || str_contains(strtolower($pendidikan->pendidikan), 'smk')
+                            || str_contains(strtolower($pendidikan->asal), 'smk')
+                            || str_contains(strtolower($pendidikan->pendidikan), 'smu')
+                            || str_contains(strtolower($pendidikan->asal), 'smu')
+                        ) {
+                            $degreeId = 3;
+                        } else if (
+                            str_contains(strtolower($pendidikan->pendidikan), 'd3')
+                            || str_contains(strtolower($pendidikan->pendidikan), 'd4')
+                        ) {
+                            $degreeId = 4;
+                        } else if (
+                            str_contains(strtolower($pendidikan->pendidikan), 's1')
+                            || str_contains(strtolower($pendidikan->pendidikan), 'sarjana')
+                            || str_contains(strtolower($pendidikan->asal), 'universitas')
+                        ) {
+                            $degreeId = 5;
+                        } else if (
+                            str_contains(strtolower($pendidikan->pendidikan), 's2')
+                            || str_contains(strtolower($pendidikan->pendidikan), 'magister')
+                        ) {
+                            $degreeId = 6;
+                        } else if (
+                            str_contains(strtolower($pendidikan->pendidikan), 's3')
+                            || str_contains(strtolower($pendidikan->pendidikan), 'doktor')
+                        ) {
+                            $degreeId = 7;
+                        }
+                        $startedAt = date('Y-m-d', strtotime($pendidikan->Tahun));
+                        $endedAt = date('Y-m-d', strtotime($pendidikan->sampai));
+                        if ($pendidikan->Tahun === '0000-00-00' || !$startedAt) {
+                            $startedAt = '1970-01-01';
+                        }
+                        if ($pendidikan->sampai === '0000-00-00' || !$endedAt) {
+                            $endedAt = null;
+                        } else {
+                            $endedAt = $pendidikan->sampai;
+                        }
+                        $cvEducations[] = [
+                            'candidate_id' => $candidateId,
+                            'instance' => $pendidikan->asal,
+                            'field_of_study' => '-',
+                            'degree_id' => $degreeId,
+                            'grade' => '-',
+                            'started_at' => $startedAt,
+                            'ended_at' => $endedAt,
+                            // 'started_at' => $pendidikan->Tahun === '0000-00-00' ? '1970-01-01' : $pendidikan->Tahun,
+                            // 'ended_at' => $pendidikan->sampai === '0000-00-00' ? null : $pendidikan->sampai,
+                            'description' => '-',
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+
+                    $kualifikasis = $kualifikasisAll->where('idlogin', $admin->idlogin)->all();
+                    foreach ($kualifikasis as $kualifikasi) {
+                        if ($kualifikasi->kualifikasi !== '' && $kualifikasi->kualifikasi !== null)
+                            $cvSpecialities[] = [
+                                'candidate_id' => $candidateId,
+                                'name' => $kualifikasi->kualifikasi,
+                                'created_at' => $kualifikasi->TglPost ?? now(),
+                                'updated_at' =>  $kualifikasi->TglPost ?? now(),
+                            ];
+                    }
+
+                    $hobies = $hobiesAll->where('idlogin', $admin->idlogin)->all();
+                    foreach ($hobies as $hoby) {
+                        if ($hoby->hoby !== '' && $hoby->hoby !== null)
+                            $cvHobbies[] = [
+                                'candidate_id' => $candidateId,
+                                'name' => $hoby->hoby,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ];
                     }
                 }
 
@@ -376,29 +553,71 @@ class OldDatabaseSeeder extends Seeder
                 //         }
                 //     }
                 // }
-                // Log::info('Index ke: ' . $index . ',' . $index2);
+                Log::info('Candidate ke: ' . $candidateId);
             }
-            // $chunckedCandidates = array_chunk($candidates, 1000);
-            // foreach ($chunckedCandidates as $candidates) {
-            //     // Candidate::insert($candidates);
-            //     DB::table('candidates')->insert($candidates);
-            // }
-            // $chunckedCandidateNotes = array_chunk($candidateNotes, 1000);
-            // foreach ($chunckedCandidateNotes as $candidateNotes) {
-            //     CandidateNote::insert($candidateNotes);
-            // }
-            // $chunckedProfileDetails = array_chunk($profileDetails, 1000);
-            // foreach ($chunckedProfileDetails as $profileDetails) {
-            //     CvProfileDetail::insert($profileDetails);
-            // }
-            $chunckedDomiciles = array_chunk($domiciles, 1000);
-            foreach ($chunckedDomiciles as $domiciles) {
-                CvDomicile::insert($domiciles);
-            }
-            $chunckedExpectedJobs = array_chunk($expectedJobs, 1000);
-            foreach ($chunckedExpectedJobs as $expectedJobs) {
-                CvExpectedJob::insert($expectedJobs);
-            }
+            DB::transaction(function () use (
+                $candidates,
+                $candidateNotes,
+                $profileDetails,
+                $newCandidatePositions,
+                $domiciles,
+                $cvExperiences,
+                $cvEducations,
+                $cvSpecialities,
+                $cvHobbies,
+                $expectedJobs,
+                $documents,
+                $cvDocuments,
+            ) {
+                $chunckedCandidates = array_chunk($candidates, 1000);
+                foreach ($chunckedCandidates as $candidates) {
+                    DB::table('candidates')->insert($candidates);
+                }
+                $chunckedCandidateNotes = array_chunk($candidateNotes, 1000);
+                foreach ($chunckedCandidateNotes as $candidateNotes) {
+                    CandidateNote::insert($candidateNotes);
+                }
+                $chunckedProfileDetails = array_chunk($profileDetails, 1000);
+                foreach ($chunckedProfileDetails as $profileDetails) {
+                    CvProfileDetail::insert($profileDetails);
+                }
+                $chunckedCandidatePositions = array_chunk($newCandidatePositions, 1000);
+                foreach ($chunckedCandidatePositions as $candidatePositions) {
+                    DB::table('candidate_positions')->insert($candidatePositions);
+                }
+                $chunckedDomiciles = array_chunk($domiciles, 1000);
+                foreach ($chunckedDomiciles as $domiciles) {
+                    CvDomicile::insert($domiciles);
+                }
+                $chunckedExperiences = array_chunk($cvExperiences, 1000);
+                foreach ($chunckedExperiences as $experiences) {
+                    CvExperience::insert($experiences);
+                }
+                $chunckedEducations = array_chunk($cvEducations, 1000);
+                foreach ($chunckedEducations as $educations) {
+                    CvEducation::insert($educations);
+                }
+                $chunckedSpecialities = array_chunk($cvSpecialities, 1000);
+                foreach ($chunckedSpecialities as $specialities) {
+                    CvSpeciality::insert($specialities);
+                }
+                $chunckedHobbies = array_chunk($cvHobbies, 1000);
+                foreach ($chunckedHobbies as $hobbies) {
+                    CvHobby::insert($hobbies);
+                }
+                $chunckedExpectedJobs = array_chunk($expectedJobs, 1000);
+                foreach ($chunckedExpectedJobs as $expectedJobs) {
+                    CvExpectedJob::insert($expectedJobs);
+                }
+                $chunckedDocuments = array_chunk($documents, 1000);
+                foreach ($chunckedDocuments as $documents) {
+                    Document::insert($documents);
+                }
+                $chunckedCvDocuments = array_chunk($cvDocuments, 1000);
+                foreach ($chunckedCvDocuments as $cvDocuments) {
+                    CvDocument::insert($cvDocuments);
+                }
+            });
             // CvSosmed::insert($sosmeds);
             // CvDomicile::insert($domiciles);
             // CvExpectedJob::insert($expectedJobs);
