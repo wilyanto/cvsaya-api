@@ -307,22 +307,29 @@ class EmployeeController extends Controller
 
     public function getEmployeesByCompany(Request $request, $companyId)
     {
-        $employees = Employee::whereHas('position', function ($positionQuery) use ($companyId) {
+
+        $page = $request->page ? $request->page : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
+        $name = $request->name;
+
+        $employees = Employee::whereHas('position', function ($positionQuery) use ($companyId, $name) {
             $positionQuery->whereHas('company', function ($companyQuery) use ($companyId) {
                 $companyQuery->where('id', $companyId);
             });
+        })->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
+            $profileDetailQuery->withName($name);
         })
             ->with([
-                'profileDetail' => function ($query) {
-                    // TODO: selective fetch
-                    // $query->select('id', 'first_name', 'last_name');
-                },
-                'position' => function ($query) {
-                    $query->select('id', 'name');
-                },
+                'profileDetail:id,first_name,last_name,user_id',
+                'position:id,name'
             ])
-            ->get(['id', 'user_id', 'position_id']);
+            ->paginate(
+                $pageSize,
+                ['id', 'user_id', 'position_id'],
+                'page',
+                $page
+            );
 
-        return $this->showAll($employees);
+        return $this->showPagination('employees', $employees);
     }
 }
