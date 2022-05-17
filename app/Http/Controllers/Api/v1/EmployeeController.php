@@ -310,7 +310,7 @@ class EmployeeController extends Controller
 
         $page = $request->page ? $request->page : 1;
         $pageSize = $request->page_size ? $request->page_size : 10;
-        $name = $request->name;
+        $name = $request->keyword;
 
         $employees = Employee::whereHas('position', function ($positionQuery) use ($companyId, $name) {
             $positionQuery->whereHas('company', function ($companyQuery) use ($companyId) {
