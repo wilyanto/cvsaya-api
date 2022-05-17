@@ -46,8 +46,11 @@ class EmployeeShiftController extends Controller
             ->whereHas('employee', function ($employeeQuery) use ($name, $companyId, $positionId) {
                 $employeeQuery->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
                     $profileDetailQuery->withName($name);
-                })->whereHas('position', function ($positionQuery) use ($companyId, $positionId) {
-                    $positionQuery->where('id', $positionId)->when($companyId, function ($filteredPositionQuery, $companyId) {
+                })->when($positionId, function($positionQuery, $positionId){
+                    $positionQuery->where('position_id', $positionId);
+                })
+                ->whereHas('position', function ($positionQuery) use ($companyId, $positionId) {
+                    $positionQuery->when($companyId, function ($filteredPositionQuery, $companyId) {
                         $filteredPositionQuery->where('company_id', $companyId);
                     });
                 });
@@ -60,8 +63,11 @@ class EmployeeShiftController extends Controller
             ->whereHas('employee', function ($employeeQuery) use ($name, $companyId, $positionId) {
                 $employeeQuery->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
                     $profileDetailQuery->withName($name);
-                })->whereHas('position', function ($positionQuery) use ($companyId, $positionId) {
-                    $positionQuery->where('id', $positionId)->when($companyId, function ($filteredPositionQuery, $companyId) {
+                })->when($positionId, function($positionQuery, $positionId){
+                    $positionQuery->where('position_id', $positionId);
+                })
+                ->whereHas('position', function ($positionQuery) use ($companyId, $positionId) {
+                    $positionQuery->when($companyId, function ($filteredPositionQuery, $companyId) {
                         $filteredPositionQuery->where('company_id', $companyId);
                     });
                 });
