@@ -59,7 +59,7 @@ class EmployeeShiftController extends Controller
             ->select('id', 'employee_id', 'shift_id', 'date')
             ->get();
 
-        $employeeRecurringShifts = EmployeeRecurringShift::whereDate('day', $day)
+        $employeeRecurringShifts = EmployeeRecurringShift::where('day', $day)
             ->whereHas('employee', function ($employeeQuery) use ($name, $companyId, $positionId) {
                 $employeeQuery->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
                     $profileDetailQuery->withName($name);

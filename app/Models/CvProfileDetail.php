@@ -41,7 +41,7 @@ class CvProfileDetail extends Model implements Auditable
             $fullname .= $this->first_name;
         }
         if ($this->last_name) {
-            $fullname .= $this->last_name;
+            $fullname .= " $this->last_name";
         }
         return $fullname;
     }
