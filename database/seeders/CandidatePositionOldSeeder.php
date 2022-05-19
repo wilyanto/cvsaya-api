@@ -49,6 +49,8 @@ class CandidatePositionOldSeeder extends Seeder
 
         $candidatePositionNames = array_unique(array_merge($candidates->toArray(), $employees->toArray()));
 
+        // dd($candidatePositionNames);
+
         $candidatePositions = [];
         foreach ($candidatePositionNames as $candidatePositionName) {
             if ($candidatePositionName !== null && $candidatePositionName !== '') {

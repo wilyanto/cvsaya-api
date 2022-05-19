@@ -28,7 +28,7 @@ use Illuminate\Support\Str;
 
 
 
-class OldDatabaseSeeder extends Seeder
+class OldDatabaseSeeder2 extends Seeder
 {
     /**
      * Run the database seeds.
@@ -74,24 +74,24 @@ class OldDatabaseSeeder extends Seeder
                 'id', 'name',
             ]);
             Log::info('Candidate : ' . count($candidatePositions));
-            $pendidikansAll = DB::connection('cvsaya')->table('1pendidikan')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
-                'idlogin', 'Tahun', 'sampai', 'asal', 'pendidikan'
-            ]);
-            Log::info('1pendidikan : ' . count($pendidikansAll));
-            $kualifikasisAll = DB::connection('cvsaya')->table('1kualifikasi')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
-                'idlogin', 'kualifikasi', 'TglPost',
-            ]);
-            Log::info('1kualifikasi : ' . count($kualifikasisAll));
-            $hobiesAll = DB::connection('cvsaya')->table('1hoby')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
-                'idlogin', 'hoby',
-            ]);
-            Log::info('1hoby : ' . count($hobiesAll));
-            $degrees = Degree::all();
-            Log::info('degree : ' . count($degrees));
-            $oldRecentComments = DB::connection('cvsaya')->table('9Recentcomet')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
-                'idlogin', 'ulasan', 'TglPost', 'Usercreate'
-            ]);
-            Log::info('9Recentcomet : ' . count($oldRecentComments));
+            // $pendidikansAll = DB::connection('cvsaya')->table('1pendidikan')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
+            //     'idlogin', 'Tahun', 'sampai', 'asal', 'pendidikan'
+            // ]);
+            // Log::info('1pendidikan : ' . count($pendidikansAll));
+            // $kualifikasisAll = DB::connection('cvsaya')->table('1kualifikasi')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
+            //     'idlogin', 'kualifikasi', 'TglPost',
+            // ]);
+            // Log::info('1kualifikasi : ' . count($kualifikasisAll));
+            // $hobiesAll = DB::connection('cvsaya')->table('1hoby')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
+            //     'idlogin', 'hoby',
+            // ]);
+            // Log::info('1hoby : ' . count($hobiesAll));
+            // $degrees = Degree::all();
+            // Log::info('degree : ' . count($degrees));
+            // $oldRecentComments = DB::connection('cvsaya')->table('9Recentcomet')->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
+            //     'idlogin', 'ulasan', 'TglPost', 'Usercreate'
+            // ]);
+            // Log::info('9Recentcomet : ' . count($oldRecentComments));
             $employees = Employee::all();
 
             // $userPhoneNumbers = $users->pluck('telpon');
@@ -210,16 +210,17 @@ class OldDatabaseSeeder extends Seeder
                             $candidatePosition = $candidatePositions->where('name', $employee->job)->first();
                             if ($candidatePosition) {
                                 $candidatePositionId = $candidatePosition->id;
-                            } else {
-                                $lastCandidatePositionId++;
-                                array_push($newCandidatePositions, [
-                                    'id' => $lastCandidatePositionId,
-                                    'name' => ucwords($employee->job),
-                                    'created_at' => now(),
-                                    'updated_at' => now(),
-                                ]);
-                                $candidatePositionId = $lastCandidatePositionId;
-                            }
+                            } 
+                            // else {
+                            //     $lastCandidatePositionId++;
+                            //     array_push($newCandidatePositions, [
+                            //         'id' => $lastCandidatePositionId,
+                            //         'name' => ucwords($employee->job),
+                            //         'created_at' => now(),
+                            //         'updated_at' => now(),
+                            //     ]);
+                            //     $candidatePositionId = $lastCandidatePositionId;
+                            // }
                             $expectedJob = [
                                 'candidate_id' => $candidateId,
                                 'expected_salary' => $keinginanGaji->Desired,
@@ -260,23 +261,24 @@ class OldDatabaseSeeder extends Seeder
                         $candidatePosition = $candidatePositions->where('name', $pengalaman->sebagai)->first();
                         if ($candidatePosition) {
                             $candidatePositionId = $candidatePosition->id;
-                        } else {
-                            $candidatePositionFound = collect($newCandidatePositions)->where('name', $pengalaman->sebagai)->first();
+                        } 
+                        // else {
+                        //     $candidatePositionFound = collect($newCandidatePositions)->where('name', $pengalaman->sebagai)->first();
 
-                            if (!$candidatePositionFound) {
-                                $lastCandidatePositionId++;
-                                array_push($newCandidatePositions, [
-                                    'id' => $lastCandidatePositionId,
-                                    'name' => ucwords($pengalaman->sebagai),
-                                    'created_at' => now(),
-                                    'updated_at' => now(),
-                                ]);
-                                $candidatePositionId = $lastCandidatePositionId;
-                            } else {
-                                // Log::info($candidatePositionFound['id']);
-                                $candidatePositionId = $candidatePositionFound['id'];
-                            }
-                        }
+                        //     if (!$candidatePositionFound) {
+                        //         $lastCandidatePositionId++;
+                        //         array_push($newCandidatePositions, [
+                        //             'id' => $lastCandidatePositionId,
+                        //             'name' => ucwords($pengalaman->sebagai),
+                        //             'created_at' => now(),
+                        //             'updated_at' => now(),
+                        //         ]);
+                        //         $candidatePositionId = $lastCandidatePositionId;
+                        //     } else {
+                        //         // Log::info($candidatePositionFound['id']);
+                        //         $candidatePositionId = $candidatePositionFound['id'];
+                        //     }
+                        // }
                         $cvExperiences[] = [
                             'candidate_id' => $candidateId,
                             'employment_type_id' => null,
