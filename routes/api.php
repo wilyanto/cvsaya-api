@@ -180,8 +180,8 @@ Route::prefix('v1')->group(function () {
             });
 
             Route::prefix('completeness-status')->group(function () {
-                Route::controller(CvProfileDetailController::class)->group(function () {
-                    Route::get('/', 'status');
+                Route::controller(CandidateController::class)->group(function () {
+                    Route::get('/', 'getCompletenessStatus');
                 });
             });
 

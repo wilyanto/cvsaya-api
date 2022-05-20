@@ -17,7 +17,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // CleanerSeeder::class,
             // OldDatabaseSeeder2::class,
-            NewDatabaseSeeder::class,
+            // NewDatabaseSeeder::class,
+            ReviseEducationSeeder::class,
             // MoveCandidatePositionId::class,
             // CandidatePositionOldSeeder::class,
             // OldEmployeeSeeder::class,

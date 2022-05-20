@@ -11,6 +11,10 @@ use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CandidatePosition;
 use App\Models\CandidateInterviewSchedule;
 use App\Models\CandidateNote;
+use App\Models\CvDocument;
+use App\Models\CvEducation;
+use App\Models\CvExpectedJob;
+use App\Models\CvProfileDetail;
 use Illuminate\Validation\Rule;
 use App\Models\InterviewResult;
 use App\Models\User;
@@ -316,6 +320,68 @@ class CandidateController extends Controller
         $candidate->refresh();
 
         return $this->showOne($candidate);
+    }
+
+    public function getCompletenessStatus()
+    {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->firstOrFail();
+        $education = CvEducation::where('candidate_id', $candidate->id)->first();
+        $document = CvDocument::where('candidate_id', $candidate->id)->first();
+        $expectedSalaries = CvExpectedJob::where('candidate_id', $candidate->id)->first();
+
+        $data['is_profile_completed'] = true;
+        $data['is_job_completed'] = true;
+        $data['is_document_completed'] = true;
+        $data['is_cv_completed'] = true;
+        if (!$userProfileDetail || !$userProfileDetail->addresses || !$userProfileDetail->sosmeds) {
+            $data['is_profile_completed'] = false;
+        }
+
+        if (!$expectedSalaries) {
+            $data['is_job_completed'] = false;
+        }
+
+        if (!$education || !$education->experiences || !$education->certifications || !$education->specialities || !$education->hobbies) {
+            $data['is_cv_completed'] = false;
+        }
+
+        if (!$document || !$document->identityCard || !$document->frontSelfie || !$document->rightSelfie || !$document->leftSelfie) {
+            $data['is_document_completed'] = false;
+        }
+        $result['basic_profile'] = [
+            'first_name' => $userProfileDetail->first_name,
+            'last_name' => $userProfileDetail->last_name,
+        ];
+
+        $employee = Employee::where('user_id', auth()->id())->first();
+        if ($employee) {
+            $result['is_employee'] = true;
+            $position = [
+                'id' => $employee->position ? $employee->position->id : null,
+                'name' => $employee->position ? $employee->position->name : null,
+                'company' => $employee->position ? $employee->position->company : null
+            ];
+            $result['position'] = $position;
+        } else {
+            $result['position'] = null;
+        }
+
+        $result['completeness_status'] = $data;
+
+        // TODO: better approach using relationship
+        // $employee = Employee::where('user_id', auth()->id())
+        //     ->with([
+        //         'position' => function ($query) {
+        //             $query->select(['id', 'name', 'company_id']);
+        //         },
+        //         'position.company' => function ($query) {
+        //             $query->select(['id', 'name']);
+        //         }
+        //     ])
+        //     ->first(['id', 'position_id']);
+
+        return $this->showOne($result);
     }
 
     /**

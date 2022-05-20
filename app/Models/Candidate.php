@@ -52,7 +52,7 @@ class Candidate extends Model implements Auditable
 
     public function domicile()
     {
-        return $this->hasOne(CvDomicile::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvDomicile::class)->withDefault();
     }
 
     public function suggestBy()
@@ -75,7 +75,7 @@ class Candidate extends Model implements Auditable
 
     public function profile()
     {
-        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvProfileDetail::class)->withDefault();
     }
 
     public function job()

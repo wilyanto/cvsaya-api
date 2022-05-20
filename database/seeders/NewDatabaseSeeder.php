@@ -271,7 +271,7 @@ class NewDatabaseSeeder extends Seeder
                             array_push($addCvEducations, [
                                 'candidate_id' => $cvEducation->candidate_id,
                                 'instance' => $cvEducation->instance,
-                                'field_of_study' => $cvEducation->grade,
+                                'field_of_study' => $cvEducation->field_of_study,
                                 'degree_id' => $cvEducation->degree_id,
                                 'grade' => $cvEducation->grade,
                                 'started_at' => $cvEducation->started_at,
