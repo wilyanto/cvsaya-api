@@ -23,7 +23,7 @@ class CvProfileDetail extends Model implements Auditable
     protected $append = ['full_name'];
 
     public $fillable = [
-        'user_id',
+        'candidate_id',
         'first_name',
         'last_name',
         'birth_location',

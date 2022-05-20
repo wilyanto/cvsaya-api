@@ -24,21 +24,30 @@ class OldEmployeeSeeder extends Seeder
             Log::info('Kustomer : ' . count($users));
             $administrators = DB::connection('cvsaya')->table('administrator')->get();
             Log::info('Administrator : ' . count($administrators));
+            $userPhoneNumbers = $users->pluck('telpon');
+            $administratorPhoneNumbers = $administrators->pluck('no_telp');
+            $intersectedAdministrators = array_intersect($administratorPhoneNumbers->toArray(), $userPhoneNumbers->toArray());
+
+            $filteredUsers = $users->whereIn('telpon', $intersectedAdministrators);
+            $filteredAdministrators = $administrators->whereIn('no_telp', $intersectedAdministrators);
+
             $employees = [];
-            foreach ($users as $index => $user) {
-                $administrator = $administrators->where('no_telp', $user->telpon)->first();
+            foreach ($filteredUsers as $index => $user) {
+                $administrator = $filteredAdministrators->where('no_telp', $user->telpon)->first();
                 if ($administrator) {
                     $isDeleted = null;
                     if ($administrator->blokir == 'Y') {
-                        $isDeleted = date('Y-m-d\TH:i:s.v\Z', time());
+                        $isDeleted = now();
                     }
                     $employees[] = [
                         'user_id' => $user->id_kustomer,
                         'position_id' => null,
-                        'salary' => 0,
+                        'type' => 'daily',
+                        'is_default' => true,
+                        'joined_at' => null,
+                        'created_at' => $administrator->TglPost ?? now(),
+                        'updated_at' =>  $administrator->TglPost ?? now(),
                         'deleted_at' => $isDeleted,
-                        'created_at' => $administrator->TglPost ? $administrator->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
-                        'updated_at' =>  $administrator->TglPost ? $administrator->TglPost : date('Y-m-d\TH:i:s.v\Z', time()),
 
                     ];
                 }

@@ -41,9 +41,10 @@ class Candidate extends Model implements Auditable
     ];
 
     protected $fillable = [
-        'name',
-        'phone_number',
         'user_id',
+        'name',
+        'country_code',
+        'phone_number',
         'status',
         'suggested_by',
         'registered_at',

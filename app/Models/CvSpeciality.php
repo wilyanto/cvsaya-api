@@ -21,8 +21,7 @@ class CvSpeciality extends Model implements Auditable
     protected $primaryKey = 'id';
 
     public $fillable = [
-        'id',
-        'user_id',
+        'candidate_id',
         'name',
         'speciality_certifcate_id',
     ];

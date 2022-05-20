@@ -20,8 +20,7 @@ class CvExpectedJob extends Model implements Auditable
     protected $primaryKey = 'id';
 
     public $fillable = [
-        'id',
-        'user_id',
+        'candidate_id',
         'expected_position',
         'expected_salary',
         'position_reason',
