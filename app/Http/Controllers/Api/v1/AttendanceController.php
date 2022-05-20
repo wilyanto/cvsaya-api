@@ -382,8 +382,8 @@ class AttendanceController extends Controller
             'company_id' => 'required|exists:companies,id'
         ]);
 
-        $startDate = $request->started_at;
-        $endDate = $request->ended_at;
+        $startDate = Carbon::parse($request->started_at);
+        $endDate = Carbon::parse($request->ended_at);
         $companyId = $request->company_id;
         $company = Company::where('id', $companyId)->first();
         $employees = $company->employees()->get();
