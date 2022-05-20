@@ -163,21 +163,41 @@ class ShiftController extends Controller
 
     public function getShift(Request $request)
     {
-        $date = $request->date;
-        $employee = Employee::where('user_id', auth()->id())->firstOrFail();
+        $request->validate([
+            'started_at' => 'required',
+            'ended_at' => 'required',
+            'company_id' => 'required|exists:companies,id',
+        ]);
 
-        $employeeOneTimeShifts = $employee->getCertainDateOneTimeShifts($date);
+        $startDate = $request->started_at;
+        $endDate = $request->ended_at;
+        $companyId = $request->company_id;
+        $positions = Position::where('company_id', $companyId)->pluck('id');
+        $employee = Employee::where(
+            'user_id',
+            auth()->id()
+        )->whereIn('position_id', $positions)->firstOrFail();
 
-        if ($employeeOneTimeShifts->isNotEmpty()) {
-            return $this->showAll($employeeOneTimeShifts);
+        if (!$employee) {
+            return $this->errorResponse("Employee not found", 422, 42200);
         }
 
-        $employeeRecurringShifts = $employee->getCertainDateRecurringShifts($date);
+        $data = [];
+        $attendances = $employee->getAttendances($startDate, $endDate);
+        $employeeShifts = $employee->getShifts($startDate);
 
-        if ($employeeRecurringShifts->isNotEmpty()) {
-            return $this->showAll($employeeRecurringShifts);
+        foreach ($employeeShifts as $shift) {
+            $data[] = $shift;
+            $shiftAttendances = [];
+            foreach ($attendances as $attendance) {
+                if ($attendance->shift_id == $shift->id) {
+                    $shiftAttendances[] = $attendance;
+                }
+            }
+            // insert into last shift array
+            end($data)['shift']['attendances'] = $shiftAttendances;
         }
 
-        return $this->showAll(collect([]));
+        return $this->showAll(collect($data));
     }
 }

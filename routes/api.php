@@ -320,6 +320,8 @@ Route::prefix('v1')->group(function () {
         Route::prefix('attendances')->group(function () {
             Route::controller(AttendanceController::class)->group(function () {
                 Route::get('/', 'index');
+                Route::get('/histories', 'getAttendancesByDateRange');
+                Route::get('/company-employees', 'getAttendancesByCompany');
                 Route::post('/', 'store');
             });
         });
