@@ -19,6 +19,8 @@
         "nesbot/carbon": "^2.57",
         "owen-it/laravel-auditing": "^13.0",
         "ralouphie/mimey": "^1.0",
+        "spatie/enum": "^3.13",
+        "spatie/laravel-enum": "^3.0",
         "spatie/laravel-permission": "^5.5"
     },
     "require-dev": {

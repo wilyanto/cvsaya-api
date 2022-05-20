@@ -22,40 +22,58 @@ class EmployeeShiftController extends Controller
         $name = $request->name;
         $date = $request->date;
         $companyId = $request->company_id;
+        $positionId = $request->position_id;
         $dateTimestamp = strtotime($date);
         $day = date('w', $dateTimestamp);
 
+        // TODO: can be improved using scopeWith
+        $withRelationships = [
+            'shift' => function ($query) {
+                $query->select('id', 'name', 'clock_in', 'clock_out', 'break_started_at', 'break_ended_at', 'break_duration');
+            },
+            'employee' => function ($query) {
+                $query->select('id', 'user_id', 'position_id');
+            },
+            'employee.position' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'employee.profileDetail' => function ($query) {
+                $query->select('id', 'user_id', 'first_name', 'last_name');
+            },
+        ];
+
         $employeeOneTimeShifts = EmployeeOneTimeShift::whereDate('date', $date)
-            ->whereHas('employee', function ($employeeQuery) use ($name, $companyId) {
+            ->whereHas('employee', function ($employeeQuery) use ($name, $companyId, $positionId) {
                 $employeeQuery->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
-                    $profileDetailQuery->where('first_name', 'LIKE', '%' . $name . '%')
-                        ->orWhere('last_name', 'LIKE', '%' . $name . '%');
+                    $profileDetailQuery->withName($name);
+                })->when($positionId, function($positionQuery, $positionId){
+                    $positionQuery->where('position_id', $positionId);
+                })
+                ->whereHas('position', function ($positionQuery) use ($companyId, $positionId) {
+                    $positionQuery->when($companyId, function ($filteredPositionQuery, $companyId) {
+                        $filteredPositionQuery->where('company_id', $companyId);
+                    });
                 });
-                // $employeeQuery->whereHas('position', function ($positionQuery) use ($companyId) {
-                //     $positionQuery->when($companyId, function ($filteredPositionQuery, $companyId) {
-                //         $filteredPositionQuery->where('company_id', $companyId)->dd();
-                //     });
-                // });
             })
-            ->with([
-                'shift',
-                'employee.position',
-                'employee.profileDetail',
-            ])
+            ->with($withRelationships)
+            ->select('id', 'employee_id', 'shift_id', 'date')
             ->get();
 
-        $employeeRecurringShifts = EmployeeRecurringShift::whereDate('day', $day)
-            ->whereHas('employee', function ($employeeQuery) use ($name) {
+        $employeeRecurringShifts = EmployeeRecurringShift::where('day', $day)
+            ->whereHas('employee', function ($employeeQuery) use ($name, $companyId, $positionId) {
                 $employeeQuery->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
-                    $profileDetailQuery->where('first_name', 'LIKE', '%' . $name . '%')
-                        ->orWhere('last_name', 'LIKE', '%' . $name . '%');
+                    $profileDetailQuery->withName($name);
+                })->when($positionId, function($positionQuery, $positionId){
+                    $positionQuery->where('position_id', $positionId);
+                })
+                ->whereHas('position', function ($positionQuery) use ($companyId, $positionId) {
+                    $positionQuery->when($companyId, function ($filteredPositionQuery, $companyId) {
+                        $filteredPositionQuery->where('company_id', $companyId);
+                    });
                 });
             })
-            ->with([
-                'shift',
-                'employee.position',
-                'employee.profileDetail',
-            ])
+            ->with($withRelationships)
+            ->select('id', 'employee_id', 'shift_id', 'day')
             ->get();
 
         return $this->showOne([

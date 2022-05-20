@@ -304,4 +304,32 @@ class EmployeeController extends Controller
 
         return $this->showOne(null, 204);
     }
+
+    public function getEmployeesByCompany(Request $request, $companyId)
+    {
+
+        $page = $request->page ? $request->page : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
+        $name = $request->keyword;
+
+        $employees = Employee::whereHas('position', function ($positionQuery) use ($companyId, $name) {
+            $positionQuery->whereHas('company', function ($companyQuery) use ($companyId) {
+                $companyQuery->where('id', $companyId);
+            });
+        })->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
+            $profileDetailQuery->withName($name);
+        })
+            ->with([
+                'profileDetail:id,first_name,last_name,user_id',
+                'position:id,name'
+            ])
+            ->paginate(
+                $pageSize,
+                ['id', 'user_id', 'position_id'],
+                'page',
+                $page
+            );
+
+        return $this->showPagination('employees', $employees);
+    }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Position;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Carbon\Carbon;
 use DateInterval;
 use DateTimeZone;
 use Spatie\Permission\Traits\HasRoles;
@@ -234,7 +235,7 @@ class Employee extends Authenticatable implements Auditable
         return $penalty;
     }
 
-    public function getTodayOneTimeShifts()
+    public function getCertainDateOneTimeShifts($date)
     {
         return $this->hasManyThrough(
             Shift::class,
@@ -243,10 +244,10 @@ class Employee extends Authenticatable implements Auditable
             'id',
             'id',
             'shift_id'
-        )->where('date', today())->get();
+        )->whereDate('date', $date)->get();
     }
 
-    public function getTodayRecurringShifts()
+    public function getCertainDateRecurringShifts($date)
     {
         return $this->hasManyThrough(
             Shift::class,
@@ -255,6 +256,6 @@ class Employee extends Authenticatable implements Auditable
             'id',
             'id',
             'shift_id'
-        )->where('day', today()->dayOfWeek)->get();
+        )->where('day', (new Carbon($date))->dayOfWeek)->get();
     }
 }

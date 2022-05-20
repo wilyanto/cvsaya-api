@@ -26,7 +26,7 @@ class UpdateEmployeeOneTimeShift extends FormRequest
         return [
             'employee_id' => 'required|exists:employees,id',
             'shift_id' => 'required|exists:shifts,id',
-            'date' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
+            'date' => 'date_format:Y-m-d\TH:i:s.v\Z',
         ];
     }
 }

@@ -12,10 +12,6 @@ class EmployeeOneTimeShift extends Model implements Auditable
 
     use \OwenIt\Auditing\Auditable;
 
-    protected $casts = [
-        'date' => 'date'
-    ];
-
     protected $fillable = [
         'employee_id',
         'shift_id',
