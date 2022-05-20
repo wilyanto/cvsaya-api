@@ -29,7 +29,7 @@ class Company extends Model implements Auditable
 
     public function employees()
     {
-        return $this->hasManyThrough(Employee::class, Position::class, 'id', 'position_id', 'id', 'company_id');
+        return $this->hasManyThrough(Employee::class, Position::class, 'company_id', 'position_id', 'id', 'id');
     }
 
     public function attendances()
