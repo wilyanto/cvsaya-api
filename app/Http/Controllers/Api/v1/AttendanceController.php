@@ -259,8 +259,8 @@ class AttendanceController extends Controller
 
         $attendance = Attendance::create([
             'attendance_type' => $attendanceType,
-            'attended_at' => Carbon::now()->toIso8601String(),
-            'scheduled_at' => Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight())->toIso8601String(),
+            'attended_at' => Carbon::now(),
+            'scheduled_at' => Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight()),
             'attendance_qr_code_id' => $request->attendance_qr_code_id,
             'image' => $fileName,
             'ip' => $request->ip(),
@@ -405,6 +405,7 @@ class AttendanceController extends Controller
                         'attendances' => $shiftAttendances[$employeeShift->shift_id]
                     ];
                 }
+                $employee['profile_detail'] = $employee->profileDetail()->first();
                 $employee['shifts'] = $shifts;
                 array_push($employeeAttendances, $employee);
             }
@@ -446,6 +447,7 @@ class AttendanceController extends Controller
                         'attendances' => $shiftAttendances[$employeeShift->shift_id]
                     ];
                 }
+                $employee['profile_detail'] = $employee->profileDetail()->first();
                 $employee['shifts'] = $shifts;
                 array_push($employeeAttendances, $employee);
             }
