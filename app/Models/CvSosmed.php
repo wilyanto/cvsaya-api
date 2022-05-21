@@ -19,8 +19,7 @@ class CvSosmed extends Model implements Auditable
     protected $primaryKey = 'id';
 
     public $fillable = [
-        'id',
-        'user_id',
+        'candidate_id',
         'instagram',
         'tiktok',
         'youtube',

@@ -41,9 +41,10 @@ class Candidate extends Model implements Auditable
     ];
 
     protected $fillable = [
-        'name',
-        'phone_number',
         'user_id',
+        'name',
+        'country_code',
+        'phone_number',
         'status',
         'suggested_by',
         'registered_at',
@@ -51,7 +52,7 @@ class Candidate extends Model implements Auditable
 
     public function domicile()
     {
-        return $this->hasOne(CvDomicile::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvDomicile::class)->withDefault();
     }
 
     public function suggestBy()
@@ -74,7 +75,7 @@ class Candidate extends Model implements Auditable
 
     public function profile()
     {
-        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvProfileDetail::class)->withDefault();
     }
 
     public function job()

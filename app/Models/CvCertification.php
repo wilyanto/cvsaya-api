@@ -31,8 +31,7 @@ class CvCertification extends Model implements Auditable
     ];
 
     public $fillable = [
-        'id',
-        'user_id',
+        'candidate_id',
         'name',
         'organization',
         'issued_at',

@@ -9,7 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class Document extends Model implements Auditable
 {
-    use HasFactory,UuidGenerator;
+    use HasFactory, UuidGenerator;
 
     use \OwenIt\Auditing\Auditable;
 
@@ -18,13 +18,14 @@ class Document extends Model implements Auditable
     protected $keytype = 'string';
 
     public $fillable = [
-        'user_id','file_name', 'mime_type', 'type_id', 'original_file_name'
+        'user_id', 'file_name', 'mime_type',
+        'type_id', 'original_file_name'
     ];
 
-    public function toIdDocuments(){
+    public function toIdDocuments()
+    {
         return [
             'id' => $this->id,
         ];
     }
-
 }

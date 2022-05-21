@@ -20,35 +20,54 @@ class CandidatePositionOldSeeder extends Seeder
      */
     public function run()
     {
-
         $pengalamans = DB::connection('cvsaya')
             ->table('1pengalaman')
             ->groupBy('sebagai')
             ->select('sebagai')
-            // ->distinct('sebagai')
             ->get();
         $employees = DB::connection('cvsaya')
-        ->table('1employee')
-        ->groupBy('job')
-        ->select('job')
-        ->get();
+            ->table('1employee')
+            ->groupBy('job')
+            ->select('job')
+            ->get();
 
-        $candidates = $pengalamans->map(function ($item, $key) {
-            return [
-                'name' => $item->sebagai,
-                'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-            ];
+        $candidates = $pengalamans->map(function ($item) {
+            if ($item !== null || $item !== '') {
+                return strtolower($item->sebagai);
+            }
         });
 
-        $employees = $employees->map(function ($item, $key) {
-            return [
-                'name' => $item->job,
-                'created_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-                'updated_at' => date('Y-m-d\TH:i:s.v\Z', time()),
-            ];
+        $employees = $employees->map(function ($item) {
+            if ($item !== null || $item !== '') {
+                return strtolower($item->job);
+            }
         });
-        CandidatePosition::insert($candidates->toArray());
-        CandidatePosition::insert($employees->toArray());
+
+        Log::info(count($candidates));
+        Log::info(count($employees));
+        Log::info(count(array_unique(array_merge($candidates->toArray(), $employees->toArray()))));
+
+        $candidatePositionNames = array_unique(array_merge($candidates->toArray(), $employees->toArray()));
+
+        // dd($candidatePositionNames);
+
+        $candidatePositions = [];
+        foreach ($candidatePositionNames as $candidatePositionName) {
+            if ($candidatePositionName !== null && $candidatePositionName !== '') {
+                array_push(
+                    $candidatePositions,
+                    [
+                        'name' => ucwords($candidatePositionName),
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+        }
+
+        $chunckedPositions = array_chunk($candidatePositions, 1000);
+        foreach ($chunckedPositions as $chunckedPositionsVal) {
+            CandidatePosition::insert($chunckedPositionsVal);
+        }
     }
 }

@@ -26,8 +26,7 @@ class CvEducation extends Model implements Auditable
     ];
 
     public $fillable = [
-        'id',
-        'user_id',
+        'candidate_id',
         'instance',
         'degree_id',
         'field_of_study',

@@ -15,12 +15,13 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-            // CompanySeeder::class,
-            // DepartmentSeeder::class,
-            // LevelSeeder::class,
-            // PositionSeeder::class,
-            // ShiftSeeder::class,
-            PenaltySeeder::class,
+            // CleanerSeeder::class,
+            // OldDatabaseSeeder2::class,
+            // NewDatabaseSeeder::class,
+            ReviseEducationSeeder::class,
+            // MoveCandidatePositionId::class,
+            // CandidatePositionOldSeeder::class,
+            // OldEmployeeSeeder::class,
         ]);
     }
 }
