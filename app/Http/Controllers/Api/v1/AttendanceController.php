@@ -386,7 +386,7 @@ class AttendanceController extends Controller
         $endDate = Carbon::parse($request->ended_at);
         $companyId = $request->company_id;
         $company = Company::where('id', $companyId)->first();
-        $employees = $company->employees()->get();
+        $employees = $company->employees()->with('position')->get();
         $period = CarbonPeriod::create($startDate, $endDate);
         $data = [];
 
@@ -400,9 +400,16 @@ class AttendanceController extends Controller
                 $shifts = [];
                 $employeeShifts = $attendances->unique('shift_id');
                 foreach ($employeeShifts as $employeeShift) {
+                    $attendances = [];
+                    foreach ($shiftAttendances[$employeeShift->shift_id] as $attendance) {
+                        $attendances[] = [
+                            'attendance' => $attendance,
+                            'penalty' => $attendance->attendancePenalty(),
+                        ];
+                    }
                     $shifts[] = [
                         'id' => $employeeShift->shift_id,
-                        'attendances' => $shiftAttendances[$employeeShift->shift_id]
+                        'attendances' => $attendances,
                     ];
                 }
                 $employee['profile_detail'] = $employee->profileDetail()->first();

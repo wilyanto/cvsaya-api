@@ -19,6 +19,7 @@ use App\Models\Employee;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use stdClass;
 
 class CvProfileDetailController extends Controller
 {
@@ -52,9 +53,9 @@ class CvProfileDetailController extends Controller
         $userAddress = CvDomicile::where('candidate_id', $candidate->id)->first();
         $userSosmed = CvSosmed::where('candidate_id', $candidate->id)->first();
 
-        $array['profile_detail'] = $userProfileDetail;
-        $array['domicile'] = $userAddress;
-        $array['sosmed'] = $userSosmed;
+        $array['profile_detail'] = $userProfileDetail ?? new stdClass();
+        $array['domicile'] = $userAddress ?? new stdClass();
+        $array['sosmed'] = $userSosmed ?? new stdClass();
         $collectionArray = collect($array);
         return $this->showOne($collectionArray);
     }
@@ -62,8 +63,8 @@ class CvProfileDetailController extends Controller
 
     public function cvDetailByDefault()
     {
-        $user = auth()->user();
-        $id = $user->id_kustomer;
+        $candidate = Candidate::where('user_id', auth()->id())->first();
+        $id = $candidate->id;
         $education = CvEducation::where('candidate_id', $id)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
@@ -133,16 +134,15 @@ class CvProfileDetailController extends Controller
 
     public function status()
     {
-        $user = auth()->user();
-
-        $status = $this->getStatus($user->id_kustomer);
+        $candidate = Candidate::where('user_id', auth()->id())->first();
+        $status = $this->getStatus($candidate->id);
 
         return $status;
     }
 
     public function getStatus($id)
     {
-        $userProfileDetail = CvProfileDetail::where('candidate_id', $id)->firstOrFail();
+        $userProfileDetail = CvProfileDetail::where('candidate_id', $id)->first();
         $education = CvEducation::where('candidate_id', $id)->first();
         $document = CvDocument::where('candidate_id', $id)->first();
         $expectedSalaries = CvExpectedJob::where('candidate_id', $id)->first();
@@ -167,8 +167,8 @@ class CvProfileDetailController extends Controller
             $data['is_document_completed'] = false;
         }
         $result['basic_profile'] = [
-            'first_name' => $userProfileDetail->first_name,
-            'last_name' => $userProfileDetail->last_name,
+            'first_name' => $userProfileDetail->first_name ?? null,
+            'last_name' => $userProfileDetail->last_name ?? null,
         ];
 
         $employee = Employee::where('user_id', $id)->first();

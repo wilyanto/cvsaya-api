@@ -356,7 +356,7 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::apiResource('candidate-positions', CandidatePositionController::class)->only(['index', 'store', 'update']);
+        Route::apiResource('candidate-positions', CandidatePositionController::class)->only(['index', 'show', 'store', 'update']);
         Route::prefix('candidate-positions')->controller(CandidatePositionController::class)->group(function () {
             Route::put('/{id}/verified', 'verified');
             Route::delete('/{id}/verified', 'unverified');
