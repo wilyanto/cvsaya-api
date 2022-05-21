@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Candidate;
 use App\Models\CvCertification;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
@@ -19,9 +20,8 @@ class CvCertificationController extends Controller
      */
     public function index()
     {
-        $user = Auth()->user();
-
-        $certifications = CvCertification::where('candidate_id', $user->id_kustomer)
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $certifications = CvCertification::where('candidate_id', $candidate->id)
             ->orderBy('issued_at', 'DESC')
             ->orderByRaw("CASE WHEN expired_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('expired_at', 'DESC')
@@ -38,7 +38,6 @@ class CvCertificationController extends Controller
      */
     public function store(Request $request)
     {
-        $user = auth()->user();
         $request->validate([
             'name' => 'required|string',
             'organization' => 'required|string',
@@ -49,7 +48,8 @@ class CvCertificationController extends Controller
         ]);
 
         $data = $request->all();
-        $data['candidate_id'] = $user->id_kustomer;
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $data['candidate_id'] = $candidate->id;
         if (!$request->issued_at) {
             $data['expired_at'] = null;
         }
@@ -77,7 +77,6 @@ class CvCertificationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = auth()->user();
         $request->validate([
             'name' => 'nullable|string',
             'organization' => 'nullable|string',
@@ -87,15 +86,16 @@ class CvCertificationController extends Controller
             'credential_url' => 'nullable|url',
         ]);
         $data = $request->all();
-        $data['candidate_id'] = $user->id_kustomer;
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $data['candidate_id'] = $candidate->id;
         if (!$data['expired_at']) {
             $data['expired_at'] = null;
         }
         $certifications = CvCertification::where('id', $id)
-            ->where('candidate_id', $user->id_kustomer)->first();
+            ->where('candidate_id', $candidate->id)->first();
 
         if (!$certifications) {
-            return $this->errorResponse('ID not found', 404, 40401);
+            return $this->errorResponse('Certification not found', 404, 40401);
         }
         $certifications->update($data);
 
@@ -110,10 +110,10 @@ class CvCertificationController extends Controller
      */
     public function destroy($id)
     {
-        $user = auth()->user();
-        $certifications = CvCertification::where('id', $id)->where('candidate_id', $user->id_kustomer)->first();
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $certifications = CvCertification::where('id', $id)->where('candidate_id', $candidate->id)->first();
         if (!$certifications) {
-            return $this->errorResponse('ID not found', 404, 40401);
+            return $this->errorResponse('Certification not found', 404, 40401);
         }
         $certifications->delete();
 
