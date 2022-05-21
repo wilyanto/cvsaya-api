@@ -28,9 +28,9 @@ class CvExpectedJobController extends Controller
 
     public function index()
     {
-        $user = auth()->user();
-
-        $expectedSalaries = CvExpectedJob::where('candidate_id', $user->id_kustomer)->orderBy('updated_at', 'DESC')->firstOrFail();
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $expectedSalaries = CvExpectedJob::where('candidate_id', $candidate->id)
+            ->firstOrFail();
 
         return $this->showOne($expectedSalaries);
     }
