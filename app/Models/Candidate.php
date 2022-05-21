@@ -140,7 +140,7 @@ class Candidate extends Model implements Auditable
             'education' => $this->educations->first(),
             'gender' =>  $this->profile->gender,
             'position' => $this->job->position,
-            'domicile' => $this->domicile->toArray(),
+            'domicile' => $this->domicile->province(),
         ];
     }
 
@@ -183,7 +183,7 @@ class Candidate extends Model implements Auditable
             'profile' => $this->profile,
             'latest_result' => $this->label(),
             'registered_at' => $this->registered_at,
-            'domicile' => $this->domicile->province(),
+            'domicile' => $this->domicile,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
