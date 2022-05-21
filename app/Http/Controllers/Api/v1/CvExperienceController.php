@@ -22,7 +22,7 @@ class CvExperienceController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $experiences = CvExperience::where('user_id', $user->id_kustomer)
+        $experiences = CvExperience::where('candidate_id', $user->id_kustomer)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC')
@@ -46,7 +46,7 @@ class CvExperienceController extends Controller
             $document = $documents->id;
         }
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $user->id_kustomer;
         $requestPosition = json_decode($request->position);
         $position = CandidatePosition::where('id', $requestPosition->id)->orWhere('name', $requestPosition->name)->first();
         if (!$position) {
@@ -99,7 +99,7 @@ class CvExperienceController extends Controller
         $request->validated();
 
         $user = auth()->user();
-        $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
+        $experience = CvExperience::where('id', $id)->where('candidate_id', $user->id_kustomer)->firstOrFail();
         $requestPosition = $request->position;
         $position = CandidatePosition::where('id', $requestPosition['id'])->orWhere('name', $requestPosition['name'])->first();
         if (!$position) {
@@ -110,7 +110,7 @@ class CvExperienceController extends Controller
         }
         $data = $request->all();
         $data['position_id'] = $position->id;
-        $data['user_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $user->id_kustomer;
         unset($data['position']);
         if ($request->started_at) {
             if (strtotime($experience->ended_at) > strtotime($request->started_at) || $experience->ended_at == null) {
@@ -145,7 +145,7 @@ class CvExperienceController extends Controller
     {
         $user = auth()->user();
 
-        $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
+        $experience = CvExperience::where('id', $id)->where('candidate_id', $user->id_kustomer)->firstOrFail();
         if (!$experience) {
             return $this->errorResponse('id not found', 404, 40401);
         }

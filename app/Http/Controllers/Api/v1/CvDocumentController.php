@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Response;
 
 class CvDocumentController extends Controller
 {
-    use ApiResponser,HasRoleAndPermission;
+    use ApiResponser, HasRoleAndPermission;
     /**
      * Display a listing of the resource.
      *
@@ -24,13 +24,14 @@ class CvDocumentController extends Controller
     {
         $user = auth()->user();
 
-        $getDocuments = CvDocument::where('user_id', $user->id_kustomer)->firstOrFail();
+        $getDocuments = CvDocument::where('candidate_id', $user->id_kustomer)->firstOrFail();
         return $this->showOne($getDocuments);
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $candidate = Candidate::findOrFail($id);
-        $getDocuments = CvDocument::where('user_id', $candidate->user_id)->firstOrFail();
+        $getDocuments = CvDocument::where('candidate_id', $candidate->user_id)->firstOrFail();
         return $this->showOne($getDocuments);
     }
 
@@ -65,10 +66,10 @@ class CvDocumentController extends Controller
 
         $documentType = DocumentType::where('id', $request->type)->firstOrFail();
         $document = Document::where('id', $request->id)->where('type_id', $documentType->id)->firstOrFail();
-        $cvDocument = CvDocument::where('user_id', $user->id_kustomer)->first();
+        $cvDocument = CvDocument::where('candidate_id', $user->id_kustomer)->first();
         if (!$cvDocument) {
             $cvDocument = new CvDocument;
-            $cvDocument->user_id = $user->id_kustomer;
+            $cvDocument->candidate_id = $user->id_kustomer;
         }
         $typeOfDocument = $documentType->name;
 
@@ -328,14 +329,14 @@ class CvDocumentController extends Controller
         $permissions = [
             'manage-candidate'
         ];
-        $hasPermission = $this->hasPermission($permissions,$user->id_kustomer);
-        if($hasPermission){
+        $hasPermission = $this->hasPermission($permissions, $user->id_kustomer);
+        if ($hasPermission) {
             $document = Document::where('id', $documentID)->firstOrFail();
-        }else{
-            $document = Document::where('id', $documentID)->where('user_id', $user->id_kustomer)->firstOrFail();
+        } else {
+            $document = Document::where('id', $documentID)->where('candidate_id', $user->id_kustomer)->firstOrFail();
         }
 
-        $documentType = DocumentType::where('id',$document->type_id)->firstOrFail();
+        $documentType = DocumentType::where('id', $document->type_id)->firstOrFail();
         try {
             $path = public_path() . '/storage/' . $documentType->name . '/' . $document->file_name . '.' . $this->getExtension($document->mime_type);
             return Response::download($path);

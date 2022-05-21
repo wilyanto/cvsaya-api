@@ -21,7 +21,7 @@ class CvCertificationController extends Controller
     {
         $user = Auth()->user();
 
-        $certifications = CvCertification::where('user_id', $user->id_kustomer)
+        $certifications = CvCertification::where('candidate_id', $user->id_kustomer)
             ->orderBy('issued_at', 'DESC')
             ->orderByRaw("CASE WHEN expired_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('expired_at', 'DESC')
@@ -49,7 +49,7 @@ class CvCertificationController extends Controller
         ]);
 
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $user->id_kustomer;
         if (!$request->issued_at) {
             $data['expired_at'] = null;
         }
@@ -87,12 +87,12 @@ class CvCertificationController extends Controller
             'credential_url' => 'nullable|url',
         ]);
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $user->id_kustomer;
         if (!$data['expired_at']) {
             $data['expired_at'] = null;
         }
         $certifications = CvCertification::where('id', $id)
-            ->where('user_id', $user->id_kustomer)->first();
+            ->where('candidate_id', $user->id_kustomer)->first();
 
         if (!$certifications) {
             return $this->errorResponse('ID not found', 404, 40401);
@@ -111,7 +111,7 @@ class CvCertificationController extends Controller
     public function destroy($id)
     {
         $user = auth()->user();
-        $certifications = CvCertification::where('id', $id)->where('user_id', $user->id_kustomer)->first();
+        $certifications = CvCertification::where('id', $id)->where('candidate_id', $user->id_kustomer)->first();
         if (!$certifications) {
             return $this->errorResponse('ID not found', 404, 40401);
         }
