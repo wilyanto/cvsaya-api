@@ -52,7 +52,7 @@ class CvDocument extends Model implements Auditable
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'candidate_id' => $this->candidate_id,
             'identity_card' => $this->identity_card,
             'front_selfie' => $this->front_selfie,
             'left_selfie' => $this->left_selfie,

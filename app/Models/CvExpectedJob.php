@@ -33,7 +33,7 @@ class CvExpectedJob extends Model implements Auditable
 
     public function candidates()
     {
-        return $this->hasMany(Candidate::class, 'user_id', 'user_id');
+        return $this->hasMany(Candidate::class, 'candidate_id', 'candidate_id');
     }
 
     public function position()
@@ -45,7 +45,7 @@ class CvExpectedJob extends Model implements Auditable
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'candidate_id' => $this->candidate_id,
             'expected_salary' => $this->expected_salary,
             'expected_position' => $this->position,
             'position_reason' => $this->position_reason,

@@ -27,7 +27,8 @@ class CvSosmed extends Model implements Auditable
         'website_url',
     ];
 
-    public function profileDetails(){
-        return $this->belongsTo(CvProfileDetail::class,'user_id','user_id')->withDefault();
+    public function profileDetails()
+    {
+        return $this->belongsTo(CvProfileDetail::class, 'candidate_id', 'candidate_id')->withDefault();
     }
 }

@@ -28,7 +28,7 @@ class CvProfileDetail extends Model implements Auditable
         'last_name',
         'birth_location',
         'birth_date',
-        'gender',   
+        'gender',
         'identity_number',
         'reference',
         'religion_id',
@@ -49,17 +49,17 @@ class CvProfileDetail extends Model implements Auditable
 
     public function addresses()
     {
-        return $this->hasOne(CvDomicile::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvDomicile::class, 'candidate_id', 'candidate_id')->withDefault();
     }
 
     public function sosmeds()
     {
-        return $this->hasOne(CvSosmed::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvSosmed::class, 'candidate_id', 'candidate_id')->withDefault();
     }
 
     public function employee()
     {
-        return $this->belongsToMany(Employee::class, 'user_id', 'user_id')->withDefault();
+        return $this->belongsToMany(Employee::class, Candidate::class, 'id', 'user_id', 'candidate_id', 'user_id')->withDefault();
     }
 
     public function religion()
@@ -83,8 +83,8 @@ class CvProfileDetail extends Model implements Auditable
 
         $query;
         foreach ($names as $name) {
-            $query->where('first_name', 'LIKE', '%'.$name.'%')
-                ->orWhere('last_name', 'LIKE', '%'.$name.'%');
+            $query->where('first_name', 'LIKE', '%' . $name . '%')
+                ->orWhere('last_name', 'LIKE', '%' . $name . '%');
         }
         return $query;
     }
@@ -93,7 +93,7 @@ class CvProfileDetail extends Model implements Auditable
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'candidate_id' => $this->candidate_id,
             'full_name' => $this->full_name,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,

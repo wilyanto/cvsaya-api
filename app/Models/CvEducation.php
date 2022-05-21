@@ -38,22 +38,22 @@ class CvEducation extends Model implements Auditable
 
     public function experiences()
     {
-        return $this->hasOne(CvExperience::class, 'user_id', 'user_id');
+        return $this->hasOne(CvExperience::class, 'candidate_id', 'candidate_id');
     }
 
     public function certifications()
     {
-        return $this->hasOne(CvCertification::class, 'user_id', 'user_id');
+        return $this->hasOne(CvCertification::class, 'candidate_id', 'candidate_id');
     }
 
     public function specialities()
     {
-        return $this->hasOne(CvSpeciality::class, 'user_id', 'user_id');
+        return $this->hasOne(CvSpeciality::class, 'candidate_id', 'candidate_id');
     }
 
     public function hobbies()
     {
-        return $this->hasOne(CvHobby::class, 'user_id', 'user_id');
+        return $this->hasOne(CvHobby::class, 'candidate_id', 'candidate_id');
     }
 
     public function degree()
@@ -65,7 +65,7 @@ class CvEducation extends Model implements Auditable
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'candidate_id' => $this->candidate_id,
             'instance' => $this->instance,
             'degree' => $this->degree,
             'field_of_study' => $this->field_of_study,
