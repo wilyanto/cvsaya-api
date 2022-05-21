@@ -400,10 +400,6 @@ class AttendanceController extends Controller
                 $shifts = [];
                 $employeeShifts = $attendances->unique('shift_id');
                 foreach ($employeeShifts as $employeeShift) {
-                    $note = $attendances->where(
-                        'attendance_type',
-                        AttendanceType::clockIn()
-                    )->first()->outsideRadiusAttendance();
                     $attendances = [];
                     foreach ($shiftAttendances[$employeeShift->shift_id] as $attendance) {
                         $attendances[] = [
@@ -414,7 +410,6 @@ class AttendanceController extends Controller
                     $shifts[] = [
                         'id' => $employeeShift->shift_id,
                         'attendances' => $attendances,
-                        'note' => $note
                     ];
                 }
                 $employee['profile_detail'] = $employee->profileDetail()->first();
