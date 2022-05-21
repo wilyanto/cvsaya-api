@@ -6,6 +6,7 @@ use App\Models\CvSpeciality;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
+use App\Models\Candidate;
 use App\Models\CvSpecialityCertificate;
 
 class CvSpecialityController extends Controller
@@ -18,11 +19,10 @@ class CvSpecialityController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $specialities = CvSpeciality::where('candidate_id', $candidate->id)->get();
 
-        $specialities = CvSpeciality::where('candidate_id', $user->id_kustomer)->get();
-
-        return $this->showAll(collect($specialities->toArray()));
+        return $this->showAll($specialities);
     }
 
     /**
@@ -32,24 +32,59 @@ class CvSpecialityController extends Controller
      */
     public function create(Request $request)
     {
-        $user = auth()->user();
-
         $request->validate([
             'name' => 'required|string',
         ]);
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
         $data = $request->all();
-        $data['candidate_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $candidate->id;
         $specialities = CvSpeciality::create($data);
 
         return $this->showOne($specialities->toArray());
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Specialities  $specialities
      * @return \Illuminate\Http\Response
      */
+    public function update(Request $request, $id)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'name' => 'required|string',
+        ]);
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $data = $request->all();
+        $data['candidate_id'] = $candidate->id;
+        $speciality = CvSpeciality::where('id', $id)
+            ->where('candidate_id', $candidate->id)
+            ->firstOrFail();
+        $speciality->update($data);
+
+        return $this->showOne($speciality);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Specialities  $specialities
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Request $request, $id)
+    {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $specialities = CvSpeciality::where('id', $request->id)->where('candidate_id', $candidate->id)->first();
+        if (!$specialities) {
+            return $this->errorResponse('Speciality not found', 404, 40401);
+        }
+        $specialities->delete();
+
+        return $this->showOne(null);
+    }
 
     public function updateDeleteCertificate(array $old, array $new, $speciality)
     {
@@ -67,26 +102,21 @@ class CvSpecialityController extends Controller
 
     public function updateCertificate(Request $request, $id)
     {
-        $user = auth()->user();
         $request->validate([
             'certificates' => 'array',
         ]);
         $certificates = $request->certificates;
 
-        $validateSpeciality = CvSpeciality::where('id', $request->id)->where('candidate_id', $user->id_kustomer)->firstOrFail();
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $validateSpeciality = CvSpeciality::where('id', $request->id)
+            ->where('candidate_id', $candidate->id)
+            ->firstOrFail();
 
         $havedCertificates = CvSpecialityCertificate::where('speciality_id', $request->id)->pluck('certificate_id')->toArray();
         $this->updateDeleteCertificate($havedCertificates, $certificates, $validateSpeciality);
         $validateSpeciality = $validateSpeciality->fresh();
         return $this->showOne($validateSpeciality);
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Specialities  $specialities
-     * @return \Illuminate\Http\Response
-     */
 
     public function suggestion(Request $request)
     {
@@ -103,60 +133,5 @@ class CvSpecialityController extends Controller
         $specialities = collect($specialities)->pluck('name');
 
         return $this->showAll($specialities);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Specialities  $specialities
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Request $request)
-    {
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Specialities  $specialities
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        $user = auth()->user();
-
-        $request->validate([
-            'name' => 'required|string',
-        ]);
-        $data = $request->all();
-        $data['candidate_id'] = $user->id_kustomer;
-        $specialities = CvSpeciality::where('candidate_id', $user->id_kustomer)->where('id', $id)->firstOrFail();
-        $specialities->update($data);
-
-        return $this->showOne($specialities);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Specialities  $specialities
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $request, $id)
-    {
-        $user = auth()->user();
-
-        $specialities = CvSpeciality::where('id', $request->id)->where('candidate_id', $user->id_kustomer)->first();
-        if (!$specialities) {
-            return $this->errorResponse('id not found', 404, 40401);
-        }
-        $specialities->delete();
-
-        return $this->showOne(null);
-    }
-
-    public function destroyIntergrity(Request $request)
-    {
     }
 }
