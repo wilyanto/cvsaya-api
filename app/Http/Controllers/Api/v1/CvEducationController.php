@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Candidate;
 use App\Models\CvEducation;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
@@ -20,8 +21,8 @@ class CvEducationController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
-        $educations = CvEducation::where('user_id', $user->id_kustomer)
+        $candidate = Candidate::where('user_id', auth()->id())->first();
+        $educations = CvEducation::where('candidate_id', $candidate->id)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC')
@@ -46,7 +47,6 @@ class CvEducationController extends Controller
      */
     public function store(Request $request)
     {
-        $user = auth()->user();
         $request->validate([
             'instance' => 'required|string',
             'degree_id' => 'exists:degrees,id|required',
@@ -57,8 +57,9 @@ class CvEducationController extends Controller
             'description' => 'nullable|string',
         ]);
 
+        $candidate = Candidate::where('user_id', auth()->id())->first();
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $candidate->id;
         if (!$request->ended_at) {
             $data['ended_at'] = null;
         }
@@ -86,7 +87,6 @@ class CvEducationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = auth()->user();
         $request->validate([
             'instance' => 'nullable|string',
             'degree_id' => 'exists:degrees,id|required',
@@ -96,8 +96,10 @@ class CvEducationController extends Controller
             'ended_at' => 'nullable|date|after:started_at',
             'description' => 'nullable|string',
         ]);
+
+        $candidate = Candidate::where('user_id', auth()->id())->first();
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $candidate->id;
         if (!$request->started_at) {
             $data['started_at'] = null;
         }
@@ -105,7 +107,7 @@ class CvEducationController extends Controller
             $data['ended_at'] = null;
         }
         $education = CvEducation::where('id', $id)
-            ->where('user_id', $user->id_kustomer)
+            ->where('candidate_id', $candidate->id)
             ->first();
         if (!$education) {
             return $this->errorResponse('id not found', 404, 40401);
@@ -124,8 +126,7 @@ class CvEducationController extends Controller
      */
     public function destroy($id)
     {
-        $user = auth()->user();
-        $educations = CvEducation::where('id', $id)->where('user_id', $user->id_kustomer)->first();
+        $educations = CvEducation::where('candidate_id', $id)->first();
         if (!$educations) {
             return $this->errorResponse('id not found', 404, 40401);
         }

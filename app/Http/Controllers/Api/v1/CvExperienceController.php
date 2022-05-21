@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CvExperienceRequest;
+use App\Models\Candidate;
 use App\Models\CvExperience;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
@@ -21,8 +22,8 @@ class CvExperienceController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
-        $experiences = CvExperience::where('user_id', $user->id_kustomer)
+        $candidate = Candidate::where('user_id', auth()->id())->first();
+        $experiences = CvExperience::where('candidate_id', $candidate->id)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC')
@@ -38,21 +39,19 @@ class CvExperienceController extends Controller
      */
     public function store(CvExperienceRequest $request)
     {
-        $user = auth()->user();
-
+        $candidate = Candidate::where('user_id', auth()->id())->first();
         $document = null;
         if ($request->payslip) {
             $documents = Document::where('id', $request->payslip)->firstOrFail();
             $document = $documents->id;
         }
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $candidate->id;
         $requestPosition = json_decode($request->position);
         $position = CandidatePosition::where('id', $requestPosition->id)->orWhere('name', $requestPosition->name)->first();
         if (!$position) {
             $position = CandidatePosition::create([
                 'name' => $requestPosition->name,
-                'inserted_by' => $user->id_kustomer,
             ]);
         }
         $data['position_id'] = $position->id;
@@ -98,19 +97,18 @@ class CvExperienceController extends Controller
     {
         $request->validated();
 
-        $user = auth()->user();
-        $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
+        $candidate = Candidate::where('user_id', auth()->id())->first();
+        $experience = CvExperience::where('candidate_id', $id)->firstOrFail();
         $requestPosition = $request->position;
         $position = CandidatePosition::where('id', $requestPosition['id'])->orWhere('name', $requestPosition['name'])->first();
         if (!$position) {
             $position = CandidatePosition::create([
                 'name' => $requestPosition['name'],
-                'inserted_by' => $user->id_kustomer,
             ]);
         }
         $data = $request->all();
         $data['position_id'] = $position->id;
-        $data['user_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $candidate->id;
         unset($data['position']);
         if ($request->started_at) {
             if (strtotime($experience->ended_at) > strtotime($request->started_at) || $experience->ended_at == null) {
@@ -145,7 +143,7 @@ class CvExperienceController extends Controller
     {
         $user = auth()->user();
 
-        $experience = CvExperience::where('id', $id)->where('user_id', $user->id_kustomer)->firstOrFail();
+        $experience = CvExperience::where('candidate_id', $id)->firstOrFail();
         if (!$experience) {
             return $this->errorResponse('id not found', 404, 40401);
         }
