@@ -212,7 +212,7 @@ class CvProfileDetailController extends Controller
             'reference' => 'string|nullable',
         ]);
 
-        $candidate = Candidate::where('candidate_id', auth()->id())->first();
+        $candidate = Candidate::where('id', auth()->id())->first();
         if ($candidate) {
             return $this->errorResponse('This user already being a candidate', 409, 40900);
         }
@@ -303,7 +303,7 @@ class CvProfileDetailController extends Controller
 
     public function update(Request $request)
     {
-        $candidate = Candidate::where('candidate_id', auth()->id())->first();
+        $candidate = Candidate::where('id', auth()->id())->first();
 
         $request->validate([
             #Profile Detail
