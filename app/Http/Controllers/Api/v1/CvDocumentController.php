@@ -30,7 +30,7 @@ class CvDocumentController extends Controller
     public function show($id)
     {
         $candidate = Candidate::findOrFail($id);
-        $cvDocument = CvDocument::where('user_id', $candidate->user_id)->firstOrFail();
+        $cvDocument = CvDocument::where('candidate_id', $candidate->id)->firstOrFail();
         return $this->showOne($cvDocument);
     }
 
