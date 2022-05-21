@@ -235,7 +235,7 @@ Route::prefix('v1')->group(function () {
                 Route::controller(CvHobbyController::class)->group(function () {
                     Route::get('/', 'index');
                     Route::get('/suggestions', 'suggestion');
-                    Route::post('/', 'create');
+                    Route::post('/', 'store');
                     Route::delete('/{id}', 'destroy');
                     Route::put('/{id}', 'update');
                 });
