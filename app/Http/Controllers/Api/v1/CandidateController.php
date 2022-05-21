@@ -116,6 +116,31 @@ class CandidateController extends Controller
         return $this->showOne($candidate->listDefaultCandidate());
     }
 
+    public function getSummaryByDay(Request $request)
+    {
+        $request->validate([
+            'started_at' => 'required',
+            'ended_at' => 'required'
+        ]);
+        $startDate = $request->started_at;
+        $endDate = $request->ended_at;
+        $candidates = Candidate::whereBetween('registered_at', [$startDate, $endDate])->get();
+        $totalCandidate = $candidates->count();
+        $interviewCandidates = $candidates->where('status', Candidate::READY_TO_INTERVIEW)->count();
+        $interviewedCandidates = $candidates->whereIn(
+            'status',
+            [Candidate::STANDBY, Candidate::CONSIDER, Candidate::ACCEPTED, Candidate::DECLINE]
+        )->count();
+
+        $data = [
+            'total_candidate' => $totalCandidate,
+            'candidate_in_interview' => $interviewCandidates,
+            'candidate_interview' => $interviewedCandidates
+        ];
+
+        return $this->showOne($data);
+    }
+
     public function addCandidateToBlast(Request $request)
     {
         $user = auth()->user();

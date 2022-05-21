@@ -138,6 +138,7 @@ Route::prefix('v1')->group(function () {
                 Route::prefix('candidates')->group(function () {
                     Route::controller(CandidateController::class)->group(function () {
                         Route::get('/', 'index');
+                        Route::get('/candidate-summary', 'getSummaryByDay');
                         Route::get('/{id}', 'indexDetail');
                         Route::post('/', 'addCandidateToBlast');
                         Route::put('/{id}', 'updateStatus');
