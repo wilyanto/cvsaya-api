@@ -140,7 +140,7 @@ class Candidate extends Model implements Auditable
             'education' => $this->educations->first(),
             'gender' =>  $this->profile->gender,
             'position' => $this->job->position,
-            'domicile' => $this->domicile->province(),
+            'domicile' => $this->domicile,
         ];
     }
 
