@@ -44,7 +44,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function profileDetail()
     {
-        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id');
+        return $this->hasOneThrough(CvProfileDetail::class, Candidate::class, 'user_id', 'candidate_id', 'user_id', 'id');
     }
 
     public function company()
