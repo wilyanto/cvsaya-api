@@ -136,6 +136,7 @@ class Candidate extends Model implements Auditable
             'updated_at' => $this->updated_at,
             'last_assessment' => $this->label(),
             'religion' => $this->profile->religion,
+            'profile' => $this->profile,
             'education' => $this->educations->first(),
             'gender' =>  $this->profile->gender,
             'position' => $this->job->position,
