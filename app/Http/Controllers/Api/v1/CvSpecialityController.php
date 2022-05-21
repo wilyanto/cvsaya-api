@@ -20,7 +20,7 @@ class CvSpecialityController extends Controller
     {
         $user = auth()->user();
 
-        $specialities = CvSpeciality::where('user_id', $user->id_kustomer)->get();
+        $specialities = CvSpeciality::where('candidate_id', $user->id_kustomer)->get();
 
         return $this->showAll(collect($specialities->toArray()));
     }
@@ -38,7 +38,7 @@ class CvSpecialityController extends Controller
             'name' => 'required|string',
         ]);
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $user->id_kustomer;
         $specialities = CvSpeciality::create($data);
 
         return $this->showOne($specialities->toArray());
@@ -72,12 +72,10 @@ class CvSpecialityController extends Controller
             'certificates' => 'array',
         ]);
         $certificates = $request->certificates;
-        // dd($request->input());
 
-        $validateSpeciality = CvSpeciality::where('id', $request->id)->where('user_id', $user->id_kustomer)->firstOrFail();
+        $validateSpeciality = CvSpeciality::where('id', $request->id)->where('candidate_id', $user->id_kustomer)->firstOrFail();
 
         $havedCertificates = CvSpecialityCertificate::where('speciality_id', $request->id)->pluck('certificate_id')->toArray();
-        // dd(var_dump($havedCertificates));
         $this->updateDeleteCertificate($havedCertificates, $certificates, $validateSpeciality);
         $validateSpeciality = $validateSpeciality->fresh();
         return $this->showOne($validateSpeciality);
@@ -103,7 +101,6 @@ class CvSpecialityController extends Controller
         })->select('name')->groupBy('name')->orderByRaw('COUNT(*) DESC')->limit($limit)->get();
 
         $specialities = collect($specialities)->pluck('name');
-        //    dd($specialities);
 
         return $this->showAll($specialities);
     }
@@ -133,8 +130,8 @@ class CvSpecialityController extends Controller
             'name' => 'required|string',
         ]);
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
-        $specialities = CvSpeciality::where('user_id', $user->id_kustomer)->where('id', $id)->firstOrFail();
+        $data['candidate_id'] = $user->id_kustomer;
+        $specialities = CvSpeciality::where('candidate_id', $user->id_kustomer)->where('id', $id)->firstOrFail();
         $specialities->update($data);
 
         return $this->showOne($specialities);
@@ -150,7 +147,7 @@ class CvSpecialityController extends Controller
     {
         $user = auth()->user();
 
-        $specialities = CvSpeciality::where('id', $request->id)->where('user_id', $user->id_kustomer)->first();
+        $specialities = CvSpeciality::where('id', $request->id)->where('candidate_id', $user->id_kustomer)->first();
         if (!$specialities) {
             return $this->errorResponse('id not found', 404, 40401);
         }
