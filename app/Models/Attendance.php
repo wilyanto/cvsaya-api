@@ -70,4 +70,9 @@ class Attendance extends Model implements Auditable
             return $date->format('Y-m-d\TH:i:s.v\Z');
         }
     }
+
+    public function getNote()
+    {
+        return $this->outsideRadiusAttendance()->where('attendance_id', $this->id)->pluck('note');
+    }
 }
