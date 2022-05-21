@@ -99,7 +99,7 @@ class CvProfileDetailController extends Controller
     public function getCandidateCv($id)
     {
         $candidate = Candidate::findOrFail($id);
-        $candidateId = $candidate->user_id;
+        $candidateId = $candidate->id;
 
         $education = CvEducation::where('candidate_id', $candidateId)
             ->orderBy('started_at', 'DESC')
