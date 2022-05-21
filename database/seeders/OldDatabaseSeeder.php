@@ -270,7 +270,7 @@ class OldDatabaseSeeder extends Seeder
                                     'name' => ucwords($pengalaman->sebagai),
                                     'created_at' => now(),
                                     'updated_at' => now(),
-                                ]);
+                            ]);
                                 $candidatePositionId = $lastCandidatePositionId;
                             } else {
                                 // Log::info($candidatePositionFound['id']);

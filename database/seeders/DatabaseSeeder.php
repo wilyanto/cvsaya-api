@@ -18,10 +18,12 @@ class DatabaseSeeder extends Seeder
             // CleanerSeeder::class,
             // OldDatabaseSeeder2::class,
             // NewDatabaseSeeder::class,
-            ReviseEducationSeeder::class,
+            // ReviseEducationSeeder::class,
             // MoveCandidatePositionId::class,
             // CandidatePositionOldSeeder::class,
             // OldEmployeeSeeder::class,
+            // UniqueCandidatePositionSeeder::class,
+            RevisePositionIdSeeder::class,
         ]);
     }
 }
