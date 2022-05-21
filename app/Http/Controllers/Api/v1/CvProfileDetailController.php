@@ -348,6 +348,7 @@ class CvProfileDetailController extends Controller
                 $requestDomicile,
                 $requestSosmed,
             ) {
+                // TODO: Debugging
                 $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->first();
                 $userProfileDetail->fill($requestProfile);
                 if ($userProfileDetail->isDirty()) {

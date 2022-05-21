@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Models\CandidatePosition;
 use App\Models\CvExpectedJob;
+use App\Models\CvExperience;
 use App\Traits\ApiResponser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -94,10 +95,18 @@ class CandidatePositionController extends Controller
             'name' => 'string',
         ]);
 
-        CandidatePosition::find($id)
+        $candidatePositionId = $request->id;
+        CvExpectedJob::where('expected_position', $candidatePositionId)->update([
+            'expected_position' => $candidatePositionId,
+        ]);
+        CvExperience::where('position_id', $candidatePositionId)->update([
+            'position_id' => $candidatePositionId,
+        ]);
+
+        $candidatePosition = CandidatePosition::find($id)
             ->update($request->all());
 
-        return $this->showOne(null);
+        return $this->showOne($candidatePosition);
     }
 
     public function verified($id)
