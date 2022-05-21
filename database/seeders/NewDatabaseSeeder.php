@@ -457,9 +457,6 @@ class NewDatabaseSeeder extends Seeder
             Log::info('Error :' . $e);
         }
 
-
-
-
         // DB::transaction(function () use (
         //     $addCandidates,
         //     $addCvProfileDetails,
