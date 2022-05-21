@@ -178,7 +178,7 @@ class Candidate extends Model implements Auditable
             'status' => $this->status,
             'country_code' => $this->country_code,
             'phone_number' => $this->phone_number,
-            'interviews' => $this->schedules,
+            // 'interviews' => $this->schedules,
             'profile' => $this->profile,
             'latest_result' => $this->label(),
             'registered_at' => $this->registered_at,
