@@ -33,9 +33,9 @@ class CvProfileDetailController extends Controller
     {
         $array = [];
         $candidate = Candidate::findOrFail($id);
-        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->firstOrFail();
-        $userAddress = CvDomicile::where('candidate_id', $candidate->id)->firstOrFail();
-        $userSosmed = CvSosmed::where('candidate_id', $candidate->id)->firstOrFail();
+        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->first();
+        $userAddress = CvDomicile::where('candidate_id', $candidate->id)->first();
+        $userSosmed = CvSosmed::where('candidate_id', $candidate->id)->first();
 
         $array['profile_detail'] = $userProfileDetail;
         $array['domicile'] = $userAddress;
@@ -48,9 +48,9 @@ class CvProfileDetailController extends Controller
     {
         $candidate = Candidate::where('user_id', auth()->id())->first();
         $array = [];
-        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->firstOrFail();
-        $userAddress = CvDomicile::where('candidate_id', $candidate->id)->firstOrFail();
-        $userSosmed = CvSosmed::where('candidate_id', $candidate->id)->firstOrFail();
+        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->first();
+        $userAddress = CvDomicile::where('candidate_id', $candidate->id)->first();
+        $userSosmed = CvSosmed::where('candidate_id', $candidate->id)->first();
 
         $array['profile_detail'] = $userProfileDetail;
         $array['domicile'] = $userAddress;
