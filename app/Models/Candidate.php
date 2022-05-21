@@ -67,7 +67,7 @@ class Candidate extends Model implements Auditable
 
     public function educations()
     {
-        return $this->hasMany(CvEducation::class, 'user_id', 'user_id')
+        return $this->hasMany(CvEducation::class, 'candidate_id', 'id')
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC');
@@ -80,7 +80,7 @@ class Candidate extends Model implements Auditable
 
     public function job()
     {
-        return $this->hasOne(CvExpectedJob::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvExpectedJob::class, 'candidate_id', 'id')->withDefault();
     }
 
 
@@ -112,7 +112,7 @@ class Candidate extends Model implements Auditable
         if ($this->status == 3) {
             $candidateController = new CvProfileDetailController;
 
-            $profileStatus = $candidateController->getStatus($this->candidate_id);
+            $profileStatus = $candidateController->getStatus($this->id);
             $profileStatus = $profileStatus->original;
             $profileStatus = $profileStatus['data']['completeness_status'];
             if (
