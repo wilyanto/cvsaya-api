@@ -107,7 +107,7 @@ class CandidateController extends Controller
                 $data[] = $candidate->listDefaultCandidate();
             }
         }
-        return $this->showPagination('candidates', $data);
+        return $this->showPagination('candidates', $candidates);
     }
 
     public function indexDetail(Request $request, $id)

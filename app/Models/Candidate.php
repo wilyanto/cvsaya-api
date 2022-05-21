@@ -183,6 +183,7 @@ class Candidate extends Model implements Auditable
             'profile' => $this->profile,
             'latest_result' => $this->label(),
             'registered_at' => $this->registered_at,
+            'domicile' => $this->domicile->province(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
