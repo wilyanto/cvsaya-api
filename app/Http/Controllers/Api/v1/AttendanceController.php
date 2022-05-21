@@ -403,7 +403,7 @@ class AttendanceController extends Controller
                     $note = $attendances->where(
                         'attendance_type',
                         AttendanceType::clockIn()
-                    )->outsideRadiusAttendance();
+                    )->first()->outsideRadiusAttendance();
                     $attendances = [];
                     foreach ($shiftAttendances[$employeeShift->shift_id] as $attendance) {
                         $attendances[] = [
