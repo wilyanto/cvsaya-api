@@ -244,8 +244,8 @@ Route::prefix('v1')->group(function () {
             Route::prefix('specialities')->group(function () {
                 Route::controller(CvSpecialityController::class)->group(function () {
                     Route::get('/',  'index');
+                    Route::post('/', 'store');
                     Route::get('/suggestions', 'suggestion');
-                    Route::post('/', 'create');
                     Route::put('/{id}/certificates', 'updateCertificate');
                     Route::put('/{id}',  'update');
                     Route::delete('/{id}', 'destroy');

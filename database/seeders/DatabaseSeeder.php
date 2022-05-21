@@ -23,7 +23,8 @@ class DatabaseSeeder extends Seeder
             // CandidatePositionOldSeeder::class,
             // OldEmployeeSeeder::class,
             // UniqueCandidatePositionSeeder::class,
-            RevisePositionIdSeeder::class,
+            // RevisePositionIdSeeder::class,
+            CertificationSeeder::class,
         ]);
     }
 }

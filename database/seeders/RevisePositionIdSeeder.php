@@ -68,8 +68,8 @@ class RevisePositionIdSeeder extends Seeder
 
         // Pergi ke cvsayav, ambil administrator (idlogin dan telpon)
 
-        $lowerBoundaryId = 1;
-        $upperBoundaryId = 5000;
+        $lowerBoundaryId = 35001;
+        $upperBoundaryId = 43000;
         $administrators = DB::connection('cvsaya')->table('administrator')->whereRaw('LENGTH(no_telp) > 7')
             ->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
                 'idlogin', 'username', 'id_ktp', 'nama_lengkap', 'no_telp', 'TglPost', 'IDprovinces'
@@ -96,7 +96,7 @@ class RevisePositionIdSeeder extends Seeder
             $employee = $oldEmployees->where('idlogin', $admin->idlogin)->first();
             $keinginanGaji = $keinginanGajis->where('idlogin', $admin->idlogin)->first();
             $pengalamans = $pengalamansAll->where('idlogin', $admin->idlogin)->all();
-            if ($employee && $keinginanGaji) {
+            if ($employee && $keinginanGaji && $candidate) {
                 if ($employee->job !== '') {
                     $candidatePosition = collect($candidatePositions)->filter(function ($item) use ($employee) {
                         return trim(strtolower($item->name)) == trim(strtolower($employee->job));
@@ -104,45 +104,47 @@ class RevisePositionIdSeeder extends Seeder
 
                     if ($candidatePosition) {
                         $candidatePositionId = $candidatePosition->id;
+                        $expectedJob = [
+                            'candidate_id' => $candidate->id,
+                            'expected_salary' => $keinginanGaji->Desired,
+                            'expected_position' => $candidatePositionId,
+                            'position_reason' => $employee->inginposisi,
+                            'salary_reason' => $keinginanGaji->Ulasan,
+                            'created_at' => $employee->TglPost !== null && $employee->TglPost !== '0000-00-00 00:00:00' ? $employee->TglPost : now(),
+                            'updated_at' => $employee->TglPost !== null && $employee->TglPost !== '0000-00-00 00:00:00' ? $employee->TglPost : now(),
+                        ];
+                        Log::info($candidate->id);
+                        array_push($newExpectedJobs, $expectedJob);
                     }
-                    $expectedJob = [
-                        'candidate_id' => $candidate->id,
-                        'expected_salary' => $keinginanGaji->Desired,
-                        'expected_position' => $candidatePositionId,
-                        'position_reason' => $employee->inginposisi,
-                        'salary_reason' => $keinginanGaji->Ulasan,
-                        'created_at' => $employee->TglPost !== null && $employee->TglPost !== '0000-00-00 00:00:00' ? $employee->TglPost : now(),
-                        'updated_at' => $employee->TglPost !== null && $employee->TglPost !== '0000-00-00 00:00:00' ? $employee->TglPost : now(),
-                    ];
-                    Log::info($candidate->id);
-                    array_push($newExpectedJobs, $expectedJob);
                 }
             }
 
-            foreach ($pengalamans as $pengalaman) {
-                $candidatePosition = collect($candidatePositions)->filter(function ($item) use ($pengalaman) {
-                    return trim(strtolower($item->name)) == trim(strtolower($pengalaman->sebagai));
-                })->first();
-                if ($candidatePosition) {
-                    $candidatePositionId = $candidatePosition->id;
+            if ($candidate) {
+                foreach ($pengalamans as $pengalaman) {
+                    $candidatePosition = collect($candidatePositions)->filter(function ($item) use ($pengalaman) {
+                        return trim(strtolower($item->name)) == trim(strtolower($pengalaman->sebagai));
+                    })->first();
+                    if ($candidatePosition) {
+                        $candidatePositionId = $candidatePosition->id;
+                        $experience = [
+                            'candidate_id' => $candidate->id,
+                            'employment_type_id' => null,
+                            'position_id' => $candidatePositionId,
+                            'company_name' => $pengalaman->perusahaan,
+                            'company_location' => null,
+                            'jobdesc' => $pengalaman->sebagai,
+                            'resign_reason' => $pengalaman->resign,
+                            'reference' => null,
+                            'previous_salary' => $pengalaman->gaji,
+                            'started_at' => Carbon::createFromTimestamp($pengalaman->tahun)->toDateString(),
+                            'ended_at' => Carbon::createFromTimestamp($pengalaman->sampai)->toDateString(),
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                        Log::info($candidate->id);
+                        array_push($newExperiences, $experience);
+                    }
                 }
-                $experience = [
-                    'candidate_id' => $candidate->id,
-                    'employment_type_id' => null,
-                    'position_id' => $candidatePositionId,
-                    'company_name' => $pengalaman->perusahaan,
-                    'company_location' => null,
-                    'jobdesc' => $pengalaman->sebagai,
-                    'resign_reason' => $pengalaman->resign,
-                    'reference' => null,
-                    'previous_salary' => $pengalaman->gaji,
-                    'started_at' => Carbon::createFromTimestamp($pengalaman->tahun)->toDateString(),
-                    'ended_at' => Carbon::createFromTimestamp($pengalaman->sampai)->toDateString(),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-                Log::info($candidate->id);
-                array_push($newExperiences, $experience);
             }
         }
 
@@ -150,7 +152,7 @@ class RevisePositionIdSeeder extends Seeder
             $newExpectedJobs,
             $newExperiences,
         ) {
-            $chunckedExpectedJobs = array_chunk($newExpectedJobs, 1000);
+        $chunckedExpectedJobs = array_chunk($newExpectedJobs, 1000);
             foreach ($chunckedExpectedJobs as $expectedJobs) {
                 CvExpectedJob::insert($expectedJobs);
             }

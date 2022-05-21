@@ -38,8 +38,8 @@ class OldDatabaseSeeder extends Seeder
     public function run()
     {
         try {
-            $lowerBoundaryId = 1;
-            $upperBoundaryId = 5000;
+            $lowerBoundaryId = 10001;
+            $upperBoundaryId = 15000;
             $users = User::whereRaw('LENGTH(telpon) > 7')->get();
             Log::info('Kustomer : ' . count($users));
             $administrators = DB::connection('cvsaya')->table('administrator')->whereRaw('LENGTH(no_telp) > 7')
