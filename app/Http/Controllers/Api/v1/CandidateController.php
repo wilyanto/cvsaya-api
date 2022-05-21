@@ -325,7 +325,7 @@ class CandidateController extends Controller
     public function getCompletenessStatus()
     {
         $candidate = Candidate::where('id', auth()->id())->firstOrFail();
-        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->firstOrFail();
+        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->first();
         $education = CvEducation::where('candidate_id', $candidate->id)->first();
         $document = CvDocument::where('candidate_id', $candidate->id)->first();
         $expectedSalaries = CvExpectedJob::where('candidate_id', $candidate->id)->first();
