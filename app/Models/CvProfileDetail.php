@@ -28,10 +28,11 @@ class CvProfileDetail extends Model implements Auditable
         'last_name',
         'birth_location',
         'birth_date',
-        'gender',
+        'gender',   
         'identity_number',
-        'religion',
         'reference',
+        'religion_id',
+        'marriage_status_id',
     ];
 
     public function getFullNameAttribute()
