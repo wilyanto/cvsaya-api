@@ -112,7 +112,7 @@ class Candidate extends Model implements Auditable
         if ($this->status == 3) {
             $candidateController = new CvProfileDetailController;
 
-            $profileStatus = $candidateController->getStatus($this->user_id);
+            $profileStatus = $candidateController->getStatus($this->candidate_id);
             $profileStatus = $profileStatus->original;
             $profileStatus = $profileStatus['data']['completeness_status'];
             if (
@@ -126,7 +126,7 @@ class Candidate extends Model implements Auditable
         }
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'candidate_id' => $this->candidate_id,
             'name' => $this->name,
             'phone_number' => $this->phone_number,
             'country_code' => $this->country_code,
