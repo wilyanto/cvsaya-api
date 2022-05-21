@@ -142,7 +142,7 @@ class CvProfileDetailController extends Controller
 
     public function getStatus($id)
     {
-        $userProfileDetail = CvProfileDetail::where('candidate_id', $id)->firstOrFail();
+        $userProfileDetail = CvProfileDetail::where('candidate_id', $id)->first();
         $education = CvEducation::where('candidate_id', $id)->first();
         $document = CvDocument::where('candidate_id', $id)->first();
         $expectedSalaries = CvExpectedJob::where('candidate_id', $id)->first();
