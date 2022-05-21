@@ -182,28 +182,29 @@ class CandidateController extends Controller
 
     public function getCount($position)
     {
-        $data['total'] = collect($position->candidates)->count();
-        $data['interview'] = collect($position->candidates)->filter(function ($item) {
+        $candidates = $position->candidates;
+        $data['total'] = collect($candidates)->count();
+        $data['interview'] = collect($candidates)->filter(function ($item) {
             if ($item->status == 5) {
                 return $item->label() == null;
             }
         })->count();
-        $data['bad'] = collect($position->candidates)->filter(function ($item) {
+        $data['bad'] = collect($candidates)->filter(function ($item) {
             if ($item->label()) {
                 return $item->label()->id == InterviewResult::RESULT_BAD;
             }
         })->count();
-        $data['hold'] = collect($position->candidates)->filter(function ($item) {
+        $data['hold'] = collect($candidates)->filter(function ($item) {
             if ($item->label()) {
                 return $item->label()->id == InterviewResult::RESULT_HOLD;
             }
         })->count();
-        $data['recommended'] = collect($position->candidates)->filter(function ($item) {
+        $data['recommended'] = collect($candidates)->filter(function ($item) {
             if ($item->label()) {
                 return $item->label()->id == InterviewResult::RESULT_RECOMMENDED;
             }
         })->count();
-        $data['accepted'] = collect($position->candidates)->filter(function ($item) {
+        $data['accepted'] = collect($candidates)->filter(function ($item) {
             return $item->status == Candidate::ACCEPTED;
         })->count();
 
