@@ -386,7 +386,7 @@ class AttendanceController extends Controller
         $endDate = Carbon::parse($request->ended_at);
         $companyId = $request->company_id;
         $company = Company::where('id', $companyId)->first();
-        $employees = $company->employees()->get();
+        $employees = $company->employees()->with('company')->get();
         $period = CarbonPeriod::create($startDate, $endDate);
         $data = [];
 
