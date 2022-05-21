@@ -21,7 +21,7 @@ class CvHobbyController extends Controller
     {
         $user = auth()->user();
 
-        $hobbies = CvHobby::where('user_id', $user->id_kustomer)->get();
+        $hobbies = CvHobby::where('candidate_id', $user->id_kustomer)->get();
 
         return $this->showAll($hobbies);
     }
@@ -39,7 +39,7 @@ class CvHobbyController extends Controller
             'name' => 'required|string'
         ]);
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $user->id_kustomer;
         $hobbies = CvHobby::create($data);
 
         return $this->showOne($hobbies);
@@ -107,8 +107,8 @@ class CvHobbyController extends Controller
             'name' => 'required|string'
         ]);
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
-        $hobbies = CvHobby::where('user_id', $user->id_kustomer)->where('id', $id)->first();
+        $data['candidate_id'] = $user->id_kustomer;
+        $hobbies = CvHobby::where('candidate_id', $user->id_kustomer)->where('id', $id)->first();
         if (!$hobbies) {
             return $this->errorResponse('id not found', 409, 40901);
         }
@@ -126,7 +126,7 @@ class CvHobbyController extends Controller
     public function destroy($id)
     {
         $user = auth()->user();
-        $hobbies = CvHobby::where('id', $id)->where('user_id', $user->id_kustomer)->first();
+        $hobbies = CvHobby::where('id', $id)->where('candidate_id', $user->id_kustomer)->first();
         if (!$hobbies) {
             return $this->errorResponse('id not found', 404, 40401);
         }

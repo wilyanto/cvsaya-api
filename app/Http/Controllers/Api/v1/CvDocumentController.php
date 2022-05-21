@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Response;
 
 class CvDocumentController extends Controller
 {
-    use ApiResponser,HasRoleAndPermission;
+    use ApiResponser, HasRoleAndPermission;
     /**
      * Display a listing of the resource.
      *
@@ -22,26 +22,16 @@ class CvDocumentController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
-
-        $getDocuments = CvDocument::where('user_id', $user->id_kustomer)->firstOrFail();
-        return $this->showOne($getDocuments);
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $cvDocument = CvDocument::where('candidate_id', $candidate->id)->firstOrFail();
+        return $this->showOne($cvDocument);
     }
 
-    public function show($id){
-        $candidate = Candidate::findOrFail($id);
-        $getDocuments = CvDocument::where('user_id', $candidate->user_id)->firstOrFail();
-        return $this->showOne($getDocuments);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function show($id)
     {
-        //
+        $candidate = Candidate::findOrFail($id);
+        $cvDocument = CvDocument::where('candidate_id', $candidate->id)->firstOrFail();
+        return $this->showOne($cvDocument);
     }
 
     /**
@@ -52,27 +42,25 @@ class CvDocumentController extends Controller
      */
     public function store(Request $request)
     {
-        $user = auth()->user();
         $request->validate([
-            'type' =>
-            'integer|required|exists:App\Models\DocumentType,id',
-
+            'type' => 'required|exists:App\Models\DocumentType,id',
             'id' => [
                 'string',
                 'exists:App\Models\Document,id',
             ]
         ]);
 
-        $documentType = DocumentType::where('id', $request->type)->firstOrFail();
-        $document = Document::where('id', $request->id)->where('type_id', $documentType->id)->firstOrFail();
-        $cvDocument = CvDocument::where('user_id', $user->id_kustomer)->first();
+        $candidate = Candidate::where('user_id', auth()->id())->first();
+
+        $documentType = DocumentType::findorFail($request->type);
+        $document = Document::where('id', $request->id)->first();
+        $cvDocument = CvDocument::where('candidate_id', $candidate->id)->first();
         if (!$cvDocument) {
             $cvDocument = new CvDocument;
-            $cvDocument->user_id = $user->id_kustomer;
+            $cvDocument->candidate_id = $candidate->id;
         }
-        $typeOfDocument = $documentType->name;
-
-        $cvDocument->$typeOfDocument = $document->id;
+        $documentTypeName = $documentType->name;
+        $cvDocument->$documentTypeName = $document->id;
         $cvDocument->save();
         return $this->showOne($cvDocument);
     }
@@ -328,14 +316,14 @@ class CvDocumentController extends Controller
         $permissions = [
             'manage-candidate'
         ];
-        $hasPermission = $this->hasPermission($permissions,$user->id_kustomer);
-        if($hasPermission){
+        $hasPermission = $this->hasPermission($permissions, $user->id_kustomer);
+        if ($hasPermission) {
             $document = Document::where('id', $documentID)->firstOrFail();
-        }else{
+        } else {
             $document = Document::where('id', $documentID)->where('user_id', $user->id_kustomer)->firstOrFail();
         }
 
-        $documentType = DocumentType::where('id',$document->type_id)->firstOrFail();
+        $documentType = DocumentType::where('id', $document->type_id)->firstOrFail();
         try {
             $path = public_path() . '/storage/' . $documentType->name . '/' . $document->file_name . '.' . $this->getExtension($document->mime_type);
             return Response::download($path);

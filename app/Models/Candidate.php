@@ -41,9 +41,10 @@ class Candidate extends Model implements Auditable
     ];
 
     protected $fillable = [
-        'name',
-        'phone_number',
         'user_id',
+        'name',
+        'country_code',
+        'phone_number',
         'status',
         'suggested_by',
         'registered_at',
@@ -51,7 +52,7 @@ class Candidate extends Model implements Auditable
 
     public function domicile()
     {
-        return $this->hasOne(CvDomicile::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvDomicile::class)->withDefault();
     }
 
     public function suggestBy()
@@ -66,7 +67,7 @@ class Candidate extends Model implements Auditable
 
     public function educations()
     {
-        return $this->hasMany(CvEducation::class, 'user_id', 'user_id')
+        return $this->hasMany(CvEducation::class, 'candidate_id', 'id')
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC');
@@ -74,12 +75,12 @@ class Candidate extends Model implements Auditable
 
     public function profile()
     {
-        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvProfileDetail::class)->withDefault();
     }
 
     public function job()
     {
-        return $this->hasOne(CvExpectedJob::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvExpectedJob::class, 'candidate_id', 'id')->withDefault();
     }
 
 
@@ -111,7 +112,7 @@ class Candidate extends Model implements Auditable
         if ($this->status == 3) {
             $candidateController = new CvProfileDetailController;
 
-            $profileStatus = $candidateController->getStatus($this->user_id);
+            $profileStatus = $candidateController->getStatus($this->id);
             $profileStatus = $profileStatus->original;
             $profileStatus = $profileStatus['data']['completeness_status'];
             if (
@@ -125,7 +126,7 @@ class Candidate extends Model implements Auditable
         }
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'candidate_id' => $this->candidate_id,
             'name' => $this->name,
             'phone_number' => $this->phone_number,
             'country_code' => $this->country_code,
@@ -135,6 +136,7 @@ class Candidate extends Model implements Auditable
             'updated_at' => $this->updated_at,
             'last_assessment' => $this->label(),
             'religion' => $this->profile->religion,
+            'profile' => $this->profile,
             'education' => $this->educations->first(),
             'gender' =>  $this->profile->gender,
             'position' => $this->job->position,
@@ -177,10 +179,12 @@ class Candidate extends Model implements Auditable
             'status' => $this->status,
             'country_code' => $this->country_code,
             'phone_number' => $this->phone_number,
-            'interviews' => $this->schedules,
+            // 'interviews' => $this->schedules,
             'profile' => $this->profile,
             'latest_result' => $this->label(),
             'registered_at' => $this->registered_at,
+            'domicile' => $this->domicile,
+            'job' => $this->job,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

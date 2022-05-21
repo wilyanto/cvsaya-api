@@ -23,7 +23,7 @@ class CvCertification extends Model implements Auditable
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_kustomer', 'user_id')->withDefault();
+        return $this->belongsTo(User::class, 'id_kustomer', 'candidate_id')->withDefault();
     }
     protected $dates = [
         'issued_at',
@@ -31,8 +31,7 @@ class CvCertification extends Model implements Auditable
     ];
 
     public $fillable = [
-        'id',
-        'user_id',
+        'candidate_id',
         'name',
         'organization',
         'issued_at',

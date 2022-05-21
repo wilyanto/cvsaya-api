@@ -15,6 +15,7 @@ class Company extends Model implements Auditable
     use HasRoles;
 
     use \OwenIt\Auditing\Auditable;
+    use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
 
     protected $primaryKey = 'id';
 
@@ -25,4 +26,24 @@ class Company extends Model implements Auditable
     public $fillable = [
         'id', 'name'
     ];
+
+    public function employees()
+    {
+        return $this->hasManyThrough(Employee::class, Position::class, 'company_id', 'position_id', 'id', 'id');
+    }
+
+    public function attendances()
+    {
+        return $this->hasManyDeep(
+            Attendance::class,
+            [Position::class, Employee::class, AttendanceEmployee::class],
+            ['company_id', 'position_id', 'employee_id', 'id'],
+            ['id', 'id', 'id', 'attendance_id']
+        )->with(['employee.company']);
+    }
+
+    public function getEmployeeAttendances($startDate, $endDate)
+    {
+        return $this->attendances()->whereBetween('scheduled_at', [$startDate, $endDate])->get();
+    }
 }

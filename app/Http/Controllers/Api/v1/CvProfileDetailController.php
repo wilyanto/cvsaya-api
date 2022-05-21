@@ -16,13 +16,10 @@ use App\Models\CvDocument;
 use App\Models\CvExpectedJob;
 use Illuminate\Http\Request;
 use App\Models\Employee;
-use App\Models\Religion;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Auth;
+use stdClass;
 
 class CvProfileDetailController extends Controller
 {
@@ -37,9 +34,9 @@ class CvProfileDetailController extends Controller
     {
         $array = [];
         $candidate = Candidate::findOrFail($id);
-        $userProfileDetail = CvProfileDetail::where('user_id', $candidate->user_id)->firstOrFail();
-        $userAddress = CvDomicile::where('user_id', $candidate->user_id)->firstOrFail();
-        $userSosmed = CvSosmed::where('user_id', $candidate->user_id)->firstOrFail();
+        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->first();
+        $userAddress = CvDomicile::where('candidate_id', $candidate->id)->first();
+        $userSosmed = CvSosmed::where('candidate_id', $candidate->id)->first();
 
         $array['profile_detail'] = $userProfileDetail;
         $array['domicile'] = $userAddress;
@@ -50,16 +47,15 @@ class CvProfileDetailController extends Controller
 
     public function index()
     {
-        $user = auth()->user();
-        $id = $user->id_kustomer;
+        $candidate = Candidate::where('user_id', auth()->id())->first();
         $array = [];
-        $userProfileDetail = CvProfileDetail::where('user_id', $id)->firstOrFail();
-        $userAddress = CvDomicile::where('user_id', $id)->firstOrFail();
-        $userSosmed = CvSosmed::where('user_id', $id)->firstOrFail();
+        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->first();
+        $userAddress = CvDomicile::where('candidate_id', $candidate->id)->first();
+        $userSosmed = CvSosmed::where('candidate_id', $candidate->id)->first();
 
-        $array['profile_detail'] = $userProfileDetail;
-        $array['domicile'] = $userAddress;
-        $array['sosmed'] = $userSosmed;
+        $array['profile_detail'] = $userProfileDetail ?? new stdClass();
+        $array['domicile'] = $userAddress ?? new stdClass();
+        $array['sosmed'] = $userSosmed ?? new stdClass();
         $collectionArray = collect($array);
         return $this->showOne($collectionArray);
     }
@@ -67,33 +63,33 @@ class CvProfileDetailController extends Controller
 
     public function cvDetailByDefault()
     {
-        $user = auth()->user();
-        $id = $user->id_kustomer;
-        $education = CvEducation::where('user_id', $id)
+        $candidate = Candidate::where('user_id', auth()->id())->first();
+        $id = $candidate->id;
+        $education = CvEducation::where('candidate_id', $id)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC')
             ->get();
         $data['educations'] = $education;
 
-        $experience = CvExperience::where('user_id', $id)
+        $experience = CvExperience::where('candidate_id', $id)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC')
             ->get();
         $data['experiences'] = $experience;
 
-        $certifications = CvCertification::where('user_id', $id)
+        $certifications = CvCertification::where('candidate_id', $id)
             ->orderBy('issued_at', 'DESC')
             ->orderByRaw("CASE WHEN expired_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('expired_at', 'DESC')
             ->get();
         $data['certifications'] = $certifications;
 
-        $specialities = CvSpeciality::where('user_id', $id)->get();
+        $specialities = CvSpeciality::where('candidate_id', $id)->get();
         $data['specialities'] = $specialities;
 
-        $hobbies = CvHobby::where('user_id', $id)->get();
+        $hobbies = CvHobby::where('candidate_id', $id)->get();
         $data['hobbies'] = $hobbies;
 
         $data = (object)$data;
@@ -104,33 +100,33 @@ class CvProfileDetailController extends Controller
     public function getCandidateCv($id)
     {
         $candidate = Candidate::findOrFail($id);
-        $candidateId = $candidate->user_id;
+        $candidateId = $candidate->id;
 
-        $education = CvEducation::where('user_id', $candidateId)
+        $education = CvEducation::where('candidate_id', $candidateId)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC')
             ->get();
         $data['educations'] = $education;
 
-        $experience = CvExperience::where('user_id', $candidateId)
+        $experience = CvExperience::where('candidate_id', $candidateId)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC')
             ->get();
         $data['experiences'] = $experience;
 
-        $certifications = CvCertification::where('user_id', $candidateId)
+        $certifications = CvCertification::where('candidate_id', $candidateId)
             ->orderBy('issued_at', 'DESC')
             ->orderByRaw("CASE WHEN expired_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('expired_at', 'DESC')
             ->get();
         $data['certifications'] = $certifications;
 
-        $specialities = CvSpeciality::where('user_id', $candidateId)->get();
+        $specialities = CvSpeciality::where('candidate_id', $candidateId)->get();
         $data['specialities'] = $specialities;
 
-        $hobbies = CvHobby::where('user_id', $candidateId)->get();
+        $hobbies = CvHobby::where('candidate_id', $candidateId)->get();
         $data['hobbies'] = $hobbies;
 
         return $this->showOne($data);
@@ -138,20 +134,18 @@ class CvProfileDetailController extends Controller
 
     public function status()
     {
-        $user = auth()->user();
-
-        $status = $this->getStatus($user->id_kustomer);
+        $candidate = Candidate::where('user_id', auth()->id())->first();
+        $status = $this->getStatus($candidate->id);
 
         return $status;
     }
 
-
     public function getStatus($id)
     {
-        $userProfileDetail = CvProfileDetail::where('user_id', $id)->firstOrFail();
-        $education = CvEducation::where('user_id', $id)->first();
-        $document = CvDocument::where('user_id', $id)->first();
-        $expectedSalaries = CvExpectedJob::where('user_id', $id)->first();
+        $userProfileDetail = CvProfileDetail::where('candidate_id', $id)->first();
+        $education = CvEducation::where('candidate_id', $id)->first();
+        $document = CvDocument::where('candidate_id', $id)->first();
+        $expectedSalaries = CvExpectedJob::where('candidate_id', $id)->first();
 
         $data['is_profile_completed'] = true;
         $data['is_job_completed'] = true;
@@ -173,8 +167,8 @@ class CvProfileDetailController extends Controller
             $data['is_document_completed'] = false;
         }
         $result['basic_profile'] = [
-            'first_name' => $userProfileDetail->first_name,
-            'last_name' => $userProfileDetail->last_name,
+            'first_name' => $userProfileDetail->first_name ?? null,
+            'last_name' => $userProfileDetail->last_name ?? null,
         ];
 
         $employee = Employee::where('user_id', $id)->first();
@@ -212,19 +206,27 @@ class CvProfileDetailController extends Controller
      */
     public function store(Request $request)
     {
-        $user = auth()->user();
         $request->validate([
             'first_name' => 'string|required|min:3',
             'last_name' => 'string|nullable|min:3',
             'reference' => 'string|nullable',
         ]);
-        if (CvProfileDetail::where('user_id', $user->id_kustomer)->first()) {
-            return $this->errorResponse('User already created', 409, 40901);
+
+        $candidate = Candidate::where('id', auth()->id())->first();
+        if ($candidate) {
+            return $this->errorResponse('This user already being a candidate', 409, 40900);
         }
 
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
-        $this->createCandidate($user, $request);
+        $candidate = Candidate::create([
+            'user_id' => auth()->id(),
+            'name' => $request->first_name . " " . $request->last_name,
+            'country_code' => '62',
+            'phone_number' => substr(auth()->user()->telpon, 1),
+            'registered_at' => now(),
+            'status' => 3
+        ]);
+        $data['candidate_id'] = $candidate->id;
         $userProfileDetail = CvProfileDetail::create($data);
         return $this->showOne($userProfileDetail);
     }
@@ -236,7 +238,7 @@ class CvProfileDetailController extends Controller
         if (!$candidate) {
             $candidate = new Candidate();
         }
-        $candidate->user_id = $user->id_kustomer;
+        $candidate->candidate_id = $user->id_kustomer;
         $candidate->name = $request->first_name . " " . $request->last_name;
         $candidate->phone_number = (int) substr($user->telpon, 1);
         $candidate->country_code = 62;
@@ -263,17 +265,6 @@ class CvProfileDetailController extends Controller
             'permissions' => $employee->getAllPermissions()->pluck('name')
         ];
         return $this->showOne(collect($data));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\UserProfileDetail  $userProfileDetail
-     * @return \Illuminate\Http\Response
-     */
-    public function edit()
-    {
-        //
     }
 
     /**
@@ -312,9 +303,7 @@ class CvProfileDetailController extends Controller
 
     public function update(Request $request)
     {
-        $user = auth()->user();
-
-        CvProfileDetail::where('user_id', $user->id_kustomer)->firstOrFail();
+        $candidate = Candidate::where('id', auth()->id())->first();
 
         $request->validate([
             #Profile Detail
@@ -344,73 +333,64 @@ class CvProfileDetailController extends Controller
 
         $requestProfile = $json['profile_detail'];
 
-        $requestAddress = $json['domicile'];
-        $requestAddress['user_id'] = $user->id_kustomer;
-        $requestAddress['country_id'] = 62;
+        $requestDomicile = $json['domicile'];
+        $requestDomicile['candidate_id'] = $candidate->id;
+        $requestDomicile['country_id'] = 62;
 
-        $requestSosmeds = $json['sosmed'];
-        $requestSosmeds['user_id'] = $user->id_kustomer;
+        $requestSosmed = $json['sosmed'];
+        $requestSosmed['candidate_id'] = $candidate->id;
 
         try {
-            DB::beginTransaction();
-            $userProfileDetail = CvProfileDetail::where('user_id', $user->id_kustomer)->first();
-            $userProfileDetail->fill($requestProfile);
-            $userProfileDetail->religion_id = $requestProfile['religion_id'];
-            $userProfileDetail->marriage_status_id = $requestProfile['marriage_status_id'];
-            if ($userProfileDetail->isDirty()) {
-                $userProfileDetail->update($requestProfile);
-            }
-
-            $userAddress = CvDomicile::where('user_id', $user->id_kustomer)->first();
-            if ($userAddress) {
-                $userAddress->fill($requestAddress);
-
-                $validation = self::validateAddress(
-                    $requestAddress['country_id'],
-                    $requestAddress['province_id'],
-                    $requestAddress['city_id'],
-                    $requestAddress['subdistrict_id'],
-                    $requestAddress['village_id'],
-                    explode(' ', $request->header('Authorization'))[1]
-                );
-                if ($validation['status'] != 200) {
-                    return $this->errorResponse(collect($validation['message']), $validation['status'], $validation['message']['code']);
+            $res = DB::transaction(function () use (
+                $candidate,
+                $request,
+                $requestProfile,
+                $requestDomicile,
+                $requestSosmed,
+            ) {
+                $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->first();
+                $userProfileDetail->fill($requestProfile);
+                if ($userProfileDetail->isDirty()) {
+                    $userProfileDetail->update($requestProfile);
                 }
-                $userAddress->save();
-            } else {
-                $userAddress = CvDomicile::create($requestAddress);
-            }
 
-            $userSosmed = CvSosmed::where('user_id', $user->id_kustomer)->first();
-            if ($userSosmed) {
-                $userSosmed->fill($requestSosmeds);
-                if ($userSosmed->isDirty()) {
-                    $userSosmed->update($requestSosmeds);
+                $userDomicile = CvDomicile::where('candidate_id', $candidate->id)->first();
+                if ($userDomicile) {
+                    $userDomicile->fill($requestDomicile);
+
+                    $validation = self::validateAddress(
+                        $requestDomicile['country_id'],
+                        $requestDomicile['province_id'],
+                        $requestDomicile['city_id'],
+                        $requestDomicile['subdistrict_id'],
+                        $requestDomicile['village_id'],
+                        $request->bearerToken(),
+                    );
+                    if ($validation['status'] != 200) {
+                        return $this->errorResponse(collect($validation['message']), $validation['status'], $validation['message']['code']);
+                    }
+                    $userDomicile->save();
+                } else {
+                    $userDomicile = CvDomicile::create($requestDomicile);
                 }
-            } else {
-                $userSosmed = CvSosmed::create($requestSosmeds);
-            }
-            $array['profile_detail'] = $userProfileDetail;
-            $array['domicile'] = $userAddress;
-            $array['sosmed'] = $userSosmed;
-            $object = (object)$array;
-            DB::commit();
-            return $this->showOne($object);
+
+                $userSosmed = CvSosmed::where('candidate_id', $candidate->id)->first();
+                if ($userSosmed) {
+                    $userSosmed->fill($requestSosmed);
+                    if ($userSosmed->isDirty()) {
+                        $userSosmed->update($requestSosmed);
+                    }
+                } else {
+                    $userSosmed = CvSosmed::create($requestSosmed);
+                }
+                $array['profile_detail'] = $userProfileDetail;
+                $array['domicile'] = $userDomicile;
+                $array['sosmed'] = $userSosmed;
+                return $this->showOne($array);
+            });
+            return $res->getData();
         } catch (\Exception $e) {
-            DB::rollback();
             return $this->errorResponse($e->getMessage(), 500, 50001);
         }
-        return $this->showOne($userProfileDetail);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\UserProfileDetail  $userProfileDetail
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy()
-    {
-        //
     }
 }

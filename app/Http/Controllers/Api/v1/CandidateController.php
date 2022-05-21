@@ -11,6 +11,10 @@ use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CandidatePosition;
 use App\Models\CandidateInterviewSchedule;
 use App\Models\CandidateNote;
+use App\Models\CvDocument;
+use App\Models\CvEducation;
+use App\Models\CvExpectedJob;
+use App\Models\CvProfileDetail;
 use Illuminate\Validation\Rule;
 use App\Models\InterviewResult;
 use App\Models\User;
@@ -88,7 +92,7 @@ class CandidateController extends Controller
             if ($status == Candidate::READY_TO_INTERVIEW) {
                 $candidateController = new CvProfileDetailController;
 
-                $status = $candidateController->getStatus($candidate->user_id);
+                $status = $candidateController->getStatus($candidate->candidate_id);
                 $status = $status->original;
                 $status = $status['data']['completeness_status'];
                 if (
@@ -110,6 +114,31 @@ class CandidateController extends Controller
     {
         $candidate = Candidate::where('id', $id)->firstOrFail();
         return $this->showOne($candidate->listDefaultCandidate());
+    }
+
+    public function getSummaryByDay(Request $request)
+    {
+        $request->validate([
+            'started_at' => 'required',
+            'ended_at' => 'required'
+        ]);
+        $startDate = $request->started_at;
+        $endDate = $request->ended_at;
+        $candidates = Candidate::whereBetween('registered_at', [$startDate, $endDate])->get();
+        $totalCandidate = $candidates->count();
+        $interviewCandidates = $candidates->where('status', Candidate::READY_TO_INTERVIEW)->count();
+        $interviewedCandidates = $candidates->whereIn(
+            'status',
+            [Candidate::STANDBY, Candidate::CONSIDER, Candidate::ACCEPTED, Candidate::DECLINE]
+        )->count();
+
+        $data = [
+            'total_candidate' => $totalCandidate,
+            'candidate_in_interview' => $interviewCandidates,
+            'candidate_interview' => $interviewedCandidates
+        ];
+
+        return $this->showOne($data);
     }
 
     public function addCandidateToBlast(Request $request)
@@ -178,28 +207,29 @@ class CandidateController extends Controller
 
     public function getCount($position)
     {
-        $data['total'] = collect($position->candidates)->count();
-        $data['interview'] = collect($position->candidates)->filter(function ($item) {
+        $candidates = $position->candidates;
+        $data['total'] = collect($candidates)->count();
+        $data['interview'] = collect($candidates)->filter(function ($item) {
             if ($item->status == 5) {
                 return $item->label() == null;
             }
         })->count();
-        $data['bad'] = collect($position->candidates)->filter(function ($item) {
+        $data['bad'] = collect($candidates)->filter(function ($item) {
             if ($item->label()) {
                 return $item->label()->id == InterviewResult::RESULT_BAD;
             }
         })->count();
-        $data['hold'] = collect($position->candidates)->filter(function ($item) {
+        $data['hold'] = collect($candidates)->filter(function ($item) {
             if ($item->label()) {
                 return $item->label()->id == InterviewResult::RESULT_HOLD;
             }
         })->count();
-        $data['recommended'] = collect($position->candidates)->filter(function ($item) {
+        $data['recommended'] = collect($candidates)->filter(function ($item) {
             if ($item->label()) {
                 return $item->label()->id == InterviewResult::RESULT_RECOMMENDED;
             }
         })->count();
-        $data['accepted'] = collect($position->candidates)->filter(function ($item) {
+        $data['accepted'] = collect($candidates)->filter(function ($item) {
             return $item->status == Candidate::ACCEPTED;
         })->count();
 
@@ -316,6 +346,68 @@ class CandidateController extends Controller
         $candidate->refresh();
 
         return $this->showOne($candidate);
+    }
+
+    public function getCompletenessStatus()
+    {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->first();
+        $education = CvEducation::where('candidate_id', $candidate->id)->first();
+        $document = CvDocument::where('candidate_id', $candidate->id)->first();
+        $expectedSalaries = CvExpectedJob::where('candidate_id', $candidate->id)->first();
+
+        $data['is_profile_completed'] = true;
+        $data['is_job_completed'] = true;
+        $data['is_document_completed'] = true;
+        $data['is_cv_completed'] = true;
+        if (!$userProfileDetail || !$userProfileDetail->addresses || !$userProfileDetail->sosmeds) {
+            $data['is_profile_completed'] = false;
+        }
+
+        if (!$expectedSalaries) {
+            $data['is_job_completed'] = false;
+        }
+
+        if (!$education || !$education->experiences || !$education->certifications || !$education->specialities || !$education->hobbies) {
+            $data['is_cv_completed'] = false;
+        }
+
+        if (!$document || !$document->identityCard || !$document->frontSelfie || !$document->rightSelfie || !$document->leftSelfie) {
+            $data['is_document_completed'] = false;
+        }
+        $result['basic_profile'] = [
+            'first_name' => $userProfileDetail->first_name ?? null,
+            'last_name' => $userProfileDetail->last_name ?? null,
+        ];
+
+        $employee = Employee::where('user_id', auth()->id())->first();
+        if ($employee) {
+            $result['is_employee'] = true;
+            $position = [
+                'id' => $employee->position ? $employee->position->id : null,
+                'name' => $employee->position ? $employee->position->name : null,
+                'company' => $employee->position ? $employee->position->company : null
+            ];
+            $result['position'] = $position;
+        } else {
+            $result['position'] = null;
+        }
+
+        $result['completeness_status'] = $data;
+
+        // TODO: better approach using relationship
+        // $employee = Employee::where('user_id', auth()->id())
+        //     ->with([
+        //         'position' => function ($query) {
+        //             $query->select(['id', 'name', 'company_id']);
+        //         },
+        //         'position.company' => function ($query) {
+        //             $query->select(['id', 'name']);
+        //         }
+        //     ])
+        //     ->first(['id', 'position_id']);
+
+        return $this->showOne($result);
     }
 
     /**

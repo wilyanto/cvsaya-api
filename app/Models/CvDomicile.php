@@ -14,7 +14,7 @@ class CvDomicile extends Model implements Auditable
     use \OwenIt\Auditing\Auditable;
 
     protected $fillable = [
-        'user_id',
+        'candidate_id',
         'country_id',
         'province_id',
         'city_id',
@@ -30,7 +30,7 @@ class CvDomicile extends Model implements Auditable
 
     public function profileDetails()
     {
-        return $this->belongsTo(CvProfileDetail::class, 'user_id', 'user_id')->withDefault();
+        return $this->belongsTo(CvProfileDetail::class, 'candidate_id', 'candidate_id')->withDefault();
     }
 
     public function requestDomicile($url)
@@ -102,7 +102,7 @@ class CvDomicile extends Model implements Auditable
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'candidate_id' => $this->candidate_id,
             'country' => $this->country(),
             'province' => $this->province(),
             'city' => $this->city(),

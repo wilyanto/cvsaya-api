@@ -21,16 +21,16 @@ class CvExpectedJobController extends Controller
     public function show($id)
     {
         $candidate = Candidate::findOrFail($id);
-        $expectedSalaries = CvExpectedJob::where('user_id', $candidate->user_id)->orderBy('updated_at', 'DESC')->firstOrFail();
+        $expectedSalaries = CvExpectedJob::where('candidate_id', $candidate->user_id)->orderBy('updated_at', 'DESC')->firstOrFail();
 
         return $this->showOne($expectedSalaries);
     }
 
     public function index()
     {
-        $user = auth()->user();
-
-        $expectedSalaries = CvExpectedJob::where('user_id', $user->id_kustomer)->orderBy('updated_at', 'DESC')->firstOrFail();
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $expectedSalaries = CvExpectedJob::where('candidate_id', $candidate->id)
+            ->firstOrFail();
 
         return $this->showOne($expectedSalaries);
     }
@@ -62,10 +62,8 @@ class CvExpectedJobController extends Controller
             'salary_reason' => 'string|required|min:30',
         ]);
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
-        // dd($data);
+        $data['candidate_id'] = $user->id_kustomer;
         $data['expected_position'] = json_decode($request->expected_position);
-        // dump($data);
         $position = CandidatePosition::where('id', $data['expected_position']->id)->orWhere('name', $data['expected_position']->name)->first();
         if (!$position) {
             $position = new CandidatePosition();
@@ -73,7 +71,7 @@ class CvExpectedJobController extends Controller
             $position->save();
         }
         $data['expected_position'] = $position->id;
-        $expectedSalaries = CvExpectedJob::where('user_id', $user->id_kustomer)->first();
+        $expectedSalaries = CvExpectedJob::where('candidate_id', $user->id_kustomer)->first();
         if (!$expectedSalaries) {
             $expectedSalaries = CvExpectedJob::create($data);
 

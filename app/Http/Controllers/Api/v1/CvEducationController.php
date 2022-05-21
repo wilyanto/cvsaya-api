@@ -21,7 +21,7 @@ class CvEducationController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $educations = CvEducation::where('user_id', $user->id_kustomer)
+        $educations = CvEducation::where('candidate_id', $user->id_kustomer)
             ->orderBy('started_at', 'DESC')
             ->orderByRaw("CASE WHEN ended_at IS NULL THEN 0 ELSE 1 END ASC")
             ->orderBy('ended_at', 'DESC')
@@ -58,7 +58,7 @@ class CvEducationController extends Controller
         ]);
 
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $user->id_kustomer;
         if (!$request->ended_at) {
             $data['ended_at'] = null;
         }
@@ -97,7 +97,7 @@ class CvEducationController extends Controller
             'description' => 'nullable|string',
         ]);
         $data = $request->all();
-        $data['user_id'] = $user->id_kustomer;
+        $data['candidate_id'] = $user->id_kustomer;
         if (!$request->started_at) {
             $data['started_at'] = null;
         }
@@ -105,7 +105,7 @@ class CvEducationController extends Controller
             $data['ended_at'] = null;
         }
         $education = CvEducation::where('id', $id)
-            ->where('user_id', $user->id_kustomer)
+            ->where('candidate_id', $user->id_kustomer)
             ->first();
         if (!$education) {
             return $this->errorResponse('id not found', 404, 40401);
@@ -125,7 +125,7 @@ class CvEducationController extends Controller
     public function destroy($id)
     {
         $user = auth()->user();
-        $educations = CvEducation::where('id', $id)->where('user_id', $user->id_kustomer)->first();
+        $educations = CvEducation::where('id', $id)->where('candidate_id', $user->id_kustomer)->first();
         if (!$educations) {
             return $this->errorResponse('id not found', 404, 40401);
         }

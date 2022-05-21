@@ -62,9 +62,13 @@ Route::prefix('v1')->group(function () {
                 Route::put('/{id}', 'update');
             });
             Route::controller(ShiftController::class)->group(function () {
-                Route::get('/{companyId}/shifts', 'getShiftByCompany');
-                // Route::post('/', 'store');
-                // Route::put('/{id}', 'update');
+                Route::get('/{companyId}/shifts', 'getShiftsByCompany');
+            });
+            Route::controller(PositionController::class)->group(function () {
+                Route::get('/{companyId}/positions', 'getPositionsByCompany');
+            });
+            Route::controller(EmployeeController::class)->group(function () {
+                Route::get('/{companyId}/employees', 'getEmployeesByCompany');
             });
         });
 
@@ -134,6 +138,7 @@ Route::prefix('v1')->group(function () {
                 Route::prefix('candidates')->group(function () {
                     Route::controller(CandidateController::class)->group(function () {
                         Route::get('/', 'index');
+                        Route::get('/candidate-summary', 'getSummaryByDay');
                         Route::get('/{id}', 'indexDetail');
                         Route::post('/', 'addCandidateToBlast');
                         Route::put('/{id}', 'updateStatus');
@@ -176,8 +181,8 @@ Route::prefix('v1')->group(function () {
             });
 
             Route::prefix('completeness-status')->group(function () {
-                Route::controller(CvProfileDetailController::class)->group(function () {
-                    Route::get('/', 'status');
+                Route::controller(CandidateController::class)->group(function () {
+                    Route::get('/', 'getCompletenessStatus');
                 });
             });
 
@@ -316,6 +321,8 @@ Route::prefix('v1')->group(function () {
         Route::prefix('attendances')->group(function () {
             Route::controller(AttendanceController::class)->group(function () {
                 Route::get('/', 'index');
+                Route::get('/histories', 'getAttendancesByDateRange');
+                Route::get('/company-employees', 'getAttendancesByCompany');
                 Route::post('/', 'store');
             });
         });
@@ -350,7 +357,7 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::apiResource('candidate-positions', CandidatePositionController::class)->only(['index', 'store', 'update']);
+        Route::apiResource('candidate-positions', CandidatePositionController::class)->only(['index', 'show', 'store', 'update']);
         Route::prefix('candidate-positions')->controller(CandidatePositionController::class)->group(function () {
             Route::put('/{id}/verified', 'verified');
             Route::delete('/{id}/verified', 'unverified');

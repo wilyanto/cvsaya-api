@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Department;
 use App\Models\Level;
 use App\Traits\ApiResponser;
-    
+
 class PositionController extends Controller
 {
     use ApiResponser;
@@ -156,5 +156,11 @@ class PositionController extends Controller
      */
     public function destroy(Position $cvSayaPositions)
     {
+    }
+
+    public function getPositionsByCompany($companyId)
+    {
+        $positions = Position::where('company_id', $companyId)->get();
+        return $this->showAll($positions);
     }
 }

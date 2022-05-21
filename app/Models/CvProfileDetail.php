@@ -18,37 +18,48 @@ class CvProfileDetail extends Model implements Auditable
         'selfie_picture' => 'array',
     ];
 
+    protected $guard = 'id';
+
+    protected $append = ['full_name'];
+
     public $fillable = [
-        'user_id',
+        'candidate_id',
         'first_name',
         'last_name',
         'birth_location',
         'birth_date',
         'gender',
         'identity_number',
-        'religion',
         'reference',
+        'religion_id',
+        'marriage_status_id',
     ];
 
-    protected $table = 'cv_profile_details';
-
-    protected $guard = 'id';
-
-    protected $primaryKey = 'id';
+    public function getFullNameAttribute()
+    {
+        $fullname = '';
+        if ($this->first_name) {
+            $fullname .= $this->first_name;
+        }
+        if ($this->last_name) {
+            $fullname .= " $this->last_name";
+        }
+        return $fullname;
+    }
 
     public function addresses()
     {
-        return $this->hasOne(CvDomicile::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvDomicile::class, 'candidate_id', 'candidate_id')->withDefault();
     }
 
     public function sosmeds()
     {
-        return $this->hasOne(CvSosmed::class, 'user_id', 'user_id')->withDefault();
+        return $this->hasOne(CvSosmed::class, 'candidate_id', 'candidate_id')->withDefault();
     }
 
     public function employee()
     {
-        return $this->belongsToMany(Employee::class, 'user_id', 'user_id')->withDefault();
+        return $this->belongsToMany(Employee::class, Candidate::class, 'id', 'user_id', 'candidate_id', 'user_id')->withDefault();
     }
 
     public function religion()
@@ -66,11 +77,24 @@ class CvProfileDetail extends Model implements Auditable
         return $this->hasOne(Candidate::class, 'user_id', 'user_id')->withDefault();
     }
 
+    public function scopeWithName($query, $name)
+    {
+        $names = explode(" ", $name);
+
+        $query;
+        foreach ($names as $name) {
+            $query->where('first_name', 'LIKE', '%' . $name . '%')
+                ->orWhere('last_name', 'LIKE', '%' . $name . '%');
+        }
+        return $query;
+    }
+
     public function toArray()
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'candidate_id' => $this->candidate_id,
+            'full_name' => $this->full_name,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'phone_number' => $this->candidate->phone_number,

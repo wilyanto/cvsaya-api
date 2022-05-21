@@ -77,7 +77,8 @@ class CandidatePositionController extends Controller
      */
     public function show($id)
     {
-        //
+        $candidatePosition = CandidatePosition::where('id', $id)->firstOrFail();
+        return $this->showOne($candidatePosition);
     }
 
     /**

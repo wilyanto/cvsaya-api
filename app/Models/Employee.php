@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Position;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Carbon\Carbon;
 use DateInterval;
 use DateTimeZone;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use OwenIt\Auditing\Contracts\Auditable;
+use App\Enums\AttendanceType;
 
 class Employee extends Authenticatable implements Auditable
 {
@@ -42,7 +44,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function profileDetail()
     {
-        return $this->hasOne(CvProfileDetail::class, 'user_id', 'user_id');
+        return $this->hasOneThrough(CvProfileDetail::class, Candidate::class, 'user_id', 'candidate_id', 'user_id', 'id');
     }
 
     public function company()
@@ -78,6 +80,11 @@ class Employee extends Authenticatable implements Auditable
     public function salaryTypes()
     {
         return $this->hasMany(EmployeeSalaryType::class);
+    }
+
+    public function attendances()
+    {
+        return $this->belongsToMany(Attendance::class, 'attendances_employees');
     }
 
     public function typeOfSalary()
@@ -171,18 +178,38 @@ class Employee extends Authenticatable implements Auditable
         return  $this->hasMany(ShiftEmployee::class, 'employee_id', 'id');
     }
 
-    public function getShift($date)
+    public function getShifts($date)
     {
-        $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
-        $shift =  EmployeeOneTimeShift::whereDate('date', $date->format(' '))->first();
-        if (!$shift) {
-            $getTodayDay = $date->format('N');
-            $shift = ShiftPositions::where('day', $getTodayDay)->where('position_id', $this->position->id)->first();
-            if (!$shift) {
-                return null;
-            }
-        };
-        return $shift;
+        $date = new Carbon($date, 'Asia/Jakarta');
+        $shifts = EmployeeOneTimeShift::whereDate('date', $date->toDateString())->with('shift')->get();
+        if (!$shifts->isEmpty()) {
+            return $shifts;
+        }
+
+        $getTodayDay = Carbon::now()->dayOfWeek;
+        $shifts = EmployeeRecurringShift::where('day', $getTodayDay)->with('shift')->get();
+        if ($shifts) {
+            return $shifts;
+        }
+
+        return null;
+    }
+
+    public function getShift($date = null)
+    {
+        $date = $date == null ? Carbon::now() : new Carbon($date, 'Asia/Jakarta');
+        $shift = EmployeeOneTimeShift::whereDate('date', $date->toDateString())->with('shift')->first();
+        if ($shift) {
+            return $shift;
+        }
+
+        $getTodayDay = Carbon::now()->dayOfWeek;
+        $shift = EmployeeRecurringShift::where('day', $getTodayDay)->with('shift')->first();
+        if ($shift) {
+            return $shift;
+        }
+
+        return null;
     }
 
     public function isWorkToday($date)
@@ -202,7 +229,7 @@ class Employee extends Authenticatable implements Auditable
                 $date->format('Y-m-d\TH:i:s.u\Z'),
                 $endDayOfDate
             ]
-        )->where('attendance_type_id', AttendanceType::CLOCK_IN_ID)
+        )->where('attendance_type_id', AttendanceType::clockIn())
             ->where('employee_id', $this->id)
             ->whereNotNull('validated_at')
             ->first();
@@ -234,7 +261,7 @@ class Employee extends Authenticatable implements Auditable
         return $penalty;
     }
 
-    public function getTodayOneTimeShifts()
+    public function getCertainDateOneTimeShifts($date)
     {
         return $this->hasManyThrough(
             Shift::class,
@@ -243,10 +270,10 @@ class Employee extends Authenticatable implements Auditable
             'id',
             'id',
             'shift_id'
-        )->where('date', today())->get();
+        )->whereDate('date', $date)->get();
     }
 
-    public function getTodayRecurringShifts()
+    public function getCertainDateRecurringShifts($date)
     {
         return $this->hasManyThrough(
             Shift::class,
@@ -255,6 +282,11 @@ class Employee extends Authenticatable implements Auditable
             'id',
             'id',
             'shift_id'
-        )->where('day', today()->dayOfWeek)->get();
+        )->where('day', (new Carbon($date))->dayOfWeek)->get();
+    }
+
+    public function getAttendances($startDate, $endDate)
+    {
+        return $this->attendances()->whereBetween('scheduled_at', [$startDate, $endDate])->get();
     }
 }

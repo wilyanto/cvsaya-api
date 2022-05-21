@@ -11,17 +11,19 @@ class AttendancePenalty extends Model implements Auditable
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
 
-    protected $table = 'attendances_penalties';
-
-    public $timestamps = false;
+    const UPDATED_AT = null;
 
     public $fillable = [
-        'amount',
         'attendance_id',
         'penalty_id',
+        'penalty_name',
+        'penalty_amount',
+        'attendance_employee_id',
+        'note'
     ];
 
-    public function employee(){
-        return $this->hasOne(Employee::class,'id','employee_id');
+    public function employee()
+    {
+        return $this->hasOne(Employee::class, 'id', 'employee_id');
     }
 }

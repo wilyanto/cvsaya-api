@@ -19,7 +19,7 @@ class CvDocument extends Model implements Auditable
     protected $primaryKey = 'id';
 
     public $fillable = [
-        'user_id',
+        'candidate_id',
         'identity_card',
         'front_selfie',
         'left_selfie',
@@ -27,28 +27,32 @@ class CvDocument extends Model implements Auditable
         'mirrage_certificate',
     ];
 
-    public function identityCard(){
+    public function identityCard()
+    {
 
-        return $this->hasOne(Document::class,'id','identity_card');
+        return $this->hasOne(Document::class, 'id', 'identity_card');
     }
 
-    public function frontSelfie(){
-        return $this->hasOne(Document::class,'id','front_selfie');
+    public function frontSelfie()
+    {
+        return $this->hasOne(Document::class, 'id', 'front_selfie');
     }
 
-    public function leftSelfie(){
-        return $this->hasOne(Document::class,'id','left_selfie');
+    public function leftSelfie()
+    {
+        return $this->hasOne(Document::class, 'id', 'left_selfie');
     }
 
-    public function rightSelfie(){
-        return $this->hasOne(Document::class,'id','right_selfie');
+    public function rightSelfie()
+    {
+        return $this->hasOne(Document::class, 'id', 'right_selfie');
     }
 
     public function toArray()
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'candidate_id' => $this->candidate_id,
             'identity_card' => $this->identity_card,
             'front_selfie' => $this->front_selfie,
             'left_selfie' => $this->left_selfie,

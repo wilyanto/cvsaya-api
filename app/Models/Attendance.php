@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\UuidGenerator;
 use DateTimeZone;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class Attendance extends Model implements Auditable
 {
-    use HasFactory;
+    use HasFactory, UuidGenerator;
 
     use \OwenIt\Auditing\Auditable;
 
@@ -21,19 +22,18 @@ class Attendance extends Model implements Auditable
         'validated_at'
     ];
 
-    public $fillable = [
-        'id',
-        'checked_at',
-        'duty_at',
-        'validated_at',
-        'employee_id',
-        'attendance_type_id'
-    ];
+    protected $guarded = [];
 
     public function employee()
     {
         return $this->hasOne(Employee::class, 'id', 'employee_id');
     }
+
+    public function employees()
+    {
+        return $this->belongsToMany(Employee::class, 'attendances_employees');
+    }
+
 
     public function attendanceType()
     {
@@ -48,6 +48,11 @@ class Attendance extends Model implements Auditable
     public function penalty()
     {
         return $this->hasOne(AttendancePenalty::class, 'penalty_id', 'id')->withDefault();
+    }
+
+    public function outsideRadiusAttendance()
+    {
+        return $this->hasOne(OutsideRadiusAttendance::class);
     }
 
     public function getCheckedAtAttribute($date)

@@ -10,7 +10,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class CvSpeciality extends Model implements Auditable
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     use \OwenIt\Auditing\Auditable;
 
@@ -21,14 +21,14 @@ class CvSpeciality extends Model implements Auditable
     protected $primaryKey = 'id';
 
     public $fillable = [
-        'id',
-        'user_id',
+        'candidate_id',
         'name',
         'speciality_certifcate_id',
     ];
 
-    public function certifcates(){
-        return $this->hasManyThrough(CvCertification::class,CvSpecialityCertificate::class,'speciality_id','id','id','certificate_id');
+    public function certifcates()
+    {
+        return $this->hasManyThrough(CvCertification::class, CvSpecialityCertificate::class, 'speciality_id', 'id', 'id', 'certificate_id');
     }
 
     // public function certifcates(){
@@ -39,10 +39,10 @@ class CvSpeciality extends Model implements Auditable
     {
         $data = [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'candidate_id' => $this->candidate_id,
             'name' => $this->name,
             'certificates' => $this->certifcates,
-            'created_at'=> $this->created_at,
+            'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,
         ];

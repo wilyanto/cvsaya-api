@@ -25,7 +25,7 @@ class CandidatePosition extends Model implements Auditable
 
     public function candidates()
     {
-        return $this->hasManyThrough(Candidate::class, CvExpectedJob::class, 'expected_position', 'user_id', 'id', 'user_id');
+        return $this->hasManyThrough(Candidate::class, CvExpectedJob::class, 'expected_position', 'id', 'id', 'candidate_id');
     }
 
     public function toArrayCategories()
