@@ -212,7 +212,7 @@ class CvProfileDetailController extends Controller
             'reference' => 'string|nullable',
         ]);
 
-        $candidate = Candidate::where('id', auth()->id())->first();
+        $candidate = Candidate::where('user_id', auth()->id())->first();
         if ($candidate) {
             return $this->errorResponse('This user already being a candidate', 409, 40900);
         }
