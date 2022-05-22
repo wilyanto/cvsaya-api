@@ -303,16 +303,16 @@ class CvProfileDetailController extends Controller
 
     public function update(Request $request)
     {
-        $candidate = Candidate::where('id', auth()->id())->first();
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
 
         $request->validate([
             #Profile Detail
-            'profile_detail.birth_location' => 'string|required',
-            'profile_detail.birth_date' => 'date|required',
+            'profile_detail.birth_location' => 'required|string',
+            'profile_detail.birth_date' => 'required|date',
             'profile_detail.gender' => 'required|string',
             'profile_detail.identity_number' => 'required|min:5', // TODO: should be integer
-            'profile_detail.marriage_status_id' => 'exists:marriage_statuses,id|required',
-            'profile_detail.religion_id' => 'exists:religions,id|required',
+            'profile_detail.marriage_status_id' => 'required|exists:marriage_statuses,id',
+            'profile_detail.religion_id' => 'required|exists:religions,id',
 
             #Address
             'domicile.province_id' => 'integer|required',
