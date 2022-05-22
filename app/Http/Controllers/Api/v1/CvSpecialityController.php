@@ -30,7 +30,7 @@ class CvSpecialityController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string',
@@ -52,8 +52,6 @@ class CvSpecialityController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = auth()->user();
-
         $request->validate([
             'name' => 'required|string',
         ]);
