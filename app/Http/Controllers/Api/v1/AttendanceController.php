@@ -30,6 +30,7 @@ use PDO;
 use Intervention\Image\ImageManagerStatic as Image;
 use App\Models\Position;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
@@ -225,7 +226,9 @@ class AttendanceController extends Controller
         $distance = $this->vincentyGreatCircleDistance($attendanceQRcode->latitude, $attendanceQRcode->longitude, $request->latitude, $request->longitude);
         $penalty = $this->getPenalty($request, $employee);
         $isOutsideAttendanceRadius = $this->isOutsideAttendanceRadius($distance, $attendanceQRcode);
-        $this->createAttendance($request, $employee, $penalty, $isOutsideAttendanceRadius, $isParentCompany);
+        DB::transaction(function () use ($request, $employee, $penalty, $isOutsideAttendanceRadius, $isParentCompany) {
+            $this->createAttendance($request, $employee, $penalty, $isOutsideAttendanceRadius, $isParentCompany);
+        });
         return $this->showOne('Success');
     }
 
