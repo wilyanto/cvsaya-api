@@ -176,12 +176,16 @@ class CandidateController extends Controller
         $request->validate([
             'keyword' => 'nullable',
             'page' => 'nullable|numeric|gt:0',
-            'page_size' => 'nullable|numeric|gt:0'
+            'page_size' => 'nullable|numeric|gt:0',
+            'started_at' => 'required',
+            'ended_at' => 'required'
         ]);
 
         $page = $request->page ? $request->page  : 1;
         $pageSize = $request->page_size ? $request->page_size : 10;
         $keyword = $request->keyword;
+        $startDate = $request->started_at;
+        $endDate = $request->ended_at;
         $result = [];
         $positions = CandidatePosition::where(function ($query) use ($keyword) {
             if ($keyword != null) {
@@ -198,38 +202,38 @@ class CandidateController extends Controller
             $result[] = [
                 'id' => $position->id,
                 'name' => $position->name,
-                'statistics' => $this->getCount($position),
+                'statistics' => $this->getCount($position, $startDate, $endDate),
             ];
         }
 
         return $this->showPaginate('positions', collect($result), collect($positions));
     }
 
-    public function getCount($position)
+    public function getCount($position, $startDate, $endDate)
     {
-        $candidates = $position->candidates;
-        $data['total'] = collect($candidates)->count();
-        $data['interview'] = collect($candidates)->filter(function ($item) {
+        $candidates = $position->getCandidateStatistic($startDate, $endDate);
+        $data['total'] = $candidates->count();
+        $data['interview'] = $candidates->filter(function ($item) {
             if ($item->status == 5) {
                 return $item->label() == null;
             }
         })->count();
-        $data['bad'] = collect($candidates)->filter(function ($item) {
+        $data['bad'] = $candidates->filter(function ($item) {
             if ($item->label()) {
                 return $item->label()->id == InterviewResult::RESULT_BAD;
             }
         })->count();
-        $data['hold'] = collect($candidates)->filter(function ($item) {
+        $data['hold'] = $candidates->filter(function ($item) {
             if ($item->label()) {
                 return $item->label()->id == InterviewResult::RESULT_HOLD;
             }
         })->count();
-        $data['recommended'] = collect($candidates)->filter(function ($item) {
+        $data['recommended'] = $candidates->filter(function ($item) {
             if ($item->label()) {
                 return $item->label()->id == InterviewResult::RESULT_RECOMMENDED;
             }
         })->count();
-        $data['accepted'] = collect($candidates)->filter(function ($item) {
+        $data['accepted'] = $candidates->filter(function ($item) {
             return $item->status == Candidate::ACCEPTED;
         })->count();
 

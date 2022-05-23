@@ -38,4 +38,9 @@ class CandidatePosition extends Model implements Auditable
             'updated_at' => $this->updated_at
         ];
     }
+
+    public function getCandidateStatistic($startDate, $endDate)
+    {
+        return $this->candidates()->whereBetween('registered_at', [$startDate, $endDate])->get();
+    }
 }
