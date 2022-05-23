@@ -113,6 +113,8 @@ class CvDomicile extends Model implements Auditable
             'id' => $this->id,
             'candidate_id' => $this->candidate_id,
             'address' => $this->address,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
 
         if ($response->status() == 200) {
