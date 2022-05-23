@@ -405,8 +405,7 @@ class AttendanceController extends Controller
         $employees = $company->employees()->with('position')
             ->whereHas('profileDetail', function ($query) use ($keyword) {
                 $query->where('first_name', 'like', '%' . $keyword . '%')
-                    ->orWhere('last_name', 'like', '%' . $keyword . '%')
-                    ->sortBy('first_name');
+                    ->orWhere('last_name', 'like', '%' . $keyword . '%');
             })->get();
         $data = [];
 
