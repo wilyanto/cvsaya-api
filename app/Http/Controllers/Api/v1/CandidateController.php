@@ -41,6 +41,8 @@ class CandidateController extends Controller
                 'nullable',
                 Rule::in(['DESC', 'ASC']),
             ],
+            'started_at' => 'required',
+            'ended_at' => 'required'
         ]);
 
         $page = $request->page ? $request->page  : 1;
@@ -51,8 +53,10 @@ class CandidateController extends Controller
         $provinceId = $request->province_id;
         $cityId = $request->city_id;
         $position = $request->position_id;
+        $startDate = $request->started_at;
+        $endDate = $request->ended_at;
 
-        $candidates = Candidate::where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position) {
+        $candidates = Candidate::whereBetween('registered_at', [$startDate, $endDate])->where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position) {
             if ($name != null) {
                 $query->where('name', 'LIKE', '%' . $name . '%');
             }
