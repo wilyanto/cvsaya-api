@@ -42,7 +42,7 @@ class Attendance extends Model implements Auditable
 
     public function attendancePenalty()
     {
-        return $this->hasOne(AttendancePenalty::class, 'attendance_id', 'id');
+        return $this->hasOneThrough(AttendancePenalty::class, AttendanceEmployee::class, 'attendance_id', 'attendance_employee_id', 'id', 'id');
     }
 
     public function penalty()

@@ -30,6 +30,7 @@ use PDO;
 use Intervention\Image\ImageManagerStatic as Image;
 use App\Models\Position;
 use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
@@ -178,8 +179,10 @@ class AttendanceController extends Controller
             'attendance_qr_code_id' => 'required|exists:attendance_qr_codes,id',
             'outside_radius_note' => 'string',
             'penalty_note' => 'string',
+            'shift_id' => 'required|exists:shifts,id'
         ]);
 
+        $shiftId = $request->shift_id;
         $isParentCompany = false;
         $attendanceQRcode = AttendanceQrCode::where('id', $request->attendance_qr_code_id)->firstOrFail();
         $companyId = $attendanceQRcode->company_id;
@@ -205,12 +208,12 @@ class AttendanceController extends Controller
             return $this->errorResponse('Employee Not Found', 422, 42200);
         }
 
-        if (!$employee->getShift()) {
+        if (!$employee->getShift($shiftId)) {
             return $this->errorResponse('No Shift registered', 422, 42201);
         }
 
         $attendanceType = $request->attendance_type;
-        $employeeShift = $employee->getShift()->shift;
+        $employeeShift = $employee->getShift($shiftId)->shift;
         $shiftTime = new Carbon($employeeShift->$attendanceType);
 
         if (
@@ -223,7 +226,9 @@ class AttendanceController extends Controller
         $distance = $this->vincentyGreatCircleDistance($attendanceQRcode->latitude, $attendanceQRcode->longitude, $request->latitude, $request->longitude);
         $penalty = $this->getPenalty($request, $employee);
         $isOutsideAttendanceRadius = $this->isOutsideAttendanceRadius($distance, $attendanceQRcode);
-        $this->createAttendance($request, $employee, $penalty, $isOutsideAttendanceRadius, $isParentCompany);
+        DB::transaction(function () use ($request, $employee, $penalty, $isOutsideAttendanceRadius, $isParentCompany) {
+            $this->createAttendance($request, $employee, $penalty, $isOutsideAttendanceRadius, $isParentCompany);
+        });
         return $this->showOne('Success');
     }
 
@@ -238,10 +243,11 @@ class AttendanceController extends Controller
     public function createAttendance($request, Employee $employee, $penalty, $isOutsideAttendanceRadius, $isParentCompany)
     {
         $image = $request->file;
+        $shiftId = $request->shift_id;
         $img = Image::make($image)->encode($image->extension(), 70);
         $attendanceType = $request->attendance_type;
         $fileName = time() . '.' . $image->extension();
-        $employeeShift = $employee->getShift()->shift;
+        $employeeShift = $employee->getShift($shiftId)->shift;
         $shiftTime = new Carbon($employeeShift->$attendanceType);
 
         $verifiedAt = null;
@@ -306,15 +312,15 @@ class AttendanceController extends Controller
 
     public static function getPenalty($request, $employee)
     {
-        if ($employee->getShift() instanceof EmployeeOneTimeShift) {
+        $shiftId = $request->shift_id;
+        if ($employee->getShift($shiftId) instanceof EmployeeOneTimeShift) {
             return null;
         }
         $attendanceType = $request->attendance_type;
         $now = Carbon::now();
-        $employeeShift = $employee->getShift()->shift;
-        $shiftTime = new Carbon($employeeShift->$attendanceType, 'Asia/Jakarta');
+        $employeeShift = $employee->getShift($shiftId)->shift;
+        $shiftTime = new Carbon($employeeShift->$attendanceType);
         $scheduledAt = Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight());
-
         if ($attendanceType == AttendanceType::clockIn() && $now->gt($scheduledAt)) {
             $interval = $scheduledAt->diffInMinutes($now);
             return Penalty::where('attendance_type', $attendanceType)
@@ -376,18 +382,34 @@ class AttendanceController extends Controller
 
     public function getAttendancesByCompany(Request $request)
     {
+
+        // $employees = Employee::get();
+        // foreach ($employees as $employee) {
+        //     $employeeShifts = $employee->getShifts(now());
+        //     foreach ($employeeShifts as $employeeShift) {
+        //         dd($employeeShift->attendances);
+        //     }
+        // }
+
+        // return;
+        // pagination and search by user
         $request->validate([
             'started_at' => 'required',
             'ended_at' => 'required',
             'company_id' => 'required|exists:companies,id'
         ]);
 
+        $keyword = $request->keyword;
         $startDate = Carbon::parse($request->started_at);
         $endDate = Carbon::parse($request->ended_at);
+        $period = CarbonPeriod::create($startDate, $endDate);
         $companyId = $request->company_id;
         $company = Company::where('id', $companyId)->first();
-        $employees = $company->employees()->with('position')->get();
-        $period = CarbonPeriod::create($startDate, $endDate);
+        $employees = $company->employees()->with('position')
+            ->whereHas('profileDetail', function ($query) use ($keyword) {
+                $query->where('first_name', 'like', '%' . $keyword . '%')
+                    ->orWhere('last_name', 'like', '%' . $keyword . '%');
+            })->get();
         $data = [];
 
         foreach ($period as $date) {
@@ -404,7 +426,7 @@ class AttendanceController extends Controller
                     foreach ($shiftAttendances[$employeeShift->shift_id] as $attendance) {
                         $attendances[] = [
                             'attendance' => $attendance,
-                            'penalty' => $attendance->attendancePenalty(),
+                            'penalty' => $attendance->attendancePenalty
                         ];
                     }
                     $shifts[] = [
@@ -412,9 +434,9 @@ class AttendanceController extends Controller
                         'attendances' => $attendances,
                     ];
                 }
-                $employee['profile_detail'] = $employee->profileDetail()->first();
-                $employee['shifts'] = $shifts;
-                array_push($employeeAttendances, $employee);
+                $employeeAttendance['profile_detail'] = $employee->profileDetail()->first();
+                $employeeAttendance['shifts'] = $shifts;
+                $employeeAttendances[] = $employeeAttendance;
             }
 
             $array['employees'] = $employeeAttendances;
@@ -443,20 +465,27 @@ class AttendanceController extends Controller
             $employeeAttendances = [];
 
             foreach ($employees as $employee) {
-                $attendances = $employee->getAttendances($startDate, $endDate);
+                $attendances = $employee->getAttendances($date->copy()->startOfDay(), $date->copy()->endOfDay());
                 $shiftAttendances = $attendances->groupBy('shift_id');
 
                 $shifts = [];
                 $employeeShifts = $attendances->unique('shift_id');
                 foreach ($employeeShifts as $employeeShift) {
+                    $attendances = [];
+                    foreach ($shiftAttendances[$employeeShift->shift_id] as $attendance) {
+                        $attendances[] = [
+                            'attendance' => $attendance,
+                            'penalty' => $attendance->attendancePenalty
+                        ];
+                    }
                     $shifts[] = [
                         'id' => $employeeShift->shift_id,
-                        'attendances' => $shiftAttendances[$employeeShift->shift_id]
+                        'attendances' => $attendances,
                     ];
                 }
-                $employee['profile_detail'] = $employee->profileDetail()->first();
-                $employee['shifts'] = $shifts;
-                array_push($employeeAttendances, $employee);
+                $employeeAttendance['profile_detail'] = $employee->profileDetail()->first();
+                $employeeAttendance['shifts'] = $shifts;
+                $employeeAttendances[] = $employeeAttendance;
             }
 
             $array['employees'] = $employeeAttendances;
