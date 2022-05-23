@@ -41,8 +41,6 @@ class CandidateController extends Controller
                 'nullable',
                 Rule::in(['DESC', 'ASC']),
             ],
-            'started_at' => 'required',
-            'ended_at' => 'required'
         ]);
 
         $page = $request->page ? $request->page  : 1;
@@ -56,38 +54,41 @@ class CandidateController extends Controller
         $startDate = $request->started_at;
         $endDate = $request->ended_at;
 
-        $candidates = Candidate::whereBetween('registered_at', [$startDate, $endDate])->where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position) {
-            if ($name != null) {
-                $query->where('name', 'LIKE', '%' . $name . '%');
-            }
-
-            if (($countryId != null) || ($provinceId != null) || ($cityId != null)) {
-                $query->whereHas('domicile', function ($secondQuery) use ($countryId, $provinceId, $cityId) {
-                    if ($countryId != null) {
-                        $secondQuery->where('country_id', $countryId);
-                    }
-                    if ($provinceId != null) {
-                        $secondQuery->where('province_id', $provinceId);
-                    }
-                    if ($cityId != null) {
-                        $secondQuery->where('city_id', $cityId);
-                    }
-                });
-            }
-
-            if ($position != null) {
-                $query->whereHas('job', function ($secondQuery) use ($position) {
-                    $secondQuery->where('expected_position', $position);
-                });
-            }
-            if ($status != null) {
-                if ($status == Candidate::READY_TO_INTERVIEW) {
-                    $query->where('status', 3);
-                } else {
-                    $query->where('status', $status);
-                }
-            }
+        $candidates = Candidate::when($startDate, function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('registered_at', [$startDate, $endDate]);
         })
+            ->where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position) {
+                if ($name != null) {
+                    $query->where('name', 'LIKE', '%' . $name . '%');
+                }
+
+                if (($countryId != null) || ($provinceId != null) || ($cityId != null)) {
+                    $query->whereHas('domicile', function ($secondQuery) use ($countryId, $provinceId, $cityId) {
+                        if ($countryId != null) {
+                            $secondQuery->where('country_id', $countryId);
+                        }
+                        if ($provinceId != null) {
+                            $secondQuery->where('province_id', $provinceId);
+                        }
+                        if ($cityId != null) {
+                            $secondQuery->where('city_id', $cityId);
+                        }
+                    });
+                }
+
+                if ($position != null) {
+                    $query->whereHas('job', function ($secondQuery) use ($position) {
+                        $secondQuery->where('expected_position', $position);
+                    });
+                }
+                if ($status != null) {
+                    if ($status == Candidate::READY_TO_INTERVIEW) {
+                        $query->where('status', 3);
+                    } else {
+                        $query->where('status', $status);
+                    }
+                }
+            })
             ->orderBy('updated_at', $request->input('order_by', 'desc'))
             ->paginate($request->input('page_size', 10));
 
