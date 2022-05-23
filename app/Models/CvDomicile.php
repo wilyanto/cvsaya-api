@@ -100,17 +100,42 @@ class CvDomicile extends Model implements Auditable
 
     public function toArray()
     {
-        return [
+        $url = env('KADA_URL') . "/v1/domicile";
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])
+            ->get(
+                $url,
+            );
+
+        $result = [
             'id' => $this->id,
             'candidate_id' => $this->candidate_id,
-            'country' => $this->country(),
-            'province' => $this->province(),
-            'city' => $this->city(),
-            'subdistrict' => $this->subDistrict(),
-            'village' => $this->village(),
             'address' => $this->address,
-            'created_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->created_at)),
-            'updated_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->updated_at)),
         ];
+
+        if ($response->status() == 200) {
+            $decodedDomicile = json_decode($response->body());
+            $result['province'] = $decodedDomicile->province;
+            $result['city'] = $decodedDomicile->city;
+            $result['subdistrict'] = $decodedDomicile->subdistrict;
+            $result['village'] = $decodedDomicile->village;
+        }
+
+        return $result;
+
+        // return [
+        //     'id' => $this->id,
+        //     'candidate_id' => $this->candidate_id,
+        //     'country' => $this->country(),
+        //     // 'province' => $this->province(),
+        //     // 'city' => $this->city(),
+        //     // 'subdistrict' => $this->subDistrict(),
+        //     // 'village' => $this->village(),
+        //     'address' => $this->address,
+        //     'created_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->created_at)),
+        //     'updated_at' => date('Y-m-d\TH:i:s.v\Z', strtotime($this->updated_at)),
+        // ];
     }
 }

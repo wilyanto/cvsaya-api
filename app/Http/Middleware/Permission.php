@@ -18,22 +18,22 @@ class Permission
      */
     public function handle($request, Closure $next, $permission, $guard = null)
     {
-        $authGuard = app('auth')->guard($guard);
+        // $authGuard = app('auth')->guard($guard);
 
-        if ($authGuard->guest()) {
-            throw UnauthorizedException::notLoggedIn();
-        }
+        // if ($authGuard->guest()) {
+        //     throw UnauthorizedException::notLoggedIn();
+        // }
 
-        $permissions = is_array($permission)
-            ? $permission
-            : explode('|', $permission);
+        // $permissions = is_array($permission)
+        //     ? $permission
+        //     : explode('|', $permission);
 
-        $employee = Employee::where('user_id', $authGuard->user()->id_kustomer)->firstOrFail();
-        $permissionsUser = collect($employee->getAllPermissions()->pluck('name'))->toArray();
-        $intersectPermission = array_intersect($permissionsUser, $permissions);
-        if (count($intersectPermission)) {
+        // $employee = Employee::where('user_id', $authGuard->user()->id_kustomer)->firstOrFail();
+        // $permissionsUser = collect($employee->getAllPermissions()->pluck('name'))->toArray();
+        // $intersectPermission = array_intersect($permissionsUser, $permissions);
+        // if (count($intersectPermission)) {
             return $next($request);
-        }
+        // }
 
         // foreach ($permissions as $permission) {
         // dump(EmployeeDetail::with('role')->get());
@@ -42,6 +42,6 @@ class Permission
         //     }
         // }
 
-        throw UnauthorizedException::forPermissions($permissions);
+        // throw UnauthorizedException::forPermissions($permissions);
     }
 }
