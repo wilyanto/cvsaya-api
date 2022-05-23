@@ -180,7 +180,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function getShifts($date)
     {
-        $date = new Carbon($date, 'Asia/Jakarta');
+        $date = new Carbon($date);
         $shifts = EmployeeOneTimeShift::whereDate('date', $date->toDateString())->with('shift')->get();
         if (!$shifts->isEmpty()) {
             return $shifts;
@@ -195,16 +195,22 @@ class Employee extends Authenticatable implements Auditable
         return null;
     }
 
-    public function getShift($date = null)
+    public function getShift($shiftId, $date = null)
     {
-        $date = $date == null ? Carbon::now() : new Carbon($date, 'Asia/Jakarta');
-        $shift = EmployeeOneTimeShift::whereDate('date', $date->toDateString())->with('shift')->first();
+        $date = $date == null ? Carbon::now() : new Carbon($date);
+        $shift = EmployeeOneTimeShift::whereDate('date', $date->toDateString())
+            ->where('shift_id', $shiftId)
+            ->with('shift')
+            ->first();
         if ($shift) {
             return $shift;
         }
 
         $getTodayDay = Carbon::now()->dayOfWeek;
-        $shift = EmployeeRecurringShift::where('day', $getTodayDay)->with('shift')->first();
+        $shift = EmployeeRecurringShift::where('day', $getTodayDay)
+            ->where('shift_id', $shiftId)
+            ->with('shift')
+            ->first();
         if ($shift) {
             return $shift;
         }
