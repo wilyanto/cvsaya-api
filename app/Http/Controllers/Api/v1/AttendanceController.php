@@ -380,6 +380,15 @@ class AttendanceController extends Controller
     public function getAttendancesByCompany(Request $request)
     {
 
+        // $employees = Employee::get();
+        // foreach ($employees as $employee) {
+        //     $employeeShifts = $employee->getShifts(now());
+        //     foreach ($employeeShifts as $employeeShift) {
+        //         dd($employeeShift->attendances);
+        //     }
+        // }
+
+        // return;
         // pagination and search by user
         $request->validate([
             'started_at' => 'required',
@@ -387,12 +396,18 @@ class AttendanceController extends Controller
             'company_id' => 'required|exists:companies,id'
         ]);
 
+        $keyword = $request->keyword;
         $startDate = Carbon::parse($request->started_at);
         $endDate = Carbon::parse($request->ended_at);
         $period = CarbonPeriod::create($startDate, $endDate);
         $companyId = $request->company_id;
         $company = Company::where('id', $companyId)->first();
-        $employees = $company->employees()->with('position')->get();
+        $employees = $company->employees()->with('position')
+            ->whereHas('profileDetail', function ($query) use ($keyword) {
+                $query->where('first_name', 'like', '%' . $keyword . '%')
+                    ->orWhere('last_name', 'like', '%' . $keyword . '%')
+                    ->sortBy('first_name');
+            })->get();
         $data = [];
 
         foreach ($period as $date) {
