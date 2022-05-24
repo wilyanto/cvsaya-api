@@ -145,7 +145,7 @@ class Candidate extends Model implements Auditable
             'gender' =>  $this->profile->gender,
             'position' => $this->job->position,
             'domicile' => $this->domicile->province(),
-            'document_id' => $this->document == null ? null : $this->document->front_selfie,
+            'front_selfie_document_id' => $this->document == null ? null : $this->document->front_selfie,
         ];
     }
 
@@ -190,7 +190,7 @@ class Candidate extends Model implements Auditable
             'registered_at' => $this->registered_at,
             'domicile' => $this->domicile,
             'job' => $this->job,
-            'document_id' => $this->document == null ? null : $this->document->front_selfie,
+            'front_selfie_document_id' => $this->document == null ? null : $this->document->front_selfie,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
