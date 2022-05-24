@@ -20,6 +20,8 @@ use App\Models\User;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic as Image;
 use stdClass;
 
 class CvProfileDetailController extends Controller
@@ -202,7 +204,18 @@ class CvProfileDetailController extends Controller
             'first_name' => 'required|string|min:3',
             'last_name' => 'nullable|string',
             'reference' => 'nullable|string',
+            'file' => 'file|required'
         ]);
+
+        $fullName = $request->first_name;
+        if (!empty($request->last_name)) {
+            $fullName = $request->first_name . ' ' . $request->last_name;
+        }
+        $reference = $request->reference;
+
+        $image = $request->file;
+        $img = Image::make($image)->encode($image->extension(), 70);
+        $fileName = time() . '.' . $image->extension();
 
         $candidate = Candidate::where('user_id', auth()->id())->first();
         if ($candidate) {
@@ -216,27 +229,25 @@ class CvProfileDetailController extends Controller
         if ($candidateWithSamePhoneNumber) {
             $candidateWithSamePhoneNumber->update([
                 'user_id' => auth()->id(),
-            ]);
-            CvProfileDetail::where('candidate_id', $candidateWithSamePhoneNumber->id)->first()->update([
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'reference' => $request->reference,
+                'name' => $fullName,
+                'reference' => $reference,
+                'profile_picture' => $fileName,
             ]);
             return $this->showOne(null);
-        } else {
-            $data = $request->all();
-            $candidate = Candidate::create([
-                'user_id' => auth()->id(),
-                'name' => $request->first_name . " " . $request->last_name,
-                'country_code' => '62',
-                'phone_number' => substr(auth()->user()->telpon, 1),
-                'registered_at' => now(),
-                'status' => 3
-            ]);
-            $data['candidate_id'] = $candidate->id;
-            $userProfileDetail = CvProfileDetail::create($data);
-            return $this->showOne($userProfileDetail);
         }
+        $candidate = Candidate::create([
+            'user_id' => auth()->id(),
+            'name' => $fullName,
+            'country_code' => '62',
+            'phone_number' => substr(auth()->user()->telpon, 1),
+            'registered_at' => now(),
+            'status' => 3,
+            'profile_picture' => $fileName,
+        ]);
+        $data['candidate_id'] = $candidate->id;
+
+        Storage::disk('public')->put('images/profile_picture/' . $fileName, $img);
+        return $this->showOne($candidate);
     }
 
     public function createCandidate($user, $request)

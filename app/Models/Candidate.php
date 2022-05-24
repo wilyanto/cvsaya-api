@@ -48,6 +48,7 @@ class Candidate extends Model implements Auditable
         'status',
         'suggested_by',
         'registered_at',
+        'profile_picture'
     ];
 
     public function domicile()
@@ -98,6 +99,11 @@ class Candidate extends Model implements Auditable
     public function document()
     {
         return $this->hasOne(CvDocument::class, 'candidate_id', 'id');
+    }
+
+    public function getProfilePictureUrl()
+    {
+        return public_path() . '/storage/images/profile_picture' . $this->profile_picture;
     }
 
     public function label()
@@ -190,6 +196,7 @@ class Candidate extends Model implements Auditable
             'registered_at' => $this->registered_at,
             'domicile' => $this->domicile,
             'job' => $this->job,
+            'profile_picture_url' => $this->getProfilePictureUrl(),
             'front_selfie_document_id' => $this->document == null ? null : $this->document->front_selfie,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

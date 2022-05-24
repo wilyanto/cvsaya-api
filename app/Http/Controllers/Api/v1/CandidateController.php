@@ -384,6 +384,7 @@ class CandidateController extends Controller
         $result['basic_profile'] = [
             'first_name' => $userProfileDetail->first_name ?? null,
             'last_name' => $userProfileDetail->last_name ?? null,
+            'profile_picture_url' => $candidate->getProfilePictureUrl(),
         ];
 
         $employee = Employee::where('user_id', auth()->id())->first();
@@ -431,6 +432,7 @@ class CandidateController extends Controller
     public function store(Request $request)
     {
     }
+
 
     /**
      * Display the specified resource.
