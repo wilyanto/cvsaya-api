@@ -103,7 +103,7 @@ class Candidate extends Model implements Auditable
 
     public function getProfilePictureUrl()
     {
-        return public_path() . '/storage/images/profile_picture' . $this->profile_picture;
+        return asset(public_path() . '/images/profile_picture/' . $this->profile_picture);
     }
 
     public function label()
