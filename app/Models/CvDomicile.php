@@ -100,7 +100,7 @@ class CvDomicile extends Model implements Auditable
 
     public function toArray()
     {
-        $url = env('KADA_URL') . "/api/v1/domicile";
+        $url = env('KADA_URL') . "/v1/domicile";
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
