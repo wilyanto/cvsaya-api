@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
 use OwenIt\Auditing\Contracts\Auditable;
+use PHPUnit\Framework\Constraint\Count;
 
 class CvDomicile extends Model implements Auditable
 {
@@ -33,105 +34,45 @@ class CvDomicile extends Model implements Auditable
         return $this->belongsTo(CvProfileDetail::class, 'candidate_id', 'candidate_id')->withDefault();
     }
 
-    public function requestDomicile($url)
-    {
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-        ])
-            ->get(
-                $url,
-            );
-        return [
-            'status' => $response->status(),
-            'message' => $response->json()['data'],
-        ];
-    }
-
     public function country()
     {
-        $url = env('KADA_URL') . "/v1/domicile/countries/" . $this->country_id;
-        $response = $this->requestDomicile($url);
-        return $response['message'];
+        return $this->hasOne(Country::class, 'code', 'country_id');
     }
+
     public function province()
     {
-        if ($this->province_id) {
-            $url = env('KADA_URL') . "/v1/domicile/provinces/" . $this->province_id;
-            $this->requestDomicile($url);
-            $response = $this->requestDomicile($url);
-            return $response['message'];
-        }
-        return null;
+        return $this->hasOne(Province::class, 'code', 'province_id');
     }
+
     public function city()
     {
-        if ($this->city_id) {
-            $url = env('KADA_URL') . "/v1/domicile/cities/" . $this->city_id;
-            $this->requestDomicile($url);
-            $response = $this->requestDomicile($url);
-
-            return $response['message'];
-        }
-        return null;
+        return $this->hasOne(City::class, 'code', 'city_id');
     }
+
     public function subDistrict()
     {
-        if ($this->subdistrict_id) {
-            $url = env('KADA_URL') . "/v1/domicile/sub-districts/" . $this->subdistrict_id;
-            $this->requestDomicile($url);
-            $response = $this->requestDomicile($url);
-            return $response['message'];
-        }
-        return null;
+        return $this->hasOne(SubDistrict::class, 'code', 'subdistrict_id');
     }
 
     public function village()
     {
-        if ($this->village_id) {
-            $url = env('KADA_URL') . "/v1/domicile/villages/" . $this->village_id;
-            $this->requestDomicile($url);
-            $response = $this->requestDomicile($url);
-            return $response['message'];
-        }
-        return null;
+        return $this->hasOne(Village::class, 'code', 'village_id');
     }
 
 
     public function toArray()
     {
-        $url = env('KADA_URL') . "/v1/domicile";
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-        ])
-            ->get(
-                $url,
-                [
-                    'province_id' => $this->province_id,
-                    'city_id' => $this->city_id,
-                    'subdistrict_id' => $this->subdistrict_id,
-                    'village_id' => $this->village_id,
-                ]
-            );
-
-        $result = [
+        return [
             'id' => $this->id,
             'candidate_id' => $this->candidate_id,
             'address' => $this->address,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'province' => $this->province,
+            'city' => $this->city,
+            'subdistrict' => $this->subDistrict,
+            'village' => $this->village
         ];
-
-        if ($response->status() == 200) {
-            $decodedDomicile = json_decode($response->body());
-            $result['province'] = $decodedDomicile->province;
-            $result['city'] = $decodedDomicile->city;
-            $result['subdistrict'] = $decodedDomicile->subdistrict;
-            $result['village'] = $decodedDomicile->village;
-        }
-
-        return $result;
 
         // return [
         //     'id' => $this->id,
