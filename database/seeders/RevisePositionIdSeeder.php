@@ -62,14 +62,15 @@ class RevisePositionIdSeeder extends Seeder
 
         $newExpectedJobs = [];
         $newExperiences = [];
+        $newCandidatePositions = [];
 
         $candidates = Candidate::all();
         $candidatePositions = CandidatePosition::all();
 
         // Pergi ke cvsayav, ambil administrator (idlogin dan telpon)
 
-        $lowerBoundaryId = 35001;
-        $upperBoundaryId = 43000;
+        $lowerBoundaryId = 40001;
+        $upperBoundaryId = 43500;
         $administrators = DB::connection('cvsaya')->table('administrator')->whereRaw('LENGTH(no_telp) > 7')
             ->whereBetween('idlogin', [$lowerBoundaryId, $upperBoundaryId])->get([
                 'idlogin', 'username', 'id_ktp', 'nama_lengkap', 'no_telp', 'TglPost', 'IDprovinces'
@@ -88,22 +89,61 @@ class RevisePositionIdSeeder extends Seeder
             'idlogin', 'sebagai', 'tahun', 'sampai', 'perusahaan', 'resign', 'gaji'
         ]);
         Log::info('1pengalaman : ' . count($pengalamansAll));
+        // $dummyCandidates = DB::connection('dummy-cvsaya')->table('candidates')->get([
+        //     'id', 'user_id', 'phone_number'
+        // ]);
+        // $dummyCandidatePositions = DB::connection('dummy-cvsaya')->table('candidate_positions')->get([
+        //     'id', 'name', 'phone_number'
+        // ]);
+        // $dummyExpectedJobs = DB::connection('dummy-cvsaya')->table('cv_expected_jobs')->get([
+        //     'id', 'user_id', 'expected_position'
+        // ]);
+        // $dummyExperiences = DB::connection('dummy-cvsaya')->table('cv_experiences')->get([
+        //     'id', 'user_id', 'position_id'
+        // ]);
 
         Log::info($administrators);
 
-        foreach ($administrators as $admin) {
-            $candidate = $candidates->where('phone_number', substr($admin->no_telp, 1))->first();
-            $employee = $oldEmployees->where('idlogin', $admin->idlogin)->first();
-            $keinginanGaji = $keinginanGajis->where('idlogin', $admin->idlogin)->first();
-            $pengalamans = $pengalamansAll->where('idlogin', $admin->idlogin)->all();
-            if ($employee && $keinginanGaji && $candidate) {
-                if ($employee->job !== '') {
-                    $candidatePosition = collect($candidatePositions)->filter(function ($item) use ($employee) {
-                        return trim(strtolower($item->name)) == trim(strtolower($employee->job));
-                    })->first();
+        // foreach ($dummyCandidates as $dummyCandidate) {
+        //     $candidateFound = $candidates->where('user_id', $dummyCandidate->user_id)->first();
+        //     $dummyExpectedJobFound = $dummyExpectedJobs->where('user_id', $dummyCandidate->user_id)->first();
+        //     if ($dummyExpectedJobFound) {
+        //         $dummyCandidatePositionFound = $dummyCandidatePositions->where('id', $dummyExpectedJobFound->expected_position)->first();
 
-                    if ($candidatePosition) {
-                        $candidatePositionId = $candidatePosition->id;
+        //     }
+
+        // $dummyExperiencesFound = $dummyExperiences->where('user_id', $dummyCandidate->user_id)->all();
+
+        // if ($candidateFound) {
+        //     $dummyExpectedJobFound = $dummyExpectedJobs->where('user_id', $dummyCandidateFound->user_id)->first();
+        // }
+        // }
+
+        try {
+            foreach ($administrators as $admin) {
+                $candidate = $candidates->where('phone_number', substr($admin->no_telp, 1))->first();
+                $employee = $oldEmployees->where('idlogin', $admin->idlogin)->first();
+                $keinginanGaji = $keinginanGajis->where('idlogin', $admin->idlogin)->first();
+                $pengalamans = $pengalamansAll->where('idlogin', $admin->idlogin)->all();
+                if ($employee && $keinginanGaji && $candidate) {
+                    if (trim($employee->job) !== '') {
+                        $candidatePosition = collect($candidatePositions)->filter(function ($item) use ($employee, $candidate) {
+                            return trim(strtolower($item->name)) == trim(strtolower($employee->job));
+                        })->first();
+
+                        if ($candidatePosition) {
+                            $candidatePositionId = $candidatePosition->id;
+                        } else {
+                            $candidatePositionId = count($candidatePositions) + 1;
+                            $newCandidatePosition = [
+                                'id' => $candidatePositionId,
+                                'name' => ucwords($employee->job),
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ];
+                            array_push($newCandidatePositions, $newCandidatePosition);
+                            $candidatePositions->push((object) $newCandidatePosition);
+                        }
                         $expectedJob = [
                             'candidate_id' => $candidate->id,
                             'expected_salary' => $keinginanGaji->Desired,
@@ -117,42 +157,61 @@ class RevisePositionIdSeeder extends Seeder
                         array_push($newExpectedJobs, $expectedJob);
                     }
                 }
-            }
 
-            if ($candidate) {
-                foreach ($pengalamans as $pengalaman) {
-                    $candidatePosition = collect($candidatePositions)->filter(function ($item) use ($pengalaman) {
-                        return trim(strtolower($item->name)) == trim(strtolower($pengalaman->sebagai));
-                    })->first();
-                    if ($candidatePosition) {
-                        $candidatePositionId = $candidatePosition->id;
-                        $experience = [
-                            'candidate_id' => $candidate->id,
-                            'employment_type_id' => null,
-                            'position_id' => $candidatePositionId,
-                            'company_name' => $pengalaman->perusahaan,
-                            'company_location' => null,
-                            'jobdesc' => $pengalaman->sebagai,
-                            'resign_reason' => $pengalaman->resign,
-                            'reference' => null,
-                            'previous_salary' => $pengalaman->gaji,
-                            'started_at' => Carbon::createFromTimestamp($pengalaman->tahun)->toDateString(),
-                            'ended_at' => Carbon::createFromTimestamp($pengalaman->sampai)->toDateString(),
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ];
-                        Log::info($candidate->id);
-                        array_push($newExperiences, $experience);
+                if ($candidate) {
+                    foreach ($pengalamans as $pengalaman) {
+                        if (trim($pengalaman->sebagai) !== '') {
+                            $candidatePosition = collect($candidatePositions)->filter(function ($item) use ($pengalaman) {
+                                return trim(strtolower($item->name)) == trim(strtolower($pengalaman->sebagai));
+                            })->first();
+                            if ($candidatePosition) {
+                                $candidatePositionId = $candidatePosition->id;
+                            } else {
+                                $candidatePositionId = count($candidatePositions) + 1;
+                                $newCandidatePosition = [
+                                    'id' => $candidatePositionId,
+                                    'name' => ucwords($pengalaman->sebagai),
+                                    'created_at' => now(),
+                                    'updated_at' => now(),
+                                ];
+                                array_push($newCandidatePositions, $newCandidatePosition);
+                                $candidatePositions->push((object) $newCandidatePosition);
+                            }
+                            $experience = [
+                                'candidate_id' => $candidate->id,
+                                'employment_type_id' => null,
+                                'position_id' => $candidatePositionId,
+                                'company_name' => $pengalaman->perusahaan,
+                                'company_location' => null,
+                                'jobdesc' => $pengalaman->sebagai,
+                                'resign_reason' => $pengalaman->resign,
+                                'reference' => null,
+                                'previous_salary' => $pengalaman->gaji,
+                                'started_at' => Carbon::createFromTimestamp($pengalaman->tahun)->toDateString(),
+                                'ended_at' => Carbon::createFromTimestamp($pengalaman->sampai)->toDateString(),
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ];
+                            Log::info($candidate->id);
+                            array_push($newExperiences, $experience);
+                        }
                     }
                 }
             }
+        } catch (\Throwable $th) {
+            Log::info($th);
         }
 
         DB::transaction(function () use (
             $newExpectedJobs,
             $newExperiences,
+            $newCandidatePositions,
         ) {
-        $chunckedExpectedJobs = array_chunk($newExpectedJobs, 1000);
+            $chunckedCandidatePositions = array_chunk($newCandidatePositions, 1000);
+            foreach ($chunckedCandidatePositions as $candidatePositions) {
+                CandidatePosition::insert($candidatePositions);
+            }
+            $chunckedExpectedJobs = array_chunk($newExpectedJobs, 1000);
             foreach ($chunckedExpectedJobs as $expectedJobs) {
                 CvExpectedJob::insert($expectedJobs);
             }
