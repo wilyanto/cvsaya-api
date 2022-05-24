@@ -107,6 +107,12 @@ class CvDomicile extends Model implements Auditable
         ])
             ->get(
                 $url,
+                [
+                    'province_id' => $this->province_id,
+                    'city_id' => $this->city_id,
+                    'subdistrict_id' => $this->subdistrict_id,
+                    'village_id' => $this->village_id,
+                ]
             );
 
         $result = [
