@@ -123,13 +123,11 @@ class CandidateController extends Controller
 
     public function getSummaryByDay(Request $request)
     {
-        $request->validate([
-            'started_at' => 'required',
-            'ended_at' => 'required'
-        ]);
-        $startDate = $request->started_at;
-        $endDate = $request->ended_at;
-        $candidates = Candidate::whereBetween('registered_at', [$startDate, $endDate])->get();
+        $startDate = $request->started_at ?? null;
+        $endDate = $request->ended_at ?? null;
+        $candidates = Candidate::when($startDate, function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('registered_at', [$startDate, $endDate]);
+        })->get();
         $totalCandidate = $candidates->count();
         $interviewCandidates = $candidates->where('status', Candidate::READY_TO_INTERVIEW)->count();
         $interviewedCandidates = $candidates->whereIn(
@@ -182,15 +180,14 @@ class CandidateController extends Controller
             'keyword' => 'nullable',
             'page' => 'nullable|numeric|gt:0',
             'page_size' => 'nullable|numeric|gt:0',
-            'started_at' => 'required',
-            'ended_at' => 'required'
+
         ]);
 
         $page = $request->page ? $request->page  : 1;
         $pageSize = $request->page_size ? $request->page_size : 10;
         $keyword = $request->keyword;
-        $startDate = $request->started_at;
-        $endDate = $request->ended_at;
+        $startDate = $request->started_at ?? null;
+        $endDate = $request->ended_at ?? null;
         $result = [];
         $positions = CandidatePosition::where(function ($query) use ($keyword) {
             if ($keyword != null) {

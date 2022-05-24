@@ -83,7 +83,6 @@ class Candidate extends Model implements Auditable
         return $this->hasOne(CvExpectedJob::class, 'candidate_id', 'id')->withDefault();
     }
 
-
     public function results()
     {
         return $this->hasManyThrough(
@@ -94,6 +93,11 @@ class Candidate extends Model implements Auditable
             'id',
             'result_id'
         )->withDefault();
+    }
+
+    public function document()
+    {
+        return $this->hasOne(CvDocument::class, 'candidate_id', 'id');
     }
 
     public function label()
@@ -141,6 +145,7 @@ class Candidate extends Model implements Auditable
             'gender' =>  $this->profile->gender,
             'position' => $this->job->position,
             'domicile' => $this->domicile->province(),
+            'document_id' => $this->document == null ? null : $this->document->front_selfie,
         ];
     }
 
@@ -185,6 +190,7 @@ class Candidate extends Model implements Auditable
             'registered_at' => $this->registered_at,
             'domicile' => $this->domicile,
             'job' => $this->job,
+            'document_id' => $this->document == null ? null : $this->document->front_selfie,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
