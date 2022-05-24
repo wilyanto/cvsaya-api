@@ -233,6 +233,8 @@ class CvProfileDetailController extends Controller
                 'reference' => $reference,
                 'profile_picture' => $fileName,
             ]);
+            Storage::disk('public')->put('images/profile_picture/' . $fileName, $img);
+
             return $this->showOne(null);
         }
         $candidate = Candidate::create([
@@ -245,8 +247,8 @@ class CvProfileDetailController extends Controller
             'profile_picture' => $fileName,
         ]);
         $data['candidate_id'] = $candidate->id;
-
         Storage::disk('public')->put('images/profile_picture/' . $fileName, $img);
+
         return $this->showOne($candidate);
     }
 
