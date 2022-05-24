@@ -304,7 +304,7 @@ class CandidateController extends Controller
         $user = auth()->user();
         $request->validate([
             'interviewed_at' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
-            'interviewed_by' => 'integer|exists:employee_details,id',
+            'interviewed_by' => 'integer|exists:employees,id',
         ]);
 
         $candidate = Candidate::where('id', $id)->firstOrFail();
@@ -382,8 +382,7 @@ class CandidateController extends Controller
             $data['is_document_completed'] = false;
         }
         $result['basic_profile'] = [
-            'first_name' => $userProfileDetail->first_name ?? null,
-            'last_name' => $userProfileDetail->last_name ?? null,
+            'name' => $candidate->name ?? null,
         ];
 
         $employee = Employee::where('user_id', auth()->id())->first();
@@ -440,7 +439,6 @@ class CandidateController extends Controller
      */
     public function show(Candidate $candidate)
     {
-        //
     }
 
     /**

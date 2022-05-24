@@ -44,11 +44,7 @@ class CandidateNoteController extends Controller
             $candidateNoteQuery->where('visibility', $request->visibility);
         }
 
-        $candidateNotes = $candidateNoteQuery
-            ->with('profileDetail', function ($query) {
-                $query->select(['first_name', 'last_name']);
-            })
-            ->orderBy('created_at', 'desc')
+        $candidateNotes = $candidateNoteQuery->orderBy('created_at', 'desc')
             ->paginate($pageSize);
 
         return $this->showPagination(
@@ -71,7 +67,7 @@ class CandidateNoteController extends Controller
         $candidateNote = CandidateNote::create([
             'note' => $request->note,
             'employee_id' => $employee->id,
-            'candidate_id' => $candidateId,
+            'candidate_id' => $candidate->id,
             'visibility' => $request->visibility,
         ]);
 

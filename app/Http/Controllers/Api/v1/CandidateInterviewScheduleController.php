@@ -86,6 +86,7 @@ class CandidateInterviewScheduleController extends Controller
 
     public function indexInterviewer()
     {
+        // TODO : Fix Profile Detail
 
         $employee = Employee::with('roles')->get();
 

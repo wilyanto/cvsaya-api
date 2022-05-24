@@ -143,6 +143,7 @@ class CvProfileDetailController extends Controller
 
     public function getStatus($id)
     {
+        $candidate = Candidate::where('id', $id)->first();
         $userProfileDetail = CvProfileDetail::where('candidate_id', $id)->first();
         $education = CvEducation::where('candidate_id', $id)->first();
         $document = CvDocument::where('candidate_id', $id)->first();
@@ -168,8 +169,7 @@ class CvProfileDetailController extends Controller
             $data['is_document_completed'] = false;
         }
         $result['basic_profile'] = [
-            'first_name' => $userProfileDetail->first_name ?? null,
-            'last_name' => $userProfileDetail->last_name ?? null,
+            'name' => $candidate->name
         ];
 
         $employee = Employee::where('user_id', $id)->first();
@@ -198,6 +198,8 @@ class CvProfileDetailController extends Controller
      */
     public function store(Request $request)
     {
+        // TODO : Fix Profile Detail
+        //Post image
         $request->validate([
             'first_name' => 'required|string|min:3',
             'last_name' => 'nullable|string',

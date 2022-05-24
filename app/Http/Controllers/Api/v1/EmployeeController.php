@@ -59,13 +59,14 @@ class EmployeeController extends Controller
                     $query->where('level_id', $request->level_id);
                 });
 
+
+            // TODO : Fix Profile Detail
             if ($request->keyword)
-                $query->whereHas('profileDetail', function ($query) use ($request) {
-                    $query->where('first_name', 'like', '%' . $request->keyword . '%')
-                        ->orWhere('last_name', 'like', '%' . $request->keyword . '%');
+                $query->whereHas('candidate', function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->keyword . '%');
                 });
         })
-            ->with('position', 'profileDetail')
+            ->with('position', 'profileDetail', 'candidate')
             ->paginate($request->input('page_size', 10));
 
         return $this->showPagination('employees', $employees);

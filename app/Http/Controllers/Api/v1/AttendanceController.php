@@ -10,6 +10,7 @@ use App\Enums\AttendanceType;
 use App\Models\AttendanceCompanyGroup;
 use App\Models\AttendanceEmployee;
 use App\Models\AttendanceQrCode;
+use App\Models\Candidate;
 use App\Models\Company;
 use App\Models\Document;
 use App\Models\DocumentType;
@@ -55,9 +56,11 @@ class AttendanceController extends Controller
 
         $user = auth()->user();
         $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
+
+        // TODO : Fix Profile Detail
         $data['employee'] = [
             'id' => $employee->id,
-            'name' => $employee->profileDetail->first_name . ' ' . $employee->profileDetail->last_name,
+            'name' => $employee->candidate->name,
         ];
         $attendance = [];
         $startedAt = new \DateTime($request->started_at, new DateTimeZone('Asia/Jakarta'));
@@ -382,16 +385,6 @@ class AttendanceController extends Controller
 
     public function getAttendancesByCompany(Request $request)
     {
-
-        // $employees = Employee::get();
-        // foreach ($employees as $employee) {
-        //     $employeeShifts = $employee->getShifts(now());
-        //     foreach ($employeeShifts as $employeeShift) {
-        //         dd($employeeShift->attendances);
-        //     }
-        // }
-
-        // return;
         // pagination and search by user
         $request->validate([
             'started_at' => 'required',
@@ -406,9 +399,8 @@ class AttendanceController extends Controller
         $companyId = $request->company_id;
         $company = Company::where('id', $companyId)->first();
         $employees = $company->employees()->with('position')
-            ->whereHas('profileDetail', function ($query) use ($keyword) {
-                $query->where('first_name', 'like', '%' . $keyword . '%')
-                    ->orWhere('last_name', 'like', '%' . $keyword . '%');
+            ->whereHas('candidate', function ($query) use ($keyword) {
+                $query->where('name', 'like', '%' . $keyword . '%');
             })->get();
         $data = [];
 
@@ -434,7 +426,7 @@ class AttendanceController extends Controller
                         'attendances' => $attendances,
                     ];
                 }
-                $employeeAttendance['profile_detail'] = $employee->profileDetail()->first();
+                $employeeAttendance['employee_detail'] = $employee->candidate;
                 $employeeAttendance['shifts'] = $shifts;
                 $employeeAttendances[] = $employeeAttendance;
             }
@@ -448,6 +440,7 @@ class AttendanceController extends Controller
 
     public function getAttendancesByDateRange(Request $request)
     {
+        $keyword = $request->keyword;
         $request->validate([
             'started_at' => 'required',
             'ended_at' => 'required',
@@ -455,6 +448,10 @@ class AttendanceController extends Controller
         $startDate = Carbon::parse($request->started_at);
         $endDate = Carbon::parse($request->ended_at);
         $userId = auth()->id();
+        $candidate = Candidate::where('user_id', $userId)
+            ->where('name', 'like', '%' . $keyword . '%')
+            ->first();
+        // $employees = Employee::where('candidate_id', $candidate->id)->get();
         $employees = Employee::where('user_id', $userId)->get();
         $period = CarbonPeriod::create($startDate, $endDate);
 

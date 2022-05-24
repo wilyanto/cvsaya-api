@@ -13,6 +13,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use OwenIt\Auditing\Contracts\Auditable;
 use App\Enums\AttendanceType;
+use PDO;
 
 class Employee extends Authenticatable implements Auditable
 {
@@ -87,6 +88,11 @@ class Employee extends Authenticatable implements Auditable
         return $this->belongsToMany(Attendance::class, 'attendances_employees');
     }
 
+    public function candidate()
+    {
+        return $this->hasOne(Candidate::class, 'id', 'candidate_id');
+    }
+
     public function typeOfSalary()
     {
         $employeeSalaryTypes = $this->salaryTypes;
@@ -117,8 +123,8 @@ class Employee extends Authenticatable implements Auditable
 
     public function getUserName()
     {
-        if ($this->profileDetail) {
-            return $this->profileDetail->first_name;
+        if ($this->candidate) {
+            return $this->candidate->name;
         }
     }
 
@@ -128,8 +134,7 @@ class Employee extends Authenticatable implements Auditable
             'id' => $this->id,
             'user_id' => $this->user_id,
             'position' => $this->position,
-            'first_name' => $this->profileDetail->first_name,
-            'last_name' => $this->profileDetail->last_name
+            'name' => $this->candidate->name
         ];
     }
 

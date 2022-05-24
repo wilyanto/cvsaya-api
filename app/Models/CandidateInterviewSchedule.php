@@ -90,11 +90,12 @@ class CandidateInterviewSchedule extends Model implements Auditable
 
     public function interviewer()
     {
+
+        // TODO : Fix Profile Detail
         if ($this->interviewBy) {
             return [
                 'id' => $this->interviewBy->id,
-                'first_name' => $this->interviewBy->profileDetail->first_name,
-                'last_name' => $this->interviewBy->profileDetail->last_name,
+                'name' => $this->interviewBy->candidate->name,
             ];
         } else {
             return null;
