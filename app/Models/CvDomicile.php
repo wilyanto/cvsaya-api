@@ -100,13 +100,19 @@ class CvDomicile extends Model implements Auditable
 
     public function toArray()
     {
-        $url = env('KADA_URL') . "/v1/domicile";
+        $url = env('KADA_URL') . "/api/v1/domicile";
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ])
             ->get(
                 $url,
+                [
+                    'province_id' => $this->province_id,
+                    'city_id' => $this->city_id,
+                    'subdistrict_id' => $this->subdistrict_id,
+                    'village_id' => $this->village_id,
+                ]
             );
 
         $result = [
