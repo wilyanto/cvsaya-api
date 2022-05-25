@@ -241,7 +241,7 @@ class CandidateController extends Controller
 
             $candidateController = new CvProfileDetailController;
 
-            $status = $candidateController->getStatus($candidate->user_id);
+            $status = $candidateController->getStatus($candidate->id);
             $status = $status->original;
             $status = $status['data']['completeness_status'];
             if (
@@ -351,11 +351,12 @@ class CandidateController extends Controller
         if (!$document || !$document->identityCard || !$document->frontSelfie || !$document->rightSelfie || !$document->leftSelfie) {
             $data['is_document_completed'] = false;
         }
+        // note => need to change to name next release
         $result['basic_profile'] = [
-            'name' => $candidate->name ?? null,
+            'first_name' => $candidate->name ?? null,
         ];
 
-        $employee = Employee::where('user_id', auth()->id())->first();
+        $employee = Employee::where('candidate_id', $candidate->id)->first();
         if ($employee) {
             $result['is_employee'] = true;
             $position = [

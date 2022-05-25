@@ -32,20 +32,20 @@ class EmployeeShiftController extends Controller
                 $query->select('id', 'name', 'clock_in', 'clock_out', 'break_started_at', 'break_ended_at', 'break_duration');
             },
             'employee' => function ($query) {
-                $query->select('id', 'user_id', 'position_id');
+                $query->select('id', 'candidate_id', 'position_id');
             },
             'employee.position' => function ($query) {
                 $query->select('id', 'name');
             },
             'employee.candidate' => function ($query) {
-                $query->select('id', 'candidate_id', 'name');
+                $query->select('id', 'name');
             },
         ];
 
         $employeeOneTimeShifts = EmployeeOneTimeShift::whereDate('date', $date)
             ->whereHas('employee', function ($employeeQuery) use ($name, $companyId, $positionId) {
                 $employeeQuery->whereHas('candidate', function ($candidateQuery) use ($name) {
-                    $candidateQuery->where('name', $name);
+                    $candidateQuery->where('name', 'like', '%' . $name . '%');
                 })->when($positionId, function ($positionQuery, $positionId) {
                     $positionQuery->where('position_id', $positionId);
                 })
@@ -62,7 +62,7 @@ class EmployeeShiftController extends Controller
         $employeeRecurringShifts = EmployeeRecurringShift::where('day', $day)
             ->whereHas('employee', function ($employeeQuery) use ($name, $companyId, $positionId) {
                 $employeeQuery->whereHas('candidate', function ($candidateQuery) use ($name) {
-                    $candidateQuery->where('name', $name);
+                    $candidateQuery->where('name', 'like', '%' . $name . '%');
                 })->when($positionId, function ($positionQuery, $positionId) {
                     $positionQuery->where('position_id', $positionId);
                 })

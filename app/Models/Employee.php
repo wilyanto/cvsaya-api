@@ -26,7 +26,7 @@ class Employee extends Authenticatable implements Auditable
     ];
 
     protected $fillable = [
-        'user_id',
+        'candidate_id',
         'position_id',
         'joined_at',
         'type',
@@ -45,7 +45,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function profileDetail()
     {
-        return $this->hasOneThrough(CvProfileDetail::class, Candidate::class, 'user_id', 'candidate_id', 'user_id', 'id');
+        return $this->hasOneThrough(CvProfileDetail::class, Candidate::class, 'id', 'candidate_id', 'candidate_id', 'id');
     }
 
     public function company()
@@ -92,6 +92,7 @@ class Employee extends Authenticatable implements Auditable
     {
         return $this->hasOne(Candidate::class, 'id', 'candidate_id');
     }
+
 
     public function typeOfSalary()
     {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreShiftRequest;
+use App\Models\Candidate;
 use App\Models\Employee;
 use App\Models\EmployeeOneTimeShift;
 use App\Models\EmployeeRecurringShift;
@@ -173,9 +174,10 @@ class ShiftController extends Controller
         $endDate = $request->ended_at;
         $companyId = $request->company_id;
         $positions = Position::where('company_id', $companyId)->pluck('id');
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
         $employee = Employee::where(
-            'user_id',
-            auth()->id()
+            'candidate_id',
+            $candidate->id
         )->whereIn('position_id', $positions)->firstOrFail();
 
         if (!$employee) {

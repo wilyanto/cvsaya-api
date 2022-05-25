@@ -130,7 +130,6 @@ class Candidate extends Model implements Auditable
         }
         return [
             'id' => $this->id,
-            'candidate_id' => $this->candidate_id,
             'name' => $this->name,
             'phone_number' => $this->phone_number,
             'country_code' => $this->country_code,
@@ -144,7 +143,7 @@ class Candidate extends Model implements Auditable
             'education' => $this->educations->first(),
             'gender' =>  $this->profile->gender,
             'position' => $this->job->position,
-            'domicile' => $this->domicile->province(),
+            'domicile' => $this->domicile,
             'front_selfie_document_id' => $this->document == null ? null : $this->document->front_selfie,
         ];
     }

@@ -55,7 +55,8 @@ class AttendanceController extends Controller
         ]);
 
         $user = auth()->user();
-        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
+        $candidate = Candidate::where('user_id', $user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
 
         // TODO : Fix Profile Detail
         $data['employee'] = [
@@ -190,9 +191,10 @@ class AttendanceController extends Controller
         $attendanceQRcode = AttendanceQrCode::where('id', $request->attendance_qr_code_id)->firstOrFail();
         $companyId = $attendanceQRcode->company_id;
 
-        if (AttendanceCompanyGroup::where('user_id', $user->id())->count() != 0) {
+        $candidate = Candidate::where('user_id', $user->id())->first();
+        if (AttendanceCompanyGroup::where('candidate_id', $candidate->id)->count() != 0) {
             $parentCompanyId = 0;
-            $parentCompany = AttendanceCompanyGroup::where('user_id', $user->id())
+            $parentCompany = AttendanceCompanyGroup::where('candidate_id', $candidate->id)
                 ->where('company_parent_id', $companyId)
                 ->first();
             if ($parentCompany) {
@@ -200,11 +202,10 @@ class AttendanceController extends Controller
             }
             $isParentCompany = $companyId == $parentCompanyId;
         }
-
         $positionIds = Position::where('company_id', $companyId)->pluck('id');
         $employee = Employee::where(
-            'user_id',
-            $user->id()
+            'candidate_id',
+            $candidate->id
         )->whereIn('position_id', $positionIds)->first();
 
         if (!$employee) {
@@ -262,7 +263,7 @@ class AttendanceController extends Controller
             ($attendanceType == AttendanceType::clockOut() &&
                 now()->lt(Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight())))
         ) {
-            $verifiedAt = now()->toIso8601String();
+            $verifiedAt = now();
             $verifiedBy = auth()->user()->id;
         }
 
@@ -283,7 +284,7 @@ class AttendanceController extends Controller
 
         $employeeIds = [$employee->id];
         if ($isParentCompany) {
-            $employeeIds = Employee::where('user_id', $employee->user_id)->pluck('id');
+            $employeeIds = Employee::where('candidate_id', $employee->candidate_id)->pluck('id');
         }
         $attendance->employees()->attach($employeeIds);
 
@@ -448,11 +449,10 @@ class AttendanceController extends Controller
         $startDate = Carbon::parse($request->started_at);
         $endDate = Carbon::parse($request->ended_at);
         $userId = auth()->id();
-        $candidate = Candidate::where('user_id', $userId)
-            ->where('name', 'like', '%' . $keyword . '%')
-            ->first();
-        // $employees = Employee::where('candidate_id', $candidate->id)->get();
-        $employees = Employee::where('user_id', $userId)->get();
+        $candidate = Candidate::where('user_id', $userId)->first();
+        $employees = Employee::where('candidate_id', $candidate->id)->whereHas('candidate', function ($query) use ($keyword) {
+            $query->where('name', 'like', '%' . $keyword . '%');
+        })->get();
         $period = CarbonPeriod::create($startDate, $endDate);
 
         $data = [];

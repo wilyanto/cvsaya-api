@@ -20,7 +20,9 @@ class CvExpectedJobController extends Controller
      */
     public function show($id)
     {
-        $expectedJob = CvExpectedJob::where('candidate_id', $id)->orderBy('updated_at', 'DESC')->firstOrFail();
+        $expectedJob = CvExpectedJob::where('candidate_id', $id)
+            ->orderBy('updated_at', 'DESC')
+            ->firstOrFail();
 
         return $this->showOne($expectedJob);
     }

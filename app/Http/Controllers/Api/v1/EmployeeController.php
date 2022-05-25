@@ -66,7 +66,7 @@ class EmployeeController extends Controller
                     $query->where('name', 'like', '%' . $request->keyword . '%');
                 });
         })
-            ->with('position', 'profileDetail', 'candidate')
+            ->with('position', 'candidate')
             ->paginate($request->input('page_size', 10));
 
         return $this->showPagination('employees', $employees);
@@ -106,7 +106,7 @@ class EmployeeController extends Controller
         if ($position->remaining_slot === 0) return $this->errorResponse('There\'s no remaining slot for the specified position.', 422, 42201);
 
         $candidate = Candidate::select('id', 'user_id')->where('id', $request->candidate_id)->whereIn('status', [Candidate::STANDBY, Candidate::CONSIDER, Candidate::ACCEPTED])->firstOrFail();
-        $employees = Employee::where('user_id', $candidate->user_id)->get(['id', 'position_id']);
+        $employees = Employee::where('candidate_id', $candidate->id)->get(['id', 'position_id']);
 
         if ($employees->first(function ($employee) use ($request) {
             return $employee->position_id === $request->position_id;
@@ -129,7 +129,7 @@ class EmployeeController extends Controller
             $position->decrement('remaining_slot');
 
             $employee = Employee::create([
-                'user_id' => $candidate->user_id,
+                'candidate_id' => $candidate->id,
                 'position_id' => $request->position_id,
                 'type' => $request->type,
                 'is_default' => $employees->isEmpty(),
@@ -317,16 +317,16 @@ class EmployeeController extends Controller
             $positionQuery->whereHas('company', function ($companyQuery) use ($companyId) {
                 $companyQuery->where('id', $companyId);
             });
-        })->whereHas('candidates', function ($candidateQuery) use ($name) {
-            $candidateQuery->where('name', $name);
+        })->whereHas('candidate', function ($candidateQuery) use ($name) {
+            $candidateQuery->where('name', 'like', '%' . $name . '%');
         })
             ->with([
-                'candidates:id,name,user_id',
+                'candidate:id,name',
                 'position:id,name'
             ])
             ->paginate(
                 $pageSize,
-                ['id', 'user_id', 'position_id'],
+                ['id', 'candidate_id', 'position_id'],
                 'page',
                 $page
             );

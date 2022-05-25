@@ -171,7 +171,7 @@ class CvProfileDetailController extends Controller
             $data['is_document_completed'] = false;
         }
         $result['basic_profile'] = [
-            'name' => $candidate->name
+            'first_name' => $candidate->name ?? null,
         ];
 
         $employee = Employee::where('candidate_id', $id)->first();
@@ -269,10 +269,11 @@ class CvProfileDetailController extends Controller
     public function show()
     {
         $user = auth()->user();
-
-        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
+        $candidate = Candidate::where('user_id', $user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
 
         $data = [
+            'candidate' => $employee->candidate,
             'profile' => $employee->profileDetail,
             'roles' => $employee->getRoleNames(),
             'permissions' => $employee->getAllPermissions()->pluck('name')

@@ -22,9 +22,10 @@ class CandidateNoteController extends Controller
         $userId = auth()->user()->id_kustomer;
 
         $candidate = Candidate::findOrFail($candidateId);
-        $employee = Employee::where('user_id', $userId)->firstOrFail();
+        $interviewer = Candidate::where('user_id', $userId)->firstOrFail();
+        $employee = Employee::where('candidate_id', $interviewer->id)->firstOrFail();
 
-        if ($userId == $candidate->id) {
+        if ($userId == $candidate->user_id) {
             return $this->errorResponse('Data not found', 404, 40400);
         }
 
@@ -58,11 +59,12 @@ class CandidateNoteController extends Controller
         $userId = auth()->user()->id_kustomer;
         $candidate = Candidate::findOrFail($candidateId);
 
-        if ($userId == $candidate->id) {
+        if ($userId == $candidate->user_id) {
             return $this->errorResponse('Can\'t perform this action', 409, 40900);
         }
 
-        $employee = Employee::where('user_id', $userId)->firstOrFail();
+        $interviewer = Candidate::where('user_id', $userId)->firstOrFail();
+        $employee = Employee::where('candidate_id', $interviewer->id)->firstOrFail();
 
         $candidateNote = CandidateNote::create([
             'note' => $request->note,
