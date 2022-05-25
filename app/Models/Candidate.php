@@ -103,7 +103,8 @@ class Candidate extends Model implements Auditable
 
     public function getProfilePictureUrl()
     {
-        return asset(public_path() . '/images/profile_picture/' . $this->profile_picture);
+        // https: laracasts.com/discuss/channels/laravel/show-images-from-storage-folder
+        return url('/storage/images/profile_picture/' . $this->profile_picture);
     }
 
     public function label()
