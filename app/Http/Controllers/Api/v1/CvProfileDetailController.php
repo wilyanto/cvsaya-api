@@ -7,6 +7,7 @@ use App\Models\CvDomicile;
 use App\Models\CvSosmed;
 use App\Http\Controllers\Controller;
 use App\Models\Candidate;
+use App\Models\CandidatePosition;
 use App\Models\CvEducation;
 use App\Models\CvCertification;
 use App\Models\CvSpeciality;
@@ -204,8 +205,14 @@ class CvProfileDetailController extends Controller
             'first_name' => 'required|string|min:3',
             'last_name' => 'nullable|string',
             'reference' => 'nullable|string',
-            'file' => 'file|required'
+            'file' => 'file|required',
+            'expected_position' => 'required'
         ]);
+
+        $candidate = Candidate::where('user_id', auth()->id())->first();
+        if ($candidate) {
+            return $this->errorResponse('This user already being a candidate', 409, 40900);
+        }
 
         $fullName = $request->first_name;
         if (!empty($request->last_name)) {
@@ -217,37 +224,44 @@ class CvProfileDetailController extends Controller
         $img = Image::make($image)->encode($image->extension(), 70);
         $fileName = time() . '.' . $image->extension();
 
-        $candidate = Candidate::where('user_id', auth()->id())->first();
-        if ($candidate) {
-            return $this->errorResponse('This user already being a candidate', 409, 40900);
-        }
-
         $user = User::find(auth()->id());
         $phoneNumber = substr($user->telpon, 1);
-        $candidateWithSamePhoneNumber = Candidate::where('phone_number', $phoneNumber)->first();
-
-        if ($candidateWithSamePhoneNumber) {
-            $candidateWithSamePhoneNumber->update([
-                'user_id' => auth()->id(),
-                'name' => $fullName,
-                'reference' => $reference,
-                'profile_picture' => $fileName,
-            ]);
+        $candidate = Candidate::where('phone_number', $phoneNumber)->first();
+        DB::transaction(function () use ($request, $candidate, $fileName, $fullName, $reference, $img) {
+            if ($candidate) {
+                $candidate->update([
+                    'user_id' => auth()->id(),
+                    'name' => $fullName,
+                    'reference' => $reference,
+                    'profile_picture' => $fileName,
+                ]);
+            } else {
+                $candidate = Candidate::create([
+                    'user_id' => auth()->id(),
+                    'name' => $fullName,
+                    'country_code' => '62',
+                    'phone_number' => substr(auth()->user()->telpon, 1),
+                    'registered_at' => now(),
+                    'status' => 3,
+                    'profile_picture' => $fileName,
+                ]);
+            }
+            $data['candidate_id'] = $candidate->id;
             Storage::disk('public')->put('images/profile_picture/' . $fileName, $img);
 
-            return $this->showOne(null);
-        }
-        $candidate = Candidate::create([
-            'user_id' => auth()->id(),
-            'name' => $fullName,
-            'country_code' => '62',
-            'phone_number' => substr(auth()->user()->telpon, 1),
-            'registered_at' => now(),
-            'status' => 3,
-            'profile_picture' => $fileName,
-        ]);
-        $data['candidate_id'] = $candidate->id;
-        Storage::disk('public')->put('images/profile_picture/' . $fileName, $img);
+            $expectedPosition = json_decode($request->expected_position);
+            $candidatePosition = CandidatePosition::where('id', $expectedPosition->id)
+                ->orWhere('name', $expectedPosition->name)
+                ->first();
+            if (!$candidatePosition) {
+                $candidatePosition = CandidatePosition::create(['name' => $expectedPosition->name]);
+            }
+
+            CvExpectedJob::create([
+                'candidate_id' => $candidate->id,
+                'expected_position' => $candidatePosition->id,
+            ]);
+        });
 
         return $this->showOne($candidate);
     }
