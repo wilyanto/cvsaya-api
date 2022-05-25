@@ -93,9 +93,9 @@ class CandidateController extends Controller
 
                 if ($isReviewed != null) {
                     if ($isReviewed) {
-                        $query->candidateNotes->count() != 0;
+                        $query->has('candidateNotes', '>', 0);
                     } else {
-                        $query->candidateNotes->count() == 0;
+                        $query->has('candidateNotes', '==', 0);
                     }
                 }
             })
