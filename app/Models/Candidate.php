@@ -207,7 +207,7 @@ class Candidate extends Model implements Auditable
             'job' => $this->job,
             'profile_picture_url' => $this->getProfilePictureUrl(),
             'front_selfie_document_id' => $this->document == null ? null : $this->document->front_selfie,
-            'is_reviewed' => $this->candidateNotes()->count() == 0 ? null : $this->candidateNotes()->count(),
+            'is_reviewed' => $this->candidateNotes()->count() != 0,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
