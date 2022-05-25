@@ -299,7 +299,7 @@ class CandidateController extends Controller
         return $this->showOne($candidate);
     }
 
-    public function addSchdule(Request $request, $id)
+    public function addSchedule(Request $request, $id)
     {
         $user = auth()->user();
         $request->validate([
@@ -324,7 +324,7 @@ class CandidateController extends Controller
         } else {
             $candidateController = new CvProfileDetailController;
 
-            $status = $candidateController->getStatus($candidate->user_id);
+            $status = $candidateController->getStatus($candidate->id);
             $status = $status->original;
             $status = $status['data']['completeness_status'];
             if (

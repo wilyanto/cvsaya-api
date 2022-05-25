@@ -317,11 +317,11 @@ class EmployeeController extends Controller
             $positionQuery->whereHas('company', function ($companyQuery) use ($companyId) {
                 $companyQuery->where('id', $companyId);
             });
-        })->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
-            $profileDetailQuery->withName($name);
+        })->whereHas('candidates', function ($candidateQuery) use ($name) {
+            $candidateQuery->where('name', $name);
         })
             ->with([
-                'profileDetail:id,first_name,last_name,user_id',
+                'candidates:id,name,user_id',
                 'position:id,name'
             ])
             ->paginate(

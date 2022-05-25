@@ -94,9 +94,8 @@ class CandidateInterviewScheduleController extends Controller
             return $this->map(function ($value) {
                 return [
                     'id' => $value->id,
-                    'user_id' => $value->user_id,
-                    'first_name' => $value->profileDetail->first_name,
-                    'last_name' => $value->profileDetail->last_name
+                    'candidate_id' => $value->candidate_id,
+                    'name' => $value->candidate->name
                 ];
             });
         });

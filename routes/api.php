@@ -142,7 +142,7 @@ Route::prefix('v1')->group(function () {
                         Route::get('/{id}', 'indexDetail');
                         Route::post('/', 'addCandidateToBlast');
                         Route::put('/{id}', 'updateStatus');
-                        Route::post('/{id}/interviews', 'addSchdule');
+                        Route::post('/{id}/interviews', 'addSchedule');
                         // Route::post('update-status','updateStatus');
 
                     });

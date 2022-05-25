@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use stdClass;
 
+use function PHPUnit\Framework\isEmpty;
+
 class CvProfileDetailController extends Controller
 {
     use ApiResponser;
@@ -172,7 +174,7 @@ class CvProfileDetailController extends Controller
             'name' => $candidate->name
         ];
 
-        $employee = Employee::where('user_id', $id)->first();
+        $employee = Employee::where('candidate_id', $id)->first();
         if ($employee) {
             $result['is_employee'] = true;
             $position = [
@@ -211,6 +213,11 @@ class CvProfileDetailController extends Controller
             return $this->errorResponse('This user already being a candidate', 409, 40900);
         }
 
+        $fullName = $request->first_name;
+        if (!isEmpty($request->last_name)) {
+            $fullName = $request->first_name . " " . $request->last_name;
+        }
+
         $user = User::find(auth()->id());
         $phoneNumber = substr($user->telpon, 1);
         $candidateWithSamePhoneNumber = Candidate::where('phone_number', $phoneNumber)->first();
@@ -218,27 +225,23 @@ class CvProfileDetailController extends Controller
         if ($candidateWithSamePhoneNumber) {
             $candidateWithSamePhoneNumber->update([
                 'user_id' => auth()->id(),
-            ]);
-            CvProfileDetail::where('candidate_id', $candidateWithSamePhoneNumber->id)->first()->update([
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'reference' => $request->reference,
+                'name' => $fullName,
+                'reference' => $request->reference
             ]);
             return $this->showOne(null);
-        } else {
-            $data = $request->all();
-            $candidate = Candidate::create([
-                'user_id' => auth()->id(),
-                'name' => $request->first_name . " " . $request->last_name,
-                'country_code' => '62',
-                'phone_number' => substr(auth()->user()->telpon, 1),
-                'registered_at' => now(),
-                'status' => 3
-            ]);
-            $data['candidate_id'] = $candidate->id;
-            $userProfileDetail = CvProfileDetail::create($data);
-            return $this->showOne($userProfileDetail);
         }
+        $data = $request->all();
+        $candidate = Candidate::create([
+            'user_id' => auth()->id(),
+            'name' => $fullName,
+            'country_code' => '62',
+            'phone_number' => substr(auth()->user()->telpon, 1),
+            'registered_at' => now(),
+            'status' => 3
+        ]);
+        $data['candidate_id'] = $candidate->id;
+        $userProfileDetail = CvProfileDetail::create($data);
+        return $this->showOne($userProfileDetail);
     }
 
     public function createCandidate($user, $request)

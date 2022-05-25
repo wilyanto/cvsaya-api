@@ -154,7 +154,7 @@ class Employee extends Authenticatable implements Auditable
     {
         return [
             'id' => $this->id,
-            'name' => $this->profileDetail->first_name . ' ' . $this->profileDetail->last_name,
+            'name' => $this->candidate->name,
             'salary_types' => $this->typeOfSalary(),
             'company' => $this->company,
             'department' => $this->department->onlyNameAndId(),

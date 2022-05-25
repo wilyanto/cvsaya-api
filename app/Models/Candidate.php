@@ -200,8 +200,7 @@ class Candidate extends Model implements Auditable
     {
         return [
             'id' => $this->id,
-            'first_name' => $this->profile->first_name,
-            'last_name' => $this->profile->last_name,
+            'name' => $this->name,
         ];
     }
 }
