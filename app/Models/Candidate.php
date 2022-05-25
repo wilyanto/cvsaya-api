@@ -84,6 +84,26 @@ class Candidate extends Model implements Auditable
         return $this->hasOne(CvExpectedJob::class, 'candidate_id', 'id')->withDefault();
     }
 
+    public function hobbies()
+    {
+        return $this->hasMany(CvHobby::class, 'candidate_id', 'id');
+    }
+
+    public function experiences()
+    {
+        return $this->hasMany(CvExperience::class, 'candidate_id', 'id');
+    }
+
+    public function certifications()
+    {
+        return $this->hasMany(CvCertification::class, 'candidate_id', 'id');
+    }
+
+    public function specialities()
+    {
+        return $this->hasMany(CvSpeciality::class, 'candidate_id', 'id');
+    }
+
     public function results()
     {
         return $this->hasManyThrough(
@@ -104,6 +124,45 @@ class Candidate extends Model implements Auditable
     public function candidateNotes()
     {
         return $this->hasMany(CandidateNote::class, 'candidate_id', 'id');
+    }
+
+    public function getCompletenessStatus()
+    {
+        $completenessCount = 0;
+        if ($this->document) {
+            $completenessCount += $this->document->front_selfie != null ? 0 : 1;
+            $completenessCount += $this->document->identity_card != null ? 0 : 1;
+        }
+
+        if ($this->profile->id != null) {
+            $completenessCount += 1;
+        }
+
+        if ($this->job->id != null) {
+            $completenessCount += 1;
+        }
+
+        if ($this->educations()->count() != 0) {
+            $completenessCount += 0.2;
+        }
+
+        if ($this->hobbies()->count() != 0) {
+            $completenessCount += 0.2;
+        }
+
+        if ($this->experiences()->count() != 0) {
+            $completenessCount += 0.2;
+        }
+
+        if ($this->certifications()->count() != 0) {
+            $completenessCount += 0.2;
+        }
+
+        if ($this->specialities()->count() != 0) {
+            $completenessCount += 0.2;
+        }
+
+        return $completenessCount / 5 * 100;
     }
 
     public function getProfilePictureUrl()
@@ -207,6 +266,7 @@ class Candidate extends Model implements Auditable
             'profile_picture_url' => $this->getProfilePictureUrl(),
             'front_selfie_document_id' => $this->document == null ? null : $this->document->front_selfie,
             'is_reviewed' => $this->candidateNotes()->count() != 0,
+            'completeness_percentage' => $this->getCompletenessStatus(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
