@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('candidates', function (Blueprint $table) {
-            $table->string('profile_picture')->nullable();
+            $table->string('profile_picture')->after('suggested_by')->nullable();
         });
     }
 
