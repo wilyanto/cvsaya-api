@@ -45,7 +45,9 @@ class CandidateNoteController extends Controller
             $candidateNoteQuery->where('visibility', $request->visibility);
         }
 
-        $candidateNotes = $candidateNoteQuery->orderBy('created_at', 'desc')
+        $candidateNotes = $candidateNoteQuery
+            ->with('candidate.profileDetail')
+            ->orderBy('created_at', 'desc')
             ->paginate($pageSize);
 
         return $this->showPagination(

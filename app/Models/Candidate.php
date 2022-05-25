@@ -48,6 +48,7 @@ class Candidate extends Model implements Auditable
         'status',
         'suggested_by',
         'registered_at',
+        'profile_picture'
     ];
 
     public function domicile()
@@ -73,7 +74,7 @@ class Candidate extends Model implements Auditable
             ->orderBy('ended_at', 'DESC');
     }
 
-    public function profile()
+    public function profileDetail()
     {
         return $this->hasOne(CvProfileDetail::class)->withDefault();
     }
@@ -98,6 +99,20 @@ class Candidate extends Model implements Auditable
     public function document()
     {
         return $this->hasOne(CvDocument::class, 'candidate_id', 'id');
+    }
+
+    public function candidateNotes()
+    {
+        return $this->hasMany(CandidateNote::class, 'candidate_id', 'id');
+    }
+
+    public function getProfilePictureUrl()
+    {
+        // https: laracasts.com/discuss/channels/laravel/show-images-from-storage-folder
+        if (!$this->profile_picture) {
+            return null;
+        }
+        return url('/storage/images/profile_picture/' . $this->profile_picture);
     }
 
     public function label()
@@ -189,7 +204,9 @@ class Candidate extends Model implements Auditable
             'registered_at' => $this->registered_at,
             'domicile' => $this->domicile,
             'job' => $this->job,
+            'profile_picture_url' => $this->getProfilePictureUrl(),
             'front_selfie_document_id' => $this->document == null ? null : $this->document->front_selfie,
+            'is_reviewed' => $this->candidateNotes()->count() != 0,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

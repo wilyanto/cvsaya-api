@@ -41,6 +41,7 @@ class CandidateController extends Controller
                 'nullable',
                 Rule::in(['DESC', 'ASC']),
             ],
+            'is_reviewed' => 'nullable|boolean'
         ]);
 
         $page = $request->page ? $request->page  : 1;
@@ -53,11 +54,12 @@ class CandidateController extends Controller
         $position = $request->position_id;
         $startDate = $request->started_at;
         $endDate = $request->ended_at;
+        $isReviewed = $request->is_reviewed;
 
         $candidates = Candidate::when($startDate, function ($query) use ($startDate, $endDate) {
             $query->whereBetween('registered_at', [$startDate, $endDate]);
         })
-            ->where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position) {
+            ->where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position, $isReviewed) {
                 if ($name != null) {
                     $query->where('name', 'LIKE', '%' . $name . '%');
                 }
@@ -86,6 +88,14 @@ class CandidateController extends Controller
                         $query->where('status', 3);
                     } else {
                         $query->where('status', $status);
+                    }
+                }
+
+                if ($isReviewed !== null) {
+                    if ($isReviewed) {
+                        $query->has('candidateNotes');
+                    } else {
+                        $query->doesntHave('candidateNotes');
                     }
                 }
             })
@@ -354,6 +364,7 @@ class CandidateController extends Controller
         // note => need to change to name next release
         $result['basic_profile'] = [
             'first_name' => $candidate->name ?? null,
+            'profile_picture_url' => $candidate->getProfilePictureUrl(),
         ];
 
         $employee = Employee::where('candidate_id', $candidate->id)->first();
@@ -401,6 +412,7 @@ class CandidateController extends Controller
     public function store(Request $request)
     {
     }
+
 
     /**
      * Display the specified resource.
