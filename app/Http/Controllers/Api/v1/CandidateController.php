@@ -144,36 +144,6 @@ class CandidateController extends Controller
         return $this->showOne($data);
     }
 
-    public function addCandidateToBlast(Request $request)
-    {
-        $user = auth()->user();
-        $request->validate([
-            'name' => 'string|nullable',
-            'country_code' => 'integer|required',
-            'phone_number' => 'integer|required',
-        ]);
-
-        $posistion = Employee::where('user_id', $user->id_kustomer)->first();
-        if (!$posistion) {
-            return $this->errorResponse('Tidak bisa melanjutkan karena bukan Empolyee', 409, 40901);
-        }
-
-        $candidateHasSuggestOrNot = Candidate::where('phone_number', $request->phone_number)->first();
-        if ($candidateHasSuggestOrNot) {
-            $candidateHasSuggestOrNot->many_request += 1;
-            $candidateHasSuggestOrNot->save();
-            return $this->errorResponse('Candidate has been suggested', 409, 40902);
-        }
-
-        $data = $request->all();
-        $data['status'] = Candidate::BLASTING;
-        $data['suggested_by'] = $posistion->id;
-
-        $candidates = Candidate::create($data);
-
-        return $this->showOne($candidates);
-    }
-
     public function getPosition(Request $request)
     {
         $request->validate([
