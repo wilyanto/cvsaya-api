@@ -74,7 +74,7 @@ class Candidate extends Model implements Auditable
             ->orderBy('ended_at', 'DESC');
     }
 
-    public function profileDetail()
+    public function profile()
     {
         return $this->hasOne(CvProfileDetail::class)->withDefault();
     }

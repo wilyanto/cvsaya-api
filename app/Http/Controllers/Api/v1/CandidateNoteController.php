@@ -46,7 +46,7 @@ class CandidateNoteController extends Controller
         }
 
         $candidateNotes = $candidateNoteQuery
-            ->with('candidate.profileDetail')
+            ->with('profile, candidate.profile')
             ->orderBy('created_at', 'desc')
             ->paginate($pageSize);
 
