@@ -45,9 +45,10 @@ class CandidateNoteController extends Controller
         }
 
         $candidateNotes = $candidateNoteQuery
-            ->with('employee', 'profileDetail', function ($query) {
+            ->with('profileDetail', function ($query) {
                 $query->select(['first_name', 'last_name']);
             })
+            ->with('employee')
             ->orderBy('created_at', 'desc')
             ->paginate($pageSize);
 
