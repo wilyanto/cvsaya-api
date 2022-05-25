@@ -101,6 +101,11 @@ class Candidate extends Model implements Auditable
         return $this->hasOne(CvDocument::class, 'candidate_id', 'id');
     }
 
+    public function candidateNotes()
+    {
+        return $this->hasMany(CandidateNote::class, 'candidate_id', 'id');
+    }
+
     public function getProfilePictureUrl()
     {
         // https: laracasts.com/discuss/channels/laravel/show-images-from-storage-folder
@@ -202,6 +207,7 @@ class Candidate extends Model implements Auditable
             'job' => $this->job,
             'profile_picture_url' => $this->getProfilePictureUrl(),
             'front_selfie_document_id' => $this->document == null ? null : $this->document->front_selfie,
+            'is_reviewed' => $this->candidateNotes()->count() == 0 ? null : $this->candidateNotes()->count(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
