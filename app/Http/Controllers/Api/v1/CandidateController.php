@@ -91,7 +91,7 @@ class CandidateController extends Controller
                     }
                 }
 
-                if ($isReviewed != null) {
+                if ($isReviewed !== null) {
                     if ($isReviewed) {
                         $query->has('candidateNotes');
                     } else {
