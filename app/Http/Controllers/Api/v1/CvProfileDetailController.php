@@ -353,7 +353,7 @@ class CvProfileDetailController extends Controller
 
         $requestSosmed = $json['sosmed'];
         $requestSosmed['candidate_id'] = $candidate->id;
-
+        $array = [];
         try {
             $res = DB::transaction(function () use (
                 $candidate,
@@ -401,9 +401,10 @@ class CvProfileDetailController extends Controller
                 $array['profile_detail'] = $userProfileDetail;
                 $array['domicile'] = $userDomicile;
                 $array['sosmed'] = $userSosmed;
-                return $this->showOne($array);
             });
-            return $res->getData();
+            return $this->showOne($array);
+
+            // return $res->getData();
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 500, 50001);
         }

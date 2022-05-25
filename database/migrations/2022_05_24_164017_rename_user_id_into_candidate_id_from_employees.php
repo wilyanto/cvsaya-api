@@ -18,8 +18,11 @@ return new class extends Migration
         Schema::table('employees', function (Blueprint $table) {
             $candidates = Candidate::get();
             foreach ($candidates as $candidate) {
-                Employee::where('user_id', $candidate->user_id)
-                    ->update(['user_id' => $candidate->id]);
+                $employees = Employee::where('user_id', $candidate->user_id)->get();
+                foreach ($employees as $employee) {
+                    $candidate->update(['user_id' => $employee->user_id]);
+                    $employee->update(['user_id' => $candidate->id]);
+                }
             }
             $table->renameColumn('user_id', 'candidate_id');
             $table->foreign('candidate_id')->references('id')->on('candidates');
