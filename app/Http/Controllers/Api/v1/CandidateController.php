@@ -107,7 +107,7 @@ class CandidateController extends Controller
             if ($status == Candidate::READY_TO_INTERVIEW) {
                 $candidateController = new CvProfileDetailController;
 
-                $status = $candidateController->getStatus($candidate->candidate_id);
+                $status = $candidateController->getStatus($candidate->id);
                 $status = $status->original;
                 $status = $status['data']['completeness_status'];
                 if (
