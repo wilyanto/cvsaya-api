@@ -93,9 +93,9 @@ class CandidateController extends Controller
 
                 if ($isReviewed != null) {
                     if ($isReviewed) {
-                        $query->has('candidateNotes', '>', 0);
+                        $query->has('candidateNotes');
                     } else {
-                        $query->has('candidateNotes', '==', 0);
+                        $query->doesntHave('candidateNotes');
                     }
                 }
             })
