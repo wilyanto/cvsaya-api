@@ -110,22 +110,22 @@ class CvExperienceController extends Controller
         $data['position_id'] = $position->id;
         $data['candidate_id'] = $candidate->id;
         unset($data['position']);
-        if ($request->started_at) {
-            if (strtotime($experience->ended_at) > strtotime($request->started_at) || $experience->ended_at == null) {
-                $data['started_at'] = date('Y-m-d', strtotime($request->started_at));
-            } else {
-                return $this->errorResponse('The start at must be a date before saved until at', 422, 42200);
-            }
-        }
-        if ($request->filled('ended_at')) {
-            if (strtotime($experience->started_at) < strtotime($request->ended_at)) {
-                $experience->ended_at  = date('Y-m-d', strtotime($request->ended_at));
-            } else {
-                return $this->errorResponse('The until at must be a date after saved start at', 422, 42200);
-            }
-        } else {
-            $experience->ended_at = null;
-        }
+        // if ($request->started_at) {
+        //     if (strtotime($experience->ended_at) > strtotime($request->started_at) || $experience->ended_at == null) {
+        //         $data['started_at'] = date('Y-m-d', strtotime($request->started_at));
+        //     } else {
+        //         return $this->errorResponse('The start at must be a date before saved until at', 422, 42200);
+        //     }
+        // }
+        // if ($request->filled('ended_at')) {
+        //     if (strtotime($experience->started_at) < strtotime($request->ended_at)) {
+        //         $experience->ended_at  = date('Y-m-d', strtotime($request->ended_at));
+        //     } else {
+        //         return $this->errorResponse('The until at must be a date after saved start at', 422, 42200);
+        //     }
+        // } else {
+        //     $experience->ended_at = null;
+        // }
         $experience = $experience->fill($data);
         if ($experience->isDirty()) {
             $experience->update([$data]);

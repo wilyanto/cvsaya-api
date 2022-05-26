@@ -30,7 +30,7 @@ class CvExperienceRequest extends FormRequest
             'company_name' => 'required|string',
             'company_location' => 'nullable|string',
             'started_at' => 'required|date',
-            'ended_at' => 'nullable|date',
+            'ended_at' => 'nullable|date|after:started_at',
             'jobdesc' => 'nullable|string',
             'resign_reason' => [
                 'string',
