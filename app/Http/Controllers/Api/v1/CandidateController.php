@@ -41,6 +41,7 @@ class CandidateController extends Controller
                 'nullable',
                 Rule::in(['DESC', 'ASC']),
             ],
+            'is_reviewed' => 'nullable|boolean'
         ]);
 
         $page = $request->page ? $request->page  : 1;
@@ -53,11 +54,12 @@ class CandidateController extends Controller
         $position = $request->position_id;
         $startDate = $request->started_at;
         $endDate = $request->ended_at;
+        $isReviewed = $request->is_reviewed;
 
         $candidates = Candidate::when($startDate, function ($query) use ($startDate, $endDate) {
             $query->whereBetween('registered_at', [$startDate, $endDate]);
         })
-            ->where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position) {
+            ->where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position, $isReviewed) {
                 if ($name != null) {
                     $query->where('name', 'LIKE', '%' . $name . '%');
                 }
@@ -88,6 +90,14 @@ class CandidateController extends Controller
                         $query->where('status', $status);
                     }
                 }
+
+                if ($isReviewed !== null) {
+                    if ($isReviewed) {
+                        $query->has('candidateNotes');
+                    } else {
+                        $query->doesntHave('candidateNotes');
+                    }
+                }
             })
             ->orderBy('updated_at', $request->input('order_by', 'desc'))
             ->paginate($request->input('page_size', 10));
@@ -97,7 +107,7 @@ class CandidateController extends Controller
             if ($status == Candidate::READY_TO_INTERVIEW) {
                 $candidateController = new CvProfileDetailController;
 
-                $status = $candidateController->getStatus($candidate->candidate_id);
+                $status = $candidateController->getStatus($candidate->id);
                 $status = $status->original;
                 $status = $status['data']['completeness_status'];
                 if (
@@ -142,36 +152,6 @@ class CandidateController extends Controller
         ];
 
         return $this->showOne($data);
-    }
-
-    public function addCandidateToBlast(Request $request)
-    {
-        $user = auth()->user();
-        $request->validate([
-            'name' => 'string|nullable',
-            'country_code' => 'integer|required',
-            'phone_number' => 'integer|required',
-        ]);
-
-        $posistion = Employee::where('user_id', $user->id_kustomer)->first();
-        if (!$posistion) {
-            return $this->errorResponse('Tidak bisa melanjutkan karena bukan Empolyee', 409, 40901);
-        }
-
-        $candidateHasSuggestOrNot = Candidate::where('phone_number', $request->phone_number)->first();
-        if ($candidateHasSuggestOrNot) {
-            $candidateHasSuggestOrNot->many_request += 1;
-            $candidateHasSuggestOrNot->save();
-            return $this->errorResponse('Candidate has been suggested', 409, 40902);
-        }
-
-        $data = $request->all();
-        $data['status'] = Candidate::BLASTING;
-        $data['suggested_by'] = $posistion->id;
-
-        $candidates = Candidate::create($data);
-
-        return $this->showOne($candidates);
     }
 
     public function getPosition(Request $request)
@@ -271,7 +251,7 @@ class CandidateController extends Controller
 
             $candidateController = new CvProfileDetailController;
 
-            $status = $candidateController->getStatus($candidate->user_id);
+            $status = $candidateController->getStatus($candidate->id);
             $status = $status->original;
             $status = $status['data']['completeness_status'];
             if (
@@ -299,12 +279,12 @@ class CandidateController extends Controller
         return $this->showOne($candidate);
     }
 
-    public function addSchdule(Request $request, $id)
+    public function addSchedule(Request $request, $id)
     {
         $user = auth()->user();
         $request->validate([
             'interviewed_at' => 'date_format:Y-m-d\TH:i:s.v\Z|nullable',
-            'interviewed_by' => 'integer|exists:employee_details,id',
+            'interviewed_by' => 'integer|exists:employees,id',
         ]);
 
         $candidate = Candidate::where('id', $id)->firstOrFail();
@@ -324,7 +304,7 @@ class CandidateController extends Controller
         } else {
             $candidateController = new CvProfileDetailController;
 
-            $status = $candidateController->getStatus($candidate->user_id);
+            $status = $candidateController->getStatus($candidate->id);
             $status = $status->original;
             $status = $status['data']['completeness_status'];
             if (
@@ -381,12 +361,13 @@ class CandidateController extends Controller
         if (!$document || !$document->identityCard || !$document->frontSelfie || !$document->rightSelfie || !$document->leftSelfie) {
             $data['is_document_completed'] = false;
         }
+        // note => need to change to name next release
         $result['basic_profile'] = [
-            'first_name' => $userProfileDetail->first_name ?? null,
-            'last_name' => $userProfileDetail->last_name ?? null,
+            'first_name' => $candidate->name ?? null,
+            'profile_picture_url' => $candidate->getProfilePictureUrl(),
         ];
 
-        $employee = Employee::where('user_id', auth()->id())->first();
+        $employee = Employee::where('candidate_id', $candidate->id)->first();
         if ($employee) {
             $result['is_employee'] = true;
             $position = [
@@ -432,6 +413,7 @@ class CandidateController extends Controller
     {
     }
 
+
     /**
      * Display the specified resource.
      *
@@ -440,7 +422,6 @@ class CandidateController extends Controller
      */
     public function show(Candidate $candidate)
     {
-        //
     }
 
     /**

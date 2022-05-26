@@ -188,10 +188,10 @@ class EmployeeCrudController extends CrudController
             [
                 'label' => 'Name',
                 'type'  => 'select',
-                'name' => 'first_name',
-                'entity' => 'profileDetail',
-                'attribute' => 'first_name',
-                'model' => 'App\Models\CvProfileDetail',
+                'name' => 'name',
+                'entity' => 'candidate',
+                'attribute' => 'name',
+                'model' => 'App\Models\Candidate',
                 'subfields' => [],
                 'attributes' => [
                     'readonly'    => 'readonly',

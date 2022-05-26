@@ -316,7 +316,8 @@ class CvDocumentController extends Controller
         $permissions = [
             'manage-candidate'
         ];
-        $hasPermission = $this->hasPermission($permissions, $user->id_kustomer);
+        $candidate = Candidate::where('user_id', $user->id_kustomer)->first();
+        $hasPermission = $this->hasPermission($permissions, $candidate->id);
         if ($hasPermission) {
             $document = Document::where('id', $documentID)->firstOrFail();
         } else {

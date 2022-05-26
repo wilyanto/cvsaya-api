@@ -19,41 +19,41 @@ class EmployeeShiftController extends Controller
      */
     public function index(Request $request)
     {
+        // dd("a");
         $name = $request->name;
         $date = $request->date;
         $companyId = $request->company_id;
         $positionId = $request->position_id;
         $dateTimestamp = strtotime($date);
         $day = date('w', $dateTimestamp);
-
         // TODO: can be improved using scopeWith
         $withRelationships = [
             'shift' => function ($query) {
                 $query->select('id', 'name', 'clock_in', 'clock_out', 'break_started_at', 'break_ended_at', 'break_duration');
             },
             'employee' => function ($query) {
-                $query->select('id', 'user_id', 'position_id');
+                $query->select('id', 'candidate_id', 'position_id');
             },
             'employee.position' => function ($query) {
                 $query->select('id', 'name');
             },
-            'employee.profileDetail' => function ($query) {
-                $query->select('id', 'user_id', 'first_name', 'last_name');
+            'employee.candidate' => function ($query) {
+                $query->select('id', 'name');
             },
         ];
 
         $employeeOneTimeShifts = EmployeeOneTimeShift::whereDate('date', $date)
             ->whereHas('employee', function ($employeeQuery) use ($name, $companyId, $positionId) {
-                $employeeQuery->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
-                    $profileDetailQuery->withName($name);
-                })->when($positionId, function($positionQuery, $positionId){
+                $employeeQuery->whereHas('candidate', function ($candidateQuery) use ($name) {
+                    $candidateQuery->where('name', 'like', '%' . $name . '%');
+                })->when($positionId, function ($positionQuery, $positionId) {
                     $positionQuery->where('position_id', $positionId);
                 })
-                ->whereHas('position', function ($positionQuery) use ($companyId, $positionId) {
-                    $positionQuery->when($companyId, function ($filteredPositionQuery, $companyId) {
-                        $filteredPositionQuery->where('company_id', $companyId);
+                    ->whereHas('position', function ($positionQuery) use ($companyId, $positionId) {
+                        $positionQuery->when($companyId, function ($filteredPositionQuery, $companyId) {
+                            $filteredPositionQuery->where('company_id', $companyId);
+                        });
                     });
-                });
             })
             ->with($withRelationships)
             ->select('id', 'employee_id', 'shift_id', 'date')
@@ -61,16 +61,16 @@ class EmployeeShiftController extends Controller
 
         $employeeRecurringShifts = EmployeeRecurringShift::where('day', $day)
             ->whereHas('employee', function ($employeeQuery) use ($name, $companyId, $positionId) {
-                $employeeQuery->whereHas('profileDetail', function ($profileDetailQuery) use ($name) {
-                    $profileDetailQuery->withName($name);
-                })->when($positionId, function($positionQuery, $positionId){
+                $employeeQuery->whereHas('candidate', function ($candidateQuery) use ($name) {
+                    $candidateQuery->where('name', 'like', '%' . $name . '%');
+                })->when($positionId, function ($positionQuery, $positionId) {
                     $positionQuery->where('position_id', $positionId);
                 })
-                ->whereHas('position', function ($positionQuery) use ($companyId, $positionId) {
-                    $positionQuery->when($companyId, function ($filteredPositionQuery, $companyId) {
-                        $filteredPositionQuery->where('company_id', $companyId);
+                    ->whereHas('position', function ($positionQuery) use ($companyId, $positionId) {
+                        $positionQuery->when($companyId, function ($filteredPositionQuery, $companyId) {
+                            $filteredPositionQuery->where('company_id', $companyId);
+                        });
                     });
-                });
             })
             ->with($withRelationships)
             ->select('id', 'employee_id', 'shift_id', 'day')

@@ -6,6 +6,7 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
+use App\Models\Candidate;
 
 class PermissionController extends Controller
 {
@@ -13,8 +14,8 @@ class PermissionController extends Controller
     public function getPermission()
     {
         $user = auth()->user();
-
-        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
+        $candidate = Candidate::where('user_id', $user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
 
         $data = [
             'role' => $employee->getRoleNames(),
