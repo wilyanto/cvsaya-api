@@ -9,17 +9,20 @@ use Backpack\PermissionManager\app\Http\Requests\UserUpdateCrudRequest as Update
 use Illuminate\Support\Facades\Hash;
 use SebastianBergmann\CodeCoverage\Report\Xml\Tests;
 use App\Models\Employee;
+
 class UserCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     // use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation { store as traitStore; }
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation { update as traitUpdate; }
+    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation {
+        update as traitUpdate;
+    }
     // use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 
     public function setup()
     {
         $this->crud->setModel('App\Models\Employee');
-        $this->crud->setEntityNameStrings('employee','employees');
+        $this->crud->setEntityNameStrings('employee', 'employees');
         $this->crud->setRoute(backpack_url('user'));
     }
 
@@ -163,10 +166,10 @@ class UserCrudController extends CrudController
             [
                 'label' => 'Name',
                 'type'  => 'select',
-                'name' => 'first_name',
-                'entity' => 'cvprofiledetail',
-                'attribute' => 'first_name',
-                'model' => 'App\Models\CvProfileDetail',
+                'name' => 'name',
+                'entity' => 'candidate',
+                'attribute' => 'name',
+                'model' => 'App\Models\Candidate',
                 'subfields' => [],
                 'attributes' => [
                     'readonly'    => 'readonly',

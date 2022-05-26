@@ -14,7 +14,7 @@ class AttendanceCompanyGroup extends Model
     protected $fillable = [
         'company_id',
         'company_parent_id',
-        'user_id'
+        'candidate_id'
     ];
 
     public function company()

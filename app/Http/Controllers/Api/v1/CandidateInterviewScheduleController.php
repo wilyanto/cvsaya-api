@@ -25,7 +25,8 @@ class CandidateInterviewScheduleController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
+        $candidate = Candidate::where('user_id', $user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
         $request->validate([
             'started_at' => [
                 'date_format:Y-m-d\TH:i:s.v\Z',
@@ -64,8 +65,8 @@ class CandidateInterviewScheduleController extends Controller
     public function indexWithoutInterviewDate()
     {
         $user = auth()->user();
-        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
-
+        $candidate = Candidate::where('user_id', $user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
         $schedules = CandidateInterviewSchedule::
             // whereBettween('date_time',)
             whereNull('interviewed_at')
@@ -86,6 +87,7 @@ class CandidateInterviewScheduleController extends Controller
 
     public function indexInterviewer()
     {
+        // TODO : Fix Profile Detail
 
         $employee = Employee::with('roles')->get();
 
@@ -93,9 +95,8 @@ class CandidateInterviewScheduleController extends Controller
             return $this->map(function ($value) {
                 return [
                     'id' => $value->id,
-                    'user_id' => $value->user_id,
-                    'first_name' => $value->profileDetail->first_name,
-                    'last_name' => $value->profileDetail->last_name
+                    'candidate_id' => $value->candidate_id,
+                    'name' => $value->candidate->name
                 ];
             });
         });

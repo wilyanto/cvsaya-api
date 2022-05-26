@@ -20,32 +20,16 @@ class CvProfileDetail extends Model implements Auditable
 
     protected $guard = 'id';
 
-    protected $append = ['full_name'];
 
     public $fillable = [
         'candidate_id',
-        'first_name',
-        'last_name',
         'birth_location',
         'birth_date',
         'gender',
         'identity_number',
-        'reference',
         'religion_id',
         'marriage_status_id',
     ];
-
-    public function getFullNameAttribute()
-    {
-        $fullname = '';
-        if ($this->first_name) {
-            $fullname .= $this->first_name;
-        }
-        if ($this->last_name) {
-            $fullname .= " $this->last_name";
-        }
-        return $fullname;
-    }
 
     public function addresses()
     {
@@ -55,11 +39,6 @@ class CvProfileDetail extends Model implements Auditable
     public function sosmeds()
     {
         return $this->hasOne(CvSosmed::class, 'candidate_id', 'candidate_id')->withDefault();
-    }
-
-    public function employee()
-    {
-        return $this->belongsToMany(Employee::class, Candidate::class, 'id', 'user_id', 'candidate_id', 'user_id')->withDefault();
     }
 
     public function religion()
@@ -74,19 +53,7 @@ class CvProfileDetail extends Model implements Auditable
 
     public function candidate()
     {
-        return $this->hasOne(Candidate::class, 'user_id', 'user_id')->withDefault();
-    }
-
-    public function scopeWithName($query, $name)
-    {
-        $names = explode(" ", $name);
-
-        $query;
-        foreach ($names as $name) {
-            $query->where('first_name', 'LIKE', '%' . $name . '%')
-                ->orWhere('last_name', 'LIKE', '%' . $name . '%');
-        }
-        return $query;
+        return $this->hasOne(Candidate::class, 'id', 'candidate_id')->withDefault();
     }
 
     public function toArray()
@@ -94,9 +61,6 @@ class CvProfileDetail extends Model implements Auditable
         return [
             'id' => $this->id,
             'candidate_id' => $this->candidate_id,
-            'full_name' => $this->full_name,
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
             'phone_number' => $this->candidate->phone_number,
             'birth_location' => $this->birth_location,
             'birth_date' => $this->birth_date,
@@ -104,7 +68,6 @@ class CvProfileDetail extends Model implements Auditable
             'identity_number' => $this->identity_number,
             'marriage_status' => $this->marriageStatus,
             'religion' => $this->religion,
-            'reference' => $this->reference,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

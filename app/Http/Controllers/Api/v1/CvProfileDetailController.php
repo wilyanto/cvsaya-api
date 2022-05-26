@@ -7,6 +7,7 @@ use App\Models\CvDomicile;
 use App\Models\CvSosmed;
 use App\Http\Controllers\Controller;
 use App\Models\Candidate;
+use App\Models\CandidatePosition;
 use App\Models\CvEducation;
 use App\Models\CvCertification;
 use App\Models\CvSpeciality;
@@ -20,7 +21,11 @@ use App\Models\User;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic as Image;
 use stdClass;
+
+use function PHPUnit\Framework\isEmpty;
 
 class CvProfileDetailController extends Controller
 {
@@ -143,6 +148,7 @@ class CvProfileDetailController extends Controller
 
     public function getStatus($id)
     {
+        $candidate = Candidate::where('id', $id)->first();
         $userProfileDetail = CvProfileDetail::where('candidate_id', $id)->first();
         $education = CvEducation::where('candidate_id', $id)->first();
         $document = CvDocument::where('candidate_id', $id)->first();
@@ -168,11 +174,10 @@ class CvProfileDetailController extends Controller
             $data['is_document_completed'] = false;
         }
         $result['basic_profile'] = [
-            'first_name' => $userProfileDetail->first_name ?? null,
-            'last_name' => $userProfileDetail->last_name ?? null,
+            'first_name' => $candidate->name ?? null,
         ];
 
-        $employee = Employee::where('user_id', $id)->first();
+        $employee = Employee::where('candidate_id', $id)->first();
         if ($employee) {
             $result['is_employee'] = true;
             $position = [
@@ -198,10 +203,14 @@ class CvProfileDetailController extends Controller
      */
     public function store(Request $request)
     {
+        // TODO : Fix Profile Detail
+        //Post image
         $request->validate([
             'first_name' => 'required|string|min:3',
             'last_name' => 'nullable|string',
             'reference' => 'nullable|string',
+            'file' => 'file|required',
+            'expected_position' => 'required'
         ]);
 
         $candidate = Candidate::where('user_id', auth()->id())->first();
@@ -209,34 +218,56 @@ class CvProfileDetailController extends Controller
             return $this->errorResponse('This user already being a candidate', 409, 40900);
         }
 
+        $fullName = $request->first_name;
+        if (!empty($request->last_name)) {
+            $fullName = $request->first_name . ' ' . $request->last_name;
+        }
+        $reference = $request->reference;
+
+        $image = $request->file;
+        $img = Image::make($image)->encode($image->extension(), 70);
+        $fileName = time() . '.' . $image->extension();
+
         $user = User::find(auth()->id());
         $phoneNumber = substr($user->telpon, 1);
-        $candidateWithSamePhoneNumber = Candidate::where('phone_number', $phoneNumber)->first();
-
-        if ($candidateWithSamePhoneNumber) {
-            $candidateWithSamePhoneNumber->update([
-                'user_id' => auth()->id(),
-            ]);
-            CvProfileDetail::where('candidate_id', $candidateWithSamePhoneNumber->id)->first()->update([
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'reference' => $request->reference,
-            ]);
-            return $this->showOne(null);
-        } else {
-            $data = $request->all();
-            $candidate = Candidate::create([
-                'user_id' => auth()->id(),
-                'name' => $request->first_name . " " . $request->last_name,
-                'country_code' => '62',
-                'phone_number' => substr(auth()->user()->telpon, 1),
-                'registered_at' => now(),
-                'status' => 3
-            ]);
+        $candidate = Candidate::where('phone_number', $phoneNumber)->first();
+        DB::transaction(function () use ($request, $candidate, $fileName, $fullName, $reference, $img) {
+            if ($candidate) {
+                $candidate->update([
+                    'user_id' => auth()->id(),
+                    'name' => $fullName,
+                    'reference' => $reference,
+                    'profile_picture' => $fileName,
+                ]);
+            } else {
+                $candidate = Candidate::create([
+                    'user_id' => auth()->id(),
+                    'name' => $fullName,
+                    'country_code' => '62',
+                    'phone_number' => substr(auth()->user()->telpon, 1),
+                    'registered_at' => now(),
+                    'status' => 3,
+                    'profile_picture' => $fileName,
+                ]);
+            }
             $data['candidate_id'] = $candidate->id;
-            $userProfileDetail = CvProfileDetail::create($data);
-            return $this->showOne($userProfileDetail);
-        }
+            Storage::disk('public')->put('images/profile_picture/' . $fileName, $img);
+
+            $expectedPosition = json_decode($request->expected_position);
+            $candidatePosition = CandidatePosition::where('id', $expectedPosition->id)
+                ->orWhere('name', $expectedPosition->name)
+                ->first();
+            if (!$candidatePosition) {
+                $candidatePosition = CandidatePosition::create(['name' => $expectedPosition->name]);
+            }
+
+            CvExpectedJob::create([
+                'candidate_id' => $candidate->id,
+                'expected_position' => $candidatePosition->id,
+            ]);
+        });
+
+        return $this->showOne($candidate);
     }
 
     public function createCandidate($user, $request)
@@ -264,10 +295,11 @@ class CvProfileDetailController extends Controller
     public function show()
     {
         $user = auth()->user();
-
-        $employee = Employee::where('user_id', $user->id_kustomer)->firstOrFail();
+        $candidate = Candidate::where('user_id', $user->id_kustomer)->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
 
         $data = [
+            'candidate' => $employee->candidate,
             'profile' => $employee->profileDetail,
             'roles' => $employee->getRoleNames(),
             'permissions' => $employee->getAllPermissions()->pluck('name')
@@ -347,7 +379,7 @@ class CvProfileDetailController extends Controller
 
         $requestSosmed = $json['sosmed'];
         $requestSosmed['candidate_id'] = $candidate->id;
-
+        $array = [];
         try {
             $res = DB::transaction(function () use (
                 $candidate,
@@ -395,9 +427,10 @@ class CvProfileDetailController extends Controller
                 $array['profile_detail'] = $userProfileDetail;
                 $array['domicile'] = $userDomicile;
                 $array['sosmed'] = $userSosmed;
-                return $this->showOne($array);
             });
-            return $res->getData();
+            return $this->showOne($array);
+
+            // return $res->getData();
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 500, 50001);
         }
