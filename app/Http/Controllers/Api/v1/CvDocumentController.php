@@ -312,16 +312,15 @@ class CvDocumentController extends Controller
 
     public function showById(Request $request, $documentID)
     {
-        $user = auth()->user();
         $permissions = [
             'manage-candidate'
         ];
-        $candidate = Candidate::where('user_id', $user->id_kustomer)->first();
+        $candidate = Candidate::where('user_id', auth()->id())->first();
         $hasPermission = $this->hasPermission($permissions, $candidate->id);
         if ($hasPermission) {
             $document = Document::where('id', $documentID)->firstOrFail();
         } else {
-            $document = Document::where('id', $documentID)->where('user_id', $user->id_kustomer)->firstOrFail();
+            $document = Document::where('id', $documentID)->where('user_id', auth()->id())->firstOrFail();
         }
 
         $documentType = DocumentType::where('id', $document->type_id)->firstOrFail();

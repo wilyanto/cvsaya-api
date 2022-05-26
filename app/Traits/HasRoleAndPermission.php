@@ -24,9 +24,9 @@ trait HasRoleAndPermission
         }
     }
 
-    protected function hasPermission(array $permissions, $idKustomer)
+    protected function hasPermission(array $permissions, $candidateId)
     {
-        $candidate = Candidate::where('user_id', $idKustomer)->first();
+        $candidate = Candidate::where('id', $candidateId)->first();
         if (!$candidate) {
             return false;
         }
