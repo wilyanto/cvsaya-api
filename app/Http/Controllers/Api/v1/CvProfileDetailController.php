@@ -44,9 +44,9 @@ class CvProfileDetailController extends Controller
         $userAddress = CvDomicile::where('candidate_id', $candidate->id)->first();
         $userSosmed = CvSosmed::where('candidate_id', $candidate->id)->first();
 
-        $array['profile_detail'] = $userProfileDetail;
-        $array['domicile'] = $userAddress;
-        $array['sosmed'] = $userSosmed;
+        $array['profile_detail'] = $userProfileDetail->candidate ?? new stdClass();
+        $array['domicile'] = $userAddress ?? new stdClass();
+        $array['sosmed'] = $userSosmed ?? new stdClass();
         $collectionArray = collect($array);
         return $this->showOne($collectionArray);
     }
@@ -55,11 +55,11 @@ class CvProfileDetailController extends Controller
     {
         $candidate = Candidate::where('user_id', auth()->id())->first();
         $array = [];
-        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->first();
+        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->with('candidate')->first();
         $userAddress = CvDomicile::where('candidate_id', $candidate->id)->first();
         $userSosmed = CvSosmed::where('candidate_id', $candidate->id)->first();
 
-        $array['profile_detail'] = $userProfileDetail ?? new stdClass();
+        $array['profile_detail'] = $userProfileDetail->candidate ?? new stdClass();
         $array['domicile'] = $userAddress ?? new stdClass();
         $array['sosmed'] = $userSosmed ?? new stdClass();
         $collectionArray = collect($array);

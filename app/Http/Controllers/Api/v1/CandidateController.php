@@ -99,7 +99,7 @@ class CandidateController extends Controller
                     }
                 }
             })
-            ->orderBy('updated_at', $request->input('order_by', 'desc'))
+            ->orderBy('registered_at', $request->input('order_by', 'desc'))
             ->paginate($request->input('page_size', 10));
 
         $data = [];
