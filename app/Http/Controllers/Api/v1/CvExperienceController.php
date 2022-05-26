@@ -98,7 +98,7 @@ class CvExperienceController extends Controller
         $request->validated();
 
         $candidate = Candidate::where('user_id', auth()->id())->first();
-        $experience = CvExperience::findOrFail($id)->where('candidate_id', $candidate->id);
+        $experience = CvExperience::findOrFail($id)->where('candidate_id', $candidate->id)->firstOrFail();
         $requestPosition = $request->position;
         $position = CandidatePosition::where('id', $requestPosition['id'])
             ->orWhere('name', $requestPosition['name'])->first();
