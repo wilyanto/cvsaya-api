@@ -346,7 +346,8 @@ class CandidateController extends Controller
         $data['is_job_completed'] = true;
         $data['is_document_completed'] = true;
         $data['is_cv_completed'] = true;
-        if (!$userProfileDetail || !$userProfileDetail->addresses || !$userProfileDetail->sosmeds) {
+        // this is because withDefault();
+        if ($userProfileDetail->id == null || !$userProfileDetail->addresses || !$userProfileDetail->sosmeds) {
             $data['is_profile_completed'] = false;
         }
 
