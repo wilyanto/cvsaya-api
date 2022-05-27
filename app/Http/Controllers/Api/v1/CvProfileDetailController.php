@@ -390,9 +390,13 @@ class CvProfileDetailController extends Controller
             ) {
                 // TODO: Debugging
                 $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->first();
-                $userProfileDetail->fill($requestProfile);
-                if ($userProfileDetail->isDirty()) {
-                    $userProfileDetail->update($requestProfile);
+                if ($userProfileDetail) {
+                    $userProfileDetail->fill($requestProfile);
+                    if ($userProfileDetail->isDirty()) {
+                        $userProfileDetail->update($requestProfile);
+                    }
+                } else {
+                    CvProfileDetail::create($requestProfile);
                 }
 
                 $userDomicile = CvDomicile::where('candidate_id', $candidate->id)->first();
