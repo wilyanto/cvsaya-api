@@ -135,20 +135,14 @@ class CandidateController extends Controller
     {
         $startDate = $request->started_at ?? null;
         $endDate = $request->ended_at ?? null;
-        $candidates = Candidate::when($startDate, function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('registered_at', [$startDate, $endDate]);
-        })->get();
-        $totalCandidate = $candidates->count();
-        $interviewCandidates = $candidates->where('status', Candidate::READY_TO_INTERVIEW)->count();
-        $interviewedCandidates = $candidates->whereIn(
-            'status',
-            [Candidate::STANDBY, Candidate::CONSIDER, Candidate::ACCEPTED, Candidate::DECLINE]
-        )->count();
-
+        $candidateQuery = Candidate::when($startDate, function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        });
+        $totalCandidate = $candidateQuery->count();
+        $interviewedCandidates = $candidateQuery->has('candidateNotes')->count();
         $data = [
-            'total_candidate' => $totalCandidate,
-            'candidate_in_interview' => $interviewCandidates,
-            'candidate_interview' => $interviewedCandidates
+            'total' => $totalCandidate,
+            'interviewed' => $interviewedCandidates,
         ];
 
         return $this->showOne($data);
@@ -193,31 +187,8 @@ class CandidateController extends Controller
 
     public function getCount($position, $startDate, $endDate)
     {
-        $candidates = $position->getCandidateStatistic($startDate, $endDate);
-        $data['total'] = $candidates->count();
-        $data['interview'] = $candidates->filter(function ($item) {
-            if ($item->status == 5) {
-                return $item->label() == null;
-            }
-        })->count();
-        $data['bad'] = $candidates->filter(function ($item) {
-            if ($item->label()) {
-                return $item->label()->id == InterviewResult::RESULT_BAD;
-            }
-        })->count();
-        $data['hold'] = $candidates->filter(function ($item) {
-            if ($item->label()) {
-                return $item->label()->id == InterviewResult::RESULT_HOLD;
-            }
-        })->count();
-        $data['recommended'] = $candidates->filter(function ($item) {
-            if ($item->label()) {
-                return $item->label()->id == InterviewResult::RESULT_RECOMMENDED;
-            }
-        })->count();
-        $data['accepted'] = $candidates->filter(function ($item) {
-            return $item->status == Candidate::ACCEPTED;
-        })->count();
+        $data['total'] = $position->getTotalCandidates($startDate, $endDate);
+        $data['interviewed'] = $position->getTotalInterviewedCandidates($startDate, $endDate);
 
         return $data;
     }

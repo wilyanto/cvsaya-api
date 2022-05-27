@@ -20,7 +20,8 @@ class AttendanceType extends Enum
             'clockOut' => 'clock_out',
             'breakStartedAt' => 'break_started_at',
             'breakEndedAt' => 'break_ended_at',
-            'breakDuration' => 'break_duration'
+            'breakDuration' => 'break_duration',
+            'breakTime' => 'break_time'
         ];
     }
 }

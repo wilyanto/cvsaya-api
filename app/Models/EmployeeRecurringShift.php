@@ -26,4 +26,14 @@ class EmployeeRecurringShift extends Model implements Auditable
     {
         return $this->belongsTo(Shift::class);
     }
+
+    public function attendances()
+    {
+        return $this->hasManyThrough(Attendance::class, Shift::class, 'id', 'shift_id', 'shift_id', 'id');
+    }
+
+    public function getTodayAttendances()
+    {
+        return $this->attendances()->whereDate('scheduled_at', today())->get();
+    }
 }
