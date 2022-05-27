@@ -337,10 +337,10 @@ class CandidateController extends Controller
     public function getCompletenessStatus()
     {
         $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $userProfileDetail = CvProfileDetail::where('candidate_id', $candidate->id)->first();
-        $education = CvEducation::where('candidate_id', $candidate->id)->first();
-        $document = CvDocument::where('candidate_id', $candidate->id)->first();
-        $expectedSalaries = CvExpectedJob::where('candidate_id', $candidate->id)->first();
+        $userProfileDetail = $candidate->profile;
+        $education = $candidate->education;
+        $document = $candidate->document;
+        $expectedJob = $candidate->job;
 
         $data['is_profile_completed'] = true;
         $data['is_job_completed'] = true;
@@ -350,8 +350,10 @@ class CandidateController extends Controller
             $data['is_profile_completed'] = false;
         }
 
-        if (!$expectedSalaries) {
-            $data['is_job_completed'] = false;
+        if ($expectedJob) {
+            if (!$expectedJob->expected_salary) {
+                $data['is_job_completed'] = false;
+            }
         }
 
         if (!$education || !$education->experiences || !$education->certifications || !$education->specialities || !$education->hobbies) {

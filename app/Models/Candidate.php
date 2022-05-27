@@ -61,6 +61,11 @@ class Candidate extends Model implements Auditable
         return $this->hasOne(Employee::class, 'id', 'suggested_by')->withDefault();
     }
 
+    public function education()
+    {
+        return $this->hasOne(CvEducation::class, 'id', 'candidate_id');;
+    }
+
     public function schedules()
     {
         return $this->hasMany(CandidateInterviewSchedule::class, 'candidate_id', 'id');
