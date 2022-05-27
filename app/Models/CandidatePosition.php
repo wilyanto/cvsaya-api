@@ -42,7 +42,17 @@ class CandidatePosition extends Model implements Auditable
     public function getCandidateStatistic($startDate, $endDate)
     {
         return $this->candidates()->when($startDate, function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('registered_at', [$startDate, $endDate]);
-        })->get();
+            $query->whereBetween('candidates.created_at', [$startDate, $endDate]);
+        });
+    }
+
+    public function getTotalCandidates($startDate, $endDate)
+    {
+        return $this->getCandidateStatistic($startDate, $endDate)->count();
+    }
+
+    public function getTotalInterviewedCandidates($startDate, $endDate)
+    {
+        return $this->getCandidateStatistic($startDate, $endDate)->withCount('candidateNotes')->count();
     }
 }
