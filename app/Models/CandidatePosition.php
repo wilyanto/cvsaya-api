@@ -53,6 +53,6 @@ class CandidatePosition extends Model implements Auditable
 
     public function getTotalInterviewedCandidates($startDate, $endDate)
     {
-        return $this->getCandidateStatistic($startDate, $endDate)->withCount('candidateNotes')->count();
+        return $this->getCandidateStatistic($startDate, $endDate)->has('candidateNotes')->count();
     }
 }
