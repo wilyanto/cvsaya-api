@@ -85,7 +85,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function attendances()
     {
-        return $this->belongsToMany(Attendance::class, 'attendances_employees');
+        return $this->belongsToMany(Attendance::class, 'attendances_employees')->withTimestamps();
     }
 
     public function candidate()

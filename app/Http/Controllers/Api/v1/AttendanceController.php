@@ -240,7 +240,25 @@ class AttendanceController extends Controller
     // TODO
     public function validationBySecurity(Request $request)
     {
-        $employee = Employee::where('')->firstOrDefault();
+        // $employee = Employee::where('')->firstOrFail();
+        // get customer id from kada API
+        // perlu company?
+        $customerId = 34953;
+        $security = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $verifiedBy = Employee::where('candidate_id', $security->id)->firstOrFail();
+        $candidate = Candidate::where('user_id', $customerId)->firstOrFail();
+        $employeeIds = Employee::where('candidate_id', $candidate->id)->pluck('id');
+        $employeeAttendances = AttendanceEmployee::whereIn('employee_id', $employeeIds)
+            ->whereDate('created_at', today())
+            ->get();
+        foreach ($employeeAttendances as $employeeAttendance) {
+            if (($employeeAttendance->attendance->attendance_type == AttendanceType::clockIn())) {
+                $employeeAttendance->attendance->update([
+                    'verified_by' => $verifiedBy->id,
+                    'verified_at' => now(),
+                ]);
+            }
+        }
     }
 
 
