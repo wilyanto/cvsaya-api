@@ -60,6 +60,7 @@ class CvProfileDetail extends Model implements Auditable
     {
         return [
             'id' => $this->id,
+            'name' => $this->candidate->name,
             'candidate_id' => $this->candidate_id,
             'phone_number' => $this->candidate->phone_number,
             'birth_location' => $this->birth_location,
