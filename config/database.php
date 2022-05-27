@@ -63,14 +63,13 @@ return [
             ]) : [],
         ],
 
-        'cvsaya' => [
+        'data_bank' => [
             'driver' => env('DB_CONNECTION_3', 'mysql'),
             'url' => env('DATABASE_URL'),
             'host' => env('DB_HOST_3', '127.0.0.1'),
             'port' => env('DB_PORT_3', '3306'),
             'database' => env('DB_DATABASE_3', 'forge'),
             'username' => env('DB_USERNAME_3', 'forge'),
-            // 'password' => 'M#6nwyRP/',
             'password' => env('DB_PASSWORD_3', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
