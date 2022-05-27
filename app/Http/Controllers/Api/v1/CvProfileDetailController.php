@@ -203,8 +203,6 @@ class CvProfileDetailController extends Controller
      */
     public function store(Request $request)
     {
-        // TODO : Fix Profile Detail
-        //Post image
         $request->validate([
             'first_name' => 'required|string|min:3',
             'last_name' => 'nullable|string',

@@ -59,8 +59,6 @@ class EmployeeController extends Controller
                     $query->where('level_id', $request->level_id);
                 });
 
-
-            // TODO : Fix Profile Detail
             if ($request->keyword)
                 $query->whereHas('candidate', function ($query) use ($request) {
                     $query->where('name', 'like', '%' . $request->keyword . '%');
