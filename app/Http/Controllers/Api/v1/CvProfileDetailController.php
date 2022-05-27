@@ -372,6 +372,7 @@ class CvProfileDetailController extends Controller
         $json = $request->input();
 
         $requestProfile = $json['profile_detail'];
+        $requestProfile['candidate_id'] = $candidate->id;
 
         $requestDomicile = $json['domicile'];
         $requestDomicile['candidate_id'] = $candidate->id;
