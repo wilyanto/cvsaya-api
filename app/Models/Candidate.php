@@ -133,41 +133,58 @@ class Candidate extends Model implements Auditable
 
     public function getCompletenessStatus()
     {
-        $completenessCount = 0;
+        $total = 0;
+        $score = 0;
+
+        $total += 4;
         if ($this->document) {
-            $completenessCount += $this->document->front_selfie != null ? 0 : 1;
-            $completenessCount += $this->document->identity_card != null ? 0 : 1;
+            $score += $this->document->identity_card != null ? 1 : 0;
+            $score += $this->document->front_selfie != null ? 1 : 0;
+            $score += $this->document->left_selfie != null ? 1 : 0;
+            $score += $this->document->right_selfie != null ? 1 : 0;
         }
 
+        $total++;
         if ($this->profile->id != null) {
-            $completenessCount += 1;
+            $score++;
         }
 
+        $total++;
+        if ($this->domicile()->count() != 0) {
+            $score++;
+        }
+
+        $total++;
         if ($this->job->id != null) {
-            $completenessCount += 1;
+            $score++;
         }
 
+        $total++;
         if ($this->educations()->count() != 0) {
-            $completenessCount += 0.2;
+            $score++;
         }
 
+        $total++;
         if ($this->hobbies()->count() != 0) {
-            $completenessCount += 0.2;
+            $score++;
         }
 
+        $total++;
         if ($this->experiences()->count() != 0) {
-            $completenessCount += 0.2;
+            $score++;
         }
 
+        $total++;
         if ($this->certifications()->count() != 0) {
-            $completenessCount += 0.2;
+            $score++;
         }
 
+        $total++;
         if ($this->specialities()->count() != 0) {
-            $completenessCount += 0.2;
+            $score++;
         }
 
-        return $completenessCount / 5 * 100;
+        return $score / $total * 100;
     }
 
     public function getProfilePictureUrl()
