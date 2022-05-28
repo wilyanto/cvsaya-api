@@ -209,14 +209,14 @@ class LeavePermissionController extends Controller
     public function updateLeavePermissionStatus(Request $request)
     {
         $status = $request->status;
+        $leavePermissionId = $request->leave_permission_id;
+        $leavePermission = LeavePermission::findOrFail($leavePermissionId);
         if (
-            $status == LeavePermissionStatusType::accepted() ||
-            $status == LeavePermissionStatusType::declined()
+            $leavePermission->status == LeavePermissionStatusType::accepted() ||
+            $leavePermission->status == LeavePermissionStatusType::declined()
         ) {
             return $this->errorResponse("Leave Permission is either Rejected or Accepted !", 422, 42200);
         }
-        $leavePermissionId = $request->leave_permission_id;
-        $leavePermission = LeavePermission::findOrFail($leavePermissionId);
         $leavePermission->update(['status' => $status, 'answered_at' => now()]);
 
         return $this->showOne(new LeavePermissionResource($leavePermission->load('occasion')));
