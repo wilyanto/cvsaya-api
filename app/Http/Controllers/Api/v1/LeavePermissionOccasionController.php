@@ -3,12 +3,17 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LeavePermissionOccasionStoreRequest;
+use App\Http\Requests\LeavePermissionOccasionUpdateRequest;
+use App\Http\Requests\LeavePermissionStoreRequest;
 use App\Http\Resources\LeavePermissionOccasionResource;
 use App\Models\LeavePermissionOccasion;
+use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 
 class LeavePermissionOccasionController extends Controller
 {
+    use ApiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +23,7 @@ class LeavePermissionOccasionController extends Controller
     {
         $leavePermissionOccasions = LeavePermissionOccasion::get();
 
-        return LeavePermissionOccasionResource::collection($leavePermissionOccasions);
+        return $this->showAll(collect(LeavePermissionOccasionResource::collection($leavePermissionOccasions)));
     }
 
     /**
@@ -27,14 +32,14 @@ class LeavePermissionOccasionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(LeavePermissionOccasionStoreRequest $request)
     {
         $leavePermissionOccasion = LeavePermissionOccasion::create([
             'name' => $request->name,
             'max_day' => $request->max_day,
         ]);
 
-        return new LeavePermissionOccasionResource($leavePermissionOccasion);
+        return $this->showOne(new LeavePermissionOccasionResource($leavePermissionOccasion));
     }
 
     /**
@@ -47,7 +52,7 @@ class LeavePermissionOccasionController extends Controller
     {
         $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($id);
 
-        return new LeavePermissionOccasionResource($leavePermissionOccasion);
+        return $this->showOne(new LeavePermissionOccasionResource($leavePermissionOccasion));
     }
 
     /**
@@ -57,16 +62,11 @@ class LeavePermissionOccasionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(LeavePermissionOccasionUpdateRequest $request, LeavePermissionOccasion $leavePermissionOccasion)
     {
-        $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($id);
+        $leavePermissionOccasion->update($request->all());
 
-        $leavePermissionOccasion::update([
-            'name' => $request->name,
-            'max_day' => $request->max_day,
-        ]);
-
-        return new LeavePermissionOccasionResource($leavePermissionOccasion);
+        return $this->showOne(new LeavePermissionOccasionResource($leavePermissionOccasion));
     }
 
     /**

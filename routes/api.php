@@ -31,6 +31,8 @@ use App\Http\Controllers\Api\v1\AttendanceQrCodeController;
 use App\Http\Controllers\Api\v1\EmployeeOneTimeShiftController;
 use App\Http\Controllers\Api\v1\EmployeeRecurringShiftController;
 use App\Http\Controllers\Api\v1\EmployeeShiftController;
+use App\Http\Controllers\Api\v1\LeavePermissionController;
+use App\Http\Controllers\Api\v1\LeavePermissionOccasionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -355,6 +357,9 @@ Route::prefix('v1')->group(function () {
                 });
             });
         });
+
+        Route::apiResource('leave-permissions', LeavePermissionController::class);
+        Route::apiResource('leave-permission-occasions', LeavePermissionOccasionController::class);
 
         Route::apiResource('candidate-positions', CandidatePositionController::class)->only(['index', 'show', 'store', 'update']);
         Route::prefix('candidate-positions')->controller(CandidatePositionController::class)->group(function () {
