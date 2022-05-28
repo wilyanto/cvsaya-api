@@ -358,7 +358,16 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::apiResource('leave-permissions', LeavePermissionController::class);
+        Route::prefix('leave-permissions')->group(function () {
+            Route::controller(LeavePermissionController::class)->group(function () {
+                Route::get('/{id}', 'show');
+                Route::get('/', 'index');
+                Route::post('/', 'store');
+                Route::put('/status', 'updateLeavePermissionStatus');
+                Route::put('/{id}', 'update');
+                // Route::apiResource('/', LeavePermissionController::class);
+            });
+        });
         Route::apiResource('leave-permission-occasions', LeavePermissionOccasionController::class);
 
         Route::apiResource('candidate-positions', CandidatePositionController::class)->only(['index', 'show', 'store', 'update']);

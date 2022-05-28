@@ -19,4 +19,14 @@ class LeavePermission extends Model
         'status',
         'answered_at'
     ];
+
+    public function occasion()
+    {
+        return $this->hasOne(LeavePermissionOccasion::class, 'id', 'occasion_id');
+    }
+
+    public function documents()
+    {
+        return $this->belongsToMany(Document::class, 'leave_permission_documents');
+    }
 }

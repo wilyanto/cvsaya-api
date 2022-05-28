@@ -8,7 +8,19 @@ use App\Http\Resources\LeavePermissionResource;
 use App\Models\LeavePermission;
 use App\Models\LeavePermissionOccasion;
 use App\Traits\ApiResponser;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Enums\LeavePermissionStatusType;
+use App\Http\Requests\LeavePermissionUpdateRequest;
+use App\Models\Candidate;
+use App\Models\CvDocument;
+use App\Models\Document;
+use App\Models\DocumentType;
+use App\Models\Employee;
+use App\Models\LeavePermissionDocument;
+use Illuminate\Support\Facades\Storage;
+use Spatie\QueryBuilder\QueryBuilder;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class LeavePermissionController extends Controller
 {
@@ -20,7 +32,9 @@ class LeavePermissionController extends Controller
      */
     public function index()
     {
-        $leavePermissions = LeavePermission::get();
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        $leavePermissions = LeavePermission::where('employee_id', $employee->id)->get();
 
         return $this->showAll(collect(LeavePermissionResource::collection($leavePermissions)));
     }
@@ -34,6 +48,34 @@ class LeavePermissionController extends Controller
     public function store(LeavePermissionStoreRequest $request)
     {
         $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($request->occasion_id);
+        $startDate = Carbon::parse($request->started_at);
+
+        if ($startDate->diff(now())->days <= $leavePermissionOccasion->max_day) {
+            return $this->errorResponse("You need to ask for permissions sooner", 422, 42200);
+        }
+
+        $documentIds = $request->document_ids;
+        // in case need to handle file upload
+        // $documentType = DocumentType::where('name', 'Permission')->firstOrFail();
+        // if ($request->has('files')) {
+        //     $images = $request->file('files');
+        //     foreach ($images as $image) {
+        //         $extension = $image->extension();
+        //         $mimeType = $image->getMimeType();
+        //         $fileNameWithoutExtension = now()->valueOf();
+        //         $fileName = $fileNameWithoutExtension . '.' . $image->extension();
+        //         $img = Image::make($image)->encode($image->extension(), 70);
+        //         Storage::disk('public')->put('images/leave_permission/' . $fileName, $img);
+        //         $document = Document::create([
+        //             'file_name' => $fileNameWithoutExtension,
+        //             'user_id' => auth()->id(),
+        //             'mime_type' => $mimeType,
+        //             'type_id' => $documentType->id,
+        //             'original_file_name' => $image->getClientOriginalName(),
+        //         ]);
+        //         $documentIds[] = $document->id;
+        //     }
+        // }
 
         $leavePermission = LeavePermission::create([
             'started_at' => $request->started_at,
@@ -41,9 +83,17 @@ class LeavePermissionController extends Controller
             'employee_id' => $request->employee_id,
             'occasion_id' => $request->occasion_id,
             'reason' => $request->reason,
+            'status' => LeavePermissionStatusType::waiting()
         ]);
 
-        return new LeavePermissionResource($leavePermission);
+        foreach ($documentIds as $documentId) {
+            LeavePermissionDocument::create([
+                'leave_permission_id' => $leavePermission->id,
+                'document_id' => $documentId
+            ]);
+        }
+
+        return $this->showOne(new LeavePermissionResource($leavePermission));
     }
 
     /**
@@ -54,9 +104,11 @@ class LeavePermissionController extends Controller
      */
     public function show($id)
     {
-        $leavePermission = LeavePermission::findOrFail($id);
+        $leavePermission = QueryBuilder::for(LeavePermission::class)
+            ->allowedIncludes(['occasion'])
+            ->findOrFail($id);
 
-        return new LeavePermissionResource($leavePermission);
+        return $this->showOne(new LeavePermissionResource($leavePermission));
     }
 
     /**
@@ -66,21 +118,78 @@ class LeavePermissionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(LeavePermissionUpdateRequest $request, $leavePermissionId)
     {
-        $leavePermission = LeavePermission::findOrFail($id);
+        $leavePermission = LeavePermission::findOrFail($leavePermissionId);
+        if (
+            $leavePermission->status == LeavePermissionStatusType::accepted() ||
+            $leavePermission->status == LeavePermissionStatusType::declined()
+        ) {
+            return $this->errorResponse("Leave Permission is either Rejected or Accepted !", 422, 42200);
+        }
 
-        $leavePermission::update([
+        $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($request->occasion_id);
+        $startDate = Carbon::parse($request->started_at);
+
+        if ($startDate->diff(now())->days <= $leavePermissionOccasion->max_day) {
+            return $this->errorResponse("You need to ask for permissions sooner", 422, 42200);
+        }
+
+        $documentIds = $request->document_ids;
+        // $documentType = DocumentType::where('name', 'Permission')->firstOrFail();
+        // if ($request->hasFile(('files'))) {
+        //     $images = $request->file('files');
+        //     foreach ($images as $image) {
+        //         $mimeType = $image->getMimeType();
+        //         $fileNameWithoutExtension = now()->valueOf();
+        //         $fileName = $fileNameWithoutExtension . '.' . $image->extension();
+        //         $img = Image::make($image)->encode($image->extension(), 70);
+        //         Storage::disk('public')->put('images/leave_permission/' . $fileName, $img);
+        //         $document = Document::create([
+        //             'file_name' => $fileNameWithoutExtension,
+        //             'user_id' => auth()->id(),
+        //             'mime_type' => $mimeType,
+        //             'type_id' => $documentType->id,
+        //             'original_file_name' => $image->getClientOriginalName(),
+        //         ]);
+        //         $documentIds[] = $document->id;
+        //     }
+        // }
+
+        // delete previous image(s)
+        // foreach ($leavePermission->documents as $document) {
+        //     Storage::disk('public')->delete('images/leave_permission/' . $document->file_name . '.' . $document->getExtension($document->mime_type));
+        //     $leavePermission->documents()->detach([$document->id]);
+        //     $document->delete();
+        // }
+
+
+        // delete previous image(s)
+        $oldDocuments = $leavePermission->documents;
+        $oldDocumentIds = [];
+        foreach ($oldDocuments as $oldDocument) {
+            if (!in_array($oldDocument->id, $documentIds)) {
+                $oldDocumentIds[] = $oldDocument->id;
+            }
+        }
+
+        foreach ($oldDocuments->whereIn('id', $oldDocumentIds) as $document) {
+            Storage::disk('public')->delete('images/leave_permission/' . $document->file_name . '.' . $document->getExtension($document->mime_type));
+            $leavePermission->documents()->detach([$document->id]);
+            $document->delete();
+        }
+
+        $leavePermission->update([
             'started_at' => $request->started_at,
             'ended_at' => $request->ended_at,
             'employee_id' => $request->employee_id,
             'occasion_id' => $request->occasion_id,
             'reason' => $request->reason,
-            'status' => $request->status,
-            'answered_at' => $request->answered_at
         ]);
 
-        return new LeavePermissionResource($leavePermission);
+        $leavePermission->documents()->sync($documentIds);
+
+        return $this->showOne(new LeavePermissionResource($leavePermission));
     }
 
     /**
@@ -95,5 +204,21 @@ class LeavePermissionController extends Controller
         $leavePermission->delete();
 
         return $this->showOne(null);
+    }
+
+    public function updateLeavePermissionStatus(Request $request)
+    {
+        $status = $request->status;
+        if (
+            $status == LeavePermissionStatusType::accepted() ||
+            $status == LeavePermissionStatusType::declined()
+        ) {
+            return $this->errorResponse("Leave Permission is either Rejected or Accepted !", 422, 42200);
+        }
+        $leavePermissionId = $request->leave_permission_id;
+        $leavePermission = LeavePermission::findOrFail($leavePermissionId);
+        $leavePermission->update(['status' => $status, 'answered_at' => now()]);
+
+        return $this->showOne(new LeavePermissionResource($leavePermission->load('occasion')));
     }
 }

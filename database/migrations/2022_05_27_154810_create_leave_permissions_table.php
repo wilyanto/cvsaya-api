@@ -21,7 +21,7 @@ return new class extends Migration
             $table->unsignedBigInteger('occasion_id');
             $table->string('reason');
             $table->string('status');
-            $table->timestamp('answered_at');
+            $table->timestamp('answered_at')->nullable();
             $table->timestamps();
 
             $table->foreign('employee_id')->references('id')->on('employees');
