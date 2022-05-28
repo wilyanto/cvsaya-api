@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LeavePermissionStoreRequest;
 use App\Http\Resources\LeavePermissionResource;
 use App\Models\LeavePermission;
+use App\Models\LeavePermissionOccasion;
+use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 
 class LeavePermissionController extends Controller
 {
+    use ApiResponser;
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +22,7 @@ class LeavePermissionController extends Controller
     {
         $leavePermissions = LeavePermission::get();
 
-        return LeavePermissionResource::collection($leavePermissions);
+        return $this->showAll(collect(LeavePermissionResource::collection($leavePermissions)));
     }
 
     /**
@@ -27,16 +31,16 @@ class LeavePermissionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(LeavePermissionStoreRequest $request)
     {
+        $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($request->occasion_id);
+
         $leavePermission = LeavePermission::create([
             'started_at' => $request->started_at,
             'ended_at' => $request->ended_at,
             'employee_id' => $request->employee_id,
             'occasion_id' => $request->occasion_id,
             'reason' => $request->reason,
-            'status' => $request->status,
-            'answered_at' => $request->answered_at
         ]);
 
         return new LeavePermissionResource($leavePermission);
