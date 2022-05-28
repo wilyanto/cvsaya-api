@@ -19,7 +19,6 @@ class EmployeeShiftController extends Controller
      */
     public function index(Request $request)
     {
-        // dd("a");
         $name = $request->name;
         $date = $request->date;
         $companyId = $request->company_id;

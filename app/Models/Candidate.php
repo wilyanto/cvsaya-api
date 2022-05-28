@@ -63,7 +63,7 @@ class Candidate extends Model implements Auditable
 
     public function education()
     {
-        return $this->hasOne(CvEducation::class, 'id', 'candidate_id');;
+        return $this->hasOne(CvEducation::class, 'candidate_id', 'id');
     }
 
     public function schedules()

@@ -228,7 +228,7 @@ class AttendanceController extends Controller
         }
 
         $distance = $this->vincentyGreatCircleDistance($attendanceQRcode->latitude, $attendanceQRcode->longitude, $request->latitude, $request->longitude);
-        $penalty = $this->getPenalty($request, $employee);
+        $penalty = $this->getPenalty($request, $employee, $companyId);
         $isOutsideAttendanceRadius = $this->isOutsideAttendanceRadius($distance, $attendanceQRcode);
         DB::transaction(function () use ($request, $employee, $penalty, $isOutsideAttendanceRadius, $isParentCompany) {
             $this->createAttendance($request, $employee, $penalty, $isOutsideAttendanceRadius, $isParentCompany);
@@ -240,7 +240,25 @@ class AttendanceController extends Controller
     // TODO
     public function validationBySecurity(Request $request)
     {
-        $employee = Employee::where('')->firstOrDefault();
+        // $employee = Employee::where('')->firstOrFail();
+        // get customer id from kada API
+        // perlu company?
+        $customerId = 34953;
+        $security = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $verifiedBy = Employee::where('candidate_id', $security->id)->firstOrFail();
+        $candidate = Candidate::where('user_id', $customerId)->firstOrFail();
+        $employeeIds = Employee::where('candidate_id', $candidate->id)->pluck('id');
+        $employeeAttendances = AttendanceEmployee::whereIn('employee_id', $employeeIds)
+            ->whereDate('created_at', today())
+            ->get();
+        foreach ($employeeAttendances as $employeeAttendance) {
+            if (($employeeAttendance->attendance->attendance_type == AttendanceType::clockIn())) {
+                $employeeAttendance->attendance->update([
+                    'verified_by' => $verifiedBy->id,
+                    'verified_at' => now(),
+                ]);
+            }
+        }
     }
 
 
@@ -314,7 +332,7 @@ class AttendanceController extends Controller
         }
     }
 
-    public static function getPenalty($request, $employee)
+    public static function getPenalty($request, $employee, $companyId)
     {
         $shiftId = $request->shift_id;
         if ($employee->getShift($shiftId) instanceof EmployeeOneTimeShift) {
@@ -329,6 +347,7 @@ class AttendanceController extends Controller
             $interval = $scheduledAt->diffInMinutes($now);
             return Penalty::where('attendance_type', $attendanceType)
                 ->where('lateness', '<=', $interval)
+                ->where('company_id', $companyId)
                 ->orderBy('lateness', 'DESC')
                 ->first();
         }
@@ -340,6 +359,7 @@ class AttendanceController extends Controller
             $interval = $scheduledAt->diffInMinutes($now);
             return Penalty::where('attendance_type', $attendanceType)
                 ->where('lateness', '<=', $interval)
+                ->where('company_id', $companyId)
                 ->orderBy('lateness', 'DESC')
                 ->first();
         }
@@ -427,7 +447,7 @@ class AttendanceController extends Controller
                         'attendances' => $attendances,
                     ];
                 }
-                $employeeAttendance['employee_detail'] = $employee->candidate;
+                $employeeAttendance['profile_detail'] = $employee->candidate;
                 $employeeAttendance['shifts'] = $shifts;
                 $employeeAttendances[] = $employeeAttendance;
             }
@@ -449,10 +469,8 @@ class AttendanceController extends Controller
         $startDate = Carbon::parse($request->started_at);
         $endDate = Carbon::parse($request->ended_at);
         $userId = auth()->id();
-        $candidate = Candidate::where('user_id', $userId)->first();
-        $employees = Employee::where('candidate_id', $candidate->id)->whereHas('candidate', function ($query) use ($keyword) {
-            $query->where('name', 'like', '%' . $keyword . '%');
-        })->get();
+        $candidate = Candidate::where('user_id', $userId)->where('name', 'like', '%' . $keyword . '%')->first();
+        $employees = Employee::where('candidate_id', $candidate->id)->get();
         $period = CarbonPeriod::create($startDate, $endDate);
 
         $data = [];
