@@ -44,8 +44,6 @@ class CandidateController extends Controller
             'is_reviewed' => 'nullable|boolean'
         ]);
 
-        $page = $request->page ? $request->page  : 1;
-        $pageSize = $request->page_size ? $request->page_size : 10;
         $name = $request->name;
         $status = $request->status;
         $countryId = $request->country_id;
