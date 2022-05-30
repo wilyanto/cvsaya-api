@@ -92,6 +92,7 @@ trait ApiResponser
                         'last_page' => $resultValues->lastPage(),
                         'current_page' => $resultValues->currentPage(),
                         'path' => $resultValues->path(),
+                        'total' => $resultValues->total()
                     ]
                 ]
             ]
