@@ -9,5 +9,10 @@ class LeavePermissionOccasion extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'max_day'];
+    protected $fillable = ['name', 'max_day', 'company_id'];
+
+    public function company()
+    {
+        return $this->hasOne(Company::class, 'id', 'company_id');
+    }
 }

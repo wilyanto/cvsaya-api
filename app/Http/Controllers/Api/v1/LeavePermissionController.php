@@ -32,6 +32,7 @@ class LeavePermissionController extends Controller
      */
     public function index()
     {
+        // date range?
         $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
         $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
         $leavePermissions = LeavePermission::where('employee_id', $employee->id)->get();
@@ -136,6 +137,7 @@ class LeavePermissionController extends Controller
         }
 
         $documentIds = $request->document_ids;
+        // in case need to handle file upload
         // $documentType = DocumentType::where('name', 'Permission')->firstOrFail();
         // if ($request->hasFile(('files'))) {
         //     $images = $request->file('files');
@@ -206,6 +208,7 @@ class LeavePermissionController extends Controller
         return $this->showOne(null);
     }
 
+    // admin only
     public function updateLeavePermissionStatus(Request $request)
     {
         $status = $request->status;

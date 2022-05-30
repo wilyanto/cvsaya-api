@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LeavePermissionOccasionStoreRequest;
 use App\Http\Requests\LeavePermissionOccasionUpdateRequest;
-use App\Http\Requests\LeavePermissionStoreRequest;
 use App\Http\Resources\LeavePermissionOccasionResource;
+use App\Models\Candidate;
+use App\Models\Employee;
 use App\Models\LeavePermissionOccasion;
 use App\Traits\ApiResponser;
-use Illuminate\Http\Request;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class LeavePermissionOccasionController extends Controller
 {
@@ -21,7 +22,13 @@ class LeavePermissionOccasionController extends Controller
      */
     public function index()
     {
-        $leavePermissionOccasions = LeavePermissionOccasion::get();
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        $company = $employee->company;
+        $leavePermissionOccasions = QueryBuilder::for(LeavePermissionOccasion::class)
+            ->allowedIncludes(['company'])
+            ->where('company_id', $company->id)
+            ->get();
 
         return $this->showAll(collect(LeavePermissionOccasionResource::collection($leavePermissionOccasions)));
     }
@@ -34,10 +41,7 @@ class LeavePermissionOccasionController extends Controller
      */
     public function store(LeavePermissionOccasionStoreRequest $request)
     {
-        $leavePermissionOccasion = LeavePermissionOccasion::create([
-            'name' => $request->name,
-            'max_day' => $request->max_day,
-        ]);
+        $leavePermissionOccasion = LeavePermissionOccasion::create($request->all());
 
         return $this->showOne(new LeavePermissionOccasionResource($leavePermissionOccasion));
     }

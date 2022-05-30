@@ -24,12 +24,12 @@ return new class extends Migration
             $table->string('company_id');
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->foreign('company_id')->references('id')->on('companies');
         });
     }
     /**
-     * Reverse the migrations.
+     * Reverse the migratons.
      *
      * @return void
      */

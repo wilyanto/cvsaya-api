@@ -25,7 +25,8 @@ class LeavePermissionOccasionStoreRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'max_day' => 'numeric|min:0'
+            'max_day' => 'numeric|min:0',
+            'company_id' => 'required|exists:companies,id'
         ];
     }
 }
