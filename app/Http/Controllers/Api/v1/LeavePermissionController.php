@@ -25,6 +25,17 @@ use Intervention\Image\ImageManagerStatic as Image;
 class LeavePermissionController extends Controller
 {
     use ApiResponser;
+
+    private $employee;
+    private $company;
+
+    public function __construct()
+    {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $this->employee->company;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -33,9 +44,14 @@ class LeavePermissionController extends Controller
     public function index()
     {
         // date range?
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
-        $leavePermissions = LeavePermission::where('employee_id', $employee->id)->get();
+        $company = $this->company;
+        $leavePermissions = QueryBuilder::for(LeavePermission::class)
+            ->allowedIncludes(['occasion', 'documents'])
+            ->where('employee_id', $this->employee->id)
+            ->whereHas('company', function ($query) use ($company) {
+                $query->where('company_id', $company->id);
+            })
+            ->get();
 
         return $this->showAll(collect(LeavePermissionResource::collection($leavePermissions)));
     }
@@ -49,10 +65,14 @@ class LeavePermissionController extends Controller
     public function store(LeavePermissionStoreRequest $request)
     {
         $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($request->occasion_id);
+        if ($this->company->id != $leavePermissionOccasion->company_id) {
+            return $this->errorResponse("Leave Permission Not Allowed", 422, 42200);
+        }
+
         $startDate = Carbon::parse($request->started_at);
 
         if ($startDate->diff(now())->days <= $leavePermissionOccasion->max_day) {
-            return $this->errorResponse("You need to ask for permissions sooner", 422, 42200);
+            return $this->errorResponse("You need to ask for permissions sooner", 422, 42201);
         }
 
         $documentIds = $request->document_ids;
@@ -105,8 +125,13 @@ class LeavePermissionController extends Controller
      */
     public function show($id)
     {
+        $company = $this->company;
         $leavePermission = QueryBuilder::for(LeavePermission::class)
-            ->allowedIncludes(['occasion'])
+            ->allowedIncludes(['occasion', 'documents'])
+            ->where('employee_id', $this->employee->id)
+            ->whereHas('company', function ($query) use ($company) {
+                $query->where('company_id', $company->id);
+            })
             ->findOrFail($id);
 
         return $this->showOne(new LeavePermissionResource($leavePermission));
@@ -203,6 +228,9 @@ class LeavePermissionController extends Controller
     public function destroy($id)
     {
         $leavePermission = LeavePermission::findOrFail($id);
+        if ($leavePermission->employee_id != $this->employee->id) {
+            return $this->errorResponse("You're not allowed to delete", 403, 40300);
+        }
         $leavePermission->delete();
 
         return $this->showOne(null);

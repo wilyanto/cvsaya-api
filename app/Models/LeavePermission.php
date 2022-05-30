@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LeavePermission extends Model
 {
+    use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
     use HasFactory;
 
     // Tambah company_id?
@@ -28,5 +29,28 @@ class LeavePermission extends Model
     public function documents()
     {
         return $this->belongsToMany(Document::class, 'leave_permission_documents');
+    }
+
+    public function employee()
+    {
+        return $this->hasOne(Employee::class, 'id', 'employee_id');
+    }
+
+    public function company()
+    {
+        return $this->hasOneDeep(
+            Company::class,
+            [Employee::class, Position::class],
+            [
+                'id',
+                'id',
+                'id'
+            ],
+            [
+                'employee_id',
+                'position_id',
+                'company_id'
+            ]
+        );
     }
 }

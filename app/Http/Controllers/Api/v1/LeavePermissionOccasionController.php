@@ -15,6 +15,16 @@ use Spatie\QueryBuilder\QueryBuilder;
 class LeavePermissionOccasionController extends Controller
 {
     use ApiResponser;
+
+    private $company;
+
+    public function __construct()
+    {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $employee->company;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -22,12 +32,9 @@ class LeavePermissionOccasionController extends Controller
      */
     public function index()
     {
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
-        $company = $employee->company;
         $leavePermissionOccasions = QueryBuilder::for(LeavePermissionOccasion::class)
             ->allowedIncludes(['company'])
-            ->where('company_id', $company->id)
+            ->where('company_id', $this->company->id)
             ->get();
 
         return $this->showAll(collect(LeavePermissionOccasionResource::collection($leavePermissionOccasions)));
@@ -41,6 +48,9 @@ class LeavePermissionOccasionController extends Controller
      */
     public function store(LeavePermissionOccasionStoreRequest $request)
     {
+        if ($this->company->id != $request->company_id) {
+            return $this->errorResponse('Cannot create Occasion', 422, 42200);
+        }
         $leavePermissionOccasion = LeavePermissionOccasion::create($request->all());
 
         return $this->showOne(new LeavePermissionOccasionResource($leavePermissionOccasion));
@@ -54,7 +64,10 @@ class LeavePermissionOccasionController extends Controller
      */
     public function show($id)
     {
-        $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($id);
+        $leavePermissionOccasion = QueryBuilder::for(LeavePermissionOccasion::class)
+            ->allowedIncludes(['company'])
+            ->where('company_id', $this->company->id)
+            ->findOrFail($id);
 
         return $this->showOne(new LeavePermissionOccasionResource($leavePermissionOccasion));
     }
@@ -68,6 +81,9 @@ class LeavePermissionOccasionController extends Controller
      */
     public function update(LeavePermissionOccasionUpdateRequest $request, LeavePermissionOccasion $leavePermissionOccasion)
     {
+        if ($this->company->id != $request->company_id) {
+            return $this->errorResponse('Cannot update Occasion', 422, 42200);
+        }
         $leavePermissionOccasion->update($request->all());
 
         return $this->showOne(new LeavePermissionOccasionResource($leavePermissionOccasion));
@@ -82,6 +98,9 @@ class LeavePermissionOccasionController extends Controller
     public function destroy($id)
     {
         $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($id);
+        if ($this->company->id != $leavePermissionOccasion->company_id) {
+            return $this->errorResponse('Cannot delete Occasion', 422, 42200);
+        }
         $leavePermissionOccasion->delete();
 
         return $this->showOne(null);
