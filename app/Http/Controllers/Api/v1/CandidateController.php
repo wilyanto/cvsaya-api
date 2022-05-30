@@ -218,6 +218,14 @@ class CandidateController extends Controller
         return $this->showPaginate('positions', collect($result), collect($positions));
     }
 
+    public function getCount($position, $startDate, $endDate)
+    {
+        $data['total'] = $position->getTotalCandidates($startDate, $endDate);
+        $data['interviewed'] = $position->getTotalInterviewedCandidates($startDate, $endDate);
+
+        return $data;
+    }
+
     public function updateStatus(Request $request, $id)
     {
         $user = auth()->user();
