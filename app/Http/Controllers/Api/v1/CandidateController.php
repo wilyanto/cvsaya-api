@@ -152,7 +152,6 @@ class CandidateController extends Controller
             'keyword' => 'nullable',
             'page' => 'nullable|numeric|gt:0',
             'page_size' => 'nullable|numeric|gt:0',
-
         ]);
 
         $page = $request->page ? $request->page  : 1;
@@ -183,12 +182,40 @@ class CandidateController extends Controller
         return $this->showPaginate('positions', collect($result), collect($positions));
     }
 
-    public function getCount($position, $startDate, $endDate)
+    public function getUncategorizedPosition(Request $request)
     {
-        $data['total'] = $position->getTotalCandidates($startDate, $endDate);
-        $data['interviewed'] = $position->getTotalInterviewedCandidates($startDate, $endDate);
+        $request->validate([
+            'keyword' => 'nullable',
+            'page' => 'nullable|numeric|gt:0',
+            'page_size' => 'nullable|numeric|gt:0',
+        ]);
 
-        return $data;
+        $page = $request->page ? $request->page  : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
+        $keyword = $request->keyword;
+        $startDate = $request->started_at ?? null;
+        $endDate = $request->ended_at ?? null;
+        $result = [];
+        $positions = CandidatePosition::where(function ($query) use ($keyword) {
+            if ($keyword != null) {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
+            }
+        })->orderBy('name', 'desc')->whereNull('validated_at')
+            ->paginate(
+                $pageSize,
+                ['*'],
+                'page',
+                $page
+            );
+        foreach ($positions as $position) {
+            $result[] = [
+                'id' => $position->id,
+                'name' => $position->name,
+                'applicant' => $position->getTotalApplicant($startDate, $endDate),
+            ];
+        }
+
+        return $this->showPaginate('positions', collect($result), collect($positions));
     }
 
     public function updateStatus(Request $request, $id)
