@@ -95,27 +95,24 @@ class CandidatePositionController extends Controller
             'name' => 'string',
         ]);
 
-        $duplicateCandidatePosition = CandidatePosition::where('name', $request->name)
-            ->where('id', '!=', $id)
-            ->whereNotNull('validated_at')
-            ->first();
+        $candidatePositionId = $request->candidate_position_id;
 
-        if ($duplicateCandidatePosition) {
+        if ($candidatePositionId != null) {
             CvExpectedJob::where('expected_position', $id)->update([
-                'expected_position' => $duplicateCandidatePosition->id,
+                'expected_position' => $candidatePositionId,
             ]);
             CvExperience::where('position_id', $id)->update([
-                'position_id' => $duplicateCandidatePosition->id,
+                'position_id' => $candidatePositionId,
             ]);
 
             $oldCandidatePosition = CandidatePosition::findOrFail($id);
             $oldCandidatePosition->delete();
 
-            return $this->showOne($duplicateCandidatePosition);
+            return $this->showOne($candidatePositionId);
         }
 
         $candidatePosition = CandidatePosition::find($id)
-            ->update($request->all());
+            ->update([$request->all(), 'validated_at' => now()]);
 
         return $this->showOne($candidatePosition);
     }
