@@ -9,6 +9,8 @@ use Spatie\Enum\Enum;
  * @method static self clockOut()
  * @method static self breakStartedAt()
  * @method static self breakEndedAt()
+ * @method static self breakDuration()
+ * @method static self breakTime()
  */
 
 class AttendanceType extends Enum
