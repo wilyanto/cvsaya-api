@@ -232,6 +232,28 @@ class Employee extends Authenticatable implements Auditable
         return null;
     }
 
+    public function getShiftId($date = null)
+    {
+        $date = $date == null ? Carbon::now() : new Carbon($date);
+        $shift = EmployeeOneTimeShift::whereDate('date', $date->toDateString())
+            ->where('employee_id', $this->id)
+            ->with('shift')
+            ->first();
+        if ($shift) {
+            return $shift->shift_id;
+        }
+
+        $getTodayDay = Carbon::now()->dayOfWeek;
+        $shift = EmployeeRecurringShift::where('day', $getTodayDay)
+            ->where('employee_id', $this->id)
+            ->with('shift')
+            ->first();
+        if ($shift) {
+            return $shift->shift_id;
+        }
+
+        return null;
+    }
     public function isWorkToday($date)
     {
         $isWorkToday = false;

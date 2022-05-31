@@ -228,10 +228,9 @@ class AttendanceController extends Controller
         }
 
         $distance = $this->vincentyGreatCircleDistance($attendanceQRcode->latitude, $attendanceQRcode->longitude, $request->latitude, $request->longitude);
-        $penalty = $this->getPenalty($request, $employee, $companyId);
         $isOutsideAttendanceRadius = $this->isOutsideAttendanceRadius($distance, $attendanceQRcode);
-        DB::transaction(function () use ($request, $employee, $penalty, $isOutsideAttendanceRadius, $isParentCompany) {
-            $this->createAttendance($request, $employee, $penalty, $isOutsideAttendanceRadius, $isParentCompany);
+        DB::transaction(function () use ($request, $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany) {
+            $this->createAttendance($request, $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany);
         });
         return $this->showOne('Success');
     }
@@ -243,6 +242,7 @@ class AttendanceController extends Controller
         // $employee = Employee::where('')->firstOrFail();
         // get customer id from kada API
         // perlu company?
+        // get shift
         $customerId = 34953;
         $security = Candidate::where('user_id', auth()->id())->firstOrFail();
         $verifiedBy = Employee::where('candidate_id', $security->id)->firstOrFail();
@@ -262,79 +262,82 @@ class AttendanceController extends Controller
     }
 
 
-    public function createAttendance($request, Employee $employee, $penalty, $isOutsideAttendanceRadius, $isParentCompany)
+    public function createAttendance($request, Employee $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany)
     {
         $image = $request->file;
-        $shiftId = $request->shift_id;
+        // $shiftId = $request->shift_id;
         $img = Image::make($image)->encode($image->extension(), 70);
         $attendanceType = $request->attendance_type;
         $fileName = time() . '.' . $image->extension();
-        $employeeShift = $employee->getShift($shiftId)->shift;
-        $shiftTime = new Carbon($employeeShift->$attendanceType);
 
-        $verifiedAt = null;
-        $verifiedBy = null;
+        $employees = [$employee];
 
-        if (
-            $attendanceType == AttendanceType::breakStartedAt() ||
-            $attendanceType == AttendanceType::breakEndedAt() ||
-            ($attendanceType == AttendanceType::clockOut() &&
-                now()->lt(Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight())))
-        ) {
-            $verifiedAt = now();
-            $verifiedBy = auth()->user()->id;
-        }
-
-        $attendance = Attendance::create([
-            'attendance_type' => $attendanceType,
-            'attended_at' => Carbon::now(),
-            'scheduled_at' => Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight()),
-            'attendance_qr_code_id' => $request->attendance_qr_code_id,
-            'image' => $fileName,
-            'ip' => $request->ip(),
-            'longitude' => $request->longitude,
-            'latitude' => $request->latitude,
-            'verified_by' => $verifiedBy,
-            'verified_at' => $verifiedAt,
-            'shift_id' => $employeeShift->id
-        ]);
-        Storage::disk('public')->put('images/attendances/' . $fileName, $img);
-
-        $employeeIds = [$employee->id];
         if ($isParentCompany) {
-            $employeeIds = Employee::where('candidate_id', $employee->candidate_id)->pluck('id');
+            $employees = Employee::where('candidate_id', $employee->candidate_id)->get();
         }
-        $attendance->employees()->attach($employeeIds);
+        // TODO: need to handle multiple shift, for now only handle 1 shift
+        foreach ($employees as $employee) {
+            $shiftId = $employee->getShiftId();
+            $penalty = $this->getPenalty($request, $employee, $companyId);
+            $employeeShift = $employee->getShift($shiftId)->shift;
+            $shiftTime = new Carbon($employeeShift->$attendanceType);
 
-        if ($penalty) {
-            $this->createPenalty($penalty, $attendance, $request->penalty_note);
-        }
+            $verifiedAt = null;
+            $verifiedBy = null;
 
-        if ($isOutsideAttendanceRadius) {
-            OutsideRadiusAttendance::create([
-                'attendance_id' => $attendance->id,
-                'note' => $request->outside_radius_note
+            if (
+                $attendanceType == AttendanceType::breakStartedAt() ||
+                $attendanceType == AttendanceType::breakEndedAt() ||
+                ($attendanceType == AttendanceType::clockOut() &&
+                    now()->lt(Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight())))
+            ) {
+                $verifiedAt = now();
+                $verifiedBy = auth()->user()->id;
+            }
+
+            $attendance = Attendance::create([
+                'attendance_type' => $attendanceType,
+                'attended_at' => Carbon::now(),
+                'scheduled_at' => Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight()),
+                'attendance_qr_code_id' => $request->attendance_qr_code_id,
+                'image' => $fileName,
+                'ip' => $request->ip(),
+                'longitude' => $request->longitude,
+                'latitude' => $request->latitude,
+                'verified_by' => $verifiedBy,
+                'verified_at' => $verifiedAt,
+                'shift_id' => $employeeShift->id,
+                'employee_id' => $employee->id
             ]);
+            Storage::disk('public')->put('images/attendances/' . $fileName, $img);
+
+            if ($penalty) {
+                $this->createPenalty($penalty, $attendance, $request->penalty_note);
+            }
+
+            if ($isOutsideAttendanceRadius) {
+                OutsideRadiusAttendance::create([
+                    'attendance_id' => $attendance->id,
+                    'note' => $request->outside_radius_note
+                ]);
+            }
         }
     }
 
     public static function createPenalty($penalty, Attendance $attendance, $note)
     {
-        $attendanceEmployees = AttendanceEmployee::where('attendance_id', $attendance->id)->get();
-        foreach ($attendanceEmployees as $attendanceEmployee) {
-            AttendancePenalty::create([
-                'penalty_amount' => $penalty->amount,
-                'attendance_employee_id' => $attendanceEmployee->id,
-                'penalty_id' => $penalty->id,
-                'penalty_name' => $penalty->name,
-                'note' => $note ? $note : ''
-            ]);
-        }
+        AttendancePenalty::create([
+            'penalty_amount' => $penalty->amount,
+            'attendance_id' => $attendance->id,
+            'penalty_id' => $penalty->id,
+            'penalty_name' => $penalty->name,
+            'note' => $note ? $note : ''
+        ]);
     }
 
     public static function getPenalty($request, $employee, $companyId)
     {
-        $shiftId = $request->shift_id;
+        $shiftId = $employee->getShiftId();
         if ($employee->getShift($shiftId) instanceof EmployeeOneTimeShift) {
             return null;
         }
