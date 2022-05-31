@@ -18,6 +18,8 @@ use App\Models\CvProfileDetail;
 use Illuminate\Validation\Rule;
 use App\Models\InterviewResult;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class CandidateController extends Controller
 {
@@ -152,7 +154,6 @@ class CandidateController extends Controller
             'keyword' => 'nullable',
             'page' => 'nullable|numeric|gt:0',
             'page_size' => 'nullable|numeric|gt:0',
-
         ]);
 
         $page = $request->page ? $request->page  : 1;
@@ -165,7 +166,7 @@ class CandidateController extends Controller
             if ($keyword != null) {
                 $query->where('name', 'LIKE', '%' . $keyword . '%');
             }
-        })->orderBy('name', 'desc')->whereNotNull('validated_at')
+        })->orderBy('name')->whereNotNull('validated_at')
             ->paginate(
                 $pageSize,
                 ['*'],
@@ -177,6 +178,42 @@ class CandidateController extends Controller
                 'id' => $position->id,
                 'name' => $position->name,
                 'statistics' => $this->getCount($position, $startDate, $endDate),
+            ];
+        }
+
+        return $this->showPaginate('positions', collect($result), collect($positions));
+    }
+
+    public function getUncategorizedPosition(Request $request)
+    {
+        $request->validate([
+            'keyword' => 'nullable',
+            'page' => 'nullable|numeric|gt:0',
+            'page_size' => 'nullable|numeric|gt:0',
+        ]);
+
+        $page = $request->page ? $request->page  : 1;
+        $pageSize = $request->page_size ? $request->page_size : 10;
+        $keyword = $request->keyword;
+        $startDate = $request->started_at ?? null;
+        $endDate = $request->ended_at ?? null;
+        $result = [];
+        $positions = CandidatePosition::where(function ($query) use ($keyword) {
+            if ($keyword != null) {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
+            }
+        })->orderBy('name')->whereNull('validated_at')
+            ->paginate(
+                $pageSize,
+                ['*'],
+                'page',
+                $page
+            );
+        foreach ($positions as $position) {
+            $result[] = [
+                'id' => $position->id,
+                'name' => $position->name,
+                'applicant' => $position->getTotalApplicant($startDate, $endDate),
             ];
         }
 
@@ -311,28 +348,90 @@ class CandidateController extends Controller
         $document = $candidate->document;
         $expectedJob = $candidate->job;
 
-        $data['is_profile_completed'] = true;
-        $data['is_job_completed'] = true;
-        $data['is_document_completed'] = true;
-        $data['is_cv_completed'] = true;
+        $data['is_profile_completed'] = 0;
+        $data['is_job_completed'] = 0;
+        $data['is_document_completed'] = 0;
+        $data['is_cv_completed'] = 0;
         // this is because withDefault();
-        if ($userProfileDetail->id == null || !$userProfileDetail->addresses || !$userProfileDetail->sosmeds) {
-            $data['is_profile_completed'] = false;
-        }
+        // profile
+        $profileCompletedTotal = 0;
+        $profileCompletedScore = 0;
 
-        if ($expectedJob) {
-            if (!$expectedJob->expected_salary) {
-                $data['is_job_completed'] = false;
+        $profileCompletedTotal += 3;
+        if (!$userProfileDetail->id != null) {
+            $profileCompletedScore++;
+            if ($userProfileDetail->addresses) {
+                $profileCompletedScore++;
+            }
+            if ($userProfileDetail->sosmeds) {
+                $profileCompletedScore++;
             }
         }
 
-        if (!$education || !$education->experiences || !$education->certifications || !$education->specialities || !$education->hobbies) {
-            $data['is_cv_completed'] = false;
+        $data['is_profile_completed'] = $profileCompletedScore / $profileCompletedTotal * 100;
+
+        // job
+        $jobCompletedTotal = 0;
+        $jobCompletedScore = 0;
+
+        $jobCompletedTotal += 1;
+        if ($expectedJob) {
+            if ($expectedJob->expected_salary) {
+                $jobCompletedScore++;
+            }
+        }
+        $data['is_job_completed'] = $jobCompletedScore / $jobCompletedTotal * 100;
+
+        // cv
+        $cvCompletedTotal = 0;
+        $cvCompletedScore = 0;
+
+        $cvCompletedTotal += 5;
+        if ($education) {
+            $cvCompletedScore++;
+            if ($education->experiences) {
+                $cvCompletedScore++;
+            }
+
+            if ($education->certifications) {
+                $cvCompletedScore++;
+            }
+
+            if ($education->specialities) {
+                $cvCompletedScore++;
+            }
+
+            if ($education->hobbies) {
+                $cvCompletedScore++;
+            }
+        }
+        $data['is_cv_completed'] = $cvCompletedScore / $cvCompletedTotal * 100;
+
+        // document
+        $documentCompletedTotal = 0;
+        $documentCompletedScore = 5;
+
+        if ($document) {
+            $documentCompletedScore++;
+            if ($document->identityCard) {
+                $documentCompletedScore++;
+            }
+
+            if ($document->frontSelfie) {
+                $documentCompletedScore++;
+            }
+
+            if ($document->rightSelfie) {
+                $documentCompletedScore++;
+            }
+
+            if ($document->leftSelfie) {
+                $documentCompletedScore++;
+            }
         }
 
-        if (!$document || !$document->identityCard || !$document->frontSelfie || !$document->rightSelfie || !$document->leftSelfie) {
-            $data['is_document_completed'] = false;
-        }
+        $data['is_document_completed'] = $documentCompletedTotal / $documentCompletedScore * 100;
+
         // note => need to change to name next release
         $result['basic_profile'] = [
             'first_name' => $candidate->name ?? null,
@@ -414,9 +513,14 @@ class CandidateController extends Controller
      * @param  \App\Models\Candidate  $Candidate
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Candidate $candidate)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate(['name' => 'required']);
+
+        $candidate = Candidate::find($id)
+            ->update(['name' => $request->name]);
+
+        return $this->showOne($candidate);
     }
 
     /**
@@ -428,5 +532,25 @@ class CandidateController extends Controller
     public function destroy(Candidate $candidate)
     {
         //
+    }
+
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'file' => 'file|required',
+            'candidate_id' => 'required|exists:candidates,id'
+        ]);
+
+        $candidate = Candidate::find($request->candidate_id);
+        // delete old image
+        Storage::disk('public')->delete('images/profile_picture/' . $candidate->profile_picture);
+
+        $image = $request->file;
+        $img = Image::make($image)->encode($image->extension(), 70);
+        $fileName = time() . '.' . $image->extension();
+        $candidate->update(['profile_picture' => $fileName]);
+        Storage::disk('public')->put('images/profile_picture/' . $fileName, $img);
+
+        return $this->showOne($candidate);
     }
 }

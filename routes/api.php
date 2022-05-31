@@ -139,16 +139,17 @@ Route::prefix('v1')->group(function () {
                     Route::controller(CandidateController::class)->group(function () {
                         Route::get('/', 'index');
                         Route::get('/candidate-summary', 'getSummaryByDay');
+                        Route::put('/{id}/update-candidate-name', 'update');
+                        Route::post('update-profile-picture', 'updateProfilePicture');
                         Route::get('/{id}', 'indexDetail');
                         Route::put('/{id}', 'updateStatus');
                         Route::post('/{id}/interviews', 'addSchedule');
-                        // Route::post('update-status','updateStatus');
-
                     });
                 });
                 Route::prefix('candidate-positions')->group(function () {
                     Route::controller(CandidateController::class)->group(function () {
                         Route::get('/statistic', 'getPosition');
+                        Route::get('/uncategorized-statistic', 'getUncategorizedPosition');
                     });
                 });
             });

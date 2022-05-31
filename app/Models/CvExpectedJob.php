@@ -25,10 +25,12 @@ class CvExpectedJob extends Model implements Auditable
         'expected_salary',
         'position_reason',
         'salary_reason',
+        'previous_salary'
     ];
 
     protected $casts = [
         'expected_salary' => 'integer',
+        'previous_salary' => 'integer',
     ];
 
     public function candidates()
@@ -50,6 +52,7 @@ class CvExpectedJob extends Model implements Auditable
             'expected_position' => $this->position,
             'position_reason' => $this->position_reason,
             'salary_reason' => $this->salary_reason,
+            'previous_salary' => $this->previous_salary,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
