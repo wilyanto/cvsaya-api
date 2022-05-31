@@ -346,28 +346,90 @@ class CandidateController extends Controller
         $document = $candidate->document;
         $expectedJob = $candidate->job;
 
-        $data['is_profile_completed'] = true;
-        $data['is_job_completed'] = true;
-        $data['is_document_completed'] = true;
-        $data['is_cv_completed'] = true;
+        $data['is_profile_completed'] = 0;
+        $data['is_job_completed'] = 0;
+        $data['is_document_completed'] = 0;
+        $data['is_cv_completed'] = 0;
         // this is because withDefault();
-        if ($userProfileDetail->id == null || !$userProfileDetail->addresses || !$userProfileDetail->sosmeds) {
-            $data['is_profile_completed'] = false;
-        }
+        // profile
+        $profileCompletedTotal = 0;
+        $profileCompletedScore = 0;
 
-        if ($expectedJob) {
-            if (!$expectedJob->expected_salary) {
-                $data['is_job_completed'] = false;
+        $profileCompletedTotal += 3;
+        if (!$userProfileDetail->id != null) {
+            $profileCompletedScore++;
+            if ($userProfileDetail->addresses) {
+                $profileCompletedScore++;
+            }
+            if ($userProfileDetail->sosmeds) {
+                $profileCompletedScore++;
             }
         }
 
-        if (!$education || !$education->experiences || !$education->certifications || !$education->specialities || !$education->hobbies) {
-            $data['is_cv_completed'] = false;
+        $data['is_profile_completed'] = $profileCompletedScore / $profileCompletedTotal * 100;
+
+        // job
+        $jobCompletedTotal = 0;
+        $jobCompletedScore = 0;
+
+        $jobCompletedTotal += 1;
+        if ($expectedJob) {
+            if ($expectedJob->expected_salary) {
+                $jobCompletedScore++;
+            }
+        }
+        $data['is_job_completed'] = $jobCompletedScore / $jobCompletedTotal * 100;
+
+        // cv
+        $cvCompletedTotal = 0;
+        $cvCompletedScore = 0;
+
+        $cvCompletedTotal += 5;
+        if ($education) {
+            $cvCompletedScore++;
+            if ($education->experiences) {
+                $cvCompletedScore++;
+            }
+
+            if ($education->certifications) {
+                $cvCompletedScore++;
+            }
+
+            if ($education->specialities) {
+                $cvCompletedScore++;
+            }
+
+            if ($education->hobbies) {
+                $cvCompletedScore++;
+            }
+        }
+        $data['is_cv_completed'] = $cvCompletedScore / $cvCompletedTotal * 100;
+
+        // document
+        $documentCompletedTotal = 0;
+        $documentCompletedScore = 5;
+
+        if ($document) {
+            $documentCompletedScore++;
+            if ($document->identityCard) {
+                $documentCompletedScore++;
+            }
+
+            if ($document->frontSelfie) {
+                $documentCompletedScore++;
+            }
+
+            if ($document->rightSelfie) {
+                $documentCompletedScore++;
+            }
+
+            if ($document->leftSelfie) {
+                $documentCompletedScore++;
+            }
         }
 
-        if (!$document || !$document->identityCard || !$document->frontSelfie || !$document->rightSelfie || !$document->leftSelfie) {
-            $data['is_document_completed'] = false;
-        }
+        $data['is_document_completed'] = $documentCompletedTotal / $documentCompletedScore * 100;
+
         // note => need to change to name next release
         $result['basic_profile'] = [
             'first_name' => $candidate->name ?? null,
