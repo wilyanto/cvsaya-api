@@ -112,7 +112,7 @@ class CandidatePositionController extends Controller
         }
 
         $candidatePosition = CandidatePosition::find($id)
-            ->update([$request->all(), 'validated_at' => now()]);
+            ->update(['name' => $request->name, 'validated_at' => now()]);
 
         return $this->showOne($candidatePosition);
     }
