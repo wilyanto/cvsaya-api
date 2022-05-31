@@ -18,6 +18,8 @@ use App\Models\CvProfileDetail;
 use Illuminate\Validation\Rule;
 use App\Models\InterviewResult;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class CandidateController extends Controller
 {
@@ -511,9 +513,14 @@ class CandidateController extends Controller
      * @param  \App\Models\Candidate  $Candidate
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Candidate $candidate)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate(['name' => 'required']);
+
+        $candidate = Candidate::find($id)
+            ->update(['name' => $request->name]);
+
+        return $this->showOne($candidate);
     }
 
     /**
@@ -525,5 +532,25 @@ class CandidateController extends Controller
     public function destroy(Candidate $candidate)
     {
         //
+    }
+
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'file' => 'file|required',
+            'candidate_id' => 'required|exists:candidates,id'
+        ]);
+
+        $candidate = Candidate::find($request->candidate_id);
+        // delete old image
+        Storage::disk('public')->delete('images/profile_picture/' . $candidate->profile_picture);
+
+        $image = $request->file;
+        $img = Image::make($image)->encode($image->extension(), 70);
+        $fileName = time() . '.' . $image->extension();
+        $candidate->update(['profile_picture' => $fileName]);
+        Storage::disk('public')->put('images/profile_picture/' . $fileName, $img);
+
+        return $this->showOne($candidate);
     }
 }
