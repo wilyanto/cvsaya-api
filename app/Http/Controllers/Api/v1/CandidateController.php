@@ -164,7 +164,7 @@ class CandidateController extends Controller
             if ($keyword != null) {
                 $query->where('name', 'LIKE', '%' . $keyword . '%');
             }
-        })->orderBy('name', 'desc')->whereNotNull('validated_at')
+        })->orderBy('name')->whereNotNull('validated_at')
             ->paginate(
                 $pageSize,
                 ['*'],
@@ -200,7 +200,7 @@ class CandidateController extends Controller
             if ($keyword != null) {
                 $query->where('name', 'LIKE', '%' . $keyword . '%');
             }
-        })->orderBy('name', 'desc')->whereNull('validated_at')
+        })->orderBy('name')->whereNull('validated_at')
             ->paginate(
                 $pageSize,
                 ['*'],
