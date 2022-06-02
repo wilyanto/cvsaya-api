@@ -220,6 +220,28 @@ class AttendanceController extends Controller
         $employeeShift = $employee->getShift($shiftId)->shift;
         $shiftTime = new Carbon($employeeShift->$attendanceType);
 
+        // handle if blocked
+
+        if (
+            $attendanceType == AttendanceType::clockIn() &&
+            Attendance::where('attendance_type', $attendanceType)
+            ->where('shift_id', $shiftId)
+            ->where('employee_id', $employee->id)
+            ->exists()
+        ) {
+            return $this->errorResponse('Already Clock In', 422, 42200);
+        }
+
+        if (
+            $attendanceType == AttendanceType::breakStartedAt() &&
+            Attendance::where('attendance_type', $attendanceType)
+            ->where('shift_id', $shiftId)
+            ->where('employee_id', $employee->id)
+            ->exists()
+        ) {
+            return $this->errorResponse('Already Scan Break Out', 422, 42201);
+        }
+
         if (
             $attendanceType == AttendanceType::breakStartedAt() &&
             now()->lt(Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight()))
@@ -227,8 +249,20 @@ class AttendanceController extends Controller
             return $this->errorResponse('Break Time not started yet', 422, 42202);
         }
 
+        if (
+            $attendanceType == AttendanceType::clockOut() &&
+            now()->lt(Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight()))
+        ) {
+            return $this->errorResponse('Not yet Clock Out Time !!!', 422, 42203);
+        }
+
         $distance = $this->vincentyGreatCircleDistance($attendanceQRcode->latitude, $attendanceQRcode->longitude, $request->latitude, $request->longitude);
         $isOutsideAttendanceRadius = $this->isOutsideAttendanceRadius($distance, $attendanceQRcode);
+
+        if ($isOutsideAttendanceRadius) {
+            return $this->errorResponse('Not allowed to submit because outside radius', 422, 42204);
+        }
+
         DB::transaction(function () use ($request, $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany) {
             $this->createAttendance($request, $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany);
         });
