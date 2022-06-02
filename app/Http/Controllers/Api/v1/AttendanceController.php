@@ -259,7 +259,7 @@ class AttendanceController extends Controller
         $distance = $this->vincentyGreatCircleDistance($attendanceQRcode->latitude, $attendanceQRcode->longitude, $request->latitude, $request->longitude);
         $isOutsideAttendanceRadius = $this->isOutsideAttendanceRadius($distance, $attendanceQRcode);
 
-        if ($isOutsideAttendanceRadius) {
+        if ($isOutsideAttendanceRadius && $attendanceQRcode->is_geo_strict) {
             return $this->errorResponse('Not allowed to submit because outside radius', 422, 42204);
         }
 
@@ -404,7 +404,7 @@ class AttendanceController extends Controller
 
     public static function isOutsideAttendanceRadius($distance, $attendanceQRcode)
     {
-        return $distance >= $attendanceQRcode->radius && !$attendanceQRcode->is_geo_strict;
+        return $distance >= $attendanceQRcode->radius;
     }
 
     // https://stackoverflow.com/questions/10053358/measuring-the-distance-between-two-coordinates-in-php
