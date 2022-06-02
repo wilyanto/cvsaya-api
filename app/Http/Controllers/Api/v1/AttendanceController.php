@@ -485,6 +485,7 @@ class AttendanceController extends Controller
                     ];
                 }
                 $employeeAttendance['profile_detail'] = $employee->candidate;
+                $employeeAttendance['profile_detail'] = $employee;
                 $employeeAttendance['shifts'] = $shifts;
                 $employeeAttendances[] = $employeeAttendance;
             }
