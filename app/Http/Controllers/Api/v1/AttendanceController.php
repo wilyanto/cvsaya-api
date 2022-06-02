@@ -498,7 +498,6 @@ class AttendanceController extends Controller
 
     public function getAttendancesByDateRange(Request $request)
     {
-        $keyword = $request->keyword;
         $request->validate([
             'started_at' => 'required',
             'ended_at' => 'required',
@@ -506,7 +505,7 @@ class AttendanceController extends Controller
         $startDate = Carbon::parse($request->started_at);
         $endDate = Carbon::parse($request->ended_at);
         $userId = auth()->id();
-        $candidate = Candidate::where('user_id', $userId)->where('name', 'like', '%' . $keyword . '%')->first();
+        $candidate = Candidate::where('user_id', $userId)->first();
         $employees = Employee::where('candidate_id', $candidate->id)->get();
         $period = CarbonPeriod::create($startDate, $endDate);
 
@@ -527,7 +526,6 @@ class AttendanceController extends Controller
                     foreach ($shiftAttendances[$employeeShift->shift_id] as $attendance) {
                         $attendances[] = [
                             'attendance' => $attendance,
-                            'penalty' => $attendance->attendancePenalty
                         ];
                     }
                     $shifts[] = [
@@ -535,12 +533,10 @@ class AttendanceController extends Controller
                         'attendances' => $attendances,
                     ];
                 }
-                $employeeAttendance['profile_detail'] = $employee->profileDetail()->first();
-                $employeeAttendance['shifts'] = $shifts;
-                $employeeAttendances[] = $employeeAttendance;
+                $employeeAttendances[] = $shifts;
             }
 
-            $array['employees'] = $employeeAttendances;
+            $array['shifts'] = $employeeAttendances;
             array_push($data, $array);
         }
 
