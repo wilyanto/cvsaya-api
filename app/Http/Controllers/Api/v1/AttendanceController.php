@@ -227,6 +227,7 @@ class AttendanceController extends Controller
             Attendance::where('attendance_type', $attendanceType)
             ->where('shift_id', $shiftId)
             ->where('employee_id', $employee->id)
+            ->whereDate('scheduled_at', today())
             ->exists()
         ) {
             return $this->errorResponse('Already Clock In', 422, 42200);
@@ -237,9 +238,33 @@ class AttendanceController extends Controller
             Attendance::where('attendance_type', $attendanceType)
             ->where('shift_id', $shiftId)
             ->where('employee_id', $employee->id)
+            ->whereDate('scheduled_at', today())
             ->exists()
         ) {
             return $this->errorResponse('Already Scan Break Out', 422, 42201);
+        }
+
+        if (
+            $attendanceType == AttendanceType::breakEndedAt() &&
+            Attendance::where('attendance_type', $attendanceType)
+            ->where('shift_id', $shiftId)
+            ->where('employee_id', $employee->id)
+            ->whereDate('scheduled_at', today())
+            ->exists()
+        ) {
+            return $this->errorResponse('Already Scan Break In', 422, 42202);
+        }
+
+
+        if (
+            $attendanceType == AttendanceType::clockOut() &&
+            Attendance::where('attendance_type', $attendanceType)
+            ->where('shift_id', $shiftId)
+            ->where('employee_id', $employee->id)
+            ->whereDate('scheduled_at', today())
+            ->exists()
+        ) {
+            return $this->errorResponse('Already Clock Out', 422, 42202);
         }
 
         if (

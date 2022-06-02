@@ -184,6 +184,24 @@ class Employee extends Authenticatable implements Auditable
         return  $this->hasMany(ShiftEmployee::class, 'employee_id', 'id');
     }
 
+    public function getOneTimeShifts($date)
+    {
+        $date = new Carbon($date);
+        return EmployeeOneTimeShift::whereDate('date', $date->toDateString())
+            ->where('employee_id', $this->id)
+            ->with('shift')
+            ->get();
+    }
+
+    public function getRecurringShifts($date)
+    {
+        $date = new Carbon($date);
+        return EmployeeRecurringShift::where('day', $date->dayOfWeek)
+            ->where('employee_id', $this->id)
+            ->with('shift')
+            ->get();
+    }
+
     public function getShifts($date)
     {
         $date = new Carbon($date);

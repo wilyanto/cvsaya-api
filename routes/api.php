@@ -54,6 +54,8 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
         Route::get('me/shift', [ShiftController::class, 'getShift']);
+        Route::get('me/attendance-histories', [AttendanceController::class, 'getAttendancesByDateRange']);
+        Route::get('me/attendance-schedule', [EmployeeShiftController::class, 'getShift']);
 
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {
@@ -321,7 +323,6 @@ Route::prefix('v1')->group(function () {
         Route::prefix('attendances')->group(function () {
             Route::controller(AttendanceController::class)->group(function () {
                 Route::get('/', 'index');
-                Route::get('/histories', 'getAttendancesByDateRange');
                 Route::get('/company-employees', 'getAttendancesByCompany');
                 Route::post('/', 'store');
             });

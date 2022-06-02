@@ -58,6 +58,7 @@ class DailyAttendancePenalty extends Command
                 $clockInAttendance = $todayAttendances->where('attendance_type', AttendanceType::clockIn())
                     ->where('shift_id', $employeeShift->shift_id)
                     ->where('employee_id', $employee->id)
+                    ->whereDate('scheduled_at', $today)
                     ->first();
                 if (!$clockInAttendance) {
                     return;
@@ -67,6 +68,7 @@ class DailyAttendancePenalty extends Command
                 $clockOutAttendance = $todayAttendances->where('attendance_type', AttendanceType::clockOut())
                     ->where('shift_id', $employeeShift->shift_id)
                     ->where('employee_id', $employee->id)
+                    ->whereDate('scheduled_at', $today)
                     ->first();
                 if (!$clockOutAttendance) {
                     $shiftTime = new Carbon($employeeShift->shift->clock_out);
@@ -101,6 +103,7 @@ class DailyAttendancePenalty extends Command
                 $breakOutAttendance = $todayAttendances->where('attendance_type', AttendanceType::breakStartedAt())
                     ->where('shift_id', $employeeShift->shift_id)
                     ->where('employee_id', $employee->id)
+                    ->whereDate('scheduled_at', $today)
                     ->first();
                 if (!$breakOutAttendance) {
                     $shiftTime = new Carbon($employeeShift->shift->break_started_at);
@@ -135,6 +138,7 @@ class DailyAttendancePenalty extends Command
                 $breakInAttendance = $todayAttendances->where('attendance_type', AttendanceType::breakEndedAt())
                     ->where('shift_id', $employeeShift->shift_id)
                     ->where('employee_id', $employee->id)
+                    ->whereDate('scheduled_at', $today)
                     ->first();
                 if (!$breakInAttendance) {
                     $shiftTime = new Carbon($employeeShift->shift->break_ended_at);
