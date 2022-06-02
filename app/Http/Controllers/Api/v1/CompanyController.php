@@ -19,7 +19,7 @@ class CompanyController extends Controller
     {
         $request->validate([
             'keyword' => [
-                'string',
+                'string|nullable',
             ],
             'page' => 'nullable|numeric|gt:0',
             'page_size' => 'nullable|numeric|gt:0'
