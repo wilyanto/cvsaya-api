@@ -192,7 +192,7 @@ class ShiftController extends Controller
             $data[] = $shift;
             $shiftAttendances = [];
             foreach ($attendances as $attendance) {
-                if ($attendance->shift_id == $shift->id) {
+                if ($attendance->shift_id == $shift->shift_id) {
                     $shiftAttendances[] = $attendance;
                 }
             }

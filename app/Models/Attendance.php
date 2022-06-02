@@ -31,9 +31,8 @@ class Attendance extends Model implements Auditable
 
     public function employees()
     {
-        return $this->belongsToMany(Employee::class, 'attendances_employees')->withTimestamps();
+        return $this->hasOne(Employee::class, 'id', 'employee_id');
     }
-
 
     public function attendanceType()
     {

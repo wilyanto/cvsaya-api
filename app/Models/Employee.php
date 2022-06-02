@@ -85,7 +85,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function attendances()
     {
-        return $this->belongsToMany(Attendance::class, 'attendances_employees')->withTimestamps();
+        return $this->hasMany(Attendance::class, 'employee_id', 'id');
     }
 
     public function candidate()
@@ -195,7 +195,7 @@ class Employee extends Authenticatable implements Auditable
             return $shifts;
         }
 
-        $getTodayDay = Carbon::now()->dayOfWeek;
+        $getTodayDay = $date->dayOfWeek;
         $shifts = EmployeeRecurringShift::where('day', $getTodayDay)
             ->where('employee_id', $this->id)
             ->with('shift')
@@ -219,7 +219,7 @@ class Employee extends Authenticatable implements Auditable
             return $shift;
         }
 
-        $getTodayDay = Carbon::now()->dayOfWeek;
+        $getTodayDay = $date->dayOfWeek;
         $shift = EmployeeRecurringShift::where('day', $getTodayDay)
             ->where('shift_id', $shiftId)
             ->where('employee_id', $this->id)
