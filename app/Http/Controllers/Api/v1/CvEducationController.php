@@ -126,7 +126,7 @@ class CvEducationController extends Controller
      */
     public function destroy($id)
     {
-        $educations = CvEducation::where('candidate_id', $id)->first();
+        $educations = CvEducation::where('id', $id)->first();
         if (!$educations) {
             return $this->errorResponse('id not found', 404, 40401);
         }
