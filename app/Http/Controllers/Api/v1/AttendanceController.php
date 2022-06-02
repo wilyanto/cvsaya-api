@@ -277,7 +277,7 @@ class AttendanceController extends Controller
         }
         // TODO: need to handle multiple shift, for now only handle 1 shift
         foreach ($employees as $employee) {
-            $shiftId = $employee->getShiftId();
+            $shiftId = $request->shift_id;
             $penalty = $this->getPenalty($request, $employee, $companyId);
             $employeeShift = $employee->getShift($shiftId)->shift;
             $shiftTime = new Carbon($employeeShift->$attendanceType);
@@ -337,7 +337,7 @@ class AttendanceController extends Controller
 
     public static function getPenalty($request, $employee, $companyId)
     {
-        $shiftId = $employee->getShiftId();
+        $shiftId = $request->shift_id;
         if ($employee->getShift($shiftId) instanceof EmployeeOneTimeShift) {
             return null;
         }
