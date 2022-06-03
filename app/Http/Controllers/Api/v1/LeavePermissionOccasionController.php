@@ -18,13 +18,6 @@ class LeavePermissionOccasionController extends Controller
 
     private $company;
 
-    public function __construct()
-    {
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
-        // handle multiple company
-        $this->company = $employee->company;
-    }
     /**
      * Display a listing of the resource.
      *
@@ -32,6 +25,11 @@ class LeavePermissionOccasionController extends Controller
      */
     public function index()
     {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $employee->company;
+
         $leavePermissionOccasions = QueryBuilder::for(LeavePermissionOccasion::class)
             ->allowedIncludes(['company'])
             ->where('company_id', $this->company->id)
@@ -48,6 +46,11 @@ class LeavePermissionOccasionController extends Controller
      */
     public function store(LeavePermissionOccasionStoreRequest $request)
     {
+
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $employee->company;
         if ($this->company->id != $request->company_id) {
             return $this->errorResponse('Cannot create Occasion', 422, 42200);
         }
@@ -64,6 +67,11 @@ class LeavePermissionOccasionController extends Controller
      */
     public function show($id)
     {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $employee->company;
+
         $leavePermissionOccasion = QueryBuilder::for(LeavePermissionOccasion::class)
             ->allowedIncludes(['company'])
             ->where('company_id', $this->company->id)
@@ -81,6 +89,11 @@ class LeavePermissionOccasionController extends Controller
      */
     public function update(LeavePermissionOccasionUpdateRequest $request, LeavePermissionOccasion $leavePermissionOccasion)
     {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $employee->company;
+
         if ($this->company->id != $request->company_id) {
             return $this->errorResponse('Cannot update Occasion', 422, 42200);
         }
@@ -97,6 +110,10 @@ class LeavePermissionOccasionController extends Controller
      */
     public function destroy($id)
     {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $employee->company;
         $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($id);
         if ($this->company->id != $leavePermissionOccasion->company_id) {
             return $this->errorResponse('Cannot delete Occasion', 422, 42200);

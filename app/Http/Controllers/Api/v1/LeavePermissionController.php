@@ -29,13 +29,6 @@ class LeavePermissionController extends Controller
     private $employee;
     private $company;
 
-    public function __construct()
-    {
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
-        // handle multiple company
-        $this->company = $this->employee->company;
-    }
     /**
      * Display a listing of the resource.
      *
@@ -44,6 +37,11 @@ class LeavePermissionController extends Controller
     public function index()
     {
         // date range?
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $this->employee->company;
+
         $company = $this->company;
         $leavePermissions = QueryBuilder::for(LeavePermission::class)
             ->allowedIncludes(['occasion', 'documents'])
@@ -64,6 +62,11 @@ class LeavePermissionController extends Controller
      */
     public function store(LeavePermissionStoreRequest $request)
     {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $this->employee->company;
+
         $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($request->occasion_id);
         if ($this->company->id != $leavePermissionOccasion->company_id) {
             return $this->errorResponse("Leave Permission Not Allowed", 422, 42200);
@@ -125,6 +128,11 @@ class LeavePermissionController extends Controller
      */
     public function show($id)
     {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $this->employee->company;
+
         $company = $this->company;
         $leavePermission = QueryBuilder::for(LeavePermission::class)
             ->allowedIncludes(['occasion', 'documents'])
@@ -146,6 +154,11 @@ class LeavePermissionController extends Controller
      */
     public function update(LeavePermissionUpdateRequest $request, $leavePermissionId)
     {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $this->employee->company;
+
         $leavePermission = LeavePermission::findOrFail($leavePermissionId);
         if (
             $leavePermission->status == LeavePermissionStatusType::accepted() ||
@@ -227,6 +240,11 @@ class LeavePermissionController extends Controller
      */
     public function destroy($id)
     {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $this->employee->company;
+
         $leavePermission = LeavePermission::findOrFail($id);
         if ($leavePermission->employee_id != $this->employee->id) {
             return $this->errorResponse("You're not allowed to delete", 403, 40300);
@@ -239,6 +257,11 @@ class LeavePermissionController extends Controller
     // admin only
     public function updateLeavePermissionStatus(Request $request)
     {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $this->employee->company;
+
         $status = $request->status;
         $leavePermissionId = $request->leave_permission_id;
         $leavePermission = LeavePermission::findOrFail($leavePermissionId);
