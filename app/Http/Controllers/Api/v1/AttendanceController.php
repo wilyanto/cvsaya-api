@@ -535,32 +535,19 @@ class AttendanceController extends Controller
 
         $data = [];
 
+        // TODO: improve pagination
         foreach ($period as $date) {
             $array['date'] = $date->toDateString();
-            $employeeAttendances = [];
-
+            $shifts = [];
             foreach ($employees as $employee) {
-                $attendances = $employee->getAttendances($date->copy()->startOfDay(), $date->copy()->endOfDay());
-                $shiftAttendances = $attendances->groupBy('shift_id');
-
-                $shifts = [];
-                $employeeShifts = $attendances->unique('shift_id');
+                $employeeShifts = $employee->getShifts($date->copy()->startOfDay());
                 foreach ($employeeShifts as $employeeShift) {
-                    $attendances = [];
-                    foreach ($shiftAttendances[$employeeShift->shift_id] as $attendance) {
-                        $attendances[] = [
-                            'attendance' => $attendance,
-                        ];
-                    }
-                    $shifts[] = [
-                        'id' => $employeeShift->shift_id,
-                        'attendances' => $attendances,
-                    ];
+                    $attendances = $employeeShift->attendances()->whereDate('scheduled_at', $date)->get();
+                    $shifts[] = $employeeShift;
+                    end($shifts)['attendances'] = $attendances;
                 }
-                $employeeAttendances[] = $shifts;
             }
-
-            $array['shifts'] = $employeeAttendances;
+            $array['shifts'] = $shifts;
             array_push($data, $array);
         }
 
