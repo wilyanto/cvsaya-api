@@ -505,8 +505,8 @@ class AttendanceController extends Controller
                 $shifts = [];
                 foreach ($employeeShifts as $employeeShift) {
                     $attendances = $employeeShift->attendances()->whereDate('scheduled_at', $date)->get();
-                    $shifts = $employeeShift;
-                    $shifts['attendances'] = $attendances;
+                    $shifts[] = $employeeShift;
+                    end($shifts)['attendances'] = $attendances;
                 }
                 $employeeAttendance = $employee;
                 $employeeAttendance['position'] = $employee->position;
