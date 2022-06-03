@@ -36,6 +36,17 @@ class LeavePermission extends Model
         return $this->hasOne(Employee::class, 'id', 'employee_id');
     }
 
+    public function candidate()
+    {
+        return $this->hasOneThrough(Candidate::class, Employee::class, 'id', 'id', 'employee_id', 'candidate_id');
+    }
+
+    public function position()
+    {
+        return $this->hasOneThrough(Position::class, Employee::class, 'id', 'id', 'employee_id', 'position_id');
+    }
+
+
     public function company()
     {
         return $this->hasOneDeep(

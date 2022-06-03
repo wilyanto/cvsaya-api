@@ -23,6 +23,9 @@ class LeavePermissionResource extends JsonResource
             'answered_at' => $this->answered_at,
             'employee_id' => $this->employee_id,
             'occasion_id' => $this->occasion_id,
+            'created_at' => $this->created_at,
+            'candidate' => $this->candidate,
+            'position' => $this->position,
             'occasion' => new LeavePermissionOccasionResource($this->whenLoaded('occasion'))
         ];
     }
