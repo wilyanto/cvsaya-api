@@ -304,21 +304,30 @@ class AttendanceController extends Controller
         // get shift
         $customerId = 34953;
         $security = Candidate::where('user_id', auth()->id())->firstOrFail();
+        // check if security have permission or not
         $verifiedBy = Employee::where('candidate_id', $security->id)->firstOrFail();
         $candidate = Candidate::where('user_id', $customerId)->firstOrFail();
         $employeeIds = Employee::where('candidate_id', $candidate->id)->pluck('id');
-        $employeeAttendances = AttendanceEmployee::whereIn('employee_id', $employeeIds)
-            ->whereDate('created_at', today())
+        // handle multiple company?
+        $attendances = Attendance::whereIn('employee_id', $employeeIds)
+            ->whereDate('attended_at', today())
+            ->whereNull('verified_by')
             ->get();
-        foreach ($employeeAttendances as $employeeAttendance) {
-            if (($employeeAttendance->attendance->attendance_type == AttendanceType::clockIn())) {
-                $employeeAttendance->attendance->update([
-                    'verified_by' => $verifiedBy->id,
-                    'verified_at' => now(),
-                ]);
-            }
+
+        if ($attendances->count() == 0) {
+            return $this->errorResponse("No Attendance Found", 404, 40400);
         }
+
+        foreach ($attendances as $attendance) {
+            $attendance->update([
+                'verified_by' => $verifiedBy->id,
+                'verified_at' => now(),
+            ]);
+        }
+
+        return $this->showOne("Success");
     }
+
 
 
     public function createAttendance($request, Employee $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany)
@@ -481,44 +490,33 @@ class AttendanceController extends Controller
         $period = CarbonPeriod::create($startDate, $endDate);
         $companyId = $request->company_id;
         $company = Company::where('id', $companyId)->first();
-        $employees = $company->employees()->with('position')
+        $employees = $company->employees()
             ->whereHas('candidate', function ($query) use ($keyword) {
-                $query->where('name', 'like', '%' . $keyword . '%');
+                $query->where('name', 'like', '%' . $keyword . '%')->orderBy('name');
             })->get();
         $data = [];
 
+        // TODO: improve pagination
         foreach ($period as $date) {
             $array['date'] = $date->toDateString();
             $employeeAttendances = [];
             foreach ($employees as $employee) {
-                $attendances = $employee->getAttendances($date->copy()->startOfDay(), $date->copy()->endOfDay());
-                $shiftAttendances = $attendances->groupBy('shift_id');
-
+                $employeeShifts = $employee->getShifts($date->copy()->startOfDay());
                 $shifts = [];
-                $employeeShifts = $attendances->unique('shift_id');
                 foreach ($employeeShifts as $employeeShift) {
-                    $attendances = [];
-                    foreach ($shiftAttendances[$employeeShift->shift_id] as $attendance) {
-                        $attendances[] = [
-                            'attendance' => $attendance,
-                            'penalty' => $attendance->attendancePenalty
-                        ];
-                    }
-                    $shifts[] = [
-                        'id' => $employeeShift->shift_id,
-                        'attendances' => $attendances,
-                    ];
+                    $attendances = $employeeShift->attendances()->whereDate('scheduled_at', $date)->get();
+                    $shifts = $employeeShift;
+                    $shifts['attendances'] = $attendances;
                 }
+                $employeeAttendance = $employee;
+                $employeeAttendance['position'] = $employee->position;
                 $employeeAttendance['profile_detail'] = $employee->candidate;
-                $employeeAttendance['profile_detail'] = $employee;
                 $employeeAttendance['shifts'] = $shifts;
                 $employeeAttendances[] = $employeeAttendance;
             }
-
             $array['employees'] = $employeeAttendances;
             array_push($data, $array);
         }
-
         return $this->showAll(collect($data));
     }
 
