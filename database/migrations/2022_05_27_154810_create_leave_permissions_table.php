@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('leave_permissions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('employee_id');
-            $table->timestamp('started_at');
-            $table->timestamp('ended_at');
+            $table->timestamp('started_at')->useCurrent();
+            $table->timestamp('ended_at')->useCurrent();
             $table->unsignedBigInteger('occasion_id');
             $table->string('reason');
             $table->string('status');
