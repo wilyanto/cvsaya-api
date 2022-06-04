@@ -31,6 +31,8 @@ class AttendanceResource extends JsonResource
             'employee_id' => $this->employee_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'attendance_penalty' => $this->attendancePenalty,
+            'outside_radius_note' => $this->outsideRadiusAttendance,
         ];
     }
 }
