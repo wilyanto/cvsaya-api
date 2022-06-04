@@ -510,7 +510,7 @@ class AttendanceController extends Controller
                         ->with('attendancePenalty')
                         ->get();
                     $shifts[] = $employeeShift;
-                    end($shifts)['attendances'] = new AttendanceResource($attendances);
+                    end($shifts)['attendances'] = AttendanceResource::collection($attendances);
                 }
                 $employeeAttendance = $employee;
                 $employeeAttendance['position'] = $employee->position;
