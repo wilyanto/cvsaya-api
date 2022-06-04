@@ -347,6 +347,9 @@ class Employee extends Authenticatable implements Auditable
 
     public function getAttendances($startDate, $endDate)
     {
-        return $this->attendances()->with('attendancePenalty')->whereBetween('scheduled_at', [$startDate, $endDate])->get();
+        return $this->attendances()->with('attendancePenalty')
+            ->whereBetween('scheduled_at', [$startDate, $endDate])
+            ->where('employee_id', $this->employee->id)
+            ->get();
     }
 }
