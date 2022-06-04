@@ -69,4 +69,12 @@ class Attendance extends Model implements Auditable
             return $date->format('Y-m-d\TH:i:s.v\Z');
         }
     }
+
+    public function getImageUrl()
+    {
+        if (!$this->image) {
+            return null;
+        }
+        return url('/storage/images/attendances/' . $this->image);
+    }
 }

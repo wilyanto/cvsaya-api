@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\AttendancePenalty;
 use App\Enums\AttendanceType;
+use App\Http\Resources\AttendanceResource;
 use App\Models\AttendanceCompanyGroup;
 use App\Models\AttendanceEmployee;
 use App\Models\AttendanceQrCode;
@@ -509,7 +510,7 @@ class AttendanceController extends Controller
                         ->with('attendancePenalty')
                         ->get();
                     $shifts[] = $employeeShift;
-                    end($shifts)['attendances'] = $attendances;
+                    end($shifts)['attendances'] = new AttendanceResource($attendances);
                 }
                 $employeeAttendance = $employee;
                 $employeeAttendance['position'] = $employee->position;
