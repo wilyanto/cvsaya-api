@@ -28,6 +28,7 @@ class AttendanceResource extends JsonResource
             'verified_at' => $this->verified_at,
             'verified_by' => $this->verified_by,
             'shift_id' => $this->shift_id,
+            'employee_id' => $this->employee_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

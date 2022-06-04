@@ -36,6 +36,8 @@ class EmployeeOneTimeShift extends Model implements Auditable
 
     public function getAttendances($date)
     {
-        return $this->attendances()->whereDate('scheduled_at', $date)->get();
+        return $this->attendances()->whereDate('scheduled_at', $date)
+            ->where('employee_id', $this->employee->id)
+            ->get();
     }
 }
