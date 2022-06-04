@@ -499,24 +499,22 @@ class AttendanceController extends Controller
 
         // TODO: improve pagination
         foreach ($period as $date) {
-            $array['date'] = $date->toDateString();
+            $array['date'] = $date->copy()->toDateString();
             $employeeAttendances = [];
             foreach ($employees as $employee) {
-                $employeeShifts = $employee->getShifts($date->copy()->startOfDay());
+                $employeeShifts = $employee->getShifts($date);
                 $shifts = [];
                 foreach ($employeeShifts as $employeeShift) {
-                    $attendances = $employeeShift->attendances()
-                        ->whereDate('scheduled_at', $date)
-                        ->where('employee_id', $employee->id)
-                        ->with('attendancePenalty')
-                        ->get();
+                    $attendances = $employeeShift->getAttendances($date);
                     $shifts[] = $employeeShift;
                     end($shifts)['attendances'] = AttendanceResource::collection($attendances);
                 }
-                $employeeAttendance = $employee;
-                $employeeAttendance['position'] = $employee->position;
-                $employeeAttendance['profile_detail'] = $employee->candidate;
-                $employeeAttendance['shifts'] = $shifts;
+                $employeeAttendance = array(
+                    'position' => $employee->position,
+                    'profile_detail' => $employee->candidate,
+                    'shifts' => $shifts
+                );
+                $employeeAttendance = array_merge($employeeAttendance, $employee->toArray());
                 $employeeAttendances[] = $employeeAttendance;
             }
             $array['employees'] = $employeeAttendances;
