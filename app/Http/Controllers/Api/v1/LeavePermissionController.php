@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Enums\LeavePermissionStatusType;
 use App\Http\Requests\LeavePermissionUpdateRequest;
 use App\Models\Candidate;
+use App\Models\Company;
 use App\Models\CvDocument;
 use App\Models\Document;
 use App\Models\DocumentType;
@@ -87,13 +88,15 @@ class LeavePermissionController extends Controller
      */
     public function store(LeavePermissionStoreRequest $request)
     {
+        $company = Company::where('id', $request->company_id)->firstOrFail();
         $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
-        // handle multiple company
-        $this->company = $this->employee->company;
+        $employee = Employee::where('candidate_id', $candidate->id)
+            ->whereHas('company', function ($query) use ($company) {
+                $query->where('companies.id', $company->id);
+            })->firstOrFail();
 
         $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($request->occasion_id);
-        if ($this->company->id != $leavePermissionOccasion->company_id) {
+        if ($company->id != $leavePermissionOccasion->company_id) {
             return $this->errorResponse("Leave Permission Not Allowed", 422, 42200);
         }
 
@@ -129,7 +132,7 @@ class LeavePermissionController extends Controller
         $leavePermission = LeavePermission::create([
             'started_at' => $request->started_at,
             'ended_at' => $request->ended_at,
-            'employee_id' => $request->employee_id,
+            'employee_id' => $employee->id,
             'occasion_id' => $request->occasion_id,
             'reason' => $request->reason,
             'status' => LeavePermissionStatusType::waiting()
@@ -154,12 +157,18 @@ class LeavePermissionController extends Controller
      */
     public function update(LeavePermissionUpdateRequest $request, $leavePermissionId)
     {
+        $company = Company::where('id', $request->company_id)->firstOrFail();
         $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
-        // handle multiple company
-        $this->company = $this->employee->company;
+        $employee = Employee::where('candidate_id', $candidate->id)
+            ->whereHas('company', function ($query) use ($company) {
+                $query->where('companies.id', $company->id);
+            })->firstOrFail();
 
         $leavePermission = LeavePermission::findOrFail($leavePermissionId);
+        if ($employee->id != $leavePermission->employee_id) {
+            return $this->errorResponse('Not found', 404, 40400);
+        }
+
         if (
             $leavePermission->status == LeavePermissionStatusType::accepted() ||
             $leavePermission->status == LeavePermissionStatusType::declined()
@@ -171,7 +180,7 @@ class LeavePermissionController extends Controller
         $startDate = Carbon::parse($request->started_at);
 
         if ($startDate->diff(now())->days <= $leavePermissionOccasion->max_day) {
-            return $this->errorResponse("You need to ask for permissions sooner", 422, 42200);
+            return $this->errorResponse("Cannot request leave permissions", 422, 42200);
         }
 
         $documentIds = $request->document_ids;
@@ -222,7 +231,6 @@ class LeavePermissionController extends Controller
         $leavePermission->update([
             'started_at' => $request->started_at,
             'ended_at' => $request->ended_at,
-            'employee_id' => $request->employee_id,
             'occasion_id' => $request->occasion_id,
             'reason' => $request->reason,
         ]);
