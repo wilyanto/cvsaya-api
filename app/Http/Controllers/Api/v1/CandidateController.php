@@ -358,12 +358,12 @@ class CandidateController extends Controller
         $profileCompletedScore = 0;
 
         $profileCompletedTotal += 3;
-        if (!$userProfileDetail->id != null) {
+        if ($userProfileDetail->id != null) {
             $profileCompletedScore++;
-            if ($userProfileDetail->addresses) {
+            if ($userProfileDetail->addresses->id != null) {
                 $profileCompletedScore++;
             }
-            if ($userProfileDetail->sosmeds) {
+            if ($userProfileDetail->sosmeds->id != null) {
                 $profileCompletedScore++;
             }
         }
@@ -409,28 +409,29 @@ class CandidateController extends Controller
 
         // document
         $documentCompletedTotal = 0;
-        $documentCompletedScore = 5;
+        $documentCompletedScore = 0;
 
+        $documentCompletedTotal += 5;
         if ($document) {
             $documentCompletedScore++;
-            if ($document->identityCard) {
+            if ($document->identity_card) {
                 $documentCompletedScore++;
             }
 
-            if ($document->frontSelfie) {
+            if ($document->front_selfie) {
                 $documentCompletedScore++;
             }
 
-            if ($document->rightSelfie) {
+            if ($document->right_selfie) {
                 $documentCompletedScore++;
             }
 
-            if ($document->leftSelfie) {
+            if ($document->left_selfie) {
                 $documentCompletedScore++;
             }
         }
 
-        $data['is_document_completed'] = $documentCompletedTotal / $documentCompletedScore * 100;
+        $data['is_document_completed'] = $documentCompletedScore / $documentCompletedTotal * 100;
 
         // note => need to change to name next release
         $result['basic_profile'] = [
