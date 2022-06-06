@@ -349,7 +349,7 @@ class Employee extends Authenticatable implements Auditable
     {
         return $this->attendances()->with('attendancePenalty')
             ->whereBetween('scheduled_at', [$startDate, $endDate])
-            ->where('employee_id', $this->employee->id)
+            ->where('employee_id', $this->id)
             ->get();
     }
 }

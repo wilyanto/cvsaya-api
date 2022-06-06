@@ -543,9 +543,9 @@ class AttendanceController extends Controller
             $array['date'] = $date->toDateString();
             $shifts = [];
             foreach ($employees as $employee) {
-                $employeeShifts = $employee->getShifts($date->copy()->startOfDay());
+                $employeeShifts = $employee->getShifts($date);
                 foreach ($employeeShifts as $employeeShift) {
-                    $attendances = $employeeShift->attendances()->whereDate('scheduled_at', $date)->get();
+                    $attendances = $employeeShift->getAttendances($date);
                     $shifts[] = $employeeShift;
                     end($shifts)['attendances'] = $attendances;
                 }
