@@ -65,6 +65,9 @@ class CandidatePositionController extends Controller
 
         $data = $request->all();
         $data['validated_at'] = Carbon::now();
+        if (CandidatePosition::where('name', $request->name)->exists()) {
+            return $this->errorResponse("Candidate position already exists", 409, 40900);
+        }
         $position = CandidatePosition::create($data);
 
         return $this->showOne($position);
