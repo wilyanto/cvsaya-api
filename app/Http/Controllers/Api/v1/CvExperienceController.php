@@ -128,7 +128,7 @@ class CvExperienceController extends Controller
     {
         $user = auth()->user();
 
-        $experience = CvExperience::where('candidate_id', $id)->firstOrFail();
+        $experience = CvExperience::where('id', $id)->firstOrFail();
         if (!$experience) {
             return $this->errorResponse('id not found', 404, 40401);
         }
