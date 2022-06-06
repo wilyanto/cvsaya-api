@@ -7,6 +7,7 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\EmployeeResource;
 use App\Models\Position;
 use App\Models\Candidate;
 use App\Models\EmployeeOneTimeShift;
@@ -67,7 +68,7 @@ class EmployeeController extends Controller
             ->with('position', 'candidate')
             ->paginate($request->input('page_size', 10));
 
-        return $this->showPagination('employees', $employees);
+        return $this->showPaginate('employees', collect(EmployeeResource::collection($employees)), collect(($employees)));
     }
 
     /**
@@ -194,7 +195,7 @@ class EmployeeController extends Controller
     {
         $employee = Employee::findOrFail($id);
 
-        return $this->showOne($employee->toArrayEmployee());
+        return $this->showOne(new EmployeeResource($employee));
     }
 
     public function showSalaryOnly($id)

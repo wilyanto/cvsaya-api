@@ -55,6 +55,31 @@ class LeavePermissionController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
+        // handle multiple company
+        $this->company = $this->employee->company;
+
+        $company = $this->company;
+        $leavePermission = QueryBuilder::for(LeavePermission::class)
+            ->allowedIncludes(['occasion', 'documents'])
+            ->where('employee_id', $this->employee->id)
+            ->whereHas('company', function ($query) use ($company) {
+                $query->where('company_id', $company->id);
+            })
+            ->findOrFail($id);
+
+        return $this->showOne(new LeavePermissionResource($leavePermission));
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -116,31 +141,6 @@ class LeavePermissionController extends Controller
                 'document_id' => $documentId
             ]);
         }
-
-        return $this->showOne(new LeavePermissionResource($leavePermission));
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
-        // handle multiple company
-        $this->company = $this->employee->company;
-
-        $company = $this->company;
-        $leavePermission = QueryBuilder::for(LeavePermission::class)
-            ->allowedIncludes(['occasion', 'documents'])
-            ->where('employee_id', $this->employee->id)
-            ->whereHas('company', function ($query) use ($company) {
-                $query->where('company_id', $company->id);
-            })
-            ->findOrFail($id);
 
         return $this->showOne(new LeavePermissionResource($leavePermission));
     }
