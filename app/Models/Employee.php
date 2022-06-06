@@ -119,7 +119,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function getPhoneNumber()
     {
-        return $this->user->telpon;
+        return $this->candidate->phone_number;
     }
 
     public function getUserName()
