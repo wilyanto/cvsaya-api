@@ -306,6 +306,9 @@ Route::prefix('v1')->group(function () {
             Route::controller(EmploymentTypeController::class)->group(function () {
                 Route::get('/types', 'index');
             });
+            Route::controller(AttendanceController::class)->group(function () {
+                Route::get('/{id}/attendances', 'getAttendancesByEmployee');
+            });
             Route::controller(EmployeeController::class)->group(function () {
                 Route::get('/{id}', 'show');
                 Route::group(['middleware' => ['permission:manage-employee']], function () {

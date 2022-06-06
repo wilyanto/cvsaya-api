@@ -557,6 +557,39 @@ class AttendanceController extends Controller
         return $this->showAll(collect($data));
     }
 
+    public function getAttendancesByEmployee(Request $request, $employeeId)
+    {
+        $request->validate([
+            'started_at' => 'required',
+            'ended_at' => 'required',
+        ]);
+        $startDate = Carbon::parse($request->started_at);
+        $endDate = Carbon::parse($request->ended_at);
+        $employee = Employee::findOrFail($employeeId);
+
+        $period = CarbonPeriod::create($startDate, $endDate);
+
+        $data = [];
+
+        // TODO: improve pagination
+        foreach ($period as $date) {
+            $array['date'] = $date->toDateString();
+            $shifts = [];
+
+            $employeeShifts = $employee->getShifts($date);
+            foreach ($employeeShifts as $employeeShift) {
+                $attendances = $employeeShift->getAttendances($date);
+                $shifts[] = $employeeShift;
+                end($shifts)['attendances'] = $attendances;
+            }
+
+            $array['shifts'] = $shifts;
+            array_push($data, $array);
+        }
+
+        return $this->showAll(collect($data));
+    }
+
     // public function isExistsAttendance(DateTime $now, AttendanceType $type, Employee $employee, DateTime $day)
     // {
     //     $exists = false;
