@@ -386,9 +386,8 @@ class CandidateController extends Controller
         $cvCompletedTotal = 0;
         $cvCompletedScore = 0;
 
-        $cvCompletedTotal += 5;
+        $cvCompletedTotal += 4;
         if ($education) {
-            $cvCompletedScore++;
             if ($education->experiences) {
                 $cvCompletedScore++;
             }
@@ -411,9 +410,8 @@ class CandidateController extends Controller
         $documentCompletedTotal = 0;
         $documentCompletedScore = 0;
 
-        $documentCompletedTotal += 5;
+        $documentCompletedTotal += 4;
         if ($document) {
-            $documentCompletedScore++;
             if ($document->identity_card) {
                 $documentCompletedScore++;
             }
