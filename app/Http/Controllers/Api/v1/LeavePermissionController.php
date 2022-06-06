@@ -11,6 +11,8 @@ use App\Traits\ApiResponser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Enums\LeavePermissionStatusType;
+use App\Http\Common\Filter\FilterLeavePermissionEmployeeNameSearch;
+use App\Http\Common\Filter\FilterLeavePermissionStatus;
 use App\Http\Requests\LeavePermissionUpdateRequest;
 use App\Models\Candidate;
 use App\Models\Company;
@@ -22,6 +24,7 @@ use App\Models\LeavePermissionDocument;
 use Illuminate\Support\Facades\Storage;
 use Spatie\QueryBuilder\QueryBuilder;
 use Intervention\Image\ImageManagerStatic as Image;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class LeavePermissionController extends Controller
 {
@@ -35,24 +38,59 @@ class LeavePermissionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         // date range?
         $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
-        // handle multiple company
-        $this->company = $this->employee->company;
+        $company = Company::where('id', $request->company_id)->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)
+            ->whereHas('company', function ($query) use ($company) {
+                $query->where('companies.id', $company->id);
+            })->firstOrFail();
 
-        $company = $this->company;
         $leavePermissions = QueryBuilder::for(LeavePermission::class)
             ->allowedIncludes(['occasion', 'documents'])
-            ->where('employee_id', $this->employee->id)
+            ->allowedFilters([
+                AllowedFilter::exact('status'),
+            ])
+            ->where('employee_id', $employee->id)
+            ->paginate($request->input('page_size', 10));
+
+        return $this->showPaginate('leave_permissions', collect(LeavePermissionResource::collection($leavePermissions)), collect($leavePermissions));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexForCompany(Request $request, $companyId)
+    {
+        // date range?
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $company = Company::where('id', $companyId)->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)
             ->whereHas('company', function ($query) use ($company) {
                 $query->where('company_id', $company->id);
-            })
-            ->get();
+            })->firstOrFail();
 
-        return $this->showAll(collect(LeavePermissionResource::collection($leavePermissions)));
+        // check if employee have perms or not
+        // if ($employee) {
+        //     return $this->errorResponse("Employee not allowed", 403, 40300);
+        // }
+
+        $leavePermissions = QueryBuilder::for(LeavePermission::class)
+            ->allowedIncludes(['occasion', 'documents'])
+            ->allowedFilters([
+                AllowedFilter::exact('status'),
+                AllowedFilter::custom('name', new FilterLeavePermissionEmployeeNameSearch),
+            ])
+            ->whereHas('company', function ($query) use ($company) {
+                $query->where('companies.id', $company->id);
+            })
+            ->paginate($request->input('page_size', 10));
+
+        return $this->showPaginate('leave_permissions', collect(LeavePermissionResource::collection($leavePermissions)), collect($leavePermissions));
     }
 
     /**
@@ -63,6 +101,7 @@ class LeavePermissionController extends Controller
      */
     public function show($id)
     {
+        $leavePermission = LeavePermission::findOrFail($id);
         $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
         $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
         // handle multiple company
@@ -263,15 +302,21 @@ class LeavePermissionController extends Controller
     }
 
     // admin only
-    public function updateLeavePermissionStatus(Request $request)
+    public function updateLeavePermissionStatus(Request $request, $leavePermissionId)
     {
         $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
-        // handle multiple company
-        $this->company = $this->employee->company;
+        $company = Company::where('id', $request->company_id)->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)
+            ->whereHas('company', function ($query) use ($company) {
+                $query->where('companies.id', $company->id);
+            })->firstOrFail();
+
+        // check if employee is allowed to change or not
+        // if ($employee) {
+        //     return $this->errorResponse("Not allowed to change !", 403, 40300);
+        // }
 
         $status = $request->status;
-        $leavePermissionId = $request->leave_permission_id;
         $leavePermission = LeavePermission::findOrFail($leavePermissionId);
         if (
             $leavePermission->status == LeavePermissionStatusType::accepted() ||

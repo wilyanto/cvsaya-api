@@ -363,6 +363,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('leave-permissions')->group(function () {
             Route::controller(LeavePermissionController::class)->group(function () {
                 Route::get('/{id}', 'show');
+                Route::get('/{companyId}/companies', 'indexForCompany');
                 Route::get('/', 'index');
                 Route::post('/', 'store');
                 Route::put('/status', 'updateLeavePermissionStatus');
