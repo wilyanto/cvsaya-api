@@ -579,14 +579,14 @@ class AttendanceController extends Controller
             foreach ($employeeShifts as $employeeShift) {
                 $attendances = $employeeShift->getAttendances($date);
                 $shifts[] = $employeeShift;
-                end($shifts)['attendances'] = $attendances;
+                end($shifts)['attendances'] = AttendanceResource::collection($attendances);
             }
 
             $array['shifts'] = $shifts;
             array_push($data, $array);
         }
 
-        return $this->showAll(collect(AttendanceResource::collection($data)));
+        return $this->showAll(collect($data));
     }
 
     // public function isExistsAttendance(DateTime $now, AttendanceType $type, Employee $employee, DateTime $day)
