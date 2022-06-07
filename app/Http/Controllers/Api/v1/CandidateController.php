@@ -368,9 +368,16 @@ class CandidateController extends Controller
             }
         }
 
+        $data['is_profile_completed'] = $profileCompletedScore / $profileCompletedTotal * 100;
+
+        // job
+        $jobCompletedTotal = 0;
+        $jobCompletedScore = 0;
+
+        $jobCompletedTotal += 1;
         if ($expectedJob) {
-            if (!$expectedJob->expected_salary) {
-                $data['is_job_completed'] = false;
+            if ($expectedJob->expected_salary) {
+                $jobCompletedScore++;
             }
         }
         $data['is_job_completed'] = $jobCompletedScore / $jobCompletedTotal * 100;
@@ -393,8 +400,9 @@ class CandidateController extends Controller
                 $cvCompletedScore++;
             }
 
-        if (!$education || !$education->experiences || !$education->certifications || !$education->specialities || !$education->hobbies) {
-            $data['is_cv_completed'] = false;
+            if ($education->hobbies) {
+                $cvCompletedScore++;
+            }
         }
         $data['is_cv_completed'] = $cvCompletedScore / $cvCompletedTotal * 100;
 
@@ -458,12 +466,6 @@ class CandidateController extends Controller
 
         return $this->showOne($result);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
 
     /**
      * Store a newly created resource in storage.
