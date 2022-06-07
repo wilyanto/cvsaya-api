@@ -265,21 +265,21 @@ class AttendanceController extends Controller
             ->whereDate('scheduled_at', today())
             ->exists()
         ) {
-            return $this->errorResponse('Already Clock Out', 422, 42202);
+            return $this->errorResponse('Already Clock Out', 422, 42203);
         }
 
         if (
             $attendanceType == AttendanceType::breakStartedAt() &&
             now()->lt(Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight()))
         ) {
-            return $this->errorResponse('Break Time not started yet', 422, 42202);
+            return $this->errorResponse('Break Time not started yet', 422, 42204);
         }
 
         if (
             $attendanceType == AttendanceType::clockOut() &&
             now()->lt(Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight()))
         ) {
-            return $this->errorResponse('Not yet Clock Out Time !!!', 422, 42203);
+            return $this->errorResponse('Not yet Clock Out Time !!!', 422, 42205);
         }
 
         $distance = $this->vincentyGreatCircleDistance($attendanceQRcode->latitude, $attendanceQRcode->longitude, $request->latitude, $request->longitude);
@@ -334,7 +334,6 @@ class AttendanceController extends Controller
     public function createAttendance($request, Employee $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany)
     {
         $image = $request->file;
-        // $shiftId = $request->shift_id;
         $img = Image::make($image)->encode($image->extension(), 70);
         $attendanceType = $request->attendance_type;
         $fileName = time() . '.' . $image->extension();
@@ -426,7 +425,7 @@ class AttendanceController extends Controller
 
         if (
             $attendanceType == AttendanceType::breakEndedAt() &&
-            $scheduledAt->diffInMinutes($now) <= $shiftTime->AttendanceType::breakTime()
+            $scheduledAt->diffInMinutes($now) <= $shiftTime->AttendanceType::breakDuration()
         ) {
             $interval = $scheduledAt->diffInMinutes($now);
             return Penalty::where('attendance_type', $attendanceType)
