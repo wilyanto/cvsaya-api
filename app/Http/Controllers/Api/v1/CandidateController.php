@@ -348,10 +348,10 @@ class CandidateController extends Controller
         $document = $candidate->document;
         $expectedJob = $candidate->job;
 
-        $data['is_profile_completed'] = 0;
-        $data['is_job_completed'] = 0;
-        $data['is_document_completed'] = 0;
-        $data['is_cv_completed'] = 0;
+        $data['is_profile_completed'] = true;
+        $data['is_job_completed'] = true;
+        $data['is_document_completed'] = true;
+        $data['is_cv_completed'] = true;
         // this is because withDefault();
         // profile
         $profileCompletedTotal = 0;
@@ -368,16 +368,9 @@ class CandidateController extends Controller
             }
         }
 
-        $data['is_profile_completed'] = $profileCompletedScore / $profileCompletedTotal * 100;
-
-        // job
-        $jobCompletedTotal = 0;
-        $jobCompletedScore = 0;
-
-        $jobCompletedTotal += 1;
         if ($expectedJob) {
-            if ($expectedJob->expected_salary) {
-                $jobCompletedScore++;
+            if (!$expectedJob->expected_salary) {
+                $data['is_job_completed'] = false;
             }
         }
         $data['is_job_completed'] = $jobCompletedScore / $jobCompletedTotal * 100;
@@ -400,9 +393,8 @@ class CandidateController extends Controller
                 $cvCompletedScore++;
             }
 
-            if ($education->hobbies) {
-                $cvCompletedScore++;
-            }
+        if (!$education || !$education->experiences || !$education->certifications || !$education->specialities || !$education->hobbies) {
+            $data['is_cv_completed'] = false;
         }
         $data['is_cv_completed'] = $cvCompletedScore / $cvCompletedTotal * 100;
 
