@@ -586,7 +586,7 @@ class AttendanceController extends Controller
             array_push($data, $array);
         }
 
-        return $this->showAll(collect($data));
+        return $this->showAll(collect(AttendanceResource::collection($data)));
     }
 
     // public function isExistsAttendance(DateTime $now, AttendanceType $type, Employee $employee, DateTime $day)
