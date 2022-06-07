@@ -546,7 +546,7 @@ class AttendanceController extends Controller
                 foreach ($employeeShifts as $employeeShift) {
                     $attendances = $employeeShift->getAttendances($date);
                     $shifts[] = $employeeShift;
-                    end($shifts)['attendances'] = $attendances;
+                    end($shifts)['attendances'] = AttendanceResource::collection($attendances);
                 }
             }
             $array['shifts'] = $shifts;
