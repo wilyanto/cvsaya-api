@@ -17,6 +17,11 @@ class EmployeeOneTimeShift extends Model implements Auditable
         'employee_id',
         'shift_id',
         'date',
+        'is_enabled'
+    ];
+
+    public $casts = [
+        'is_enabled' => 'boolean',
     ];
 
     public function employee()
@@ -39,7 +44,7 @@ class EmployeeOneTimeShift extends Model implements Auditable
         return $this->attendances()->whereDate('scheduled_at', $date)
             ->where('shift_id', $this->shift->id)
             ->where('employee_id', $this->employee->id)
-            ->with('attendancePenalty')
+            ->with(['attendancePenalty', 'outsideRadiusAttendance'])
             ->get();
     }
 }
