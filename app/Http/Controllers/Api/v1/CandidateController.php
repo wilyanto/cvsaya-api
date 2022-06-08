@@ -374,7 +374,7 @@ class CandidateController extends Controller
             $profileCompletedScore++;
         }
 
-        $data['is_profile_completed'] = $profileCompletedScore / $profileCompletedTotal * 100;
+        $data['is_profile_completed'] = ceil($profileCompletedScore / $profileCompletedTotal * 100);
 
         // job
         $jobCompletedTotal = 0;
@@ -386,7 +386,7 @@ class CandidateController extends Controller
                 $jobCompletedScore++;
             }
         }
-        $data['is_job_completed'] = $jobCompletedScore / $jobCompletedTotal * 100;
+        $data['is_job_completed'] = ceil($jobCompletedScore / $jobCompletedTotal * 100);
 
         // cv
         $cvCompletedTotal = 0;
@@ -413,7 +413,7 @@ class CandidateController extends Controller
             $cvCompletedScore++;
         }
 
-        $data['is_cv_completed'] = $cvCompletedScore / $cvCompletedTotal * 100;
+        $data['is_cv_completed'] = ceil($cvCompletedScore / $cvCompletedTotal * 100);
 
         // document
         $documentCompletedTotal = 0;
@@ -438,7 +438,7 @@ class CandidateController extends Controller
             }
         }
 
-        $data['is_document_completed'] = $documentCompletedScore / $documentCompletedTotal * 100;
+        $data['is_document_completed'] = ceil($documentCompletedScore / $documentCompletedTotal * 100);
 
         // note => need to change to name next release
         $result['basic_profile'] = [
