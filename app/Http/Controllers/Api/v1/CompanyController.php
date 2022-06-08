@@ -18,9 +18,7 @@ class CompanyController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'keyword' => [
-                'string',
-            ],
+            'keyword' => 'nullable|string',
             'page' => 'nullable|numeric|gt:0',
             'page_size' => 'nullable|numeric|gt:0'
         ]);

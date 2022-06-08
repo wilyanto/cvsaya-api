@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Http\Common\Filter\FilterShiftEmployeeCompany;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeRecurringShift;
 use App\Http\Requests\UpdateEmployeeRecurringShift;
 use App\Models\EmployeeRecurringShift;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class EmployeeRecurringShiftController extends Controller
 {
@@ -90,7 +93,11 @@ class EmployeeRecurringShiftController extends Controller
 
     public function getEmployeeRecurringShifts($employeeId)
     {
-        $employeeRecurringShifts = EmployeeRecurringShift::with('shift')
+        $employeeRecurringShifts = QueryBuilder::for(EmployeeRecurringShift::class)
+            ->allowedIncludes(['shift'])
+            ->allowedFilters([
+                AllowedFilter::custom('company', new FilterShiftEmployeeCompany),
+            ])
             ->where('employee_id', $employeeId)
             ->orderBy('day')
             ->get();

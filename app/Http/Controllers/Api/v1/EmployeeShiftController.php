@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Candidate;
 use App\Models\Employee;
 use App\Models\EmployeeOneTimeShift;
 use App\Models\EmployeeRecurringShift;
@@ -81,6 +82,22 @@ class EmployeeShiftController extends Controller
         ]);
     }
 
+
+    public function getShift(Request $request)
+    {
+        $date = $request->date;
+        $companyId = $request->company_id;
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $employee = Employee::where('candidate_id', $candidate->id)->whereHas('company', function ($query) use ($companyId) {
+            $query->where('companies.id', $companyId);
+        })->first();
+        $employeeOneTimeShifts = $employee->getOneTimeShifts($date);
+        $employeeRecurringShifts = $employee->getRecurringShifts($date);
+        return $this->showOne([
+            'one_time_shifts' => $employeeOneTimeShifts,
+            'recurring_shifts' => $employeeRecurringShifts,
+        ]);
+    }
     /**
      * Store a newly created resource in storage.
      *

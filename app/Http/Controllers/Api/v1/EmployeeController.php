@@ -7,6 +7,7 @@ use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\EmployeeResource;
 use App\Models\Position;
 use App\Models\Candidate;
 use App\Models\EmployeeOneTimeShift;
@@ -67,7 +68,7 @@ class EmployeeController extends Controller
             ->with('position', 'candidate')
             ->paginate($request->input('page_size', 10));
 
-        return $this->showPagination('employees', $employees);
+        return $this->showPaginate('employees', collect(EmployeeResource::collection($employees)), collect(($employees)));
     }
 
     /**
@@ -90,10 +91,10 @@ class EmployeeController extends Controller
             'salary_types' => 'required|array',
             'salary_types.*.id' => 'required|numeric|exists:salary_types,id',
             'salary_types.*.amount' => 'required|numeric|gt:0',
-            'one_time_shifts' => 'required|array',
+            'one_time_shifts' => 'present|array',
             'one_time_shifts.*.shift_id' => 'required|exists:shifts,id',
             'one_time_shifts.*.date' => 'required|date_format:Y-m-d',
-            'recurring_shifts' => 'required|array',
+            'recurring_shifts' => 'present|array',
             'recurring_shifts.*.shift_id' => 'required|exists:shifts,id',
             'recurring_shifts.*.days' => 'required|array',
             'recurring_shifts.*.days.*' => 'required|numeric|between:0,6'
@@ -194,7 +195,7 @@ class EmployeeController extends Controller
     {
         $employee = Employee::findOrFail($id);
 
-        return $this->showOne($employee->toArrayEmployee());
+        return $this->showOne(new EmployeeResource($employee));
     }
 
     public function showSalaryOnly($id)

@@ -70,6 +70,7 @@ trait ApiResponser
                         'last_page' => $paginateCollection['last_page'],
                         'current_page' => $paginateCollection['current_page'],
                         'path' => $paginateCollection['path'],
+                        'total' => $paginateCollection['total']
                     ]
                 ]
             ],

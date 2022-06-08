@@ -23,20 +23,19 @@ class EmployeeCrudController extends CrudController
 
     public function setup()
     {
-        $this->crud->setModel('App\Models\Employee');
+        $this->crud->setModel(\App\Models\Employee::class);
         $this->crud->setEntityNameStrings('employees', 'employees');
         $this->crud->setRoute('admin/employee');
     }
 
     public function setupListOperation()
     {
-        // dump($this);
         $this->crud->addColumns([
             [
-                'label' => 'User ID',
-                'name'  => 'user_id',
+                'label' => 'Employee ID',
+                'name'  => 'id',
                 'type' => 'text',
-                'attribute' => 'user_id',
+                'attribute' => 'id',
             ],
             [
                 'label' => 'Name',
@@ -172,14 +171,15 @@ class EmployeeCrudController extends CrudController
         return $request;
     }
 
+    // need to fix
     protected function addUserFields()
     {
         $this->crud->addFields([
             [
-                'label' => 'User ID',
-                'name'  => 'user_id',
+                'label' => 'Employee ID',
+                'name'  => 'id',
                 'type' => 'text',
-                'attribute' => 'user_id',
+                'attribute' => 'id',
                 'attributes' => [
                     'readonly'    => 'readonly',
                     'disabled'    => 'disabled',
@@ -202,9 +202,9 @@ class EmployeeCrudController extends CrudController
                 'label' => 'No Telepon',
                 'type'  => 'select',
                 'name'  => 'phone_number',
-                'entity' => 'user',
-                'attribute' => 'telpon',
-                'model' => 'App\Models\User',
+                'entity' => 'candidate',
+                'attribute' => 'phone_number',
+                'model' => 'App\Models\Candidate',
                 'subfields' => [],
                 'attributes' => [
                     'readonly'    => 'readonly',

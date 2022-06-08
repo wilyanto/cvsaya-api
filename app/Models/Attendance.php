@@ -31,9 +31,8 @@ class Attendance extends Model implements Auditable
 
     public function employees()
     {
-        return $this->belongsToMany(Employee::class, 'attendances_employees')->withTimestamps();
+        return $this->hasOne(Employee::class, 'id', 'employee_id');
     }
-
 
     public function attendanceType()
     {
@@ -42,7 +41,7 @@ class Attendance extends Model implements Auditable
 
     public function attendancePenalty()
     {
-        return $this->hasOneThrough(AttendancePenalty::class, AttendanceEmployee::class, 'attendance_id', 'attendance_employee_id', 'id', 'id');
+        return $this->hasOne(AttendancePenalty::class, 'attendance_id', 'id');
     }
 
     public function penalty()
@@ -69,5 +68,13 @@ class Attendance extends Model implements Auditable
             $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
             return $date->format('Y-m-d\TH:i:s.v\Z');
         }
+    }
+
+    public function getImageUrl()
+    {
+        if (!$this->image) {
+            return null;
+        }
+        return url('/storage/images/attendances/' . $this->image);
     }
 }

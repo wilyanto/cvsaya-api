@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Api\v1;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\SalaryTypeResource;
 use App\Models\SalaryType;
 use App\Traits\ApiResponser;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class SalaryTypeController extends Controller
 {
@@ -14,20 +17,19 @@ class SalaryTypeController extends Controller
 
     public function index()
     {
-        $salaryTypes = SalaryType::all();
+        $salaryTypes = QueryBuilder::for(SalaryType::class)
+            ->allowedFilters([
+                AllowedFilter::exact('company_id')
+            ])->get();
 
-        $data = $salaryTypes->map(function ($item) {
-            return $item->toArrayDefault();
-        });
-
-    return $this->showAll($data);
+        return $this->showAll(collect(SalaryTypeResource::collection($salaryTypes)));
     }
 
     public function show($id)
     {
         $salaryType = SalaryType::findOrFail($id);
 
-        return $this->showOne($salaryType->toArrayDefault());
+        return $this->showOne(new SalaryTypeResource(($salaryType)));
     }
 
     public function store(Request $request)
@@ -41,7 +43,7 @@ class SalaryTypeController extends Controller
 
         $salaryType = SalaryType::create($request->all());
 
-        return $this->showOne($salaryType->toArrayDefault());
+        return $this->showOne(new SalaryTypeResource(($salaryType)));
     }
 
     public function update(Request $request, $id)
@@ -57,6 +59,6 @@ class SalaryTypeController extends Controller
         $salaryType->update($request->all());
         $salaryType->refresh();
 
-        return $this->showOne($salaryType->toArrayDefault());
+        return $this->showOne(new SalaryTypeResource(($salaryType)));
     }
 }

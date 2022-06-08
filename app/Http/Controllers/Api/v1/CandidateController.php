@@ -353,23 +353,84 @@ class CandidateController extends Controller
         $data['is_document_completed'] = true;
         $data['is_cv_completed'] = true;
         // this is because withDefault();
-        if ($userProfileDetail->id == null || !$userProfileDetail->addresses || !$userProfileDetail->sosmeds) {
-            $data['is_profile_completed'] = false;
-        }
+        // profile
+        $profileCompletedTotal = 0;
+        $profileCompletedScore = 0;
 
-        if ($expectedJob) {
-            if (!$expectedJob->expected_salary) {
-                $data['is_job_completed'] = false;
+        $profileCompletedTotal += 3;
+        if ($userProfileDetail->id != null) {
+            $profileCompletedScore++;
+            if ($userProfileDetail->addresses->id != null) {
+                $profileCompletedScore++;
+            }
+            if ($userProfileDetail->sosmeds->id != null) {
+                $profileCompletedScore++;
             }
         }
 
-        if (!$education || !$education->experiences || !$education->certifications || !$education->specialities || !$education->hobbies) {
-            $data['is_cv_completed'] = false;
+        $data['is_profile_completed'] = $profileCompletedScore / $profileCompletedTotal * 100;
+
+        // job
+        $jobCompletedTotal = 0;
+        $jobCompletedScore = 0;
+
+        $jobCompletedTotal += 1;
+        if ($expectedJob) {
+            if ($expectedJob->expected_salary) {
+                $jobCompletedScore++;
+            }
+        }
+        $data['is_job_completed'] = $jobCompletedScore / $jobCompletedTotal * 100;
+
+        // cv
+        $cvCompletedTotal = 0;
+        $cvCompletedScore = 0;
+
+        $cvCompletedTotal += 4;
+        if ($education) {
+            if ($education->experiences) {
+                $cvCompletedScore++;
+            }
+
+            if ($education->certifications) {
+                $cvCompletedScore++;
+            }
+
+            if ($education->specialities) {
+                $cvCompletedScore++;
+            }
+
+            if ($education->hobbies) {
+                $cvCompletedScore++;
+            }
+        }
+        $data['is_cv_completed'] = $cvCompletedScore / $cvCompletedTotal * 100;
+
+        // document
+        $documentCompletedTotal = 0;
+        $documentCompletedScore = 0;
+
+        $documentCompletedTotal += 4;
+        if ($document) {
+            if ($document->identity_card) {
+                $documentCompletedScore++;
+            }
+
+            if ($document->front_selfie) {
+                $documentCompletedScore++;
+            }
+
+            if ($document->right_selfie) {
+                $documentCompletedScore++;
+            }
+
+            if ($document->left_selfie) {
+                $documentCompletedScore++;
+            }
         }
 
-        if (!$document || !$document->identityCard || !$document->frontSelfie || !$document->rightSelfie || !$document->leftSelfie) {
-            $data['is_document_completed'] = false;
-        }
+        $data['is_document_completed'] = $documentCompletedScore / $documentCompletedTotal * 100;
+
         // note => need to change to name next release
         $result['basic_profile'] = [
             'first_name' => $candidate->name ?? null,
@@ -405,12 +466,6 @@ class CandidateController extends Controller
 
         return $this->showOne($result);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
 
     /**
      * Store a newly created resource in storage.

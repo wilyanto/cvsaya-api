@@ -85,7 +85,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function attendances()
     {
-        return $this->belongsToMany(Attendance::class, 'attendances_employees')->withTimestamps();
+        return $this->hasMany(Attendance::class, 'employee_id', 'id');
     }
 
     public function candidate()
@@ -119,7 +119,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function getPhoneNumber()
     {
-        return $this->user->telpon;
+        return $this->candidate->phone_number;
     }
 
     public function getUserName()
@@ -184,6 +184,24 @@ class Employee extends Authenticatable implements Auditable
         return  $this->hasMany(ShiftEmployee::class, 'employee_id', 'id');
     }
 
+    public function getOneTimeShifts($date)
+    {
+        $date = new Carbon($date);
+        return EmployeeOneTimeShift::whereDate('date', $date->toDateString())
+            ->where('employee_id', $this->id)
+            ->with('shift')
+            ->get();
+    }
+
+    public function getRecurringShifts($date)
+    {
+        $date = new Carbon($date);
+        return EmployeeRecurringShift::where('day', $date->dayOfWeek)
+            ->where('employee_id', $this->id)
+            ->with('shift')
+            ->get();
+    }
+
     public function getShifts($date)
     {
         $date = new Carbon($date);
@@ -195,7 +213,7 @@ class Employee extends Authenticatable implements Auditable
             return $shifts;
         }
 
-        $getTodayDay = Carbon::now()->dayOfWeek;
+        $getTodayDay = $date->dayOfWeek;
         $shifts = EmployeeRecurringShift::where('day', $getTodayDay)
             ->where('employee_id', $this->id)
             ->with('shift')
@@ -219,7 +237,7 @@ class Employee extends Authenticatable implements Auditable
             return $shift;
         }
 
-        $getTodayDay = Carbon::now()->dayOfWeek;
+        $getTodayDay = $date->dayOfWeek;
         $shift = EmployeeRecurringShift::where('day', $getTodayDay)
             ->where('shift_id', $shiftId)
             ->where('employee_id', $this->id)
@@ -329,6 +347,9 @@ class Employee extends Authenticatable implements Auditable
 
     public function getAttendances($startDate, $endDate)
     {
-        return $this->attendances()->whereBetween('scheduled_at', [$startDate, $endDate])->get();
+        return $this->attendances()->with('attendancePenalty')
+            ->whereBetween('scheduled_at', [$startDate, $endDate])
+            ->where('employee_id', $this->id)
+            ->get();
     }
 }

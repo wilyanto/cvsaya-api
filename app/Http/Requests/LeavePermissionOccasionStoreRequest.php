@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateEmployeeOneTimeShift extends FormRequest
+class LeavePermissionOccasionStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class UpdateEmployeeOneTimeShift extends FormRequest
      */
     public function authorize()
     {
-        return auth()->check();
+        return auth()->user();
     }
 
     /**
@@ -24,9 +24,9 @@ class UpdateEmployeeOneTimeShift extends FormRequest
     public function rules()
     {
         return [
-            'employee_id' => 'required|exists:employees,id',
-            'shift_id' => 'required|exists:shifts,id',
-            'date' => 'date_format:Y-m-d H:i:s',
+            'name' => 'required',
+            'max_day' => 'numeric|min:0',
+            'company_id' => 'required|exists:companies,id'
         ];
     }
 }

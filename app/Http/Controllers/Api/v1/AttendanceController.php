@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\AttendancePenalty;
 use App\Enums\AttendanceType;
+use App\Http\Resources\AttendanceResource;
 use App\Models\AttendanceCompanyGroup;
 use App\Models\AttendanceEmployee;
 use App\Models\AttendanceQrCode;
@@ -220,15 +221,74 @@ class AttendanceController extends Controller
         $employeeShift = $employee->getShift($shiftId)->shift;
         $shiftTime = new Carbon($employeeShift->$attendanceType);
 
+        // handle if blocked
+
+        if (
+            $attendanceType == AttendanceType::clockIn() &&
+            Attendance::where('attendance_type', $attendanceType)
+            ->where('shift_id', $shiftId)
+            ->where('employee_id', $employee->id)
+            ->whereDate('scheduled_at', today())
+            ->exists()
+        ) {
+            return $this->errorResponse('Already Clock In', 422, 42200);
+        }
+
+        if (
+            $attendanceType == AttendanceType::breakStartedAt() &&
+            Attendance::where('attendance_type', $attendanceType)
+            ->where('shift_id', $shiftId)
+            ->where('employee_id', $employee->id)
+            ->whereDate('scheduled_at', today())
+            ->exists()
+        ) {
+            return $this->errorResponse('Already Scan Break Out', 422, 42201);
+        }
+
+        if (
+            $attendanceType == AttendanceType::breakEndedAt() &&
+            Attendance::where('attendance_type', $attendanceType)
+            ->where('shift_id', $shiftId)
+            ->where('employee_id', $employee->id)
+            ->whereDate('scheduled_at', today())
+            ->exists()
+        ) {
+            return $this->errorResponse('Already Scan Break In', 422, 42202);
+        }
+
+
+        if (
+            $attendanceType == AttendanceType::clockOut() &&
+            Attendance::where('attendance_type', $attendanceType)
+            ->where('shift_id', $shiftId)
+            ->where('employee_id', $employee->id)
+            ->whereDate('scheduled_at', today())
+            ->exists()
+        ) {
+            return $this->errorResponse('Already Clock Out', 422, 42203);
+        }
+
         if (
             $attendanceType == AttendanceType::breakStartedAt() &&
             now()->lt(Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight()))
         ) {
-            return $this->errorResponse('Break Time not started yet', 422, 42202);
+            return $this->errorResponse('Break Time not started yet', 422, 42204);
+        }
+
+        if (
+            $attendanceType == AttendanceType::clockOut() &&
+            now()->lt(Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight()))
+        ) {
+            return $this->errorResponse('Not yet Clock Out Time !!!', 422, 42205);
         }
 
         $distance = $this->vincentyGreatCircleDistance($attendanceQRcode->latitude, $attendanceQRcode->longitude, $request->latitude, $request->longitude);
         $isOutsideAttendanceRadius = $this->isOutsideAttendanceRadius($distance, $attendanceQRcode);
+
+        if ($isOutsideAttendanceRadius && $attendanceQRcode->is_geo_strict) {
+            return $this->errorResponse('Not allowed to submit because outside radius', 422, 42204);
+        }
+
         DB::transaction(function () use ($request, $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany) {
             $this->createAttendance($request, $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany);
         });
@@ -245,27 +305,35 @@ class AttendanceController extends Controller
         // get shift
         $customerId = 34953;
         $security = Candidate::where('user_id', auth()->id())->firstOrFail();
+        // check if security have permission or not
         $verifiedBy = Employee::where('candidate_id', $security->id)->firstOrFail();
         $candidate = Candidate::where('user_id', $customerId)->firstOrFail();
         $employeeIds = Employee::where('candidate_id', $candidate->id)->pluck('id');
-        $employeeAttendances = AttendanceEmployee::whereIn('employee_id', $employeeIds)
-            ->whereDate('created_at', today())
+        // handle multiple company?
+        $attendances = Attendance::whereIn('employee_id', $employeeIds)
+            ->whereDate('attended_at', today())
+            ->whereNull('verified_by')
             ->get();
-        foreach ($employeeAttendances as $employeeAttendance) {
-            if (($employeeAttendance->attendance->attendance_type == AttendanceType::clockIn())) {
-                $employeeAttendance->attendance->update([
-                    'verified_by' => $verifiedBy->id,
-                    'verified_at' => now(),
-                ]);
-            }
+
+        if ($attendances->count() == 0) {
+            return $this->errorResponse("No Attendance Found", 404, 40400);
         }
+
+        foreach ($attendances as $attendance) {
+            $attendance->update([
+                'verified_by' => $verifiedBy->id,
+                'verified_at' => now(),
+            ]);
+        }
+
+        return $this->showOne("Success");
     }
+
 
 
     public function createAttendance($request, Employee $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany)
     {
         $image = $request->file;
-        // $shiftId = $request->shift_id;
         $img = Image::make($image)->encode($image->extension(), 70);
         $attendanceType = $request->attendance_type;
         $fileName = time() . '.' . $image->extension();
@@ -277,7 +345,7 @@ class AttendanceController extends Controller
         }
         // TODO: need to handle multiple shift, for now only handle 1 shift
         foreach ($employees as $employee) {
-            $shiftId = $employee->getShiftId();
+            $shiftId = $request->shift_id;
             $penalty = $this->getPenalty($request, $employee, $companyId);
             $employeeShift = $employee->getShift($shiftId)->shift;
             $shiftTime = new Carbon($employeeShift->$attendanceType);
@@ -337,7 +405,7 @@ class AttendanceController extends Controller
 
     public static function getPenalty($request, $employee, $companyId)
     {
-        $shiftId = $employee->getShiftId();
+        $shiftId = $request->shift_id;
         if ($employee->getShift($shiftId) instanceof EmployeeOneTimeShift) {
             return null;
         }
@@ -357,7 +425,7 @@ class AttendanceController extends Controller
 
         if (
             $attendanceType == AttendanceType::breakEndedAt() &&
-            $scheduledAt->diffInMinutes($now) <= $shiftTime->AttendanceType::breakTime()
+            $scheduledAt->diffInMinutes($now) <= $shiftTime->AttendanceType::breakDuration()
         ) {
             $interval = $scheduledAt->diffInMinutes($now);
             return Penalty::where('attendance_type', $attendanceType)
@@ -370,7 +438,7 @@ class AttendanceController extends Controller
 
     public static function isOutsideAttendanceRadius($distance, $attendanceQRcode)
     {
-        return $distance >= $attendanceQRcode->radius && !$attendanceQRcode->is_geo_strict;
+        return $distance >= $attendanceQRcode->radius;
     }
 
     // https://stackoverflow.com/questions/10053358/measuring-the-distance-between-two-coordinates-in-php
@@ -422,49 +490,40 @@ class AttendanceController extends Controller
         $period = CarbonPeriod::create($startDate, $endDate);
         $companyId = $request->company_id;
         $company = Company::where('id', $companyId)->first();
-        $employees = $company->employees()->with('position')
+        $employees = $company->employees()
             ->whereHas('candidate', function ($query) use ($keyword) {
-                $query->where('name', 'like', '%' . $keyword . '%');
+                $query->where('name', 'like', '%' . $keyword . '%')->orderBy('name');
             })->get();
         $data = [];
 
+        // TODO: improve pagination
         foreach ($period as $date) {
-            $array['date'] = $date->toDateString();
+            $array['date'] = $date->copy()->toDateString();
             $employeeAttendances = [];
             foreach ($employees as $employee) {
-                $attendances = $employee->getAttendances($date->copy()->startOfDay(), $date->copy()->endOfDay());
-                $shiftAttendances = $attendances->groupBy('shift_id');
-
+                $employeeShifts = $employee->getShifts($date);
                 $shifts = [];
-                $employeeShifts = $attendances->unique('shift_id');
                 foreach ($employeeShifts as $employeeShift) {
-                    $attendances = [];
-                    foreach ($shiftAttendances[$employeeShift->shift_id] as $attendance) {
-                        $attendances[] = [
-                            'attendance' => $attendance,
-                            'penalty' => $attendance->attendancePenalty
-                        ];
-                    }
-                    $shifts[] = [
-                        'id' => $employeeShift->shift_id,
-                        'attendances' => $attendances,
-                    ];
+                    $attendances = $employeeShift->getAttendances($date);
+                    $shifts[] = $employeeShift;
+                    end($shifts)['attendances'] = AttendanceResource::collection($attendances);
                 }
-                $employeeAttendance['profile_detail'] = $employee->candidate;
-                $employeeAttendance['shifts'] = $shifts;
+                $employeeAttendance = array(
+                    'position' => $employee->position,
+                    'profile_detail' => $employee->candidate,
+                    'shifts' => $shifts
+                );
+                $employeeAttendance = array_merge($employeeAttendance, $employee->toArray());
                 $employeeAttendances[] = $employeeAttendance;
             }
-
             $array['employees'] = $employeeAttendances;
             array_push($data, $array);
         }
-
         return $this->showAll(collect($data));
     }
 
     public function getAttendancesByDateRange(Request $request)
     {
-        $keyword = $request->keyword;
         $request->validate([
             'started_at' => 'required',
             'ended_at' => 'required',
@@ -472,41 +531,58 @@ class AttendanceController extends Controller
         $startDate = Carbon::parse($request->started_at);
         $endDate = Carbon::parse($request->ended_at);
         $userId = auth()->id();
-        $candidate = Candidate::where('user_id', $userId)->where('name', 'like', '%' . $keyword . '%')->first();
+        $candidate = Candidate::where('user_id', $userId)->first();
         $employees = Employee::where('candidate_id', $candidate->id)->get();
         $period = CarbonPeriod::create($startDate, $endDate);
 
         $data = [];
 
+        // TODO: improve pagination
         foreach ($period as $date) {
             $array['date'] = $date->toDateString();
-            $employeeAttendances = [];
-
+            $shifts = [];
             foreach ($employees as $employee) {
-                $attendances = $employee->getAttendances($date->copy()->startOfDay(), $date->copy()->endOfDay());
-                $shiftAttendances = $attendances->groupBy('shift_id');
-
-                $shifts = [];
-                $employeeShifts = $attendances->unique('shift_id');
+                $employeeShifts = $employee->getShifts($date);
                 foreach ($employeeShifts as $employeeShift) {
-                    $attendances = [];
-                    foreach ($shiftAttendances[$employeeShift->shift_id] as $attendance) {
-                        $attendances[] = [
-                            'attendance' => $attendance,
-                            'penalty' => $attendance->attendancePenalty
-                        ];
-                    }
-                    $shifts[] = [
-                        'id' => $employeeShift->shift_id,
-                        'attendances' => $attendances,
-                    ];
+                    $attendances = $employeeShift->getAttendances($date);
+                    $shifts[] = $employeeShift;
+                    end($shifts)['attendances'] = AttendanceResource::collection($attendances);
                 }
-                $employeeAttendance['profile_detail'] = $employee->profileDetail()->first();
-                $employeeAttendance['shifts'] = $shifts;
-                $employeeAttendances[] = $employeeAttendance;
+            }
+            $array['shifts'] = $shifts;
+            array_push($data, $array);
+        }
+
+        return $this->showAll(collect($data));
+    }
+
+    public function getAttendancesByEmployee(Request $request, $employeeId)
+    {
+        $request->validate([
+            'started_at' => 'required',
+            'ended_at' => 'required',
+        ]);
+        $startDate = Carbon::parse($request->started_at);
+        $endDate = Carbon::parse($request->ended_at);
+        $employee = Employee::findOrFail($employeeId);
+
+        $period = CarbonPeriod::create($startDate, $endDate);
+
+        $data = [];
+
+        // TODO: improve pagination
+        foreach ($period as $date) {
+            $array['date'] = $date->toDateString();
+            $shifts = [];
+
+            $employeeShifts = $employee->getShifts($date);
+            foreach ($employeeShifts as $employeeShift) {
+                $attendances = $employeeShift->getAttendances($date);
+                $shifts[] = $employeeShift;
+                end($shifts)['attendances'] = AttendanceResource::collection($attendances);
             }
 
-            $array['employees'] = $employeeAttendances;
+            $array['shifts'] = $shifts;
             array_push($data, $array);
         }
 

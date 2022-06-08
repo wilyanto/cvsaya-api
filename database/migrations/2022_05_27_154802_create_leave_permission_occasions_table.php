@@ -13,28 +13,23 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('shifts', function (Blueprint $table) {
+        Schema::create('leave_permission_occasions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->time('clock_in');
-            $table->time('clock_out');
-            $table->time('break_started_at')->nullable();
-            $table->time('break_ended_at')->nullable();
-            $table->unsignedSmallInteger('break_duration')->nullable()->comment('in minute');
+            $table->integer('max_day')->nullable();
             $table->string('company_id');
-            $table->timestamps();
-            $table->softDeletes();
-
             $table->foreign('company_id')->references('id')->on('companies');
+            $table->timestamps();
         });
     }
+
     /**
-     * Reverse the migratons.
+     * Reverse the migrations.
      *
      * @return void
      */
     public function down()
     {
-        Schema::dropIfExists('shifts');
+        Schema::dropIfExists('leave_permission_occasions');
     }
 };
