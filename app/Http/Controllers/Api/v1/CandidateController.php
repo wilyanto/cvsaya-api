@@ -348,10 +348,10 @@ class CandidateController extends Controller
         $document = $candidate->document;
         $expectedJob = $candidate->job;
 
-        $data['is_profile_completed'] = true;
-        $data['is_job_completed'] = true;
-        $data['is_document_completed'] = true;
-        $data['is_cv_completed'] = true;
+        $data['is_profile_completed'] = 0;
+        $data['is_job_completed'] = 0;
+        $data['is_document_completed'] = 0;
+        $data['is_cv_completed'] = 0;
         // this is because withDefault();
         // profile
         $profileCompletedTotal = 0;
