@@ -91,10 +91,10 @@ class EmployeeController extends Controller
             'salary_types' => 'required|array',
             'salary_types.*.id' => 'required|numeric|exists:salary_types,id',
             'salary_types.*.amount' => 'required|numeric|gt:0',
-            'one_time_shifts' => 'required|array',
+            'one_time_shifts' => 'present|array',
             'one_time_shifts.*.shift_id' => 'required|exists:shifts,id',
             'one_time_shifts.*.date' => 'required|date_format:Y-m-d',
-            'recurring_shifts' => 'required|array',
+            'recurring_shifts' => 'present|array',
             'recurring_shifts.*.shift_id' => 'required|exists:shifts,id',
             'recurring_shifts.*.days' => 'required|array',
             'recurring_shifts.*.days.*' => 'required|numeric|between:0,6'
