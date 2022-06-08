@@ -62,11 +62,13 @@ class CandidateController extends Controller
             ->where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position, $isReviewed) {
                 if ($name != null) {
                     $query->where('name', 'LIKE', '%' . $name . '%');
-                    $query->orWhereHas('job', function ($secondQuery) use ($name) {
-                        $secondQuery->orWhereHas('position', function ($thirdQuery) use ($name) {
-                            $thirdQuery->orWhere('name', 'LIKE', '%' . $name . '%');
+                    if ($position == null) {
+                        $query->orWhereHas('job', function ($secondQuery) use ($name) {
+                            $secondQuery->orWhereHas('position', function ($thirdQuery) use ($name) {
+                                $thirdQuery->orWhere('name', 'LIKE', '%' . $name . '%');
+                            });
                         });
-                    });
+                    }
                 }
 
                 if (($countryId != null) || ($provinceId != null) || ($cityId != null)) {
