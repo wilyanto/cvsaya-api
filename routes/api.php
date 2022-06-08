@@ -396,7 +396,7 @@ Route::prefix('v1')->group(function () {
         });
     });
 
-    Route::controller(BlastController::class)->group(function () {
+    Route::middleware('throttle:1000,60')->controller(BlastController::class)->group(function () {
         Route::post('blast-wa', 'blastWhatsApp');
         Route::post('blast', 'blast');
     });
