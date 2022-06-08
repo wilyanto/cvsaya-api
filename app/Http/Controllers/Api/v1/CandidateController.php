@@ -351,14 +351,13 @@ class CandidateController extends Controller
     {
         $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
         $userProfileDetail = $candidate->profile;
-        $education = $candidate->education;
         $document = $candidate->document;
         $expectedJob = $candidate->job;
 
-        $data['is_profile_completed'] = true;
-        $data['is_job_completed'] = true;
-        $data['is_document_completed'] = true;
-        $data['is_cv_completed'] = true;
+        $data['is_profile_completed'] = 0;
+        $data['is_job_completed'] = 0;
+        $data['is_document_completed'] = 0;
+        $data['is_cv_completed'] = 0;
         // this is because withDefault();
         // profile
         $profileCompletedTotal = 0;
@@ -367,12 +366,12 @@ class CandidateController extends Controller
         $profileCompletedTotal += 3;
         if ($userProfileDetail->id != null) {
             $profileCompletedScore++;
-            if ($userProfileDetail->addresses->id != null) {
-                $profileCompletedScore++;
-            }
-            if ($userProfileDetail->sosmeds->id != null) {
-                $profileCompletedScore++;
-            }
+        }
+        if ($candidate->domicile->id != null) {
+            $profileCompletedScore++;
+        }
+        if ($candidate->sosmeds->count() != 0) {
+            $profileCompletedScore++;
         }
 
         $data['is_profile_completed'] = $profileCompletedScore / $profileCompletedTotal * 100;
@@ -393,24 +392,27 @@ class CandidateController extends Controller
         $cvCompletedTotal = 0;
         $cvCompletedScore = 0;
 
-        $cvCompletedTotal += 4;
-        if ($education) {
-            if ($education->experiences) {
-                $cvCompletedScore++;
-            }
-
-            if ($education->certifications) {
-                $cvCompletedScore++;
-            }
-
-            if ($education->specialities) {
-                $cvCompletedScore++;
-            }
-
-            if ($education->hobbies) {
-                $cvCompletedScore++;
-            }
+        $cvCompletedTotal += 5;
+        if ($candidate->educations->count() != 0) {
+            $cvCompletedScore++;
         }
+
+        if ($candidate->experiences->count() != 0) {
+            $cvCompletedScore++;
+        }
+
+        if ($candidate->certifications->count() != 0) {
+            $cvCompletedScore++;
+        }
+
+        if ($candidate->specialities->count() != 0) {
+            $cvCompletedScore++;
+        }
+
+        if ($candidate->hobbies->count() != 0) {
+            $cvCompletedScore++;
+        }
+
         $data['is_cv_completed'] = $cvCompletedScore / $cvCompletedTotal * 100;
 
         // document

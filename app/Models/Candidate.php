@@ -109,6 +109,11 @@ class Candidate extends Model implements Auditable
         return $this->hasMany(CvSpeciality::class, 'candidate_id', 'id');
     }
 
+    public function sosmeds()
+    {
+        return $this->hasMany(CvSosmed::class, 'candidate_id', 'id');
+    }
+
     public function results()
     {
         return $this->hasManyThrough(
