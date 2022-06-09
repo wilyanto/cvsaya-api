@@ -111,17 +111,9 @@ class EmployeeController extends Controller
             return $employee->position_id === $request->position_id;
         })) return $this->errorResponse('Candidate is already assigned to the specified position.', 422, 42202);
 
-        $salaryTypeIds = Arr::pluck($request->salary_types, 'id');
-        $salaryTypes = SalaryType::where('company_id', $position->company_id)->whereIn('id', $salaryTypeIds)->get('id');
-        if ($salaryTypes->count() !== count($request->salary_types)) return $this->errorResponse('One (or more) salary type(s) doesn\'t exist.', 422, 42203);
-
-        $oneTimeShiftIds = Arr::pluck($request->one_time_shifts, 'shift_id');
-        $oneTimeShifts = Shift::where('company_id', $position->company_id)->whereIn('id', $oneTimeShiftIds)->get('id');
-        if ($oneTimeShifts->count() !== count($request->one_time_shifts)) return $this->errorResponse('One (or more) one time shift(s) doesn\'t exist.', 422, 42204);
-
-        $recurringShiftIds = Arr::pluck($request->recurring_shifts, 'shift_id');
-        $recurringShifts = Shift::where('company_id', $position->company_id)->whereIn('id', $recurringShiftIds)->get('id');
-        if ($recurringShifts->count() !== count($request->recurring_shifts)) return $this->errorResponse('One (or more) recurring shift(s) doesn\'t exist.', 422, 42205);
+        if ($employees->first(function ($employee) use ($position) {
+            return $employee->company->id === $position->company_id;
+        })) return $this->errorResponse('Candidate is already assigned to the company.', 422, 42203);
 
         $response = DB::transaction(function () use ($request, $employees, $candidate, $position) {
             $candidate->update(['status' => Candidate::ACCEPTED]);
