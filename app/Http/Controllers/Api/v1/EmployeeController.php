@@ -104,7 +104,7 @@ class EmployeeController extends Controller
 
         if ($position->remaining_slot === 0) return $this->errorResponse('There\'s no remaining slot for the specified position.', 422, 42201);
 
-        $candidate = Candidate::select('id', 'user_id')->where('id', $request->candidate_id)->whereIn('status', [Candidate::STANDBY, Candidate::CONSIDER, Candidate::ACCEPTED])->firstOrFail();
+        $candidate = Candidate::select('id', 'user_id')->where('id', $request->candidate_id)->firstOrFail();
         $employees = Employee::where('candidate_id', $candidate->id)->get(['id', 'position_id']);
 
         if ($employees->first(function ($employee) use ($request) {
