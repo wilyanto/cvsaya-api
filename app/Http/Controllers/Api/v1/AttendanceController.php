@@ -192,7 +192,7 @@ class AttendanceController extends Controller
         $attendanceQRcode = AttendanceQrCode::where('id', $request->attendance_qr_code_id)->firstOrFail();
         $companyId = $attendanceQRcode->company_id;
 
-        $candidate = Candidate::where('user_id', $user->id())->first();
+        $candidate = Candidate::where('user_id', $user->id())->firstOrFail();
         if (AttendanceCompanyGroup::where('candidate_id', $candidate->id)->count() != 0) {
             $parentCompanyId = 0;
             $parentCompany = AttendanceCompanyGroup::where('candidate_id', $candidate->id)
@@ -253,9 +253,8 @@ class AttendanceController extends Controller
             ->whereDate('scheduled_at', today())
             ->exists()
         ) {
-            return $this->errorResponse('Already Scan Break In', 422, 42202);
+            return $this->errorResponse('Already Scan Break In', 422, 42203);
         }
-
 
         if (
             $attendanceType == AttendanceType::clockOut() &&
@@ -265,28 +264,46 @@ class AttendanceController extends Controller
             ->whereDate('scheduled_at', today())
             ->exists()
         ) {
-            return $this->errorResponse('Already Clock Out', 422, 42203);
+            return $this->errorResponse('Already Clock Out', 422, 42204);
+        }
+
+        if (
+            $attendanceType == AttendanceType::breakEndedAt() &&
+            Attendance::where('attendance_type', AttendanceType::breakStartedAt())
+            ->where('shift_id', $shiftId)
+            ->where('employee_id', $employee->id)
+            ->whereDate('scheduled_at', today())
+            ->doesntExist()
+        ) {
+            return $this->errorResponse('Must scan break out before break in', 422, 42205);
         }
 
         if (
             $attendanceType == AttendanceType::breakStartedAt() &&
-            now()->lt(Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight()))
+            now()->lt(today()->addSeconds($shiftTime->secondsSinceMidnight()))
         ) {
-            return $this->errorResponse('Break Time not started yet', 422, 42204);
+            return $this->errorResponse('Break Time not started yet', 422, 42206);
+        }
+
+        if (
+            $attendanceType == AttendanceType::breakEndedAt() &&
+            now()->gt(today()->addSeconds($shiftTime->secondsSinceMidnight()))
+        ) {
+            return $this->errorResponse('Already out of break in time', 422, 42207);
         }
 
         if (
             $attendanceType == AttendanceType::clockOut() &&
-            now()->lt(Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight()))
+            now()->lt(today()->addSeconds($shiftTime->secondsSinceMidnight()))
         ) {
-            return $this->errorResponse('Not yet Clock Out Time !!!', 422, 42205);
+            return $this->errorResponse('Not yet Clock Out Time !!!', 422, 42208);
         }
 
         $distance = $this->vincentyGreatCircleDistance($attendanceQRcode->latitude, $attendanceQRcode->longitude, $request->latitude, $request->longitude);
         $isOutsideAttendanceRadius = $this->isOutsideAttendanceRadius($distance, $attendanceQRcode);
 
         if ($isOutsideAttendanceRadius && $attendanceQRcode->is_geo_strict) {
-            return $this->errorResponse('Not allowed to submit because outside radius', 422, 42204);
+            return $this->errorResponse('Not allowed to submit because outside radius', 422, 42208);
         }
 
         DB::transaction(function () use ($request, $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany) {
@@ -357,7 +374,7 @@ class AttendanceController extends Controller
                 $attendanceType == AttendanceType::breakStartedAt() ||
                 $attendanceType == AttendanceType::breakEndedAt() ||
                 ($attendanceType == AttendanceType::clockOut() &&
-                    now()->lt(Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight())))
+                    now()->gt(today()->addSeconds($shiftTime->secondsSinceMidnight())))
             ) {
                 $verifiedAt = now();
                 $verifiedBy = auth()->user()->id;
@@ -365,8 +382,8 @@ class AttendanceController extends Controller
 
             $attendance = Attendance::create([
                 'attendance_type' => $attendanceType,
-                'attended_at' => Carbon::now(),
-                'scheduled_at' => Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight()),
+                'attended_at' => now(),
+                'scheduled_at' => today()->addSeconds($shiftTime->secondsSinceMidnight()),
                 'attendance_qr_code_id' => $request->attendance_qr_code_id,
                 'image' => $fileName,
                 'ip' => $request->ip(),
@@ -410,10 +427,10 @@ class AttendanceController extends Controller
             return null;
         }
         $attendanceType = $request->attendance_type;
-        $now = Carbon::now();
+        $now = now();
         $employeeShift = $employee->getShift($shiftId)->shift;
         $shiftTime = new Carbon($employeeShift->$attendanceType);
-        $scheduledAt = Carbon::today()->addSeconds($shiftTime->secondsSinceMidnight());
+        $scheduledAt = today()->addSeconds($shiftTime->secondsSinceMidnight());
         if ($attendanceType == AttendanceType::clockIn() && $now->gt($scheduledAt)) {
             $interval = $scheduledAt->diffInMinutes($now);
             return Penalty::where('attendance_type', $attendanceType)
@@ -423,12 +440,13 @@ class AttendanceController extends Controller
                 ->first();
         }
 
+        $breakDuration = AttendanceType::breakDuration();
         if (
             $attendanceType == AttendanceType::breakEndedAt() &&
-            $scheduledAt->diffInMinutes($now) <= $shiftTime->AttendanceType::breakDuration()
+            $scheduledAt->diffInMinutes($now) >= $employeeShift->$breakDuration
         ) {
             $interval = $scheduledAt->diffInMinutes($now);
-            return Penalty::where('attendance_type', $attendanceType)
+            return Penalty::where('attendance_type', AttendanceType::breakTime())
                 ->where('lateness', '<=', $interval)
                 ->where('company_id', $companyId)
                 ->orderBy('lateness', 'DESC')
