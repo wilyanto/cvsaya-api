@@ -102,7 +102,7 @@ HR Spv';
             'phone' => $request->country_code . $request->phone_number,
             'type' => 'text',
             'text' => $message,
-            'schedule' => Carbon::now()->addMinutes(rand(10, 120)),
+            'schedule' => Carbon::now()->addMinutes(rand(10, 120))->timestamp,
         ]);
 
         $newBlastLogRecord = [
