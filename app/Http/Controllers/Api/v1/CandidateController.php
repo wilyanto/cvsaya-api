@@ -43,7 +43,7 @@ class CandidateController extends Controller
                 'nullable',
                 Rule::in(['DESC', 'ASC']),
             ],
-            'is_reviewed' => 'nullable|boolean'
+            'is_reviewed' => 'nullable'
         ]);
 
         $name = $request->name;
