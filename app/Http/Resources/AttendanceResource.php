@@ -16,23 +16,13 @@ class AttendanceResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'attendance_type' => $this->attendance_type,
-            'attended_at' => $this->attended_at,
-            'scheduled_at' => $this->scheduled_at,
-            'attendance_qr_code_id' => $this->attendance_qr_code_id,
-            'image' => $this->image,
-            'image_url' => $this->getImageUrl(),
-            'longitude' => $this->longitude,
-            'latitude' => $this->latitude,
-            'ip' => $this->ip,
-            'verified_at' => $this->verified_at,
-            'verified_by' => $this->verified_by,
-            'shift_id' => $this->shift_id,
-            'employee_id' => $this->employee_id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'attendance_penalty' => $this->attendancePenalty,
-            'outside_radius_note' => $this->outsideRadiusAttendance,
+            'clock_in' => new AttendanceDetailResource($this->clockInAttendanceDetail),
+            'clock_out' => new AttendanceDetailResource($this->clockOutAttendanceDetail),
+            'start_break' => new AttendanceDetailResource($this->startBreakAttendanceDetail),
+            'end_break' => new AttendanceDetailResource($this->endBreakAttendanceDetail),
+            'employee' => new EmployeeResource($this->employee),
+            'shift' => new ShiftResource($this->shift),
+            'date' => $this->date,
         ];
     }
 }
