@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\UuidGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use MatanYadaev\EloquentSpatial\Objects\Point;
 use MatanYadaev\EloquentSpatial\SpatialBuilder;
 
 class AttendanceDetail extends Model
