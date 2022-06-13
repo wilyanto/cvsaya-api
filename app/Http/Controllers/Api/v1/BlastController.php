@@ -7,6 +7,7 @@ use App\Models\BlastLog;
 use App\Models\Jobstreet;
 use App\Models\User;
 use App\Traits\ApiResponser;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -62,7 +63,7 @@ class BlastController extends Controller
                 $datum['status'] = 'success';
             }
 
-            sleep(rand(0, 1));
+            // sleep(rand(0, 1));
 
             return $datum;
         });
@@ -101,6 +102,7 @@ HR Spv';
             'phone' => $request->country_code . $request->phone_number,
             'type' => 'text',
             'text' => $message,
+            'schedule' => Carbon::now()->addMinutes(rand(10, 120))->timestamp,
         ]);
 
         $newBlastLogRecord = [
