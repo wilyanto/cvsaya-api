@@ -35,11 +35,19 @@ class AttendanceDetail extends Model
 
     public function attendancePenalty()
     {
-        return $this->hasOne(AttendancePenalty::class, 'attendance_id', 'id');
+        return $this->hasOne(AttendancePenalty::class, 'id', 'attendance_id');
     }
 
     public function outsideRadiusAttendance()
     {
-        return $this->hasOne(OutsideRadiusAttendance::class, 'attendance_id', 'id');
+        return $this->hasOne(OutsideRadiusAttendance::class, 'id', 'attendance_id');
+    }
+
+    public function getImageUrl()
+    {
+        if (!$this->image) {
+            return null;
+        }
+        return url('/storage/images/attendances/' . $this->image);
     }
 }

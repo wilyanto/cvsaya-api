@@ -62,6 +62,7 @@ class Attendance extends Model implements Auditable
         return $this->hasOne(AttendanceDetail::class, 'id', 'end_break_id');
     }
 
+
     public function getCheckedAtAttribute($date)
     {
         if ($date) {
@@ -76,13 +77,5 @@ class Attendance extends Model implements Auditable
             $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
             return $date->format('Y-m-d\TH:i:s.v\Z');
         }
-    }
-
-    public function getImageUrl()
-    {
-        if (!$this->image) {
-            return null;
-        }
-        return url('/storage/images/attendances/' . $this->image);
     }
 }
