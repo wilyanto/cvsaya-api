@@ -10,12 +10,12 @@ class OutsideRadiusAttendance extends Model
     use HasFactory;
 
     protected $fillable = [
-        'attendance_id',
+        'attendance_detail_id',
         'note'
     ];
 
     public function Attendance()
     {
-        return $this->hasOne(Attendance::class);
+        return $this->hasOne(AttendanceDetail::class);
     }
 }

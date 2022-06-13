@@ -14,16 +14,10 @@ class AttendancePenalty extends Model implements Auditable
     const UPDATED_AT = null;
 
     public $fillable = [
-        'attendance_id',
+        'attendance_detail_id',
         'penalty_id',
         'penalty_name',
         'penalty_amount',
-        'attendance_employee_id',
         'note'
     ];
-
-    public function employee()
-    {
-        return $this->hasOne(Employee::class, 'id', 'employee_id');
-    }
 }
