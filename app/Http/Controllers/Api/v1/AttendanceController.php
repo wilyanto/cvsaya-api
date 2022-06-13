@@ -9,6 +9,7 @@ use App\Models\AttendancePenalty;
 use App\Enums\AttendanceType;
 use App\Http\Resources\AttendanceResource;
 use App\Models\AttendanceCompanyGroup;
+use App\Models\AttendanceDetail;
 use App\Models\AttendanceEmployee;
 use App\Models\AttendanceQrCode;
 use App\Models\Candidate;
@@ -33,6 +34,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 use App\Models\Position;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
+use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class AttendanceController extends Controller
 {
@@ -221,61 +223,56 @@ class AttendanceController extends Controller
         $employeeShift = $employee->getShift($shiftId)->shift;
         $shiftTime = new Carbon($employeeShift->$attendanceType);
 
+        $attendance = Attendance::where('employee_id', $employee->id)
+            ->where('shift_id', $shiftId)
+            ->whereDate('date', today())
+            ->first();
+
+        if (!$attendance) {
+            $attendance = Attendance::create([
+                'employee_id' => $employee->id,
+                'shift_id' => $shiftId,
+                'date' => today()
+            ]);
+        }
+
         // handle if blocked
+
 
         if (
             $attendanceType == AttendanceType::clockIn() &&
-            Attendance::where('attendance_type', $attendanceType)
-            ->where('shift_id', $shiftId)
-            ->where('employee_id', $employee->id)
-            ->whereDate('scheduled_at', today())
-            ->exists()
+            $attendance->clockInAttendanceDetail
         ) {
             return $this->errorResponse('Already Clock In', 422, 42200);
         }
 
         if (
-            $attendanceType == AttendanceType::breakStartedAt() &&
-            Attendance::where('attendance_type', $attendanceType)
-            ->where('shift_id', $shiftId)
-            ->where('employee_id', $employee->id)
-            ->whereDate('scheduled_at', today())
-            ->exists()
-        ) {
-            return $this->errorResponse('Already Scan Break Out', 422, 42201);
-        }
-
-        if (
-            $attendanceType == AttendanceType::breakEndedAt() &&
-            Attendance::where('attendance_type', $attendanceType)
-            ->where('shift_id', $shiftId)
-            ->where('employee_id', $employee->id)
-            ->whereDate('scheduled_at', today())
-            ->exists()
-        ) {
-            return $this->errorResponse('Already Scan Break In', 422, 42203);
-        }
-
-        if (
             $attendanceType == AttendanceType::clockOut() &&
-            Attendance::where('attendance_type', $attendanceType)
-            ->where('shift_id', $shiftId)
-            ->where('employee_id', $employee->id)
-            ->whereDate('scheduled_at', today())
-            ->exists()
+            $attendance->clockOutAttendanceDetail
         ) {
-            return $this->errorResponse('Already Clock Out', 422, 42204);
+            return $this->errorResponse('Already Clock Out', 422, 42201);
+        }
+
+        // clock out without clock in
+        if (
+            $attendanceType == AttendanceType::breakEndedAt() &&
+            !$attendance->startBreakAttendanceDetail
+        ) {
+            return $this->errorResponse('Must scan start break before end break', 422, 42202);
+        }
+
+        if (
+            $attendanceType == AttendanceType::breakStartedAt() &&
+            $attendance->startBreakAttendanceDetail
+        ) {
+            return $this->errorResponse('Already Scan Start Break', 422, 42201);
         }
 
         if (
             $attendanceType == AttendanceType::breakEndedAt() &&
-            Attendance::where('attendance_type', AttendanceType::breakStartedAt())
-            ->where('shift_id', $shiftId)
-            ->where('employee_id', $employee->id)
-            ->whereDate('scheduled_at', today())
-            ->doesntExist()
+            $attendance->endBreakAttendanceDetail
         ) {
-            return $this->errorResponse('Must scan break out before break in', 422, 42205);
+            return $this->errorResponse('Already Scan End Break', 422, 42203);
         }
 
         if (
@@ -289,7 +286,7 @@ class AttendanceController extends Controller
             $attendanceType == AttendanceType::breakEndedAt() &&
             now()->gt(today()->addSeconds($shiftTime->secondsSinceMidnight()))
         ) {
-            return $this->errorResponse('Already out of break in time', 422, 42207);
+            return $this->errorResponse('Already out of break duration', 422, 42207);
         }
 
         if (
@@ -300,14 +297,14 @@ class AttendanceController extends Controller
         }
 
         $distance = $this->vincentyGreatCircleDistance($attendanceQRcode->latitude, $attendanceQRcode->longitude, $request->latitude, $request->longitude);
-        $isOutsideAttendanceRadius = $this->isOutsideAttendanceRadius($distance, $attendanceQRcode);
+        $isOutsideRadius = $this->isOutsideRadius($distance, $attendanceQRcode);
 
-        if ($isOutsideAttendanceRadius && $attendanceQRcode->is_geo_strict) {
+        if ($isOutsideRadius && $attendanceQRcode->is_geo_strict) {
             return $this->errorResponse('Not allowed to submit because outside radius', 422, 42208);
         }
 
-        DB::transaction(function () use ($request, $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany) {
-            $this->createAttendance($request, $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany);
+        DB::transaction(function () use ($request, $employee, $companyId, $isOutsideRadius, $isParentCompany) {
+            $this->createAttendanceDetail($request, $employee, $companyId, $isOutsideRadius, $isParentCompany);
         });
         return $this->showOne('Success');
     }
@@ -348,7 +345,7 @@ class AttendanceController extends Controller
 
 
 
-    public function createAttendance($request, Employee $employee, $companyId, $isOutsideAttendanceRadius, $isParentCompany)
+    public function createAttendanceDetail($request, Employee $employee, $companyId, $isOutsideRadius, $isParentCompany)
     {
         $image = $request->file;
         $img = Image::make($image)->encode($image->extension(), 70);
@@ -380,40 +377,53 @@ class AttendanceController extends Controller
                 $verifiedBy = auth()->user()->id;
             }
 
-            $attendance = Attendance::create([
+            $attendanceDetail = AttendanceDetail::create([
                 'attendance_type' => $attendanceType,
                 'attended_at' => now(),
                 'scheduled_at' => today()->addSeconds($shiftTime->secondsSinceMidnight()),
                 'attendance_qr_code_id' => $request->attendance_qr_code_id,
                 'image' => $fileName,
                 'ip' => $request->ip(),
-                'longitude' => $request->longitude,
-                'latitude' => $request->latitude,
+                'location' => new Point($request->latitude, $request->longitude),
                 'verified_by' => $verifiedBy,
                 'verified_at' => $verifiedAt,
-                'shift_id' => $employeeShift->id,
-                'employee_id' => $employee->id
             ]);
-            Storage::disk('public')->put('images/attendances/' . $fileName, $img);
 
-            if ($penalty) {
-                $this->createPenalty($penalty, $attendance, $request->penalty_note);
+            $attendance = Attendance::where('employee_id', $employee->id)
+                ->where('shift_id', $shiftId)
+                ->whereDate('date', today())
+                ->first();
+
+            if ($attendanceType == AttendanceType::clockIn()) {
+                $attendance->update(['clock_in_id' => $attendanceDetail->id]);
+            } else if ($attendanceType == AttendanceType::clockOut()) {
+                $attendance->update(['clock_out_id' => $attendanceDetail->id]);
+            } else if ($attendanceType == AttendanceType::breakStartedAt()) {
+                $attendance->update(['start_break_id' => $attendanceDetail->id]);
+            } else if ($attendanceType == AttendanceType::breakEndedAt()) {
+                $attendance->update(['end_break_id' => $attendanceDetail->id]);
             }
 
-            if ($isOutsideAttendanceRadius) {
+            Storage::disk('public')->put('images/attendance-details/' . $fileName, $img);
+
+            if ($penalty) {
+                $this->createPenalty($penalty, $attendanceDetail, $request->penalty_note);
+            }
+
+            if ($isOutsideRadius) {
                 OutsideRadiusAttendance::create([
-                    'attendance_id' => $attendance->id,
+                    'attendance_detail_id' => $attendanceDetail->id,
                     'note' => $request->outside_radius_note
                 ]);
             }
         }
     }
 
-    public static function createPenalty($penalty, Attendance $attendance, $note)
+    public static function createPenalty($penalty, AttendanceDetail $attendanceDetail, $note)
     {
         AttendancePenalty::create([
             'penalty_amount' => $penalty->amount,
-            'attendance_id' => $attendance->id,
+            'attendance_detail_id' => $attendanceDetail->id,
             'penalty_id' => $penalty->id,
             'penalty_name' => $penalty->name,
             'note' => $note ? $note : ''
@@ -454,7 +464,7 @@ class AttendanceController extends Controller
         }
     }
 
-    public static function isOutsideAttendanceRadius($distance, $attendanceQRcode)
+    public static function isOutsideRadius($distance, $attendanceQRcode)
     {
         return $distance >= $attendanceQRcode->radius;
     }
