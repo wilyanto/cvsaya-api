@@ -187,7 +187,7 @@ class ShiftController extends Controller
         }
 
         $attendances = Attendance::where('employee_id', $employee->id)
-            ->whereDate('date', today())
+            ->whereDate('date', $startDate)
             ->paginate($request->input('page_size', 10));
         return $this->showPaginate('attendances', collect(AttendanceResource::collection($attendances)), collect($attendances));
     }
