@@ -42,7 +42,7 @@ class DailyAttendanceSeeder extends Command
                 ->whereDate('ended_at', '>=', today())
                 ->exists()
             ) {
-                return;
+                continue;
             }
 
             if (Attendance::query()
@@ -51,7 +51,7 @@ class DailyAttendanceSeeder extends Command
                 ->whereDate('date', today())
                 ->exists()
             ) {
-                return;
+                continue;
             }
 
             Attendance::create([
@@ -70,7 +70,7 @@ class DailyAttendanceSeeder extends Command
                 ->whereDate('ended_at', '>=', today())
                 ->exist()
             ) {
-                return;
+                continue;
             }
 
             if (Attendance::query()
@@ -79,7 +79,7 @@ class DailyAttendanceSeeder extends Command
                 ->whereDate('date', today())
                 ->exists()
             ) {
-                return;
+                continue;
             }
 
             Attendance::create([
