@@ -100,7 +100,7 @@ HR Spv';
             'phone' => $request->country_code . $request->phone_number,
             'type' => 'text',
             'text' => $message,
-            'schedule' => now()->addMinutes(rand(10, 60))->startOfMinute(),
+            'schedule' => now()->addMinutes(rand(10, 60))->startOfMinute()->timestamp,
         ]);
 
         $newBlastLogRecord = [
