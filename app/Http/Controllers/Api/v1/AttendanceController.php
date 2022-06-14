@@ -505,7 +505,6 @@ class AttendanceController extends Controller
 
     public function getAttendancesByCompany(Request $request)
     {
-        // pagination and search by user
         $request->validate([
             'started_at' => 'required',
             'ended_at' => 'required',
@@ -515,39 +514,20 @@ class AttendanceController extends Controller
         $keyword = $request->keyword;
         $startDate = Carbon::parse($request->started_at);
         $endDate = Carbon::parse($request->ended_at);
-        $period = CarbonPeriod::create($startDate, $endDate);
         $companyId = $request->company_id;
         $company = Company::where('id', $companyId)->first();
-        $employees = $company->employees()
+        $employeeIds = $company->employees()
             ->whereHas('candidate', function ($query) use ($keyword) {
                 $query->where('name', 'like', '%' . $keyword . '%')->orderBy('name');
-            })->get();
-        $data = [];
+            })->pluck('employees.id');
 
-        // TODO: improve pagination
-        foreach ($period as $date) {
-            $array['date'] = $date->copy()->toDateString();
-            $employeeAttendances = [];
-            foreach ($employees as $employee) {
-                $employeeShifts = $employee->getShifts($date);
-                $shifts = [];
-                foreach ($employeeShifts as $employeeShift) {
-                    $attendances = $employeeShift->getAttendances($date);
-                    $shifts[] = $employeeShift;
-                    end($shifts)['attendances'] = AttendanceResource::collection($attendances);
-                }
-                $employeeAttendance = array(
-                    'position' => $employee->position,
-                    'profile_detail' => $employee->candidate,
-                    'shifts' => $shifts
-                );
-                $employeeAttendance = array_merge($employeeAttendance, $employee->toArray());
-                $employeeAttendances[] = $employeeAttendance;
-            }
-            $array['employees'] = $employeeAttendances;
-            array_push($data, $array);
-        }
-        return $this->showAll(collect($data));
+        $attendances = Attendance::whereIn('employee_id', $employeeIds)
+            ->whereDate('date', '>=', $startDate)
+            ->whereDate('date', '<=', $endDate)
+            ->orderBy('date')
+            ->paginate($request->input('page_size', 10));
+
+        return $this->showPaginate('attendances', collect(AttendanceResource::collection($attendances)), collect($attendances));
     }
 
     public function getAttendancesByDateRange(Request $request)
@@ -560,28 +540,15 @@ class AttendanceController extends Controller
         $endDate = Carbon::parse($request->ended_at);
         $userId = auth()->id();
         $candidate = Candidate::where('user_id', $userId)->first();
-        $employees = Employee::where('candidate_id', $candidate->id)->get();
-        $period = CarbonPeriod::create($startDate, $endDate);
+        $employeeIds = Employee::where('candidate_id', $candidate->id)->pluck('id');
 
-        $data = [];
+        $attendances = Attendance::whereIn('employee_id', $employeeIds)
+            ->whereDate('date', '>=', $startDate)
+            ->whereDate('date', '<=', $endDate)
+            ->orderBy('date')
+            ->paginate($request->input('page_size', 10));
 
-        // TODO: improve pagination
-        foreach ($period as $date) {
-            $array['date'] = $date->toDateString();
-            $shifts = [];
-            foreach ($employees as $employee) {
-                $employeeShifts = $employee->getShifts($date);
-                foreach ($employeeShifts as $employeeShift) {
-                    $attendances = $employeeShift->getAttendances($date);
-                    $shifts[] = $employeeShift;
-                    end($shifts)['attendances'] = AttendanceResource::collection($attendances);
-                }
-            }
-            $array['shifts'] = $shifts;
-            array_push($data, $array);
-        }
-
-        return $this->showAll(collect($data));
+        return $this->showPaginate('attendances', collect(AttendanceResource::collection($attendances)), collect($attendances));
     }
 
     public function getAttendancesByEmployee(Request $request, $employeeId)
@@ -594,27 +561,13 @@ class AttendanceController extends Controller
         $endDate = Carbon::parse($request->ended_at);
         $employee = Employee::findOrFail($employeeId);
 
-        $period = CarbonPeriod::create($startDate, $endDate);
+        $attendances = Attendance::where('employee_id', $employee->id)
+            ->whereDate('date', '>=', $startDate)
+            ->whereDate('date', '<=', $endDate)
+            ->orderBy('date')
+            ->paginate($request->input('page_size', 10));
 
-        $data = [];
-
-        // TODO: improve pagination
-        foreach ($period as $date) {
-            $array['date'] = $date->toDateString();
-            $shifts = [];
-
-            $employeeShifts = $employee->getShifts($date);
-            foreach ($employeeShifts as $employeeShift) {
-                $attendances = $employeeShift->getAttendances($date);
-                $shifts[] = $employeeShift;
-                end($shifts)['attendances'] = AttendanceResource::collection($attendances);
-            }
-
-            $array['shifts'] = $shifts;
-            array_push($data, $array);
-        }
-
-        return $this->showAll(collect($data));
+        return $this->showPaginate('attendances', collect(AttendanceResource::collection($attendances)), collect($attendances));
     }
 
     // public function isExistsAttendance(DateTime $now, AttendanceType $type, Employee $employee, DateTime $day)
