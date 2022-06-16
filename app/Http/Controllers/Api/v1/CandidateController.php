@@ -517,12 +517,6 @@ class CandidateController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate(['name' => 'required']);
-
-        $candidate = Candidate::find($id)
-            ->update(['name' => $request->name]);
-
-        return $this->showOne($candidate);
     }
 
     /**
@@ -540,10 +534,9 @@ class CandidateController extends Controller
     {
         $request->validate([
             'file' => 'file|required',
-            'candidate_id' => 'required|exists:candidates,id'
         ]);
 
-        $candidate = Candidate::find($request->candidate_id);
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
         // delete old image
         Storage::disk('public')->delete('images/profile_picture/' . $candidate->profile_picture);
 
@@ -552,6 +545,16 @@ class CandidateController extends Controller
         $fileName = time() . '.' . $image->extension();
         $candidate->update(['profile_picture' => $fileName]);
         Storage::disk('public')->put('images/profile_picture/' . $fileName, $img);
+
+        return $this->showOne($candidate);
+    }
+
+    public function updateCandidateName(Request $request)
+    {
+        $request->validate(['name' => 'required']);
+
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $candidate->update(['name' => $request->name]);
 
         return $this->showOne($candidate);
     }

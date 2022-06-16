@@ -143,7 +143,7 @@ Route::prefix('v1')->group(function () {
                     Route::controller(CandidateController::class)->group(function () {
                         Route::get('/', 'index');
                         Route::get('/candidate-summary', 'getSummaryByDay');
-                        Route::put('/{id}/update-candidate-name', 'update');
+                        Route::put('/update-candidate-name', 'updateCandidateName');
                         Route::post('update-profile-picture', 'updateProfilePicture');
                         Route::get('/{id}', 'indexDetail');
                         Route::put('/{id}', 'updateStatus');
