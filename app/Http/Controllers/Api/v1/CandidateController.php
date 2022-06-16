@@ -33,7 +33,7 @@ class CandidateController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'name' => 'nullable|string',
+            'keyword' => 'nullable|string',
             'status' => 'nullable|integer',
             'country_id' => 'nullable',
             'province_id' => 'nullable',
@@ -46,7 +46,8 @@ class CandidateController extends Controller
             'is_reviewed' => 'nullable'
         ]);
 
-        $name = $request->name;
+        $name = $request->keyword;
+        $phoneNumber = ltrim($request->keyword, '0');
         $status = $request->status;
         $countryId = $request->country_id;
         $provinceId = $request->province_id;
@@ -59,9 +60,10 @@ class CandidateController extends Controller
         $candidates = Candidate::when($startDate, function ($query) use ($startDate, $endDate) {
             $query->whereBetween('registered_at', [$startDate, $endDate]);
         })
-            ->where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position, $isReviewed) {
+            ->where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position, $isReviewed, $phoneNumber) {
                 if ($name != null) {
-                    $query->where('name', 'LIKE', '%' . $name . '%');
+                    $query->where('name', 'LIKE', '%' . $name . '%')
+                        ->orWhere('phone_number', 'LIKE', '%' . $phoneNumber . '%');
                     if ($position == null) {
                         $query->orWhereHas('job', function ($secondQuery) use ($name) {
                             $secondQuery->whereHas('position', function ($thirdQuery) use ($name) {
