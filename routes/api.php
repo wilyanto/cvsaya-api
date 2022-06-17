@@ -58,6 +58,8 @@ Route::prefix('v1')->group(function () {
         Route::get('me/shift', [ShiftController::class, 'getShift']);
         Route::get('me/attendance-histories', [AttendanceController::class, 'getAttendancesByDateRange']);
         Route::get('me/attendance-schedule', [EmployeeShiftController::class, 'getShift']);
+        Route::put('me/update-name', [CandidateController::class, 'updateCandidateName']);
+        Route::post('me/update-profile-picture', [CandidateController::class, 'updateProfilePicture']);
 
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {
@@ -143,8 +145,6 @@ Route::prefix('v1')->group(function () {
                     Route::controller(CandidateController::class)->group(function () {
                         Route::get('/', 'index');
                         Route::get('/candidate-summary', 'getSummaryByDay');
-                        Route::put('/update-candidate-name', 'updateCandidateName');
-                        Route::post('update-profile-picture', 'updateProfilePicture');
                         Route::get('/{id}', 'indexDetail');
                         Route::put('/{id}', 'updateStatus');
                         Route::post('/{id}/interviews', 'addSchedule');
