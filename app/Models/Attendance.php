@@ -22,36 +22,44 @@ class Attendance extends Model implements Auditable
         'validated_at'
     ];
 
-    protected $guarded = [];
+    protected $fillable = [
+        'employee_id',
+        'shift_id',
+        'clock_in_id',
+        'clock_out_id',
+        'start_break_id',
+        'end_break_id',
+        'date'
+    ];
 
     public function employee()
     {
         return $this->hasOne(Employee::class, 'id', 'employee_id');
     }
 
-    public function employees()
+    public function shift()
     {
-        return $this->hasOne(Employee::class, 'id', 'employee_id');
+        return $this->hasOne(Shift::class, 'id', 'shift_id');
     }
 
-    public function attendanceType()
+    public function clockInAttendanceDetail()
     {
-        return $this->hasOne(AttendanceType::class, 'id', 'attendance_type_id');
+        return $this->hasOne(AttendanceDetail::class, 'id', 'clock_in_id');
     }
 
-    public function attendancePenalty()
+    public function clockOutAttendanceDetail()
     {
-        return $this->hasOne(AttendancePenalty::class, 'attendance_id', 'id');
+        return $this->hasOne(AttendanceDetail::class, 'id', 'clock_out_id');
     }
 
-    public function penalty()
+    public function startBreakAttendanceDetail()
     {
-        return $this->hasOne(AttendancePenalty::class, 'penalty_id', 'id')->withDefault();
+        return $this->hasOne(AttendanceDetail::class, 'id', 'start_break_id');
     }
 
-    public function outsideRadiusAttendance()
+    public function endBreakAttendanceDetail()
     {
-        return $this->hasOne(OutsideRadiusAttendance::class);
+        return $this->hasOne(AttendanceDetail::class, 'id', 'end_break_id');
     }
 
     public function getCheckedAtAttribute($date)
@@ -68,13 +76,5 @@ class Attendance extends Model implements Auditable
             $date = new \DateTime($date, new DateTimeZone('Asia/Jakarta'));
             return $date->format('Y-m-d\TH:i:s.v\Z');
         }
-    }
-
-    public function getImageUrl()
-    {
-        if (!$this->image) {
-            return null;
-        }
-        return url('/storage/images/attendances/' . $this->image);
     }
 }
