@@ -186,9 +186,21 @@ class ShiftController extends Controller
             return $this->errorResponse("Employee not found", 422, 42200);
         }
 
-        $attendances = Attendance::where('employee_id', $employee->id)
-            ->whereDate('date', $startDate)
-            ->paginate($request->input('page_size', 10));
-        return $this->showPaginate('attendances', collect(AttendanceResource::collection($attendances)), collect($attendances));
+        $employeeShifts = $employee->getShifts($startDate);
+        $data = [];
+        foreach ($employeeShifts as $employeeShift) {
+            $data[]['shift'] = $employeeShift->shift;
+            $attendance = Attendance::where('employee_id', $employee->id)
+                ->where('shift_id', $employeeShift->shift->id)
+                ->whereDate('date', $startDate)
+                ->first();
+            if ($attendance) {
+                end($data)['shift']['attendances'] = new AttendanceResource($attendance);
+            } else {
+                end($data)['shift']['attendances'] = null;
+            }
+        }
+
+        return $this->showAll(collect($data), 200, 20000);
     }
 }
