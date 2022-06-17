@@ -20,6 +20,7 @@
         "laravel/passport": "^10.3",
         "laravel/sanctum": "^2.14",
         "laravel/tinker": "^2.7",
+        "matanyadaev/laravel-eloquent-spatial": "^1.0",
         "nesbot/carbon": "^2.57",
         "owen-it/laravel-auditing": "^13.0",
         "ralouphie/mimey": "^1.0",
