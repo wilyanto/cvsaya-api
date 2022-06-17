@@ -201,6 +201,6 @@ class ShiftController extends Controller
             }
         }
 
-        return $this->showAll(collect($data), 200, 20000);
+        return $this->showAll(collect($data));
     }
 }
