@@ -195,9 +195,9 @@ class ShiftController extends Controller
                 ->whereDate('date', $startDate)
                 ->first();
             if ($attendance) {
-                end($data)['shift']['attendances'] = new AttendanceResource($attendance);
+                end($data)['shift']['attendance'] = new AttendanceResource($attendance);
             } else {
-                end($data)['shift']['attendances'] = null;
+                end($data)['shift']['attendance'] = null;
             }
         }
 
