@@ -48,6 +48,6 @@ class AttendanceDetail extends Model
         if (!$this->image) {
             return null;
         }
-        return url('/storage/images/attendances/' . $this->image);
+        return url('/storage/images/attendance-details/' . $this->image);
     }
 }
