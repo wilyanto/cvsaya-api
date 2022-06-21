@@ -33,7 +33,7 @@ class CandidateController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'name' => 'nullable|string',
+            'keyword' => 'nullable|string',
             'status' => 'nullable|integer',
             'country_id' => 'nullable',
             'province_id' => 'nullable',
@@ -43,10 +43,11 @@ class CandidateController extends Controller
                 'nullable',
                 Rule::in(['DESC', 'ASC']),
             ],
-            'is_reviewed' => 'nullable|boolean'
+            'is_reviewed' => 'nullable'
         ]);
 
-        $name = $request->name;
+        $name = $request->keyword;
+        $phoneNumber = ltrim($request->keyword, '0');
         $status = $request->status;
         $countryId = $request->country_id;
         $provinceId = $request->province_id;
@@ -59,9 +60,10 @@ class CandidateController extends Controller
         $candidates = Candidate::when($startDate, function ($query) use ($startDate, $endDate) {
             $query->whereBetween('registered_at', [$startDate, $endDate]);
         })
-            ->where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position, $isReviewed) {
+            ->where(function ($query) use ($name, $status,  $countryId, $provinceId, $cityId, $position, $isReviewed, $phoneNumber) {
                 if ($name != null) {
-                    $query->where('name', 'LIKE', '%' . $name . '%');
+                    $query->where('name', 'LIKE', '%' . $name . '%')
+                        ->orWhere('phone_number', 'LIKE', '%' . $phoneNumber . '%');
                     if ($position == null) {
                         $query->orWhereHas('job', function ($secondQuery) use ($name) {
                             $secondQuery->whereHas('position', function ($thirdQuery) use ($name) {
@@ -517,12 +519,6 @@ class CandidateController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate(['name' => 'required']);
-
-        $candidate = Candidate::find($id)
-            ->update(['name' => $request->name]);
-
-        return $this->showOne($candidate);
     }
 
     /**
@@ -540,10 +536,9 @@ class CandidateController extends Controller
     {
         $request->validate([
             'file' => 'file|required',
-            'candidate_id' => 'required|exists:candidates,id'
         ]);
 
-        $candidate = Candidate::find($request->candidate_id);
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
         // delete old image
         Storage::disk('public')->delete('images/profile_picture/' . $candidate->profile_picture);
 
@@ -552,6 +547,16 @@ class CandidateController extends Controller
         $fileName = time() . '.' . $image->extension();
         $candidate->update(['profile_picture' => $fileName]);
         Storage::disk('public')->put('images/profile_picture/' . $fileName, $img);
+
+        return $this->showOne($candidate);
+    }
+
+    public function updateCandidateName(Request $request)
+    {
+        $request->validate(['name' => 'required']);
+
+        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        $candidate->update(['name' => $request->name]);
 
         return $this->showOne($candidate);
     }

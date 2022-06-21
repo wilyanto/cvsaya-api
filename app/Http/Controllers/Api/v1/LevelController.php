@@ -23,9 +23,7 @@ class LevelController extends Controller
                 'array',
                 'nullable'
             ],
-            'keyword' => [
-                'string',
-            ],
+            'keyword' => 'nullable|string',
             'page' => 'nullable|numeric|gt:0',
             'page_size' => 'nullable|numeric|gt:0'
         ]);

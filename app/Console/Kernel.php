@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use App\Console\Commands\CandidateStatusCron;
 use App\Console\Commands\DailyAttendancePenalty;
+use App\Console\Commands\DailyAttendanceSeeder;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
@@ -19,6 +20,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command(CandidateStatusCron::class)->dailyAt('08:00');
         $schedule->command(DailyAttendancePenalty::class)->dailyAt('23:59');
+        $schedule->command(DailyAttendanceSeeder::class)->dailyAt('00:01');
     }
 
     /**

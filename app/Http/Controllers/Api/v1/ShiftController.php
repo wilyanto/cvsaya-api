@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\v1;;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreShiftRequest;
+use App\Http\Resources\AttendanceResource;
+use App\Models\Attendance;
 use App\Models\Candidate;
 use App\Models\Employee;
 use App\Models\EmployeeOneTimeShift;
@@ -184,20 +186,19 @@ class ShiftController extends Controller
             return $this->errorResponse("Employee not found", 422, 42200);
         }
 
-        $data = [];
-        $attendances = $employee->getAttendances($startDate, $endDate);
         $employeeShifts = $employee->getShifts($startDate);
-
-        foreach ($employeeShifts as $shift) {
-            $data[] = $shift;
-            $shiftAttendances = [];
-            foreach ($attendances as $attendance) {
-                if ($attendance->shift_id == $shift->shift_id) {
-                    $shiftAttendances[] = $attendance;
-                }
+        $data = [];
+        foreach ($employeeShifts as $employeeShift) {
+            $data[]['shift'] = $employeeShift->shift;
+            $attendance = Attendance::where('employee_id', $employee->id)
+                ->where('shift_id', $employeeShift->shift->id)
+                ->whereDate('date', $startDate)
+                ->first();
+            if ($attendance) {
+                end($data)['shift']['attendance'] = new AttendanceResource($attendance);
+            } else {
+                end($data)['shift']['attendance'] = null;
             }
-            // insert into last shift array
-            end($data)['shift']['attendances'] = $shiftAttendances;
         }
 
         return $this->showAll(collect($data));
