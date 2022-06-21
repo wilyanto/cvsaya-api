@@ -63,8 +63,6 @@ class BlastController extends Controller
                 $datum['status'] = 'success';
             }
 
-            // sleep(rand(0, 1));
-
             return $datum;
         });
 
@@ -102,7 +100,7 @@ HR Spv';
             'phone' => $request->country_code . $request->phone_number,
             'type' => 'text',
             'text' => $message,
-            'schedule' => Carbon::now()->addMinutes(rand(10, 120))->timestamp,
+            'schedule' => now()->addMinutes(rand(10, 60))->startOfMinute()->timestamp,
         ]);
 
         $newBlastLogRecord = [
