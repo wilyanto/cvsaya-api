@@ -21,4 +21,10 @@ class AttendanceQrCode extends Model
         'is_geo_strict',
         'company_id'
     ];
+
+    // https://stackoverflow.com/questions/48288519/eloquent-casts-decimal-as-string
+    public $casts = [
+        'longitude' => 'float',
+        'latitude' => 'float',
+    ];
 }
