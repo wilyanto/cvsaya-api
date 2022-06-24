@@ -12,19 +12,18 @@ class CRMBlastLog extends Model
     protected $table = 'crm_blast_logs';
 
     protected $fillable = [
-        'model_type',
-        'model_id',
-        'sender_country_code',
-        'sender_phone_number',
+        'blast_loggable_type',
+        'blast_loggable_id',
+        'credential_id',
         'recipient_country_code',
         'recipient_phone_number',
         'blast_type_id',
-        'message_variable',
+        'message_param_value',
         'message_template'
     ];
 
-    public function CRMblastLoggable()
+    public function blastLoggable()
     {
-        return $this->morphTo();
+        return $this->morphTo(__FUNCTION__, 'blast_loggable_type', 'blast_loggable_id');
     }
 }

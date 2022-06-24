@@ -8,19 +8,17 @@ use Illuminate\Support\Facades\Log;
 
 class CRMBlastLogService
 {
-    public function create($candidate)
+    public function create($candidate, $credential, $blastType, $messageParamValue, $messageTemplate)
     {
-        $CRMBlastLog = CRMBlastLog::create([
-            'model_type' => 'model_type',
-            'model_id' => $candidate->id,
-            'sender_country_code' => 'sender_country_code',
-            'sender_phone_number' => 'sender_phone_number',
+        $CRMBlastLog = new CRMBlastLog([
+            'blast_loggable_id' => $candidate->id,
+            'credential_id' => $credential->id,
             'recipient_country_code' => $candidate->country_code,
             'recipient_phone_number' => $candidate->phone_number,
-            'blast_type_id' => 'blast_type_id',
-            'message_variable' => 'message_variable',
-            'message_template' => 'message_template',
+            'blast_type_id' => $blastType->id,
+            'message_param_value' => json_encode($messageParamValue),
+            'message_template' => json_encode($messageTemplate),
         ]);
-        $CRMBlastLog->CRMblastLoggable()->associate($candidate);
+        $CRMBlastLog->blastLoggable()->associate($candidate)->save();
     }
 }
