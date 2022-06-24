@@ -369,7 +369,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('/{companyId}/companies', 'indexForCompany');
                 Route::get('/', 'index');
                 Route::post('/', 'store');
-                Route::put('/status', 'updateLeavePermissionStatus');
+                Route::put('/{id}/status', 'updateLeavePermissionStatus');
                 Route::put('/{id}', 'update');
                 // Route::apiResource('/', LeavePermissionController::class);
             });
