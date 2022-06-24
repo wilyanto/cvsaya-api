@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\v1\EmployeeRecurringShiftController;
 use App\Http\Controllers\Api\v1\EmployeeShiftController;
 use App\Http\Controllers\Api\v1\LeavePermissionController;
 use App\Http\Controllers\Api\v1\LeavePermissionOccasionController;
+use App\Http\Controllers\v1\CRMCredentialController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,7 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware('auth:api')->group(function () {
         Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
+        Route::apiResource('crm-credentials', CRMCredentialController::class, ['only' => ['index', 'show', 'store', 'update']]);
         Route::get('me/shift', [ShiftController::class, 'getShift']);
         Route::get('me/attendance-histories', [AttendanceController::class, 'getAttendancesByDateRange']);
         Route::get('me/attendance-schedule', [EmployeeShiftController::class, 'getShift']);
