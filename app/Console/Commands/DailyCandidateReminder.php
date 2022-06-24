@@ -2,8 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Models\BlastType;
 use App\Models\Candidate;
+use App\Models\CRMCredential;
 use App\Services\CRMBlastLogService;
+use App\Services\MessageService;
 use App\Services\WhatsappService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -11,15 +14,18 @@ use Illuminate\Support\Facades\Log;
 class DailyCandidateReminder extends Command
 {
     private $CRMBlastLogService,
+        $messageService,
         $whatsappService;
 
     public function __construct(
         CRMBlastLogService $CRMBlastLogService,
+        MessageService $messageService,
         WhatsappService $whatsappService
     ) {
         parent::__construct();
 
         $this->CRMBlastLogService = $CRMBlastLogService;
+        $this->messageService = $messageService;
         $this->whatsappService = $whatsappService;
     }
 
@@ -45,13 +51,37 @@ class DailyCandidateReminder extends Command
     public function handle()
     {
         $candidates = Candidate::where('id', 1)->get();
-        // get from api keys table
-        $key = "9697bbbf-27af-4aae-9621-8be2a540c741";
-        $countryCode = "62";
-        $phoneNumber = "82368355626";
-
+        $blastType = BlastType::where('name', 'completeness-status-reminder')->firstOrFail();
+        $credential = CRMcredential::firstOrFail();
+        // set jadwal / jam format hour
+        // consider limit per number
+        $credentialKey = $credential->key;
         $batchMessages = [];
         foreach ($candidates as $candidate) {
+            $blastLogs = $candidate->blastLogs()
+                ->where('credential_id', $credential->id)
+                ->latest()
+                ->get();
+
+            if (
+                $blastLogs->count() <= 1 &&
+                $blastLogs->first()->created_at->diffInDays(now()) <= 3
+            ) {
+                continue;
+            } else if (
+                $blastLogs->count() <= 2 &&
+                $blastLogs->first()->created_at->diffInDays(now()) <= 7
+            ) {
+                continue;
+            } else if (
+                $blastLogs->count() <= 3 &&
+                $blastLogs->first()->created_at->diffInDays(now()) <= 30
+            ) {
+                continue;
+            } else {
+                continue;
+            }
+
             $message = "";
             $expectedJob = $candidate->job;
             $remindSalary = "";
@@ -81,16 +111,43 @@ class DailyCandidateReminder extends Command
                 $remindDomicile = "Menambah Alamat Tempat Tinggal";
             }
 
-            $message = "Reminder {$remindSalary}, {$remindExperience}, {$remindEducation}, {$remindDomicile}";
+            $paramValue = [
+                'remindSalary' => $remindSalary,
+                'remindExperience' => $remindExperience,
+                'remindEducation' => $remindEducation,
+                'remindDomicile' => $remindDomicile
+            ];
+
+            $shouldBeReminded = false;
+            foreach ($paramValue as $key => $value) {
+                if (!empty($value)) {
+                    $shouldBeReminded = true;
+                    break;
+                }
+            }
+
+            if (!$shouldBeReminded) {
+                continue;
+            }
+
+            $messageParamValue = [
+                'body' => $paramValue
+            ];
+
+            $template =  "Reminder {{remindSalary}}, {{remindExperience}}, {{remindEducation}}, {{remindDomicile}}";
+            $messageTemplate = [
+                'body' => $template
+            ];
+            $message = $this->messageService->constructMessage($template, $paramValue);
 
             $batchMessages[] = [
-                "key" => $key,
+                "key" => $credentialKey,
                 "country_code" => $candidate->country_code,
                 "phone_number" => $candidate->phone_number,
                 "message" => $message
             ];
             $this->whatsappService->sendMessage($batchMessages);
-            $this->CRMBlastLogService->create($candidate);
+            $this->CRMBlastLogService->create($candidate, $credential, $blastType, $messageParamValue, $messageTemplate);
         }
     }
 }

@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(CandidateStatusCron::class)->dailyAt('08:00');
         $schedule->command(DailyAttendancePenalty::class)->dailyAt('23:59');
         $schedule->command(DailyAttendanceSeeder::class)->dailyAt('00:01');
-        $schedule->command(DailyCandidateReminder::class)->everyMinute();
+        $schedule->command(DailyCandidateReminder::class)->dailyAt('08:00');
     }
 
     /**
