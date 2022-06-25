@@ -26,5 +26,6 @@ class AttendanceQrCode extends Model
     public $casts = [
         'longitude' => 'float',
         'latitude' => 'float',
+        'is_geo_strict' => 'boolean'
     ];
 }
