@@ -23,6 +23,8 @@ return new class extends Migration
             $table->unsignedBigInteger('blast_type_id');
             $table->json('message_param_value');
             $table->json('message_template');
+            $table->string('priority');
+            $table->timestamp('expired_at')->nullable();
             $table->timestamps();
 
             $table->foreign('blast_type_id')->references('id')->on('blast_types');
