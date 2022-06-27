@@ -25,13 +25,15 @@ class CRMCredentialService
 
         return $CRMCredential;
     }
+
     public function createCredential($data)
     {
         $CRMCredential = CRMCredential::create([
             'name' => $data->name,
             'key' => $data->key,
             'country_code' => $data->country_code,
-            'phone_number' => $data->phone_number
+            'phone_number' => $data->phone_number,
+            'quantity' => $data->quantity
         ]);
 
         return $CRMCredential;
@@ -43,6 +45,7 @@ class CRMCredentialService
         $CRMCredential->update([
             'name' => $data->name,
             'key' => $data->key,
+            'quantity' => $data->quantity
         ]);
 
         return $CRMCredential;
