@@ -13,10 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('blast_types', function (Blueprint $table) {
+        Schema::create('crm_credentials', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->softDeletes();
+            $table->uuid('key')->unique();
+            $table->string('country_code');
+            $table->string('phone_number');
+            $table->integer('quantity');
             $table->timestamps();
         });
     }
@@ -28,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('blast_types');
+        Schema::dropIfExists('crm_credentials');
     }
 };

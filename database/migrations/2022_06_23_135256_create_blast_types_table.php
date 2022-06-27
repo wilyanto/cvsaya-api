@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('crm_credentials', function (Blueprint $table) {
+        Schema::create('blast_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->uuid('key')->unique();
-            $table->string('country_code');
-            $table->string('phone_number');
+            $table->integer('priority');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('crm_credentials');
+        Schema::dropIfExists('blast_types');
     }
 };
