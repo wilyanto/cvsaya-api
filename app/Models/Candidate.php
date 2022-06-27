@@ -306,4 +306,10 @@ class Candidate extends Model implements Auditable
             'name' => $this->name,
         ];
     }
+
+
+    public function blastLogs()
+    {
+        return $this->morphMany(CRMBlastLog::class, 'blast_loggable');
+    }
 }
