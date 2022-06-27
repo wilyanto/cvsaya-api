@@ -426,7 +426,7 @@ class AttendanceController extends Controller
             'attendance_detail_id' => $attendanceDetail->id,
             'penalty_id' => $penalty->id,
             'penalty_name' => $penalty->name,
-            'note' => $note ? $note : ''
+            'note' => $note ?? '',
         ]);
     }
 
