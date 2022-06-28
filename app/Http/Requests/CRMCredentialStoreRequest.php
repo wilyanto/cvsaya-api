@@ -27,7 +27,8 @@ class CRMCredentialStoreRequest extends FormRequest
             'name' => 'required',
             'key' => 'required',
             'country_code' => 'required',
-            'phone_number' => 'required'
+            'phone_number' => 'required',
+            'is_active' => 'required'
         ];
     }
 }

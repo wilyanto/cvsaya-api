@@ -25,7 +25,8 @@ class CRMCredentialUpdateRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'key' => 'required'
+            'key' => 'required',
+            'is_active' => 'required'
         ];
     }
 }
