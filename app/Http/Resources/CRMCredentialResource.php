@@ -19,7 +19,9 @@ class CRMCredentialResource extends JsonResource
             'name' => $this->name,
             'key' => $this->key,
             'country_code' => $this->country_code,
-            'phone_number' => $this->phone_number
+            'phone_number' => $this->phone_number,
+            'sent_messages_count' => $this->getTodayBlastLogsCount(),
+            'is_active' => $this->is_active
         ];
     }
 }
