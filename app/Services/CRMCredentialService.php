@@ -70,4 +70,14 @@ class CRMCredentialService
 
         return $CRMCredential;
     }
+
+    public function updateCredentialStatus($isActive, $id)
+    {
+        $CRMCredential = $this->getById($id);
+        $CRMCredential->update([
+            'is_active' => $isActive
+        ]);
+
+        return $CRMCredential;
+    }
 }
