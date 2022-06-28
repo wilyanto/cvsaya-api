@@ -19,12 +19,21 @@ class CRMCredential extends Model
         'key',
         'country_code',
         'phone_number',
-        'quantity',
-        'type'
+        'is_active',
     ];
 
     public function blastTypes()
     {
-        return $this->belongsToMany(BlastType::class, 'crm_credential_blast_type', 'crm_credential_id', 'blast_type_id');
+        return $this->belongsToMany(BlastType::class, 'crm_credential_blast_type', 'credential_id', 'blast_type_id');
+    }
+
+    public function blastLogs()
+    {
+        return $this->hasMany(CRMBlastLog::class, 'credential_id', 'id');
+    }
+
+    public function getTodayBlastLogsCount()
+    {
+        return $this->blastLogs()->whereDate('created_at', today())->count();
     }
 }
