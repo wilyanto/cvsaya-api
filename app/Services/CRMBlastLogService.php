@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use App\Models\CRMBlastLog;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class CRMBlastLogService
 {
@@ -18,6 +16,8 @@ class CRMBlastLogService
             'blast_type_id' => $blastType->id,
             'message_param_value' => json_encode($messageParamValue),
             'message_template' => json_encode($messageTemplate),
+            'priority' => 1,
+            'expired_at' => now()
         ]);
         $CRMBlastLog->blastLoggable()->associate($candidate)->save();
     }

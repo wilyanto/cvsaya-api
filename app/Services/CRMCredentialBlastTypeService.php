@@ -2,11 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\CRMCredential;
 use App\Models\CRMCredentialBlastType;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Spatie\QueryBuilder\QueryBuilder;
 
 class CRMCredentialBlastTypeService
 {
