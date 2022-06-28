@@ -26,7 +26,7 @@ class BlastTypeService
 
     public function createBlastType($data)
     {
-        $blastType = new BlastType([
+        $blastType = BlastType::create([
             'name' => $data->name,
             'priority' => $data->priority
         ]);
@@ -34,9 +34,10 @@ class BlastTypeService
         return $blastType;
     }
 
-    public function updateBlastType($data)
+    public function updateBlastType($data, $id)
     {
-        $blastType = new BlastType([
+        $blastType = $this->getById($id);
+        $blastType->update([
             'name' => $data->name,
             'priority' => $data->priority
         ]);
