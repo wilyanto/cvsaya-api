@@ -10,8 +10,8 @@ class MessageCountCredentialSort implements Sort
 {
     public function __invoke(Builder $query, $value, string $property): Builder
     {
-        return $query->withCount(['blastLogs', function ($query) {
+        return $query->withCount(['blastLogs' => function ($query) {
             $query->whereDate('created_at', today());
-        }])->orderBy('blastLogs_count', 'desc');
+        }])->orderBy('blast_logs_count', 'desc');
     }
 }
