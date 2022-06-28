@@ -26,9 +26,16 @@ class QuotaTypeService
 
     public function createQuotaType($data)
     {
+        $quotaType = QuotaType::orderBy('priority', 'desc')->first();
+        if ($quotaType) {
+            $lastPriorityNumber = $quotaType->priority + 1;
+        } else {
+            $lastPriorityNumber = 1;
+        }
+
         $blastType = QuotaType::create([
             'name' => $data->name,
-            'priority' => $data->priority,
+            'priority' => $lastPriorityNumber,
             'start_time' => $data->start_time,
             'end_time' => $data->end_time
         ]);
@@ -54,5 +61,19 @@ class QuotaTypeService
         $blastType = QuotaType::where('id', $id)->firstOrFail();
         $blastType->delete();
         return true;
+    }
+
+    public function reorderPriority($data)
+    {
+        $quotaTypes = [];
+        foreach ($data as $datum) {
+            $quotaType = $this->getById($datum['id']);
+
+            $quotaType->update(['priority' => $datum['priority']]);
+
+            array_push($quotaTypes, $quotaType);
+        }
+
+        return $quotaTypes;
     }
 }

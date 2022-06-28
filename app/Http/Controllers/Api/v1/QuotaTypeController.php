@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\QuotaTypeReorderPriorityRequest;
 use App\Http\Requests\QuotaTypeStoreRequest;
 use App\Http\Requests\QuotaTypeUpdateRequest;
 use App\Http\Resources\QuotaTypeResource;
@@ -54,5 +55,12 @@ class QuotaTypeController extends Controller
         $message = $this->quotaTypeService->deleteById($id);
 
         return response()->json(null, 204);
+    }
+
+    public function reorderPriority(QuotaTypeReorderPriorityRequest $request)
+    {
+        $quotaTypes = $this->quotaTypeService->reorderPriority($request->validated());
+
+        return $this->showAll(collect(QuotaTypeResource::collection($quotaTypes)));
     }
 }

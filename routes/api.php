@@ -57,17 +57,18 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('shifts', ShiftController::class);
 
     Route::middleware('auth:api')->group(function () {
-        Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
-        Route::apiResource('crm-credentials', CRMCredentialController::class, ['only' => ['index', 'show', 'store', 'update']]);
-        Route::apiResource('blast-types', BlastTypeController::class);
-        Route::apiResource('quota-types', QuotaTypeController::class);
-
         Route::patch('crm-credentials/{id}/status', [CRMCredentialController::class, 'updateStatus']);
+        Route::patch('quota-types/reorder-priority', [QuotaTypeController::class, 'reorderPriority']);
         Route::get('me/shift', [ShiftController::class, 'getShift']);
         Route::get('me/attendance-histories', [AttendanceController::class, 'getAttendancesByDateRange']);
         Route::get('me/attendance-schedule', [EmployeeShiftController::class, 'getShift']);
         Route::put('me/update-name', [CandidateController::class, 'updateCandidateName']);
         Route::post('me/update-profile-picture', [CandidateController::class, 'updateProfilePicture']);
+
+        Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
+        Route::apiResource('crm-credentials', CRMCredentialController::class, ['only' => ['index', 'show', 'store', 'update']]);
+        Route::apiResource('blast-types', BlastTypeController::class);
+        Route::apiResource('quota-types', QuotaTypeController::class);
 
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {

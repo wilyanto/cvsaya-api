@@ -27,7 +27,6 @@ class QuotaTypeStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', new EnumRule(QuotaTypeEnum::class)],
-            'priority' => 'required',
             'start_time' => 'required',
             'end_time' => 'required'
         ];

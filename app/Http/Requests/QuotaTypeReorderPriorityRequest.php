@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\QuotaTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
-use Spatie\Enum\Laravel\Rules\EnumRule;
 
-class QuotaTypeUpdateRequest extends FormRequest
+class QuotaTypeReorderPriorityRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +24,8 @@ class QuotaTypeUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', new EnumRule(QuotaTypeEnum::class)],
-            'start_time' => 'required',
-            'end_time' => 'required'
+            '*.id' => 'required|exists:quota_types,id',
+            '*.priority' => 'required|numeric',
         ];
     }
 }
