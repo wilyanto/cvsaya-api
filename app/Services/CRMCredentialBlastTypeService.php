@@ -18,7 +18,7 @@ class CRMCredentialBlastTypeService
      */
     public function getAllCRMCredentialBlastTypeByCredentialId($credentialId)
     {
-        $CRMCredentialBlastTypes = CRMCredentialBlastType::where('crm_credential_id', $credentialId)->get();
+        $CRMCredentialBlastTypes = CRMCredentialBlastType::where('credential_id', $credentialId)->get();
 
         return $CRMCredentialBlastTypes;
     }
@@ -36,7 +36,7 @@ class CRMCredentialBlastTypeService
         $CRMCredentialBlastTypes = [];
         foreach ($data as $blastTypeId) {
             $CRMCredentialBlastType = CRMCredentialBlastType::create([
-                'crm_credential_id' => $credentialId,
+                'credential_id' => $credentialId,
                 'blast_type_id' => $blastTypeId
             ]);
 
