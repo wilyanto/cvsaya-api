@@ -48,7 +48,6 @@ class QuotaTypeService
         $blastType = $this->getById($id);
         $blastType->update([
             'name' => $data->name,
-            'priority' => $data->priority,
             'start_time' => $data->start_time,
             'end_time' => $data->end_time
         ]);

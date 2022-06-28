@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\BlastTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Spatie\Enum\Laravel\Rules\EnumRule;
 
 class BlastTypeUpdateRequest extends FormRequest
 {
@@ -24,8 +26,7 @@ class BlastTypeUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'priority' => 'required'
+            'name' => ['required', new EnumRule(BlastTypeEnum::class)],
         ];
     }
 }

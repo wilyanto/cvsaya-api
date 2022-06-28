@@ -58,6 +58,7 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware('auth:api')->group(function () {
         Route::patch('crm-credentials/{id}/status', [CRMCredentialController::class, 'updateStatus']);
+        Route::patch('blast-types/reorder-priority', [BlastTypeController::class, 'reorderPriority']);
         Route::patch('quota-types/reorder-priority', [QuotaTypeController::class, 'reorderPriority']);
         Route::get('me/shift', [ShiftController::class, 'getShift']);
         Route::get('me/attendance-histories', [AttendanceController::class, 'getAttendancesByDateRange']);
