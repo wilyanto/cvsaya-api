@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\QuotaNameTypeEnum;
+use App\Enums\QuotaTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\Enum\Laravel\Rules\EnumRule;
 
@@ -26,7 +26,7 @@ class QuotaTypeStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', new EnumRule(QuotaNameTypeEnum::class)],
+            'name' => ['required', new EnumRule(QuotaTypeEnum::class)],
             'priority' => 'required',
             'start_time' => 'required',
             'end_time' => 'required'
