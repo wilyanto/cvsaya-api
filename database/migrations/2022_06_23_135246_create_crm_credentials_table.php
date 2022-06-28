@@ -19,7 +19,7 @@ return new class extends Migration
             $table->uuid('key')->unique();
             $table->string('country_code');
             $table->string('phone_number');
-            $table->integer('quantity');
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }
