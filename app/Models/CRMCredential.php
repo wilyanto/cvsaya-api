@@ -22,6 +22,10 @@ class CRMCredential extends Model
         'is_active',
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean'
+    ];
+
     public function blastTypes()
     {
         return $this->belongsToMany(BlastType::class, 'crm_credential_blast_types', 'credential_id', 'blast_type_id');
