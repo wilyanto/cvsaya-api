@@ -33,8 +33,8 @@ use App\Http\Controllers\Api\v1\EmployeeRecurringShiftController;
 use App\Http\Controllers\Api\v1\EmployeeShiftController;
 use App\Http\Controllers\Api\v1\LeavePermissionController;
 use App\Http\Controllers\Api\v1\LeavePermissionOccasionController;
-use App\Http\Controllers\v1\BlastTypeController;
-use App\Http\Controllers\v1\CRMCredentialController;
+use App\Http\Controllers\Api\v1\BlastTypeController;
+use App\Http\Controllers\Api\v1\CRMCredentialController;
 
 /*
 |--------------------------------------------------------------------------
