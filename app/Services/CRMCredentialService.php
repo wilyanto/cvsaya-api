@@ -19,17 +19,17 @@ class CRMCredentialService
             ->allowedSorts([
                 AllowedSort::custom(
                     'last-message',
-                    new LastMessageCredentialSort
+                    new LastMessageCredentialSort()
                 ),
                 AllowedSort::custom(
                     'message-count',
-                    new MessageCountCredentialSort
+                    new MessageCountCredentialSort()
                 )
             ])
             ->allowedFilters(
                 [
+                    AllowedFilter::custom('search', new FilterCredentialSearch),
                     AllowedFilter::exact('is_active'),
-                    AllowedFilter::custom('search', new FilterCredentialSearch)
                 ]
             )
             ->get();
