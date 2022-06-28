@@ -2,9 +2,13 @@
 
 namespace App\Services;
 
+use App\Http\Common\Filter\FilterCredentialSearch;
+use App\Http\Common\Filter\SortCredential;
+use App\Http\Common\Sort\LastMessageCredentialSort;
+use App\Http\Common\Sort\MessageCountCredentialSort;
 use App\Models\CRMCredential;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class CRMCredentialService
@@ -12,6 +16,22 @@ class CRMCredentialService
     public function getAll()
     {
         $credentials = QueryBuilder::for(CRMCredential::class)
+            ->allowedSorts([
+                AllowedSort::custom(
+                    'last-message',
+                    new LastMessageCredentialSort
+                ),
+                AllowedSort::custom(
+                    'message-count',
+                    new MessageCountCredentialSort
+                )
+            ])
+            ->allowedFilters(
+                [
+                    AllowedFilter::exact('is_active'),
+                    AllowedFilter::custom('search', new FilterCredentialSearch)
+                ]
+            )
             ->get();
 
         return $credentials;
@@ -33,7 +53,7 @@ class CRMCredentialService
             'key' => $data->key,
             'country_code' => $data->country_code,
             'phone_number' => $data->phone_number,
-            'quantity' => $data->quantity
+            'is_active' => $data->is_active
         ]);
 
         return $CRMCredential;
@@ -45,7 +65,7 @@ class CRMCredentialService
         $CRMCredential->update([
             'name' => $data->name,
             'key' => $data->key,
-            'quantity' => $data->quantity
+            'is_active' => $data->is_active
         ]);
 
         return $CRMCredential;
