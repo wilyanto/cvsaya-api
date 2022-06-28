@@ -9,7 +9,7 @@ class CRMCredentialBlastType extends Model
 {
     use HasFactory;
 
-    protected $table = 'crm_credential_blast_type';
+    protected $table = 'crm_credential_blast_types';
 
     protected $fillable = [
         'credential_id',

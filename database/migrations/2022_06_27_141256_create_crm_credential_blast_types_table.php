@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('crm_credential_blast_type', function (Blueprint $table) {
+        Schema::create('crm_credential_blast_types', function (Blueprint $table) {
             $table->foreignId('credential_id')->constrained('crm_credentials')->nullable();
             $table->foreignId('blast_type_id')->constrained('blast_types')->nullable();
         });
