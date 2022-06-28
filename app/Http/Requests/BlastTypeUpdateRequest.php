@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CRMCredentialStoreRequest extends FormRequest
+class BlastTypeUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +25,7 @@ class CRMCredentialStoreRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'key' => 'required',
-            'country_code' => 'required',
-            'phone_number' => 'required',
-            'is_active' => 'required'
+            'priority' => 'required'
         ];
     }
 }

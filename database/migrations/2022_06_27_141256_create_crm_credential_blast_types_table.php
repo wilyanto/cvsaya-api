@@ -13,13 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('crm_credentials', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->uuid('key')->unique();
-            $table->string('country_code');
-            $table->string('phone_number');
-            $table->timestamps();
+        Schema::create('crm_credential_blast_types', function (Blueprint $table) {
+            $table->foreignId('credential_id')->constrained('crm_credentials')->nullable();
+            $table->foreignId('blast_type_id')->constrained('blast_types')->nullable();
         });
     }
 
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('crm_credentials');
+        Schema::dropIfExists('crm_credential_blast_type');
     }
 };

@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CRMCredentialResource extends JsonResource
+class BlastTypeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,11 +17,7 @@ class CRMCredentialResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'key' => $this->key,
-            'country_code' => $this->country_code,
-            'phone_number' => $this->phone_number,
-            'sent_messages_count' => $this->getTodayBlastLogsCount(),
-            'is_active' => $this->is_active
+            'priority' => $this->priority
         ];
     }
 }

@@ -19,7 +19,9 @@ class CRMBlastLog extends Model
         'recipient_phone_number',
         'blast_type_id',
         'message_param_value',
-        'message_template'
+        'message_template',
+        'expired_at',
+        'priority'
     ];
 
     public function blastLoggable()

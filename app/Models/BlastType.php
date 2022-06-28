@@ -11,6 +11,12 @@ class BlastType extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name'
+        'name',
+        'priority'
     ];
+
+    public function credentials()
+    {
+        return $this->belongsToMany(CRMCredential::class, 'crm_credential_blast_types', 'blast_type_id', 'credential_id');
+    }
 }
