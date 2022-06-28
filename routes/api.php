@@ -35,6 +35,7 @@ use App\Http\Controllers\Api\v1\LeavePermissionController;
 use App\Http\Controllers\Api\v1\LeavePermissionOccasionController;
 use App\Http\Controllers\Api\v1\BlastTypeController;
 use App\Http\Controllers\Api\v1\CRMCredentialController;
+use App\Http\Controllers\Api\v1\QuotaTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +60,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
         Route::apiResource('crm-credentials', CRMCredentialController::class, ['only' => ['index', 'show', 'store', 'update']]);
         Route::apiResource('blast-types', BlastTypeController::class);
+        Route::apiResource('quota-types', QuotaTypeController::class);
 
         Route::patch('crm-credentials/{id}/status', [CRMCredentialController::class, 'updateStatus']);
         Route::get('me/shift', [ShiftController::class, 'getShift']);
