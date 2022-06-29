@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('blast_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('priority');
             $table->softDeletes();
             $table->timestamps();
         });

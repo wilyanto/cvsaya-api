@@ -12,7 +12,6 @@ class BlastType extends Model
 
     protected $fillable = [
         'name',
-        'priority'
     ];
 
     public function credentials()

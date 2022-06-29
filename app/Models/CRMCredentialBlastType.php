@@ -13,6 +13,7 @@ class CRMCredentialBlastType extends Model
 
     protected $fillable = [
         'credential_id',
-        'blast_type_id'
+        'blast_type_id',
+        'priority'
     ];
 }
