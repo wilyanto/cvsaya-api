@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CRMCredentialBlastTypeUpdateResource;
 use App\Http\Requests\CRMCredentialStoreRequest;
 use App\Http\Requests\CRMCredentialUpdateRequest;
 use App\Http\Requests\CRMCredentialUpdateStatusRequest;
 use App\Http\Resources\CRMBlastLogResource;
+use App\Http\Resources\CRMCredentialBlastTypeResource;
 use App\Http\Resources\CRMCredentialResource;
 use App\Services\CRMBlastLogService;
+use App\Services\CRMCredentialBlastTypeService;
 use App\Services\CRMCredentialService;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
@@ -18,14 +21,17 @@ class CRMCredentialController extends Controller
     use ApiResponser;
 
     protected $CRMBlastLogService,
-        $CRMCredentialService;
+        $CRMCredentialService,
+        $CRMCredentialBlastTypeService;
 
     public function __construct(
         CRMBlastLogService $CRMBlastLogService,
         CRMCredentialService $CRMCredentialService,
+        CRMCredentialBlastTypeService $CRMCredentialBlastTypeService
     ) {
         $this->CRMBlastLogService = $CRMBlastLogService;
         $this->CRMCredentialService = $CRMCredentialService;
+        $this->CRMCredentialBlastTypeService = $CRMCredentialBlastTypeService;
     }
 
     /**
@@ -93,5 +99,19 @@ class CRMCredentialController extends Controller
         $CRMBlastLogs = $this->CRMBlastLogService->getBlastLogByCredentialId($credentialId, $size);
 
         return $this->showPaginate('blast_logs', collect(CRMBlastLogResource::collection($CRMBlastLogs)), collect($CRMBlastLogs));
+    }
+
+    public function getBlastTypes($credentialId)
+    {
+        $credentialBlastTypes = $this->CRMCredentialBlastTypeService->getAllCRMCredentialBlastTypeByCredentialId($credentialId);
+
+        return $this->showAll(collect(CRMCredentialBlastTypeResource::collection($credentialBlastTypes)));
+    }
+
+    public function updateBlastTypes(CRMCredentialBlastTypeUpdateResource $request, $credentialId)
+    {
+        $credentialBlastTypes = $this->CRMCredentialBlastTypeService->updateByCredentialId($credentialId, $request->validated());
+
+        return $this->showAll(collect(CRMCredentialBlastTypeResource::collection($credentialBlastTypes)));
     }
 }

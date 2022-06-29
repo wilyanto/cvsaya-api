@@ -29,11 +29,22 @@ class CRMCredentialBlastTypeService
 
     public function createByCredentialIdAndData($credentialId, $data)
     {
+        $CRMCredentialBlastType = CRMCredentialBlastType::where('credential_id', $credentialId)
+            ->latest()
+            ->first();
+
+        if ($CRMCredentialBlastType) {
+            $lastPriorityNumber = $CRMCredentialBlastType->priority + 1;
+        } else {
+            $lastPriorityNumber = 1;
+        }
+
         $CRMCredentialBlastTypes = [];
         foreach ($data as $blastTypeId) {
             $CRMCredentialBlastType = CRMCredentialBlastType::create([
                 'credential_id' => $credentialId,
-                'blast_type_id' => $blastTypeId
+                'blast_type_id' => $blastTypeId,
+                'priority' => $lastPriorityNumber++
             ]);
 
             array_push($CRMCredentialBlastTypes, $CRMCredentialBlastType);
@@ -56,5 +67,22 @@ class CRMCredentialBlastTypeService
         }
 
         return true;
+    }
+
+    public function updateByCredentialId($credentialId, $data)
+    {
+        $this->deleteByCredentialId($credentialId);
+        $CRMCredentialBlastTypes = [];
+        foreach ($data as $datum) {
+            $CRMCredentialBlastType = CRMCredentialBlastType::create([
+                'credential_id' => $credentialId,
+                'blast_type_id' => $datum['blast_type_id'],
+                'priority' => $datum['priority']
+            ]);
+
+            array_push($CRMCredentialBlastTypes, $CRMCredentialBlastType);
+        }
+
+        return $CRMCredentialBlastTypes;
     }
 }
