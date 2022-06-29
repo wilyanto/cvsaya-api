@@ -28,4 +28,18 @@ class CRMBlastLog extends Model
     {
         return $this->morphTo(__FUNCTION__, 'blast_loggable_type', 'blast_loggable_id');
     }
+
+    //TODO: need to find better way, for now copy the same code from message service
+    public function constructMessage()
+    {
+        $messageTemplate = json_decode($this->message_template, true);
+        $message = $messageTemplate['body'];
+        $messageParamValue = json_decode($this->message_param_value, true);
+        $messageParamValueBody = $messageParamValue['body'];
+        foreach ($messageParamValueBody as $key => $field) {
+            $search = "{{" . $key . "}}";
+            $message = str_replace($search, $field, $message);
+        }
+        return $message;
+    }
 }
