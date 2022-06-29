@@ -374,7 +374,7 @@ class AttendanceController extends Controller
                     now()->gt(today()->addSeconds($shiftTime->secondsSinceMidnight())))
             ) {
                 $verifiedAt = now();
-                $verifiedBy = auth()->user()->id;
+                $verifiedBy = auth()->id();
             }
 
             $attendanceDetail = AttendanceDetail::create([
