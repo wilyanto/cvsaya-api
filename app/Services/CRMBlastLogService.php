@@ -24,7 +24,7 @@ class CRMBlastLogService
             'message_template' => json_encode($messageTemplate),
             'priority' => $blastType->priority,
             'status' => BlastLogStatusEnum::pending(),
-            'expired_at' => now()
+            'expired_at' => now() // TODO: currently hardcode to now because no backlog
         ]);
         $CRMBlastLog->blastLoggable()->associate($candidate)->save();
 
@@ -42,5 +42,16 @@ class CRMBlastLogService
             ->latest()
             ->paginate($size);
         return $CRMBlastLogs;
+    }
+
+    public function updateStatusAndUuid($id, $status, $uuid)
+    {
+        $CRMBlastLog = CRMBlastLog::where('id', $id)->firstOrFail();
+        $CRMBlastLog->update([
+            'status' => $status,
+            'uuid' => $uuid
+        ]);
+
+        return $CRMBlastLog;
     }
 }
