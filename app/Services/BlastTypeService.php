@@ -26,16 +26,8 @@ class BlastTypeService
 
     public function createBlastType($data)
     {
-        $blastType = BlastType::orderBy('priority', 'desc')->first();
-        if ($blastType) {
-            $lastPriorityNumber = $blastType->priority + 1;
-        } else {
-            $lastPriorityNumber = 1;
-        }
-
         $blastType = BlastType::create([
             'name' => $data->name,
-            'priority' => $lastPriorityNumber
         ]);
 
         return $blastType;
@@ -56,19 +48,5 @@ class BlastTypeService
         $blastType = BlastType::where('id', $id)->firstOrFail();
         $blastType->delete();
         return true;
-    }
-
-    public function reorderPriority($data)
-    {
-        $quotaTypes = [];
-        foreach ($data as $datum) {
-            $quotaType = $this->getById($datum['id']);
-
-            $quotaType->update(['priority' => $datum['priority']]);
-
-            array_push($quotaTypes, $quotaType);
-        }
-
-        return $quotaTypes;
     }
 }
