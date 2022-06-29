@@ -2,7 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\BlastLogStatusEnum;
+use App\Http\Common\Filter\FilterBlastLogDateRange;
+use App\Http\Common\Filter\FilterBlastLogSearch;
 use App\Models\CRMBlastLog;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
+use Illuminate\Support\Str;
 
 class CRMBlastLogService
 {
@@ -17,7 +23,8 @@ class CRMBlastLogService
             'message_param_value' => json_encode($messageParamValue),
             'message_template' => json_encode($messageTemplate),
             'priority' => $blastType->priority,
-            'expired_at' => now()
+            'status' => BlastLogStatusEnum::pending(),
+            'expired_at' => now() // TODO: currently hardcode to now because no backlog
         ]);
         $CRMBlastLog->blastLoggable()->associate($candidate)->save();
 
@@ -26,8 +33,25 @@ class CRMBlastLogService
 
     public function getBlastLogByCredentialId($credentialId, $size)
     {
-        $CRMBlastLogs = CRMBlastLog::where('credential_id', $credentialId)->latest()->paginate($size);
-
+        $CRMBlastLogs = QueryBuilder::for(CRMBlastLog::class)
+            ->allowedFilters([
+                AllowedFilter::custom('search', new FilterBlastLogSearch),
+                AllowedFilter::custom('date-between', new FilterBlastLogDateRange),
+            ])
+            ->where('credential_id', $credentialId)
+            ->latest()
+            ->paginate($size);
         return $CRMBlastLogs;
+    }
+
+    public function updateStatusAndUuid($id, $status, $uuid)
+    {
+        $CRMBlastLog = CRMBlastLog::where('id', $id)->firstOrFail();
+        $CRMBlastLog->update([
+            'status' => $status,
+            'uuid' => $uuid
+        ]);
+
+        return $CRMBlastLog;
     }
 }
