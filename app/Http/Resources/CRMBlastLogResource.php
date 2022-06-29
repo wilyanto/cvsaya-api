@@ -22,6 +22,8 @@ class CRMBlastLogResource extends JsonResource
             'message' => $this->constructMessage(),
             'expired_at' => $this->expired_at,
             'priority' => $this->priority,
+            'uuid' => $this->uuid,
+            'status' => $this->status,
             'created_at' => $this->created_at
         ];
     }

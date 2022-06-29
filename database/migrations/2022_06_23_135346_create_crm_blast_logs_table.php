@@ -23,7 +23,9 @@ return new class extends Migration
             $table->unsignedBigInteger('blast_type_id');
             $table->json('message_param_value');
             $table->json('message_template');
-            $table->string('priority');
+            $table->integer('priority');
+            $table->enum('status', ['pending', 'sent', 'failed']);
+            $table->uuid()->nullable();
             $table->timestamp('expired_at')->nullable();
             $table->timestamps();
 

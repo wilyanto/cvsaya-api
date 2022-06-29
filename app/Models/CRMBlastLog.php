@@ -20,6 +20,8 @@ class CRMBlastLog extends Model
         'blast_type_id',
         'message_param_value',
         'message_template',
+        'status',
+        'uuid',
         'expired_at',
         'priority'
     ];
