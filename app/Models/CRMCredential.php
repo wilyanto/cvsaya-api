@@ -40,4 +40,9 @@ class CRMCredential extends Model
     {
         return $this->blastLogs()->whereDate('created_at', today())->count();
     }
+
+    public function recentMessages()
+    {
+        return $this->blastLogs()->latest()->take(3);
+    }
 }
