@@ -2,7 +2,11 @@
 
 namespace App\Services;
 
+use App\Http\Common\Filter\FilterBlastLogDateRange;
+use App\Http\Common\Filter\FilterBlastLogSearch;
 use App\Models\CRMBlastLog;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class CRMBlastLogService
 {
@@ -26,8 +30,14 @@ class CRMBlastLogService
 
     public function getBlastLogByCredentialId($credentialId, $size)
     {
-        $CRMBlastLogs = CRMBlastLog::where('credential_id', $credentialId)->latest()->paginate($size);
-
+        $CRMBlastLogs = QueryBuilder::for(CRMBlastLog::class)
+            ->allowedFilters([
+                AllowedFilter::custom('search', new FilterBlastLogSearch),
+                AllowedFilter::custom('date-between', new FilterBlastLogDateRange),
+            ])
+            ->where('credential_id', $credentialId)
+            ->latest()
+            ->paginate($size);
         return $CRMBlastLogs;
     }
 }
