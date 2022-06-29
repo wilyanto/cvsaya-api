@@ -39,11 +39,12 @@ class CRMCredentialController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $CRMCredentials = $this->CRMCredentialService->getAll();
+        $size = $request->input('page_size', 10);
+        $CRMCredentials = $this->CRMCredentialService->getAll($size);
 
-        return $this->showAll(collect(CRMCredentialResource::collection($CRMCredentials)));
+        return $this->showPaginate('credentials', collect(CRMCredentialResource::collection($CRMCredentials)), collect($CRMBlastLogs));
     }
 
     /**

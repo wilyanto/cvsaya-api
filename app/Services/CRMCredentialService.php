@@ -13,7 +13,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class CRMCredentialService
 {
-    public function getAll()
+    public function getAll($size)
     {
         $credentials = QueryBuilder::for(CRMCredential::class)
             ->allowedSorts([
@@ -32,7 +32,7 @@ class CRMCredentialService
                     AllowedFilter::exact('is_active'),
                 ]
             )
-            ->get();
+            ->paginate($size);
 
         return $credentials;
     }
