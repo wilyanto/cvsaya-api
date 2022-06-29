@@ -87,7 +87,7 @@ class CRMCredentialController extends Controller
         return $this->showOne(new CRMCredentialResource($CRMCredential));
     }
 
-    public function getBlastLogs($request, $credentialId)
+    public function getBlastLogs(Request $request, $credentialId)
     {
         $size = $request->input('page_size', 10);
         $CRMBlastLogs = $this->CRMBlastLogService->getBlastLogByCredentialId($credentialId, $size);
