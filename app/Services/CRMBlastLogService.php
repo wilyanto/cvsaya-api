@@ -16,9 +16,18 @@ class CRMBlastLogService
             'blast_type_id' => $blastType->id,
             'message_param_value' => json_encode($messageParamValue),
             'message_template' => json_encode($messageTemplate),
-            'priority' => 1,
+            'priority' => $blastType->priority,
             'expired_at' => now()
         ]);
         $CRMBlastLog->blastLoggable()->associate($candidate)->save();
+
+        return $CRMBlastLog;
+    }
+
+    public function getBlastLogByCredentialId($credentialId, $size)
+    {
+        $CRMBlastLogs = CRMBlastLog::where('credential_id', $credentialId)->latest()->paginate($size);
+
+        return $CRMBlastLogs;
     }
 }
