@@ -26,9 +26,9 @@ class AttendanceDetail extends Model
 
     protected $casts = [
         'location' => Point::class,
-        'attended_at' => 'datetime:Y-m-d H:i:s',
-        'scheduled_at' => 'datetime:Y-m-d H:i:s',
-        'verified_at' => 'datetime:Y-m-d H:i:s',
+        'attended_at' => 'datetime',
+        'scheduled_at' => 'datetime',
+        'verified_at' => 'datetime',
     ];
 
     public function newEloquentBuilder($query): SpatialBuilder

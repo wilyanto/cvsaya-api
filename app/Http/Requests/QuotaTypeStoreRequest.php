@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\BlastTypeEnum;
+use App\Enums\QuotaTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\Enum\Laravel\Rules\EnumRule;
 
-class BlastTypeStoreRequest extends FormRequest
+class QuotaTypeStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,9 @@ class BlastTypeStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', new EnumRule(BlastTypeEnum::class)],
+            'name' => ['required', new EnumRule(QuotaTypeEnum::class)],
+            'start_time' => 'required',
+            'end_time' => 'required'
         ];
     }
 }

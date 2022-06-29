@@ -33,8 +33,9 @@ use App\Http\Controllers\Api\v1\EmployeeRecurringShiftController;
 use App\Http\Controllers\Api\v1\EmployeeShiftController;
 use App\Http\Controllers\Api\v1\LeavePermissionController;
 use App\Http\Controllers\Api\v1\LeavePermissionOccasionController;
-use App\Http\Controllers\v1\BlastTypeController;
-use App\Http\Controllers\v1\CRMCredentialController;
+use App\Http\Controllers\Api\v1\BlastTypeController;
+use App\Http\Controllers\Api\v1\CRMCredentialController;
+use App\Http\Controllers\Api\v1\QuotaTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,14 +57,20 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('shifts', ShiftController::class);
 
     Route::middleware('auth:api')->group(function () {
-        Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
-        Route::apiResource('crm-credentials', CRMCredentialController::class, ['only' => ['index', 'show', 'store', 'update']]);
-        Route::apiResource('blast-types', BlastTypeController::class);
+        Route::get('crm-credentials/{id}/blast-logs', [CRMCredentialController::class, 'getBlastLogs']);
+        Route::patch('crm-credentials/{id}/status', [CRMCredentialController::class, 'updateStatus']);
+        Route::patch('blast-types/reorder-priority', [BlastTypeController::class, 'reorderPriority']);
+        Route::patch('quota-types/reorder-priority', [QuotaTypeController::class, 'reorderPriority']);
         Route::get('me/shift', [ShiftController::class, 'getShift']);
         Route::get('me/attendance-histories', [AttendanceController::class, 'getAttendancesByDateRange']);
         Route::get('me/attendance-schedule', [EmployeeShiftController::class, 'getShift']);
         Route::put('me/update-name', [CandidateController::class, 'updateCandidateName']);
         Route::post('me/update-profile-picture', [CandidateController::class, 'updateProfilePicture']);
+
+        Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
+        Route::apiResource('crm-credentials', CRMCredentialController::class, ['only' => ['index', 'show', 'store', 'update']]);
+        Route::apiResource('blast-types', BlastTypeController::class);
+        Route::apiResource('quota-types', QuotaTypeController::class);
 
         Route::prefix('companies')->group(function () {
             Route::controller(CompanyController::class)->group(function () {

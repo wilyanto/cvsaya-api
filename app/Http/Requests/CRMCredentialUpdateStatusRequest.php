@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\BlastTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
-use Spatie\Enum\Laravel\Rules\EnumRule;
 
-class BlastTypeStoreRequest extends FormRequest
+class CRMCredentialUpdateStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +24,7 @@ class BlastTypeStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', new EnumRule(BlastTypeEnum::class)],
+            'is_active' => 'required'
         ];
     }
 }

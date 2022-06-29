@@ -1,11 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\v1;
+namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CRMCredentialStoreRequest;
 use App\Http\Requests\CRMCredentialUpdateRequest;
+use App\Http\Requests\CRMCredentialUpdateStatusRequest;
+use App\Http\Resources\CRMBlastLogResource;
 use App\Http\Resources\CRMCredentialResource;
+use App\Services\CRMBlastLogService;
 use App\Services\CRMCredentialService;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
@@ -14,10 +17,14 @@ class CRMCredentialController extends Controller
 {
     use ApiResponser;
 
-    protected $CRMCredentialService;
+    protected $CRMBlastLogService,
+        $CRMCredentialService;
 
-    public function __construct(CRMCredentialService $CRMCredentialService)
-    {
+    public function __construct(
+        CRMBlastLogService $CRMBlastLogService,
+        CRMCredentialService $CRMCredentialService,
+    ) {
+        $this->CRMBlastLogService = $CRMBlastLogService;
         $this->CRMCredentialService = $CRMCredentialService;
     }
 
@@ -71,5 +78,20 @@ class CRMCredentialController extends Controller
         $CRMCredential = $this->CRMCredentialService->updateCredential($request, $id);
 
         return $this->showOne(new CRMCredentialResource($CRMCredential));
+    }
+
+    public function updateStatus(CRMCredentialUpdateStatusRequest $request, $id)
+    {
+        $CRMCredential = $this->CRMCredentialService->updateCredentialStatus($request->is_active, $id);
+
+        return $this->showOne(new CRMCredentialResource($CRMCredential));
+    }
+
+    public function getBlastLogs($credentialId)
+    {
+        $size = 10;
+        $CRMBlastLogs = $this->CRMBlastLogService->getBlastLogByCredentialId($credentialId, $size);
+
+        return $this->showPaginate('blast_logs', collect(CRMBlastLogResource::collection($CRMBlastLogs)), collect($CRMBlastLogs));
     }
 }

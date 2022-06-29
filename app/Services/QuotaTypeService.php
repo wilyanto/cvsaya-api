@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\BlastType;
+use App\Models\QuotaType;
 use Spatie\QueryBuilder\QueryBuilder;
 
-class BlastTypeService
+class QuotaTypeService
 {
     public function getAll()
     {
-        $blastTypes = QueryBuilder::for(BlastType::class)
+        $blastTypes = QueryBuilder::for(QuotaType::class)
             ->get();
 
         return $blastTypes;
@@ -17,35 +17,39 @@ class BlastTypeService
 
     public function getById($id)
     {
-        $query = BlastType::where('id', $id);
+        $query = QuotaType::where('id', $id);
         $blastType = QueryBuilder::for($query)
             ->firstOrFail();
 
         return $blastType;
     }
 
-    public function createBlastType($data)
+    public function createQuotaType($data)
     {
-        $blastType = BlastType::orderBy('priority', 'desc')->first();
-        if ($blastType) {
-            $lastPriorityNumber = $blastType->priority + 1;
+        $quotaType = QuotaType::orderBy('priority', 'desc')->first();
+        if ($quotaType) {
+            $lastPriorityNumber = $quotaType->priority + 1;
         } else {
             $lastPriorityNumber = 1;
         }
 
-        $blastType = BlastType::create([
+        $blastType = QuotaType::create([
             'name' => $data->name,
-            'priority' => $lastPriorityNumber
+            'priority' => $lastPriorityNumber,
+            'start_time' => $data->start_time,
+            'end_time' => $data->end_time
         ]);
 
         return $blastType;
     }
 
-    public function updateBlastType($data, $id)
+    public function updateQuotaType($data, $id)
     {
         $blastType = $this->getById($id);
         $blastType->update([
             'name' => $data->name,
+            'start_time' => $data->start_time,
+            'end_time' => $data->end_time
         ]);
 
         return $blastType;
@@ -53,7 +57,7 @@ class BlastTypeService
 
     public function deleteById($id)
     {
-        $blastType = BlastType::where('id', $id)->firstOrFail();
+        $blastType = QuotaType::where('id', $id)->firstOrFail();
         $blastType->delete();
         return true;
     }

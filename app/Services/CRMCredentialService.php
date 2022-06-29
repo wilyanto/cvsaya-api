@@ -3,11 +3,11 @@
 namespace App\Services;
 
 use App\Http\Common\Filter\FilterCredentialSearch;
-use App\Http\Common\Filter\SortCredential;
 use App\Http\Common\Sort\LastMessageCredentialSort;
 use App\Http\Common\Sort\MessageCountCredentialSort;
 use App\Models\CRMCredential;
 use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\AllowedSort;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -41,6 +41,10 @@ class CRMCredentialService
     {
         $query = CRMCredential::where('id', $id);
         $CRMCredential = QueryBuilder::for($query)
+            ->allowedIncludes([
+                'blastLogs',
+                'recentMessages'
+            ])
             ->firstOrFail();
 
         return $CRMCredential;
@@ -66,6 +70,16 @@ class CRMCredentialService
             'name' => $data->name,
             'key' => $data->key,
             'is_active' => $data->is_active
+        ]);
+
+        return $CRMCredential;
+    }
+
+    public function updateCredentialStatus($isActive, $id)
+    {
+        $CRMCredential = $this->getById($id);
+        $CRMCredential->update([
+            'is_active' => $isActive
         ]);
 
         return $CRMCredential;

@@ -21,7 +21,9 @@ class CRMCredentialResource extends JsonResource
             'country_code' => $this->country_code,
             'phone_number' => $this->phone_number,
             'sent_messages_count' => $this->getTodayBlastLogsCount(),
-            'is_active' => $this->is_active
+            'is_active' => $this->is_active,
+            'blast_logs' => CRMBlastLogResource::collection($this->whenLoaded('blastLogs')),
+            'recent_messages' => CRMBlastLogResource::collection($this->whenLoaded('recentMessages'))
         ];
     }
 }

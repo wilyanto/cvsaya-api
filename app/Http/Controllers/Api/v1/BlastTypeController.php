@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\v1;
+namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BlastTypeReorderPriorityRequest;
 use App\Http\Requests\BlastTypeStoreRequest;
 use App\Http\Requests\BlastTypeUpdateRequest;
 use App\Http\Resources\BlastTypeResource;
@@ -54,5 +55,12 @@ class BlastTypeController extends Controller
         $message = $this->blastTypeService->deleteById($id);
 
         return response()->json(null, 204);
+    }
+
+    public function reorderPriority(BlastTypeReorderPriorityRequest $request)
+    {
+        $blastTypes = $this->blastTypeService->reorderPriority($request->validated());
+
+        return $this->showAll(collect(BlastTypeResource::collection($blastTypes)));
     }
 }
