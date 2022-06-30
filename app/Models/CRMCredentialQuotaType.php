@@ -18,4 +18,9 @@ class CRMCredentialQuotaType extends Model
         'quota',
         'last_updated_at',
     ];
+
+    public function quotaType()
+    {
+        return $this->hasOne(QuotaType::class, 'id', 'quota_type_id');
+    }
 }
