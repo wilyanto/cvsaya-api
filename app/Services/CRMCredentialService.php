@@ -13,6 +13,14 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class CRMCredentialService
 {
+    private $CRMCredentialQuotaTypeService;
+
+    private function __construct(
+        CRMCredentialQuotaTypeService $CRMCredentialQuotaTypeService
+    ) {
+        $this->CRMCredentialQuotaTypeService = $CRMCredentialQuotaTypeService;
+    }
+
     public function getAll($size)
     {
         $credentials = QueryBuilder::for(CRMCredential::class)
@@ -59,6 +67,9 @@ class CRMCredentialService
             'phone_number' => $data->phone_number,
             'is_active' => $data->is_active
         ]);
+
+        // assign quotas
+        $this->CRMCredentialQuotaTypeService->syncCredentialQuotaType($CRMCredential->id, $data->key);
 
         return $CRMCredential;
     }

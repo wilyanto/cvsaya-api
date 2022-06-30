@@ -83,7 +83,7 @@ class CRMCredentialQuotaTypeService
 
     public function syncCredentialQuotaType($credentialId, $key)
     {
-        $syncCredentialQuotaTypes = $this->getSyncData($key);
+        $syncCredentialQuotaTypes = $this->syncCredentialQuota($key);
         $credentialQuotaTypes = [];
         foreach ($syncCredentialQuotaTypes as $syncCredentialQuotaType) {
             // encode and decode to change array back to object
@@ -102,7 +102,7 @@ class CRMCredentialQuotaTypeService
         return $credentialQuotaTypes;
     }
 
-    public function getSyncData($key)
+    public function syncCredentialQuota($key)
     {
         // TODO: fix to dynamic
         $url = "http://localhost:8001/api/v1/whatsapp-devices/96a0510e-2b10-47d5-8043-3aaf1027ec99/quotas";
