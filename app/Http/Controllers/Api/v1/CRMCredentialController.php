@@ -9,9 +9,12 @@ use App\Http\Requests\CRMCredentialUpdateRequest;
 use App\Http\Requests\CRMCredentialUpdateStatusRequest;
 use App\Http\Resources\CRMBlastLogResource;
 use App\Http\Resources\CRMCredentialBlastTypeResource;
+use App\Http\Resources\CRMCredentialQuotaTypeResource;
 use App\Http\Resources\CRMCredentialResource;
+use App\Models\CRMCredential;
 use App\Services\CRMBlastLogService;
 use App\Services\CRMCredentialBlastTypeService;
+use App\Services\CRMCredentialQuotaTypeService;
 use App\Services\CRMCredentialService;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
@@ -22,16 +25,19 @@ class CRMCredentialController extends Controller
 
     protected $CRMBlastLogService,
         $CRMCredentialService,
-        $CRMCredentialBlastTypeService;
+        $CRMCredentialBlastTypeService,
+        $CRMCredentialQuotaTypeService;
 
     public function __construct(
         CRMBlastLogService $CRMBlastLogService,
         CRMCredentialService $CRMCredentialService,
-        CRMCredentialBlastTypeService $CRMCredentialBlastTypeService
+        CRMCredentialBlastTypeService $CRMCredentialBlastTypeService,
+        CRMCredentialQuotaTypeService $CRMCredentialQuotaTypeService
     ) {
         $this->CRMBlastLogService = $CRMBlastLogService;
         $this->CRMCredentialService = $CRMCredentialService;
         $this->CRMCredentialBlastTypeService = $CRMCredentialBlastTypeService;
+        $this->CRMCredentialQuotaTypeService = $CRMCredentialQuotaTypeService;
     }
 
     /**
@@ -44,7 +50,7 @@ class CRMCredentialController extends Controller
         $size = $request->input('page_size', 10);
         $CRMCredentials = $this->CRMCredentialService->getAll($size);
 
-        return $this->showPaginate('credentials', collect(CRMCredentialResource::collection($CRMCredentials)), collect($CRMBlastLogs));
+        return $this->showPaginate('credentials', collect(CRMCredentialResource::collection($CRMCredentials)), collect($CRMCredentials));
     }
 
     /**
@@ -114,5 +120,13 @@ class CRMCredentialController extends Controller
         $credentialBlastTypes = $this->CRMCredentialBlastTypeService->updateByCredentialId($credentialId, $request->validated());
 
         return $this->showAll(collect(CRMCredentialBlastTypeResource::collection($credentialBlastTypes)));
+    }
+
+    public function syncCredentialQuota($credentialId)
+    {
+        $credential = $this->CRMCredentialService->getById($credentialId);
+        $credentialQuotaTypes = $this->CRMCredentialQuotaTypeService->syncCredentialQuotaType($credential->id, $credential->key);
+
+        return $this->showAll(collect(CRMCredentialQuotaTypeResource::collection($credentialQuotaTypes)));
     }
 }

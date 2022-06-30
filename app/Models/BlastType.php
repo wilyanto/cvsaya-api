@@ -21,6 +21,7 @@ class BlastType extends Model
 
     public function credentialBlastType()
     {
+        // need to check by credential id aswell
         return $this->hasOne(CRMCredentialBlastType::class, 'blast_type_id', 'id');
     }
 }
