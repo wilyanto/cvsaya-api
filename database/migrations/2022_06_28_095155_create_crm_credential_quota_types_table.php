@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('credential_id')->constrained('crm_credentials')->nullable();
             $table->foreignId('quota_type_id')->constrained('quota_types')->nullable();
-            $table->timestamp('renew_at');
-            $table->integer('quantity')->nullable();
-            $table->integer('max_quantity')->nullable();
+            $table->integer('remaining')->nullable();
+            $table->integer('quota')->nullable();
+            $table->timestamp('last_updated_at');
             $table->timestamps();
         });
     }

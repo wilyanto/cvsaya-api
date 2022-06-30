@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\BlastTypeEnum;
 use App\Models\BlastType;
 use App\Models\Candidate;
 use App\Models\CRMCredential;
@@ -51,7 +52,7 @@ class DailyCandidateReminder extends Command
     public function handle()
     {
         $candidates = Candidate::where('id', 1)->get();
-        $blastType = BlastType::where('name', 'completeness-status-reminder')->firstOrFail();
+        $blastType = BlastType::where('name', BlastTypeEnum::interviewReminder())->firstOrFail();
         $credential = CRMcredential::firstOrFail();
         // set jadwal / jam format hour
         // consider limit per number
@@ -63,7 +64,8 @@ class DailyCandidateReminder extends Command
                 ->latest()
                 ->get();
 
-            if (
+            if ($blastLogs->count() == 0) {
+            } else if (
                 $blastLogs->count() <= 1 &&
                 $blastLogs->first()->created_at->diffInDays(now()) <= 3
             ) {

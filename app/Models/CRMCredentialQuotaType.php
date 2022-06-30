@@ -14,8 +14,13 @@ class CRMCredentialQuotaType extends Model
     protected $fillable = [
         'credential_id',
         'quota_type_id',
-        'quantity',
-        'renew_at',
-        'max_quantity'
+        'remaining',
+        'quota',
+        'last_updated_at',
     ];
+
+    public function quotaType()
+    {
+        return $this->hasOne(QuotaType::class, 'id', 'quota_type_id');
+    }
 }

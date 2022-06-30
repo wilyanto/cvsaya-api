@@ -18,4 +18,10 @@ class BlastType extends Model
     {
         return $this->belongsToMany(CRMCredential::class, 'crm_credential_blast_types', 'blast_type_id', 'credential_id');
     }
+
+    public function credentialBlastType()
+    {
+        // need to check by credential id aswell
+        return $this->hasOne(CRMCredentialBlastType::class, 'blast_type_id', 'id');
+    }
 }

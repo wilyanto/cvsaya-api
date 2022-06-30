@@ -22,7 +22,7 @@ class CRMBlastLogService
             'blast_type_id' => $blastType->id,
             'message_param_value' => json_encode($messageParamValue),
             'message_template' => json_encode($messageTemplate),
-            'priority' => $blastType->priority,
+            'priority' => $blastType->credentialBlastType->priority,
             'status' => BlastLogStatusEnum::pending(),
             'expired_at' => now() // TODO: currently hardcode to now because no backlog
         ]);

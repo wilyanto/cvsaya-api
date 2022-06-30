@@ -25,7 +25,8 @@ class DatabaseSeeder extends Seeder
             // UniqueCandidatePositionSeeder::class,
             // RevisePositionIdSeeder::class,
             // CertificationSeeder::class,
-            NewCandidateJobSeeder::class,
+            // NewCandidateJobSeeder::class,
+            QuotaTypeSeeder::class
         ]);
     }
 }

@@ -59,6 +59,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::get('crm-credentials/{id}/blast-logs', [CRMCredentialController::class, 'getBlastLogs']);
         Route::patch('crm-credentials/{id}/status', [CRMCredentialController::class, 'updateStatus']);
+        Route::get('crm-credentials/{id}/sync-quotas', [CRMCredentialController::class, 'syncCredentialQuota']);
         Route::get('crm-credentials/{id}/blast-type', [CRMCredentialController::class, 'getBlastTypes']);
         Route::patch('crm-credentials/{id}/blast-type', [CRMCredentialController::class, 'updateBlastTypes']);
         Route::patch('blast-types/reorder-priority', [BlastTypeController::class, 'reorderPriority']);
