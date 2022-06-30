@@ -34,9 +34,9 @@ class CRMCredentialQuotaTypeService
             $CRMCredentialQuotaType = CRMCredentialQuotaType::create([
                 'credential_id' => $credentialId,
                 'blast_type_id' => $datum->blast_type_id,
-                'quantity' => $datum->max_quantity,
-                'renew_at' => $datum->renew_at,
-                'max_quantity' => $datum->max_quantity
+                'last_updated_at' => $datum->last_updated_at,
+                'remaining' => $datum->remaining,
+                'quota' => $datum->quota,
             ]);
 
             array_push($CRMCredentialQuotaTypes, $CRMCredentialQuotaType);
