@@ -11,7 +11,6 @@ use App\Http\Resources\CRMBlastLogResource;
 use App\Http\Resources\CRMCredentialBlastTypeResource;
 use App\Http\Resources\CRMCredentialQuotaTypeResource;
 use App\Http\Resources\CRMCredentialResource;
-use App\Models\CRMCredential;
 use App\Services\CRMBlastLogService;
 use App\Services\CRMCredentialBlastTypeService;
 use App\Services\CRMCredentialQuotaTypeService;

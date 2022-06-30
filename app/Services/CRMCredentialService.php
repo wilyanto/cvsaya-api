@@ -13,9 +13,9 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class CRMCredentialService
 {
-    private $CRMCredentialQuotaTypeService;
+    protected $CRMCredentialQuotaTypeService;
 
-    private function __construct(
+    public function __construct(
         CRMCredentialQuotaTypeService $CRMCredentialQuotaTypeService
     ) {
         $this->CRMCredentialQuotaTypeService = $CRMCredentialQuotaTypeService;
