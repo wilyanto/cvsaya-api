@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\BlastType;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CRMCredentialResource extends JsonResource
@@ -21,8 +22,12 @@ class CRMCredentialResource extends JsonResource
             'country_code' => $this->country_code,
             'phone_number' => $this->phone_number,
             'uuid' => $this->uuid,
-            'sent_messages_count' => $this->getTodayBlastLogsCount(),
+            'sent_messages_count' => $this->getTodayBlastLogCount(),
             'is_active' => $this->is_active,
+            'expired_at' => $this->expired_at,
+            'blast_type_count' => $this->getBlastTypeCount(),
+            'blast_types' => BlastTypeResource::collection($this->whenLoaded('blastTypes')),
+            'quotas' => CRMCredentialQuotaTypeResource::collection($this->whenLoaded('quotas')),
             'blast_logs' => CRMBlastLogResource::collection($this->whenLoaded('blastLogs')),
             'recent_messages' => CRMBlastLogResource::collection($this->whenLoaded('recentMessages'))
         ];

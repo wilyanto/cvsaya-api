@@ -105,7 +105,7 @@ class CRMCredentialQuotaTypeService
     public function syncCredentialQuota($key)
     {
         // TODO: fix to dynamic
-        $url = "http://localhost:8001/api/v1/whatsapp-devices/96a0510e-2b10-47d5-8043-3aaf1027ec99/quotas";
+        $url = "https://dev-ecrm.x5.com.au/api/v1/whatsapp-devices/$key/quotas";
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
         ])
