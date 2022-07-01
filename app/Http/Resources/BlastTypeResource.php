@@ -17,7 +17,6 @@ class BlastTypeResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'priority' => $this->priority
         ];
     }
 }
