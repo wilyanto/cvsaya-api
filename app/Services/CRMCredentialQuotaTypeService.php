@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\CRMCredentialQuotaType;
+use App\Models\QuotaType;
 use Illuminate\Support\Facades\Http;
 
 class CRMCredentialQuotaTypeService
@@ -22,8 +23,9 @@ class CRMCredentialQuotaTypeService
 
     public function getCRMCredentialQuotaTypeByCredentialIdAndQuotaType($credentialId, $quotaType)
     {
+        $quotaType = QuotaType::find($quotaType->quota_type_id);
         $CRMCredentialQuotaType = CRMCredentialQuotaType::whereHas('quotaType', function ($query) use ($quotaType) {
-            $query->where('name', $quotaType->remaining_quota_type);
+            $query->where('name', $quotaType->name);
         })->first();
 
         return $CRMCredentialQuotaType;
