@@ -52,7 +52,7 @@ class CRMCredentialService
         $CRMCredential = QueryBuilder::for($query)
             ->allowedIncludes([
                 'blastTypes',
-                'quotas',
+                'quotas.quotaType',
                 'blastLogs',
                 'recentMessages'
             ])
