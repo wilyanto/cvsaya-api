@@ -80,7 +80,6 @@ class CRMCredentialService
         $CRMCredential = $this->getById($id);
         $CRMCredential->update([
             'name' => $data->name,
-            'key' => $data->key,
             'is_active' => $data->is_active,
             'expired_at' => $data->expired_at
         ]);
