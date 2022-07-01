@@ -20,10 +20,12 @@ class CRMCredential extends Model
         'country_code',
         'phone_number',
         'is_active',
+        'expired_at'
     ];
 
     protected $casts = [
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
+        'expired_at' => 'datetime'
     ];
 
     public function blastTypes()
@@ -36,7 +38,12 @@ class CRMCredential extends Model
         return $this->hasMany(CRMBlastLog::class, 'credential_id', 'id');
     }
 
-    public function getTodayBlastLogsCount()
+    public function quotas()
+    {
+        return $this->hasMany(CRMCredentialQuotaType::class, 'credential_id', 'id');
+    }
+
+    public function getTodayBlastLogCount()
     {
         return $this->blastLogs()->whereDate('created_at', today())->count();
     }
@@ -44,5 +51,10 @@ class CRMCredential extends Model
     public function recentMessages()
     {
         return $this->blastLogs()->latest()->take(3);
+    }
+
+    public function getBlastTypeCount()
+    {
+        return $this->blastTypes()->count();
     }
 }

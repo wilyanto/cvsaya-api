@@ -65,7 +65,8 @@ class CRMCredentialService
             'key' => $data->key,
             'country_code' => $data->country_code,
             'phone_number' => $data->phone_number,
-            'is_active' => $data->is_active
+            'is_active' => $data->is_active,
+            'expired_at' => $data->expired_at
         ]);
 
         // assign quotas
@@ -79,8 +80,8 @@ class CRMCredentialService
         $CRMCredential = $this->getById($id);
         $CRMCredential->update([
             'name' => $data->name,
-            'key' => $data->key,
-            'is_active' => $data->is_active
+            'is_active' => $data->is_active,
+            'expired_at' => $data->expired_at
         ]);
 
         return $CRMCredential;
