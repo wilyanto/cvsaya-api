@@ -27,7 +27,8 @@ class CRMCredential extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'expired_at' => 'datetime'
+        'expired_at' => 'datetime',
+        'last_updated_at' => 'datetime',
     ];
 
     public function blastTypes()
