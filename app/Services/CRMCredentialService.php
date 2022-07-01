@@ -104,6 +104,16 @@ class CRMCredentialService
     {
         $data = json_decode(json_encode($this->getCredentialDataByKey($credential->key)));
         // update credential
+        if (count($data) === 0) {
+            return
+                $credential->load([
+                    'blastTypes',
+                    'quotas',
+                    'blastLogs',
+                    'recentMessages'
+                ]);
+        }
+
         $credential->update([
             'expired_at' => $data->expired_at,
             'scheduled_message_count' => $data->scheduled_message_count,
@@ -130,7 +140,11 @@ class CRMCredentialService
             ->acceptJson()
             ->get($url);
 
-        $data = json_decode($response->body(), true)['data'];
+        if ($response->failed()) {
+            $data = [];
+        } else {
+            $data = json_decode($response->body(), true)['data'];
+        }
         return $data;
     }
 }

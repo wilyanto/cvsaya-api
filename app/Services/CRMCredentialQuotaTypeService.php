@@ -121,7 +121,11 @@ class CRMCredentialQuotaTypeService
         ])
             ->acceptJson()
             ->get($url);
-        $data = json_decode($response->body(), true)['data'];
+        if ($response->failed()) {
+            $data = [];
+        } else {
+            $data = json_decode($response->body(), true)['data'];
+        }
         return $data;
     }
 }
