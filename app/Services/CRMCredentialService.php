@@ -6,6 +6,7 @@ use App\Http\Common\Filter\FilterCredentialSearch;
 use App\Http\Common\Sort\LastMessageCredentialSort;
 use App\Http\Common\Sort\MessageCountCredentialSort;
 use App\Models\CRMCredential;
+use Illuminate\Support\Facades\Http;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
 use Spatie\QueryBuilder\AllowedSort;
@@ -97,5 +98,39 @@ class CRMCredentialService
         ]);
 
         return $CRMCredential;
+    }
+
+    public function syncCredential($credential)
+    {
+        $data = json_decode(json_encode($this->getCredentialDataByKey($credential->key)));
+        // update credential
+        $credential->update([
+            'expired_at' => $data->expired_at,
+            'scheduled_message_count' => $data->scheduled_message_count,
+            'last_updated_at' => now(),
+        ]);
+
+        // update quotas
+        $this->CRMCredentialQuotaTypeService->syncCredentialQuotaType($credential->id, $credential->key);
+
+        return $credential->load([
+            'blastTypes',
+            'quotas',
+            'blastLogs',
+            'recentMessages'
+        ]);
+    }
+
+    public function getCredentialDataByKey($key)
+    {
+        $url = env('ECRM_URL') . "/api/v1/whatsapp-devices/$key/quotas";
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+        ])
+            ->acceptJson()
+            ->get($url);
+
+        $data = json_decode($response->body(), true)['data'];
+        return $data;
     }
 }

@@ -91,6 +91,7 @@ class CRMCredentialQuotaTypeService
             // encode and decode to change array back to object
             $syncCredentialQuotaType = json_decode(json_encode($syncCredentialQuotaType));
             $credentialQuotaType = $this->getCRMCredentialQuotaTypeByCredentialIdAndQuotaType($credentialId, $syncCredentialQuotaType);
+
             if ($credentialQuotaType) {
                 $credentialQuotaType->update([
                     'last_updated_at' => now(),
@@ -114,14 +115,12 @@ class CRMCredentialQuotaTypeService
 
     public function syncCredentialQuota($key)
     {
-        // TODO: fix to dynamic
-        $url = "https://dev-ecrm.x5.com.au/api/v1/whatsapp-devices/$key/quotas";
+        $url = env('ECRM_URL') . "/api/v1/whatsapp-devices/$key/quotas";
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
         ])
             ->acceptJson()
             ->get($url);
-
         $data = json_decode($response->body(), true)['data'];
         return $data;
     }

@@ -10,7 +10,7 @@ class WhatsappService
 {
     public function sendMessage($batchMessages)
     {
-        $url = CRMCredential::URL_SEND_BATCH_MESSAGE;
+        $url = env('ECRM_URL') . CRMCredential::URL_SEND_BATCH_MESSAGE;
         $body = [
             'messages' => $batchMessages,
         ];

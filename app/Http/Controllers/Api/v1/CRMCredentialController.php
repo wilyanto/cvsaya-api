@@ -121,6 +121,14 @@ class CRMCredentialController extends Controller
         return $this->showAll(collect(CRMCredentialBlastTypeResource::collection($credentialBlastTypes)));
     }
 
+    public function syncCredential($credentialId)
+    {
+        $credential = $this->CRMCredentialService->getById($credentialId);
+        $this->CRMCredentialService->syncCredential($credential);
+
+        return $this->showOne(new CRMCredentialResource($credential));
+    }
+
     public function syncCredentialQuota($credentialId)
     {
         $credential = $this->CRMCredentialService->getById($credentialId);
