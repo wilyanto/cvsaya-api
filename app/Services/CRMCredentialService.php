@@ -108,7 +108,7 @@ class CRMCredentialService
             return
                 $credential->load([
                     'blastTypes',
-                    'quotas',
+                    'quotas.quotaType',
                     'blastLogs',
                     'recentMessages'
                 ]);
