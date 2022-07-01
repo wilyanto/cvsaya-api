@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('crm_credentials', function (Blueprint $table) {
-            $table->integer('scheduled_message_count');
+            $table->integer('scheduled_message_count')->default(0);
             $table->timestamp('last_updated_at')->useCurrent();
         });
     }
