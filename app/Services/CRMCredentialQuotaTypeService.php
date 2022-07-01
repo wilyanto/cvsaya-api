@@ -97,8 +97,16 @@ class CRMCredentialQuotaTypeService
                     'remaining' => $syncCredentialQuotaType->remaining_quota,
                     'quota' => $syncCredentialQuotaType->remaining_quota, // TODO: get from total instead
                 ]);
-                array_push($credentialQuotaTypes, $credentialQuotaType);
+            } else {
+                $credentialQuotaType = CRMCredentialQuotaType::create([
+                    'credential_id' => $credentialId,
+                    'quota_type_id' => $syncCredentialQuotaType->quota_type_id,
+                    'last_updated_at' => now(),
+                    'remaining' => $syncCredentialQuotaType->remaining_quota,
+                    'quota' => $syncCredentialQuotaType->remaining_quota,
+                ]);
             }
+            array_push($credentialQuotaTypes, $credentialQuotaType);
         }
 
         return $credentialQuotaTypes;
