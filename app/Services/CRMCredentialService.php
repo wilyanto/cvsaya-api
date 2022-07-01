@@ -50,6 +50,8 @@ class CRMCredentialService
         $query = CRMCredential::where('id', $id);
         $CRMCredential = QueryBuilder::for($query)
             ->allowedIncludes([
+                'blastTypes',
+                'quotas',
                 'blastLogs',
                 'recentMessages'
             ])
