@@ -123,7 +123,7 @@ class CRMCredentialService
 
     public function getCredentialDataByKey($key)
     {
-        $url = env('ECRM_URL') . "/api/v1/whatsapp-devices/$key/quotas";
+        $url = env('ECRM_URL') . "/api/v1/whatsapp-devices/$key/key";
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
         ])
