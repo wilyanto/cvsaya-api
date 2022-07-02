@@ -107,7 +107,7 @@ class CRMCredentialService
     {
         $data = json_decode(json_encode($this->getCredentialDataByKey($credential->key)));
         // update credential
-        if (count($data) === 0) {
+        if (!$data) {
             return
                 $credential->load([
                     'blastTypes',
