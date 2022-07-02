@@ -27,6 +27,8 @@ class CRMCredentialResource extends JsonResource
             'expired_at' => $this->expired_at,
             'scheduled_message_count' => $this->scheduled_message_count,
             'last_updated_at' => $this->last_updated_at,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
             'blast_type_count' => $this->getBlastTypeCount(),
             'blast_types' => BlastTypeResource::collection($this->whenLoaded('blastTypes')),
             'quotas' => CRMCredentialQuotaTypeResource::collection($this->whenLoaded('quotas')),

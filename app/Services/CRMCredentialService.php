@@ -35,7 +35,8 @@ class CRMCredentialService
                 AllowedSort::custom(
                     'message-count',
                     new MessageCountCredentialSort()
-                )
+                ),
+                'created_at'
             ])
             ->allowedFilters(
                 [
