@@ -44,6 +44,12 @@ class CRMCredentialService
                     AllowedFilter::exact('is_active'),
                 ]
             )
+            ->allowedIncludes([
+                'blastTypes',
+                'quotas.quotaType',
+                'blastLogs',
+                'recentMessages'
+            ])
             ->paginate($size);
 
         return $credentials;
