@@ -6,6 +6,8 @@ use App\Http\Common\Filter\FilterCredentialSearch;
 use App\Http\Common\Sort\LastMessageCredentialSort;
 use App\Http\Common\Sort\MessageCountCredentialSort;
 use App\Models\CRMCredential;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\AllowedInclude;
@@ -145,6 +147,157 @@ class CRMCredentialService
         } else {
             $data = json_decode($response->body(), true)['data'];
         }
+        return $data;
+    }
+
+    public function indexForReport($request)
+    {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $timeFrame = $request->time_frame;
+
+        $query = DB::table('crm_blast_logs')
+            ->whereBetween('created_at', [$startDate, $endDate]);
+
+        $data = [];
+        $values = [];
+
+        switch ($timeFrame) {
+            case 'daily':
+                $query->select(
+                    DB::raw('COUNT(*) as total_blast'),
+                    DB::raw('YEAR(created_at) as year'),
+                    DB::raw('MONTH(created_at) as month'),
+                    DB::raw('WEEK(created_at) as week'),
+                    DB::raw('DATE(created_at) as date')
+                )
+                    ->groupBy('year', 'month', 'week', 'date')
+                    ->get()->map(function ($drones) use (&$values) {
+                        $values[] = [
+                            'y_axis_value' => (float) $drones->total_blast,
+                            'x_axis_value' => $drones->date,
+                        ];
+                    });;
+
+                break;
+            case 'weekly':
+                $query->select(
+                    DB::raw('COUNT(*) as total_blast'),
+                    DB::raw('YEAR(created_at) as year'),
+                    DB::raw('WEEK(created_at) as week'),
+                )
+                    ->groupBy('year', 'week')
+                    ->get()->map(function ($drones) use (&$values) {
+                        if ($drones->week > 0) {
+                            $date = now();
+                            $date->setISODate($drones->year, $drones->week);
+                            $firstDateOfTheWeek = $date->startOfWeek(Carbon::SUNDAY)->format('Y-m-d');
+                            $values[] = [
+                                'y_axis_value' => (float) $drones->total_blast,
+                                'x_axis_value' => $firstDateOfTheWeek,
+                            ];
+                        }
+                    });;
+
+                break;
+            case 'monthly':
+                $query->select(
+                    DB::raw('COUNT(*) as total_blast'),
+                    DB::raw('YEAR(created_at) as year'),
+                    DB::raw('MONTH(created_at) as month'),
+                )
+                    ->groupBy('year', 'month')
+                    ->get()->map(function ($drones) use (&$values) {
+                        $monthOfTheYear = Carbon::createFromDate($drones->year, $drones->month, 1);
+                        $monthOfTheYear = $monthOfTheYear->format('Y-m-d');
+                        $values[] = [
+                            'y_axis_value' => (float) $drones->total_blast,
+                            'x_axis_value' => $monthOfTheYear,
+                        ];
+                    });;
+
+                break;
+        }
+
+        $data['y_axis_label'] = 'Blast';
+        $data['values'] = $values;
+
+        return $data;
+    }
+
+    public function showForReport($request, $credentialId)
+    {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $timeFrame = $request->time_frame;
+
+        $query = DB::table('crm_blast_logs')
+            ->where('credential_id', $credentialId)
+            ->whereBetween('created_at', [$startDate, $endDate]);
+
+        $data = [];
+        $values = [];
+
+        switch ($timeFrame) {
+            case 'daily':
+                $query->select(
+                    DB::raw('COUNT(*) as total_blast'),
+                    DB::raw('YEAR(created_at) as year'),
+                    DB::raw('MONTH(created_at) as month'),
+                    DB::raw('WEEK(created_at) as week'),
+                    DB::raw('DATE(created_at) as date')
+                )
+                    ->groupBy('year', 'month', 'week', 'date')
+                    ->get()->map(function ($drones) use (&$values) {
+                        $values[] = [
+                            'y_axis_value' => (float) $drones->total_blast,
+                            'x_axis_value' => $drones->date,
+                        ];
+                    });;
+
+                break;
+            case 'weekly':
+                $query->select(
+                    DB::raw('COUNT(*) as total_blast'),
+                    DB::raw('YEAR(created_at) as year'),
+                    DB::raw('WEEK(created_at) as week'),
+                )
+                    ->groupBy('year', 'week')
+                    ->get()->map(function ($drones) use (&$values) {
+                        if ($drones->week > 0) {
+                            $date = now();
+                            $date->setISODate($drones->year, $drones->week);
+                            $firstDateOfTheWeek = $date->startOfWeek(Carbon::SUNDAY)->format('Y-m-d');
+                            $values[] = [
+                                'y_axis_value' => (float) $drones->total_blast,
+                                'x_axis_value' => $firstDateOfTheWeek,
+                            ];
+                        }
+                    });;
+
+                break;
+            case 'monthly':
+                $query->select(
+                    DB::raw('COUNT(*) as total_blast'),
+                    DB::raw('YEAR(created_at) as year'),
+                    DB::raw('MONTH(created_at) as month'),
+                )
+                    ->groupBy('year', 'month')
+                    ->get()->map(function ($drones) use (&$values) {
+                        $monthOfTheYear = Carbon::createFromDate($drones->year, $drones->month, 1);
+                        $monthOfTheYear = $monthOfTheYear->format('Y-m-d');
+                        $values[] = [
+                            'y_axis_value' => (float) $drones->total_blast,
+                            'x_axis_value' => $monthOfTheYear,
+                        ];
+                    });;
+
+                break;
+        }
+
+        $data['y_axis_label'] = 'Blast';
+        $data['values'] = $values;
+
         return $data;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CredentialBlastReportRequest;
 use App\Http\Requests\CRMCredentialBlastTypeUpdateResource;
 use App\Http\Requests\CRMCredentialStoreRequest;
 use App\Http\Requests\CRMCredentialUpdateRequest;
@@ -135,5 +136,19 @@ class CRMCredentialController extends Controller
         $credentialQuotaTypes = $this->CRMCredentialQuotaTypeService->syncCredentialQuotaType($credential->id, $credential->key);
 
         return $this->showAll(collect(CRMCredentialQuotaTypeResource::collection($credentialQuotaTypes)));
+    }
+
+    public function indexForReport(CredentialBlastReportRequest $request)
+    {
+        $data = $this->CRMCredentialService->indexForReport($request);
+
+        return $this->showOne($data);
+    }
+
+    public function showForReport(CredentialBlastReportRequest $request, $credentialId)
+    {
+        $data = $this->CRMCredentialService->showForReport($request, $credentialId);
+
+        return $this->showOne($data);
     }
 }

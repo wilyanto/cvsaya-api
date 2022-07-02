@@ -62,6 +62,8 @@ Route::prefix('v1')->group(function () {
         Route::get('crm-credentials/{id}/sync-quotas', [CRMCredentialController::class, 'syncCredentialQuota']);
         Route::get('crm-credentials/{id}/sync-credential', [CRMCredentialController::class, 'syncCredential']);
         Route::get('crm-credentials/{id}/blast-type', [CRMCredentialController::class, 'getBlastTypes']);
+        Route::get('crm-credentials/blast-count', [CRMCredentialController::class, 'indexForReport']);
+        Route::get('crm-credentials/{id}/blast-count', [CRMCredentialController::class, 'showForReport']);
         Route::patch('crm-credentials/{id}/blast-type', [CRMCredentialController::class, 'updateBlastTypes']);
         Route::patch('blast-types/reorder-priority', [BlastTypeController::class, 'reorderPriority']);
         Route::patch('quota-types/reorder-priority', [QuotaTypeController::class, 'reorderPriority']);
