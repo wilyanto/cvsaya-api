@@ -31,6 +31,7 @@ class CRMCredentialResource extends JsonResource
             'updated_at' => $this->updated_at,
             'blast_type_count' => $this->getBlastTypeCount(),
             'blast_types' => BlastTypeResource::collection($this->whenLoaded('blastTypes')),
+            'last_message' => new CRMBlastLogResource($this->whenLoaded('lastMessage')),
             'quotas' => CRMCredentialQuotaTypeResource::collection($this->whenLoaded('quotas')),
             'blast_logs' => CRMBlastLogResource::collection($this->whenLoaded('blastLogs')),
             'recent_messages' => CRMBlastLogResource::collection($this->whenLoaded('recentMessages'))

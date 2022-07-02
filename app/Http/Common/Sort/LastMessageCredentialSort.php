@@ -10,11 +10,11 @@ class LastMessageCredentialSort implements Sort
 {
     public function __invoke(Builder $query, $value, string $property): Builder
     {
-        // TODO: need to fix join logic
-        // source
-        // https://stackoverflow.com/questions/58255702/how-to-sort-by-a-custom-appended-relation-to-model
-        return $query->join('crm_blast_logs', 'crm_blast_logs.credential_id', '=', 'crm_credentials.id')
-            ->orderBy('crm_blast_logs.created_at', 'desc')
-            ->select('crm_credentials.*', 'crm_blast_logs.created_at');
+        return $query->leftJoin('crm_blast_logs', 'crm_blast_logs.credential_id', '=', 'crm_credentials.id')->whereIn('crm_blast_logs.id', function ($query) {
+            $query->from('crm_blast_logs')->selectRaw('MAX(id)')->groupBy('credential_id');
+        })->orWhereNull('crm_blast_logs.id')->orderBy('crm_blast_logs.created_at', 'desc')->select(
+            'crm_credentials.*',
+            'crm_blast_logs.created_at as blast_log_created_at'
+        );
     }
 }

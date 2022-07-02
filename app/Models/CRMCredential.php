@@ -29,6 +29,7 @@ class CRMCredential extends Model
         'is_active' => 'boolean',
         'expired_at' => 'datetime',
         'last_updated_at' => 'datetime',
+        'blast_log_created_at' => 'datetime',
     ];
 
     public function blastTypes()
@@ -59,5 +60,10 @@ class CRMCredential extends Model
     public function getBlastTypeCount()
     {
         return $this->blastTypes()->count();
+    }
+
+    public function lastMessage()
+    {
+        return $this->hasOne(CRMBlastLog::class, 'credential_id', 'id')->latest();
     }
 }

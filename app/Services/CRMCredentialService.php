@@ -48,7 +48,8 @@ class CRMCredentialService
                 'blastTypes',
                 'quotas.quotaType',
                 'blastLogs',
-                'recentMessages'
+                'recentMessages',
+                'lastMessage'
             ])
             ->paginate($size);
 
