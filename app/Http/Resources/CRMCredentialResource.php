@@ -21,7 +21,6 @@ class CRMCredentialResource extends JsonResource
             'key' => $this->key,
             'country_code' => $this->country_code,
             'phone_number' => $this->phone_number,
-            'uuid' => $this->uuid,
             'sent_messages_count' => $this->getTodayBlastLogCount(),
             'is_active' => $this->is_active,
             'expired_at' => $this->expired_at,
