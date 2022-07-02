@@ -24,7 +24,7 @@ class CRMCredentialQuotaTypeService
     public function getCRMCredentialQuotaTypeByCredentialIdAndQuotaType($credentialId, $quotaType)
     {
         $quotaType = QuotaType::find($quotaType->quota_type_id);
-        $CRMCredentialQuotaType = CRMCredentialQuotaType::whereHas('quotaType', function ($query) use ($quotaType) {
+        $CRMCredentialQuotaType = CRMCredentialQuotaType::where('credential_id', $credentialId)->whereHas('quotaType', function ($query) use ($quotaType) {
             $query->where('name', $quotaType->name);
         })->first();
 
