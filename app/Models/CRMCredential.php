@@ -9,8 +9,8 @@ class CRMCredential extends Model
 {
     use HasFactory;
 
-    const URL_SEND_MESSAGE = '/api/v1/send-whatsapp-message';
-    const URL_SEND_BATCH_MESSAGE = '/api/v1/batch/send-whatsapp-message';
+    const URL_SEND_MESSAGE = '/v1/send-whatsapp-message';
+    const URL_SEND_BATCH_MESSAGE = '/v1/batch/send-whatsapp-message';
 
     protected $table = 'crm_credentials';
 

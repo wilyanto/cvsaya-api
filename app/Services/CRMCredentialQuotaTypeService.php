@@ -115,7 +115,7 @@ class CRMCredentialQuotaTypeService
 
     public function syncCredentialQuota($key)
     {
-        $url = env('ECRM_URL') . "/api/v1/whatsapp-devices/$key/quotas";
+        $url = env('ECRM_URL') . "/v1/whatsapp-devices/$key/quotas";
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
         ])
