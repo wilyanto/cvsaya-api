@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Enums\LeavePermissionStatusType;
 use App\Http\Common\Filter\FilterLeavePermissionEmployeeNameSearch;
+use App\Http\Common\Filter\FilterLeavePermissionOccasion;
 use App\Http\Common\Filter\FilterLeavePermissionStatus;
 use App\Http\Requests\LeavePermissionUpdateRequest;
 use App\Models\Candidate;
@@ -52,6 +53,7 @@ class LeavePermissionController extends Controller
             ->allowedIncludes(['occasion', 'documents'])
             ->allowedFilters([
                 AllowedFilter::exact('status'),
+                AllowedFilter::custom('occasion', new FilterLeavePermissionOccasion)
             ])
             ->where('employee_id', $employee->id)
             ->paginate($request->input('page_size', 10));
