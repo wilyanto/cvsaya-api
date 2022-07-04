@@ -37,6 +37,7 @@ class CRMBlastLogService
             ->allowedFilters([
                 AllowedFilter::custom('search', new FilterBlastLogSearch),
                 AllowedFilter::custom('date-between', new FilterBlastLogDateRange),
+                AllowedFilter::exact('status')
             ])
             ->where('credential_id', $credentialId)
             ->latest()
