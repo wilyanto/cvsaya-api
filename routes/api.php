@@ -92,6 +92,7 @@ Route::prefix('v1')->group(function () {
             });
             Route::controller(EmployeeController::class)->group(function () {
                 Route::get('/{companyId}/employees', 'getEmployeesByCompany');
+                Route::get('/{companyId}/employees-report', 'indexForReport');
             });
         });
 

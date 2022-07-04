@@ -107,6 +107,7 @@ class CRMCredentialQuotaTypeService
                     'quota' => $syncCredentialQuotaType->remaining_quota,
                 ]);
             }
+            // delete if quota is deleted
             array_push($credentialQuotaTypes, $credentialQuotaType);
         }
 

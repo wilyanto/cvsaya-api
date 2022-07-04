@@ -324,4 +324,28 @@ class EmployeeController extends Controller
 
         return $this->showPagination('employees', $employees);
     }
+
+    public function indexForReport(Request $request, $companyId)
+    {
+        // select employee based on date range
+        // for attend, check from joined at
+        // for resign, check from deleted_at
+        $startedAt = $request->started_at;
+        $endedAt = $request->ended_at;
+        $companyId = $companyId;
+
+        $newEmployeeCount = Employee::whereBetween('joined_at', [$startedAt, $endedAt])
+            ->whereNull('deleted_at')
+            ->count();
+        $resignedEmployeeCount = Employee::whereBetween('deleted_at', [$startedAt, $endedAt])->count();
+        $totalEmployeeCount = Employee::count();
+
+        $data = [
+            'new_employee_count' => $newEmployeeCount,
+            'resigned_employee_count' => $resignedEmployeeCount,
+            'total_employee_count' => $totalEmployeeCount
+        ];
+
+        return $this->showOne($data);
+    }
 }
