@@ -31,6 +31,13 @@ class CRMCredentialQuotaTypeService
         return $CRMCredentialQuotaType;
     }
 
+    public function getCRMCredentialQuotaTypeByCredentialIdAndQuotaId($credentialId, $quotaId)
+    {
+        $CRMCredentialQuotaType = CRMCredentialQuotaType::where([['credential_id', $credentialId], ['quota_type_id', $quotaId]])->first();
+
+        return $CRMCredentialQuotaType;
+    }
+
     /**
      * Create Credential Quota Type by credential id and array of data.
      *
@@ -87,6 +94,8 @@ class CRMCredentialQuotaTypeService
     {
         $syncCredentialQuotaTypes = $this->syncCredentialQuota($key);
         $credentialQuotaTypes = [];
+        $oldCredentialQuotaTypes = [];
+        $newCredentialQuotaTypes = [];
         foreach ($syncCredentialQuotaTypes as $syncCredentialQuotaType) {
             // encode and decode to change array back to object
             $syncCredentialQuotaType = json_decode(json_encode($syncCredentialQuotaType));
@@ -98,6 +107,7 @@ class CRMCredentialQuotaTypeService
                     'remaining' => $syncCredentialQuotaType->remaining_quota,
                     'quota' => $syncCredentialQuotaType->remaining_quota, // TODO: get from total instead
                 ]);
+                array_push($newCredentialQuotaTypes, $credentialQuotaType->quota_type_id);
             } else {
                 $credentialQuotaType = CRMCredentialQuotaType::create([
                     'credential_id' => $credentialId,
@@ -106,9 +116,19 @@ class CRMCredentialQuotaTypeService
                     'remaining' => $syncCredentialQuotaType->remaining_quota,
                     'quota' => $syncCredentialQuotaType->remaining_quota,
                 ]);
+                array_push($newCredentialQuotaTypes, $credentialQuotaType->quota_type_id);
             }
+            array_push($oldCredentialQuotaTypes, $syncCredentialQuotaType->quota_type_id);
             // delete if quota is deleted
             array_push($credentialQuotaTypes, $credentialQuotaType);
+        }
+
+        $removedCredentialQuotaTypes = array_diff($oldCredentialQuotaTypes, $newCredentialQuotaTypes);
+        foreach ($removedCredentialQuotaTypes as $removedCredentialQuotaType) {
+            $data = $this->getCRMCredentialQuotaTypeByCredentialIdAndQuotaId($credentialId, $removedCredentialQuotaType);
+            if ($data) {
+                $data->delete();
+            }
         }
 
         return $credentialQuotaTypes;
