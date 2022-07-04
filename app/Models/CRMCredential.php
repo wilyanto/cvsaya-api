@@ -44,7 +44,7 @@ class CRMCredential extends Model
 
     public function quotas()
     {
-        return $this->hasMany(CRMCredentialQuotaType::class, 'credential_id', 'id')->orderBy('priority');
+        return $this->hasMany(CRMCredentialQuotaType::class, 'credential_id', 'id');
     }
 
     public function getTodayBlastLogCount()
