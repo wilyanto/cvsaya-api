@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\BlastLogStatusEnum;
 use App\Enums\BlastTypeEnum;
 use App\Models\BlastType;
 use App\Models\Candidate;
@@ -51,36 +52,32 @@ class DailyCandidateReminder extends Command
      */
     public function handle()
     {
-        $candidates = Candidate::where('id', 1)->get();
+        $candidates = Candidate::get();
         $blastType = BlastType::where('name', BlastTypeEnum::interviewReminder())->firstOrFail();
+        $blastTypeRules = $blastType->blastTypeRules;
         $credential = CRMcredential::firstOrFail();
         // set jadwal / jam format hour
         // consider limit per number
         $credentialKey = $credential->key;
-        $batchMessages = [];
         foreach ($candidates as $candidate) {
             $blastLogs = $candidate->blastLogs()
                 ->where('credential_id', $credential->id)
                 ->latest()
                 ->get();
 
-            if ($blastLogs->count() == 0) {
-            } else if (
-                $blastLogs->count() <= 1 &&
-                $blastLogs->first()->created_at->diffInDays(now()) <= 3
-            ) {
+            if ($blastTypeRules->count() === 0) {
                 continue;
-            } else if (
-                $blastLogs->count() <= 2 &&
-                $blastLogs->first()->created_at->diffInDays(now()) <= 7
+            }
+
+            $blastLogCount = $blastLogs->count();
+            $blastTypeRule = $blastTypeRules->where('count', '<=', $blastLogCount)
+                ->sortByDesc('count')
+                ->first();
+
+            if (
+                $blastLogCount !== 0 &&
+                $blastLogs->first()->created_at->diffInDays(now()) <= $blastTypeRule->duration
             ) {
-                continue;
-            } else if (
-                $blastLogs->count() <= 3 &&
-                $blastLogs->first()->created_at->diffInDays(now()) <= 30
-            ) {
-                continue;
-            } else {
                 continue;
             }
 
@@ -142,14 +139,26 @@ class DailyCandidateReminder extends Command
             ];
             $message = $this->messageService->constructMessage($template, $paramValue);
 
-            $batchMessages[] = [
+            $message = [
                 "key" => $credentialKey,
                 "country_code" => $candidate->country_code,
                 "phone_number" => $candidate->phone_number,
                 "message" => $message
             ];
-            $this->whatsappService->sendMessage($batchMessages);
-            $this->CRMBlastLogService->create($candidate, $credential, $blastType, $messageParamValue, $messageTemplate);
+            $response = $this->whatsappService->sendMessage($message);
+            $uuid = null;
+            $status = BlastLogStatusEnum::pending();
+            if ($response->isSuccessful()) {
+                $responseJson = json_decode($response->content(), true);
+                $uuid = $responseJson['uuid'];
+                $status = BlastLogStatusEnum::sent();
+            } else {
+                $uuid = null;
+                $status = BlastLogStatusEnum::failed();
+            }
+
+            $CRMBlastLog = $this->CRMBlastLogService->create($candidate, $credential, $blastType, $messageParamValue, $messageTemplate);
+            $this->CRMBlastLogService->updateStatusAndUuid($CRMBlastLog->id, $status, $uuid);
         }
     }
 }

@@ -68,10 +68,12 @@ class CandidateNoteController extends Controller
         $interviewer = Candidate::where('user_id', $userId)->firstOrFail();
         $employee = Employee::where('candidate_id', $interviewer->id)->firstOrFail();
 
+        // fix status not nullable
         $candidateNote = CandidateNote::create([
             'note' => $request->note,
             'employee_id' => $employee->id,
             'candidate_id' => $candidate->id,
+            'status' => '',
             'visibility' => $request->visibility,
         ]);
 
