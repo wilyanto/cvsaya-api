@@ -56,11 +56,4 @@ class BlastTypeController extends Controller
 
         return response()->json(null, 204);
     }
-
-    public function reorderPriority(BlastTypeReorderPriorityRequest $request)
-    {
-        $blastTypes = $this->blastTypeService->reorderPriority($request->validated());
-
-        return $this->showAll(collect(BlastTypeResource::collection($blastTypes)));
-    }
 }
