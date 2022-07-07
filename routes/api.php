@@ -36,6 +36,7 @@ use App\Http\Controllers\Api\v1\LeavePermissionOccasionController;
 use App\Http\Controllers\Api\v1\BlastTypeController;
 use App\Http\Controllers\Api\v1\BlastTypeRuleController;
 use App\Http\Controllers\Api\v1\CRMCredentialController;
+use App\Http\Controllers\Api\v1\EmployeeResignationController;
 use App\Http\Controllers\Api\v1\QuotaTypeController;
 
 /*
@@ -101,6 +102,7 @@ Route::prefix('v1')->group(function () {
         Route::group(['middleware' => ['permission:manage-employee']], function () {
             Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
             Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
+            Route::apiResource('employee-resignations', EmployeeResignationController::class);
             Route::controller(EmployeeRecurringShiftController::class)->group(function () {
                 Route::get('employees/{employeeId}/recurring-shifts', 'getEmployeeRecurringShifts');
             });
