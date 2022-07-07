@@ -46,4 +46,15 @@ class Company extends Model implements Auditable
     {
         return $this->attendances()->whereBetween('scheduled_at', [$startDate, $endDate])->get();
     }
+
+    public function resignations()
+    {
+        return $this->hasManyDeep(
+            EmployeeResignation::class,
+            [
+                Position::class,
+                Employee::class,
+            ],
+        );
+    }
 }

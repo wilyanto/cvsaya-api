@@ -181,7 +181,12 @@ class Employee extends Authenticatable implements Auditable
 
     public function shiftEmployees()
     {
-        return  $this->hasMany(ShiftEmployee::class, 'employee_id', 'id');
+        return $this->hasMany(ShiftEmployee::class, 'employee_id', 'id');
+    }
+
+    public function resignations()
+    {
+        return $this->hasMany(EmployeeResignation::class, 'employee_id', 'id');
     }
 
     public function getOneTimeShifts($date)
