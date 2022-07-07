@@ -12,6 +12,8 @@ class EmployeeResignation extends Model
     protected $fillable = [
         'employee_id',
         'note',
-        'resignation_date'
+        'resignation_date',
+        'status',
+        'consideration'
     ];
 }
