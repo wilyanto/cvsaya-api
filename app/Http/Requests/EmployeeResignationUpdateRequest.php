@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EmployeeResignationConsiderationEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Spatie\Enum\Laravel\Rules\EnumRule;
 
 class EmployeeResignationUpdateRequest extends FormRequest
 {
@@ -27,6 +29,7 @@ class EmployeeResignationUpdateRequest extends FormRequest
             'employee_id' => 'required|exists:employees,id',
             'note' => 'required',
             'resignation_date' => 'required|date',
+            'consideration' => ['required', new EnumRule(EmployeeResignationConsiderationEnum::class)]
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\EmployeeResignationStatusEnum;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\EmployeeResignation;
@@ -32,6 +33,8 @@ class EmployeeResignationService
             'employee_id' => $data->employee_id,
             'note' => $data->note,
             'resignation_date' => $data->resignation_date,
+            'status' => EmployeeResignationStatusEnum::pending(),
+            'consideration' => $data->consideration
         ]);
 
         return $employeeResignation;
@@ -44,6 +47,7 @@ class EmployeeResignationService
             'employee_id' => $data->employee_id,
             'note' => $data->note,
             'resignation_date' => $data->resignation_date,
+            'consideration' => $data->consideration
         ]);
 
         return $employeeResignation;
@@ -56,10 +60,17 @@ class EmployeeResignationService
         return true;
     }
 
-    public function showResignationsByCompany($companyId)
+    public function updateEmployeeResignationStatus($data, $employeeResignationId)
+    {
+        $employeeResignation = $this->getById($employeeResignationId);
+        $employeeResignation->update([
+            'status' => $data->status,
+        ]);
+    }
+
+    public function showResignationsByCompany($companyId, $pageSize)
     {
         $company = Company::findOrFail($companyId);
-        $pageSize = 10;
         $employeeResignations = $company->resignations()->paginate($pageSize);
 
         return $employeeResignations;
