@@ -82,6 +82,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('quota-types', QuotaTypeController::class);
 
         Route::prefix('companies')->group(function () {
+            Route::get('/{id}/resignations', [EmployeeResignationController::class, 'showResignationsByCompany']);
             Route::controller(CompanyController::class)->group(function () {
                 Route::get('/', 'index');
                 Route::post('/', 'store');
@@ -103,6 +104,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
             Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
             Route::apiResource('employee-resignations', EmployeeResignationController::class);
+            Route::patch('employee-resignations/{id}/status', [EmployeeResignationController::class, 'updateEmployeeResignationStatus']);
             Route::controller(EmployeeRecurringShiftController::class)->group(function () {
                 Route::get('employees/{employeeId}/recurring-shifts', 'getEmployeeRecurringShifts');
             });
@@ -325,6 +327,7 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('employees')->group(function () {
+            Route::get('/{id}/resignations', [EmployeeResignationController::class, 'showResignationsByEmployee']);
             Route::controller(EmploymentTypeController::class)->group(function () {
                 Route::get('/types', 'index');
             });
