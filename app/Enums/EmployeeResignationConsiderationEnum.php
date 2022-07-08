@@ -6,8 +6,8 @@ use Spatie\Enum\Enum;
 
 /**
  * @method static self fix()
- * @method static self half()
- * @method static self thinking()
+ * @method static self considering()
+ * @method static self planning()
  */
 
 class EmployeeResignationConsiderationEnum extends Enum
@@ -16,8 +16,8 @@ class EmployeeResignationConsiderationEnum extends Enum
     {
         return [
             'fix' => 'fix',
-            'half' => 'half',
-            'thinking' => 'thinking',
+            'considering' => 'considering',
+            'planning' => 'planning',
         ];
     }
 }
