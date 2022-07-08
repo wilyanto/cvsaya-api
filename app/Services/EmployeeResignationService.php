@@ -13,6 +13,7 @@ class EmployeeResignationService
     public function getAll()
     {
         $employeeResignations = QueryBuilder::for(EmployeeResignation::class)
+            ->allowedIncludes(['employee'])
             ->get();
 
         return $employeeResignations;
@@ -22,6 +23,7 @@ class EmployeeResignationService
     {
         $query = EmployeeResignation::where('id', $id);
         $employeeResignation = QueryBuilder::for($query)
+            ->allowedIncludes(['employee'])
             ->firstOrFail();
 
         return $employeeResignation;
