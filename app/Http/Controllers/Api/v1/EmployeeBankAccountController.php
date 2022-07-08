@@ -58,6 +58,9 @@ class EmployeeBankAccountController extends Controller
 
     public function showByEmployeeId(Request $request)
     {
+        $request->validate([
+            'employee_id' => 'required|exists:employees,id'
+        ]);
         $employeeId = $request->employee_id;
         $employeeBankAccount = $this->employeeBankAccountService->getByEmployeeId($employeeId);
 
