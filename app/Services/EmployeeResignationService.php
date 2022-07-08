@@ -75,6 +75,10 @@ class EmployeeResignationService
         $company = Company::findOrFail($companyId);
         $employeeResignations = $company->resignations()->paginate($pageSize);
 
+        foreach ($employeeResignations as $employeeResignation) {
+            $employeeResignation = $employeeResignation->load(['employee']);
+        }
+
         return $employeeResignations;
     }
 
@@ -82,6 +86,10 @@ class EmployeeResignationService
     {
         $employee = Employee::findOrFail($employeeId);
         $employeeResignations = $employee->resignations;
+
+        foreach ($employeeResignations as $employeeResignation) {
+            $employeeResignation = $employeeResignation->load(['employee']);
+        }
 
         return $employeeResignations;
     }
