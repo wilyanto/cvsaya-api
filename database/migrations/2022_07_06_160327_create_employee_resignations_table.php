@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('note');
             $table->date('resignation_date');
             $table->enum('status', ['declined', 'pending', 'accepted']);
-            $table->enum('consideration', ['fixed', 'half', 'thinking']);
+            $table->enum('consideration', ['fix', 'considering', 'planning']);
             $table->timestamps();
         });
     }
