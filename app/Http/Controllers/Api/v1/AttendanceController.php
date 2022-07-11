@@ -255,35 +255,35 @@ class AttendanceController extends Controller
 
         // clock out without clock in
         if (
-            $attendanceType == AttendanceType::breakEndedAt() &&
+            $attendanceType == AttendanceType::endBreak() &&
             !$attendance->startBreakAttendanceDetail
         ) {
             return $this->errorResponse('Must scan start break before end break', 422, 42202);
         }
 
         if (
-            $attendanceType == AttendanceType::breakStartedAt() &&
+            $attendanceType == AttendanceType::startBreak() &&
             $attendance->startBreakAttendanceDetail
         ) {
             return $this->errorResponse('Already Scan Start Break', 422, 42201);
         }
 
         if (
-            $attendanceType == AttendanceType::breakEndedAt() &&
+            $attendanceType == AttendanceType::endBreak() &&
             $attendance->endBreakAttendanceDetail
         ) {
             return $this->errorResponse('Already Scan End Break', 422, 42203);
         }
 
         if (
-            $attendanceType == AttendanceType::breakStartedAt() &&
+            $attendanceType == AttendanceType::startBreak() &&
             now()->lt(today()->addSeconds($shiftTime->secondsSinceMidnight()))
         ) {
             return $this->errorResponse('Break Time not started yet', 422, 42206);
         }
 
         if (
-            $attendanceType == AttendanceType::breakEndedAt() &&
+            $attendanceType == AttendanceType::endBreak() &&
             now()->gt(today()->addSeconds($shiftTime->secondsSinceMidnight()))
         ) {
             return $this->errorResponse('Already out of break duration', 422, 42207);
@@ -368,8 +368,8 @@ class AttendanceController extends Controller
             $verifiedBy = null;
 
             if (
-                $attendanceType == AttendanceType::breakStartedAt() ||
-                $attendanceType == AttendanceType::breakEndedAt() ||
+                $attendanceType == AttendanceType::startBreak() ||
+                $attendanceType == AttendanceType::endBreak() ||
                 ($attendanceType == AttendanceType::clockOut() &&
                     now()->gt(today()->addSeconds($shiftTime->secondsSinceMidnight())))
             ) {
@@ -398,9 +398,9 @@ class AttendanceController extends Controller
                 $attendance->update(['clock_in_id' => $attendanceDetail->id]);
             } else if ($attendanceType == AttendanceType::clockOut()) {
                 $attendance->update(['clock_out_id' => $attendanceDetail->id]);
-            } else if ($attendanceType == AttendanceType::breakStartedAt()) {
+            } else if ($attendanceType == AttendanceType::startBreak()) {
                 $attendance->update(['start_break_id' => $attendanceDetail->id]);
-            } else if ($attendanceType == AttendanceType::breakEndedAt()) {
+            } else if ($attendanceType == AttendanceType::endBreak()) {
                 $attendance->update(['end_break_id' => $attendanceDetail->id]);
             }
 
@@ -452,7 +452,7 @@ class AttendanceController extends Controller
 
         $breakDuration = AttendanceType::breakDuration();
         if (
-            $attendanceType == AttendanceType::breakEndedAt() &&
+            $attendanceType == AttendanceType::endBreak() &&
             $scheduledAt->diffInMinutes($now) >= $employeeShift->$breakDuration
         ) {
             $interval = $scheduledAt->diffInMinutes($now);
