@@ -68,6 +68,8 @@ class EmployeeResignationService
         $employeeResignation->update([
             'status' => $data->status,
         ]);
+
+        return $employeeResignation;
     }
 
     public function showResignationsByCompany($companyId, $pageSize)
