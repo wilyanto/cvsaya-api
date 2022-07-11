@@ -67,7 +67,8 @@ class EmployeeResignationController extends Controller
     public function showResignationsByCompany(Request $request, $companyId)
     {
         $pageSize = $request->input('page_size', 10);
-        $employeeResignations = $this->employeeResignationService->showResignationsByCompany($companyId, $pageSize);
+        $keyword = $request->input('keyword', '');
+        $employeeResignations = $this->employeeResignationService->showResignationsByCompany($companyId, $keyword, $pageSize);
 
         return $this->showPaginate('resignations', collect(EmployeeResignationResource::collection($employeeResignations)), collect($employeeResignations));
     }
