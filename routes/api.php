@@ -36,6 +36,7 @@ use App\Http\Controllers\Api\v1\LeavePermissionOccasionController;
 use App\Http\Controllers\Api\v1\BlastTypeController;
 use App\Http\Controllers\Api\v1\BlastTypeRuleController;
 use App\Http\Controllers\Api\v1\CRMCredentialController;
+use App\Http\Controllers\api\v1\EmployeeBankAccountController;
 use App\Http\Controllers\Api\v1\EmployeeResignationController;
 use App\Http\Controllers\Api\v1\QuotaTypeController;
 
@@ -74,6 +75,7 @@ Route::prefix('v1')->group(function () {
         Route::get('me/attendance-schedule', [EmployeeShiftController::class, 'getShift']);
         Route::put('me/update-name', [CandidateController::class, 'updateCandidateName']);
         Route::post('me/update-profile-picture', [CandidateController::class, 'updateProfilePicture']);
+        Route::get('me/bank-accounts', [EmployeeBankAccountController::class, 'showByEmployeeId']);
 
         Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
         Route::apiResource('crm-credentials', CRMCredentialController::class, ['only' => ['index', 'show', 'store', 'update']]);
@@ -104,6 +106,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
             Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
             Route::apiResource('employee-resignations', EmployeeResignationController::class);
+            Route::apiResource('employee-bank-accounts', EmployeeBankAccountController::class);
             Route::patch('employee-resignations/{id}/status', [EmployeeResignationController::class, 'updateEmployeeResignationStatus']);
             Route::controller(EmployeeRecurringShiftController::class)->group(function () {
                 Route::get('employees/{employeeId}/recurring-shifts', 'getEmployeeRecurringShifts');
