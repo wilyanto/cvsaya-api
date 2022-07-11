@@ -20,7 +20,9 @@ class EmployeeResignationResource extends JsonResource
             'note' => $this->note,
             'resignation_date' => $this->resignation_date,
             'status' => $this->status,
-            'consideration' => $this->consideration
+            'consideration' => $this->consideration,
+            'created_at' => $this->created_at,
+            'employee' => new EmployeeResource($this->whenLoaded('employee')),
         ];
     }
 }

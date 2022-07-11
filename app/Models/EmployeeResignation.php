@@ -16,4 +16,9 @@ class EmployeeResignation extends Model
         'status',
         'consideration'
     ];
+
+    public function employee()
+    {
+        return $this->hasOne(Employee::class, 'id', 'employee_id');
+    }
 }

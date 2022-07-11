@@ -13,6 +13,7 @@ class EmployeeResignationService
     public function getAll()
     {
         $employeeResignations = QueryBuilder::for(EmployeeResignation::class)
+            ->allowedIncludes(['employee'])
             ->get();
 
         return $employeeResignations;
@@ -22,6 +23,7 @@ class EmployeeResignationService
     {
         $query = EmployeeResignation::where('id', $id);
         $employeeResignation = QueryBuilder::for($query)
+            ->allowedIncludes(['employee'])
             ->firstOrFail();
 
         return $employeeResignation;
@@ -66,12 +68,22 @@ class EmployeeResignationService
         $employeeResignation->update([
             'status' => $data->status,
         ]);
+
+        return $employeeResignation;
     }
 
-    public function showResignationsByCompany($companyId, $pageSize)
+    public function showResignationsByCompany($companyId, $keyword, $pageSize)
     {
         $company = Company::findOrFail($companyId);
-        $employeeResignations = $company->resignations()->paginate($pageSize);
+        $employeeResignations = $company->resignations()->whereHas('employee', function ($query) use ($keyword) {
+            $query->whereHas('candidate', function ($query) use ($keyword) {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
+            });
+        })->paginate($pageSize);
+
+        foreach ($employeeResignations as $employeeResignation) {
+            $employeeResignation = $employeeResignation->load(['employee']);
+        }
 
         return $employeeResignations;
     }
@@ -80,6 +92,10 @@ class EmployeeResignationService
     {
         $employee = Employee::findOrFail($employeeId);
         $employeeResignations = $employee->resignations;
+
+        foreach ($employeeResignations as $employeeResignation) {
+            $employeeResignation = $employeeResignation->load(['employee']);
+        }
 
         return $employeeResignations;
     }
