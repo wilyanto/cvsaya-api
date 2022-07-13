@@ -13,6 +13,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use OwenIt\Auditing\Contracts\Auditable;
 use App\Enums\AttendanceType;
+use App\Enums\LeavePermissionStatusType;
 use PDO;
 
 class Employee extends Authenticatable implements Auditable
@@ -20,6 +21,7 @@ class Employee extends Authenticatable implements Auditable
     use HasFactory, SoftDeletes, CrudTrait, HasRoles;
 
     use \OwenIt\Auditing\Auditable;
+    use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
 
     protected $dates = [
         'joined_at',
@@ -352,9 +354,48 @@ class Employee extends Authenticatable implements Auditable
 
     public function getAttendances($startDate, $endDate)
     {
-        return $this->attendances()->with('attendancePenalty')
-            ->whereBetween('scheduled_at', [$startDate, $endDate])
-            ->where('employee_id', $this->id)
+        return $this->attendances()
+            ->whereBetween('attendances.date', [$startDate, $endDate])
+            ->get();
+    }
+
+    public function getAttendanceCount($startDate, $endDate)
+    {
+        return $this->getAttendances($startDate, $endDate)->count();
+    }
+
+    public function attendancePenalties()
+    {
+        return $this->hasManyDeep(
+            AttendancePenalty::class,
+            [Attendance::class, AttendanceDetail::class]
+        );
+    }
+
+    public function getAttendancePenaltyTotalAmount($startDate, $endDate)
+    {
+        return $this->attendancePenalties()->whereBetween('attendances.created_at', [$startDate, $endDate])->dd();
+    }
+
+    public function leavePermissions()
+    {
+        return $this->hasMany(LeavePermission::class);
+    }
+
+    public function getLeavePermissionsByDateRange($startDate, $endDate)
+    {
+        return $this->leavePermissions()
+            ->where('status', LeavePermissionStatusType::accepted())
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereDate('started_at', '>=', $startDate)
+                    ->whereDate('ended_at', '<=', $endDate);
+            })->orWhere(function ($query) use ($startDate, $endDate) {
+                $query->whereDate('started_at', '>=', $startDate)
+                    ->whereDate('started_at', '<=', $endDate);
+            })->orWhere(function ($query) use ($startDate, $endDate) {
+                $query->whereDate('ended_at', '>=', $startDate)
+                    ->whereDate('ended_at', '<=', $endDate);
+            })
             ->get();
     }
 }

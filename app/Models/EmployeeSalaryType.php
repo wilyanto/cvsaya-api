@@ -16,6 +16,7 @@ class EmployeeSalaryType extends Pivot
         'employee_id',
         'amount',
         'salary_type_id',
+        'type'
     ];
 
     public function salaryType()
