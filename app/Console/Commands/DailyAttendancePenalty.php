@@ -87,7 +87,7 @@ class DailyAttendancePenalty extends Command
                     ->whereNull('lateness')
                     ->first();
                 $attendanceDetail = AttendanceDetail::create([
-                    'attendance_type' => AttendanceType::breakStartedAt(),
+                    'attendance_type' => AttendanceType::startBreak(),
                     'attended_at' => null,
                     'scheduled_at' => $today->copy()->addSeconds($shiftTime->secondsSinceMidnight()),
                     'attendance_qr_code_id' => null,
@@ -116,7 +116,7 @@ class DailyAttendancePenalty extends Command
                     ->whereNull('lateness')
                     ->first();
                 $attendanceDetail = AttendanceDetail::create([
-                    'attendance_type' => AttendanceType::breakEndedAt(),
+                    'attendance_type' => AttendanceType::endBreak(),
                     'attended_at' => null,
                     'scheduled_at' => $today->copy()->addSeconds($shiftTime->secondsSinceMidnight()),
                     'attendance_qr_code_id' => null,

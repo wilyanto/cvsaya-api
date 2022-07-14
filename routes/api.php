@@ -36,7 +36,7 @@ use App\Http\Controllers\Api\v1\LeavePermissionOccasionController;
 use App\Http\Controllers\Api\v1\BlastTypeController;
 use App\Http\Controllers\Api\v1\BlastTypeRuleController;
 use App\Http\Controllers\Api\v1\CRMCredentialController;
-use App\Http\Controllers\api\v1\EmployeeBankAccountController;
+use App\Http\Controllers\Api\v1\EmployeeBankAccountController;
 use App\Http\Controllers\Api\v1\EmployeeResignationController;
 use App\Http\Controllers\Api\v1\PayrollController;
 use App\Http\Controllers\Api\v1\PayrollPeriodController;
@@ -77,7 +77,6 @@ Route::prefix('v1')->group(function () {
         Route::get('me/attendance-schedule', [EmployeeShiftController::class, 'getShift']);
         Route::put('me/update-name', [CandidateController::class, 'updateCandidateName']);
         Route::post('me/update-profile-picture', [CandidateController::class, 'updateProfilePicture']);
-        Route::get('me/bank-accounts', [EmployeeBankAccountController::class, 'showByEmployeeId']);
 
         Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
         Route::apiResource('crm-credentials', CRMCredentialController::class, ['only' => ['index', 'show', 'store', 'update']]);
@@ -337,6 +336,7 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('employees')->group(function () {
             Route::get('/{id}/resignations', [EmployeeResignationController::class, 'showResignationsByEmployee']);
+            Route::get('/{id}/employee-bank-accounts', [EmployeeBankAccountController::class, 'showByEmployeeId']);
             Route::controller(EmploymentTypeController::class)->group(function () {
                 Route::get('/types', 'index');
             });

@@ -24,6 +24,7 @@ class EmployeeResource extends JsonResource
             'joined_at' => $this->joined_at,
             'position' => $this->position,
             'candidate' => $this->candidate,
+            'company' => $this->company,
         ];
     }
 }
