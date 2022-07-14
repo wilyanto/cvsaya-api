@@ -5,9 +5,9 @@ namespace App\Enums;
 use Spatie\Enum\Enum;
 
 /**
- * @method static self declined()
+ * @method static self cancelled()
  * @method static self pending()
- * @method static self accepted()
+ * @method static self acknowledged()
  */
 
 class EmployeeResignationStatusEnum extends Enum
@@ -15,9 +15,9 @@ class EmployeeResignationStatusEnum extends Enum
     protected static function values(): array
     {
         return [
-            'declined' => 'declined',
+            'cancelled' => 'cancelled',
             'pending' => 'pending',
-            'accepted' => 'accepted',
+            'acknowledged' => 'acknowledged',
         ];
     }
 }
