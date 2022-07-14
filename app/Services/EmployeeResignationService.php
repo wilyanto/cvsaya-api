@@ -80,7 +80,7 @@ class EmployeeResignationService
         $company = Company::findOrFail($companyId);
         $query = $company->resignations();
         if ($status) {
-            $query = $query->where('status', $status);
+            $query = $query->where('employee_resignations.status', $status);
         }
         $employeeResignations = $query
             ->whereHas('employee', function ($query) use ($keyword) {
