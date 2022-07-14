@@ -5,10 +5,8 @@ namespace App\Enums;
 use Spatie\Enum\Enum;
 
 /**
- * @method static self hourly()
- * @method static self daily()
- * @method static self monthly()
- * @method static self accepted()
+ * @method static self allowance()
+ * @method static self deduction()
  */
 
 class SalaryTypeEnum extends Enum
@@ -16,9 +14,8 @@ class SalaryTypeEnum extends Enum
 	protected static function values(): array
 	{
 		return [
-			'hourly' => 'hourly',
-			'daily' => 'daily',
-			'monthly' => 'monthly'
+			'allowance' => 'allowance',
+			'deduction' => 'deduction',
 		];
 	}
 }
