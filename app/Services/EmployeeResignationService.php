@@ -72,14 +72,22 @@ class EmployeeResignationService
         return $employeeResignation;
     }
 
-    public function showResignationsByCompany($companyId, $keyword, $pageSize)
+    public function showResignationsByCompany($request, $companyId)
     {
+        $pageSize = $request->input('page_size', 10);
+        $keyword = $request->input('keyword', '');
+        $status = $request->input('status', null);
         $company = Company::findOrFail($companyId);
-        $employeeResignations = $company->resignations()->whereHas('employee', function ($query) use ($keyword) {
-            $query->whereHas('candidate', function ($query) use ($keyword) {
-                $query->where('name', 'LIKE', '%' . $keyword . '%');
-            });
-        })->paginate($pageSize);
+        $query = $company->resignations();
+        if ($status) {
+            $query = $query->where('status', $status);
+        }
+        $employeeResignations = $query
+            ->whereHas('employee', function ($query) use ($keyword) {
+                $query->whereHas('candidate', function ($query) use ($keyword) {
+                    $query->where('name', 'LIKE', '%' . $keyword . '%');
+                });
+            })->paginate($pageSize);
 
         foreach ($employeeResignations as $employeeResignation) {
             $employeeResignation = $employeeResignation->load(['employee']);
