@@ -14,9 +14,9 @@ class EmployeeSalaryType extends Pivot
 
     protected $fillable = [
         'employee_id',
-        'amount',
         'salary_type_id',
-        'type'
+        'amount',
+        'amount_type'
     ];
 
     public function salaryType()
