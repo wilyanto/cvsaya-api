@@ -10,6 +10,8 @@ class SalaryType extends Model
     use HasFactory;
     public $fillable = [
         'name',
+        'code',
+        'type',
         'company_id',
     ];
 
