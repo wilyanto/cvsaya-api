@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('salary_types', function (Blueprint $table) {
-            $table->string('code');
-            $table->enum('type', ['allowance', 'deduction']);
+            $table->string('code')->after('name');
+            $table->enum('type', ['allowance', 'deduction'])->after('code');
         });
     }
 

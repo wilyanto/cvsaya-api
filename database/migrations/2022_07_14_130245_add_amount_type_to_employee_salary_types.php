@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('employee_salary_types', function (Blueprint $table) {
-            $table->enum('amount_type', ['fixed', 'percentage']);
+        Schema::table('employees_salary_types', function (Blueprint $table) {
+            $table->enum('amount_type', ['fixed', 'percentage'])->after('amount');
         });
     }
 
@@ -25,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('employee_salary_types', function (Blueprint $table) {
-            $table->dropColumn('enum');
+        Schema::table('employees_salary_types', function (Blueprint $table) {
+            $table->dropColumn('amount_type');
         });
     }
 };
