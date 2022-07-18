@@ -34,6 +34,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 use App\Models\Position;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use MatanYadaev\EloquentSpatial\Objects\Point;
 
 class AttendanceController extends Controller
@@ -317,7 +318,21 @@ class AttendanceController extends Controller
         // get customer id from kada API
         // perlu company?
         // get shift
-        $customerId = 34953;
+        $phoneNumber = $request->country_code . $request->phone_number;
+        $url = env('KADA_URL') . "/api/v1/customer/get-customer";
+        $response = Http::withHeaders(['internal_api_key' => env('INTERNAL_API_KEY')])
+            ->post($url, ['phone_number' => $phoneNumber]);
+
+        if ($response->failed()) {
+            return $this->errorResponse('Something went wrong, please try again.', 502, 50200);
+        }
+
+        $customer = $response->json()['data'];
+        if (!$customer) {
+            return $this->errorResponse('Data not found', 404, 40400);
+        }
+
+        $customerId = $customer['id_kustomer'];
         $security = Candidate::where('user_id', auth()->id())->firstOrFail();
         // check if security have permission or not
         $verifiedBy = Employee::where('candidate_id', $security->id)->firstOrFail();
@@ -325,16 +340,16 @@ class AttendanceController extends Controller
         $employeeIds = Employee::where('candidate_id', $candidate->id)->pluck('id');
         // handle multiple company?
         $attendances = Attendance::whereIn('employee_id', $employeeIds)
-            ->whereDate('attended_at', today())
-            ->whereNull('verified_by')
+            ->whereDate('date', today())
             ->get();
-
-        if ($attendances->count() == 0) {
-            return $this->errorResponse("No Attendance Found", 404, 40400);
-        }
-
         foreach ($attendances as $attendance) {
-            $attendance->update([
+            $attendanceDetail = $attendance->clockInAttendanceDetail;
+
+            if (!$attendanceDetail) {
+                return $this->errorResponse("No Attendance Found", 404, 40400);
+            }
+
+            $attendanceDetail->update([
                 'verified_by' => $verifiedBy->id,
                 'verified_at' => now(),
             ]);
