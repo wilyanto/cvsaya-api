@@ -13,6 +13,7 @@ class SalaryType extends Model
         'code',
         'type',
         'company_id',
+        'is_adhocable'
     ];
 
     public function toArrayDefault()

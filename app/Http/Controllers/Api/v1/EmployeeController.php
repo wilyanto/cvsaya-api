@@ -88,6 +88,7 @@ class EmployeeController extends Controller
             'position_id' => 'required|exists:positions,id',
             'joined_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
             'type' => ['required', new EnumRule(EmployeeType::class)],
+            'is_attendance_required' => 'required|boolean',
             'salary_types' => 'required|array',
             'salary_types.*.id' => 'required|numeric|exists:salary_types,id',
             'salary_types.*.amount' => 'required|numeric|gt:0',
@@ -124,7 +125,8 @@ class EmployeeController extends Controller
                 'position_id' => $request->position_id,
                 'type' => $request->type,
                 'is_default' => $employees->isEmpty(),
-                'joined_at' => $request->joined_at
+                'joined_at' => $request->joined_at,
+                'is_attendance_required' => $request->is_attendance_required
             ]);
 
             $employeesSalaryTypes = [];

@@ -77,4 +77,26 @@ class Attendance extends Model implements Auditable
             return $date->format('Y-m-d\TH:i:s.v\Z');
         }
     }
+
+    public function getAttendancePenaltyTotal()
+    {
+        $total = 0;
+        if ($this->clockInAttendanceDetail->attendancePenalty) {
+            $total += $this->clockInAttendanceDetail->attendancePenalty->amount;
+        }
+
+        if ($this->clockOutAttendanceDetail->attendancePenalty) {
+            $total += $this->clockOutAttendanceDetail->attendancePenalty->amount;
+        }
+
+        if ($this->startBreakAttendanceDetail->attendancePenalty) {
+            $total += $this->startBreakAttendanceDetail->attendancePenalty->amount;
+        }
+
+        if ($this->endBreakAttendanceDetail->attendancePenalty) {
+            $total += $this->endBreakAttendanceDetail->attendancePenalty->amount;
+        }
+
+        return $total;
+    }
 }

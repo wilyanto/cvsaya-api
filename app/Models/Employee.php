@@ -14,6 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use OwenIt\Auditing\Contracts\Auditable;
 use App\Enums\AttendanceType;
 use App\Enums\LeavePermissionStatusType;
+use App\Enums\SalaryTypeEnum;
 use PDO;
 
 class Employee extends Authenticatable implements Auditable
@@ -33,11 +34,13 @@ class Employee extends Authenticatable implements Auditable
         'joined_at',
         'type',
         'is_default',
+        'is_attendance_required',
         'salary_type_id',
     ];
 
     public $casts = [
         'is_default' => 'boolean',
+        'is_attendance_required' => 'boolean'
     ];
 
     public function position()
@@ -83,6 +86,16 @@ class Employee extends Authenticatable implements Auditable
     public function salaryTypes()
     {
         return $this->hasMany(EmployeeSalaryType::class);
+    }
+
+    public function getAllowanceSalaryTypes()
+    {
+        return $this->salaryTypes()->where('salary_types.type', SalaryTypeEnum::allowance())->get();
+    }
+
+    public function getDeductionSalaryTypes()
+    {
+        return $this->salaryTypes()->where('salary_types.type', SalaryTypeEnum::deduction())->get();
     }
 
     public function attendances()

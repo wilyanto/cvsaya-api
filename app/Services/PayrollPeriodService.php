@@ -7,6 +7,13 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class PayrollPeriodService
 {
+    protected $payslipService;
+
+    public function __construct(PayslipService $payslipService)
+    {
+        $this->payslipService = $payslipService;
+    }
+
     public function getAll()
     {
         $payrollPeriods = QueryBuilder::for(PayrollPeriod::class)
@@ -33,6 +40,8 @@ class PayrollPeriodService
             'company_id' => $data->company_id,
             'working_day_count' => $data->working_day_count
         ]);
+
+        $this->payslipService->createPayslip($payrollPeriod->id);
 
         return $payrollPeriod;
     }
