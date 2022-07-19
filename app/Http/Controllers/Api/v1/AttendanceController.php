@@ -311,20 +311,15 @@ class AttendanceController extends Controller
     }
 
 
-    // TODO
     public function validationBySecurity(Request $request)
     {
-        // $employee = Employee::where('')->firstOrFail();
-        // get customer id from kada API
-        // perlu company?
-        // get shift
         $phoneNumber = $request->country_code . $request->phone_number;
         $url = env('KADA_URL') . "/api/v1/customer/get-customer";
         $response = Http::withHeaders(['internal_api_key' => env('INTERNAL_API_KEY')])
             ->post($url, ['phone_number' => $phoneNumber]);
 
         if ($response->failed()) {
-            return $this->errorResponse('Something went wrong, please try again.', 502, 50200);
+            return $this->errorResponse($response->json()['data'], $response->status(), $response->status() . '00');
         }
 
         $customer = $response->json()['data'];
