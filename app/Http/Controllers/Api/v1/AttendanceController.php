@@ -314,7 +314,7 @@ class AttendanceController extends Controller
     public function validationBySecurity(Request $request)
     {
         $phoneNumber = $request->country_code . $request->phone_number;
-        $url = env('KADA_URL') . "/api/v1/customer/get-customer";
+        $url = env('KADA_URL') . "/v1/customer/get-customer";
         $response = Http::withHeaders(['internal_api_key' => env('INTERNAL_API_KEY')])
             ->post($url, ['phone_number' => $phoneNumber]);
 
