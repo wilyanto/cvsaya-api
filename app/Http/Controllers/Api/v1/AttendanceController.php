@@ -329,28 +329,29 @@ class AttendanceController extends Controller
 
         $customerId = $customer['id_kustomer'];
         $security = Candidate::where('user_id', auth()->id())->firstOrFail();
-        // check if security have permission or not
         $verifiedBy = Employee::where('candidate_id', $security->id)->firstOrFail();
         $candidate = Candidate::where('user_id', $customerId)->firstOrFail();
         $employeeIds = Employee::where('candidate_id', $candidate->id)->pluck('id');
-        // handle multiple company?
         $attendances = Attendance::whereIn('employee_id', $employeeIds)
             ->whereDate('date', today())
             ->get();
+        $attendanceDetails = [];
         foreach ($attendances as $attendance) {
             $attendanceDetail = $attendance->clockInAttendanceDetail;
 
             if (!$attendanceDetail) {
-                return $this->errorResponse("No Attendance Found", 404, 40400);
+                continue;
             }
 
             $attendanceDetail->update([
                 'verified_by' => $verifiedBy->id,
                 'verified_at' => now(),
             ]);
+
+            array_push($attendanceDetails, $attendanceDetail);
         }
 
-        return $this->showOne("Success");
+        return $this->showAll(collect($attendanceDetails));
     }
 
 
