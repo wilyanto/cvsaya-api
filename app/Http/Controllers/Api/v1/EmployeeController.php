@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Enums\CompanySalaryAmountTypeEnum;
 use App\Enums\EmployeeType;
+use App\Enums\SalaryTypeEnum;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponser;
@@ -15,6 +17,7 @@ use App\Models\EmployeeRecurringShift;
 use App\Models\EmployeeSalaryType;
 use App\Models\SalaryType;
 use App\Models\Shift;
+use App\Services\EmployeeSalaryTypeService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -23,6 +26,13 @@ use Spatie\Enum\Laravel\Rules\EnumRule;
 class EmployeeController extends Controller
 {
     use ApiResponser;
+
+    protected $employeeSalaryTypeService;
+
+    public function __construct(EmployeeSalaryTypeService $employeeSalaryTypeService)
+    {
+        $this->employeeSalaryTypeService = $employeeSalaryTypeService;
+    }
 
     /**
      * Display a listing of the resource.
@@ -89,9 +99,10 @@ class EmployeeController extends Controller
             'joined_at' => 'required|date_format:Y-m-d\TH:i:s.v\Z',
             'type' => ['required', new EnumRule(EmployeeType::class)],
             'is_attendance_required' => 'required|boolean',
-            'salary_types' => 'required|array',
-            'salary_types.*.id' => 'required|numeric|exists:salary_types,id',
-            'salary_types.*.amount' => 'required|numeric|gt:0',
+            'employee_salary_types' => 'required|array',
+            'employee_salary_types.*.company_salary_type_id' => 'required|numeric|exists:company_salary_types,id',
+            'employee_salary_types.*.amount' => 'required|numeric|gt:0',
+            'employee_salary_types.*.amount_type' => ['required', new EnumRule(CompanySalaryAmountTypeEnum::class)],
             'one_time_shifts' => 'present|array',
             'one_time_shifts.*.shift_id' => 'required|exists:shifts,id',
             'one_time_shifts.*.date' => 'required|date_format:Y-m-d',
@@ -102,7 +113,6 @@ class EmployeeController extends Controller
         ]);
 
         $position = Position::select('id', 'company_id', 'remaining_slot')->findOrFail($request->position_id);
-
         if ($position->remaining_slot === 0) return $this->errorResponse('There\'s no remaining slot for the specified position.', 422, 42201);
 
         $candidate = Candidate::select('id', 'user_id')->where('id', $request->candidate_id)->firstOrFail();
@@ -129,19 +139,26 @@ class EmployeeController extends Controller
                 'is_attendance_required' => $request->is_attendance_required
             ]);
 
-            $employeesSalaryTypes = [];
 
-            foreach ($request->salary_types as $salaryType) {
-                $employeesSalaryTypes[] = [
-                    'employee_id' => $employee->id,
-                    'salary_type_id' => $salaryType['id'],
-                    'amount' => $salaryType['amount'],
-                    'created_at' => now(),
-                    'updated_at' => now()
+            // foreach ($request->employee_salary_types as $employeeSalaryType) {
+            //     $data = (object) [
+            //         'employee_id' => $employee->id,
+            //         'company_salary_type_id' => $employeeSalaryType['company_salary_type_id'],
+            //         'amount' => $employeeSalaryType['amount'],
+            //         'amount_type' => $employeeSalaryType['amount_type'],
+            //     ];
+            //     $this->employeeSalaryTypeService->createEmployeeSalaryType($data);
+            // }
+
+            $employeeSalaryTypes = [];
+            foreach ($request->employee_salary_types as $employeeSalaryType) {
+                $employeeSalaryTypes[$employeeSalaryType['company_salary_type_id']] =  [
+                    'amount' => $employeeSalaryType['amount'],
+                    'amount_type' => $employeeSalaryType['amount_type'],
                 ];
             }
-
-            EmployeeSalaryType::insert($employeesSalaryTypes);
+            // dd($employeeSalaryTypes);
+            $employee->employeeSalaryTypes()->sync($employeeSalaryTypes);
 
             $employeeOneTimeShifts = [];
 
@@ -229,59 +246,25 @@ class EmployeeController extends Controller
 
     public function updateSalary(Request $request, $id)
     {
-        $additionalRuple = [
-            'id' => 'required|exists:salary_types,id',
-            'amount' => 'required|integer',
-        ];
         $request->validate([
-            'salary_types' => 'required|array',
+            'employee_salary_types' => 'required|array',
+            'employee_salary_types.*.company_salary_type_id' => 'required|numeric|exists:company_salary_types,id',
+            'employee_salary_types.*.amount' => 'required|numeric|gt:0',
+            'employee_salary_types.*.amount_type' => ['required', new EnumRule(CompanySalaryAmountTypeEnum::class)],
         ]);
-        $salaryTypes = $request->salary_types;
+
         $employee = Employee::findOrFail($id);
-        $salaryTypesId = [];
-        foreach ($salaryTypes as $salaryType) {
-            $salaryTypesId[] = $salaryType['id'];
-            SalaryType::findOrFail($salaryType['id']);
-            $employeeSalary = EmployeeSalaryType::where('salary_type_id', $salaryType['id'])
-                ->where('employee_id', $employee->id)
-                ->first();
-            if ($employeeSalary) {
-                $employeeSalary->amount = $salaryType['amount'];
-                $employeeSalary->save();
-            }
+
+        $employeeSalaryTypes = [];
+        foreach ($request->employee_salary_types as $employeeSalaryType) {
+            $employeeSalaryTypes[$employeeSalaryType['company_salary_type_id']] =  [
+                'amount' => $employeeSalaryType['amount'],
+                'amount_type' => $employeeSalaryType['amount_type'],
+            ];
         }
-        $this->updateDeleteSalaries($salaryTypesId, $employee, $salaryTypes);
+        $employee->employeeSalaryTypes()->sync($employeeSalaryTypes);
 
-        $employee = $employee->refresh();
-
-        return $this->showOne($employee->typeOfSalary());
-    }
-
-    public static function updateDeleteSalaries(array $newSalaryTypesId, Employee $employee, array $salaryTypes)
-    {
-        $salaryTypes = collect($salaryTypes);
-        $oldSalaryTypesId = EmployeeSalaryType::where('employee_id', $employee->id)->pluck('id');
-        $deletes = array_diff($oldSalaryTypesId->toArray(), $newSalaryTypesId);
-        EmployeeSalaryType::whereIn('salary_type_id', $deletes)->where('employee_id', $employee->id)->delete();
-        $adds = array_diff($newSalaryTypesId, $oldSalaryTypesId->toArray());
-        foreach ($adds as $add) {
-            $salaryType = $salaryTypes->firstWhere('id', $add);
-            $newSalaryTypesId = EmployeeSalaryType::where('employee_id', $employee->id)
-                ->withTrashed()
-                ->where('salary_type_id', $add)
-                ->first();
-            if ($newSalaryTypesId) {
-                $newSalaryTypesId->restore();
-                $newSalaryTypesId->amount = $salaryType['amount'];
-                $newSalaryTypesId->save();
-            } else {
-                EmployeeSalaryType::create([
-                    'employee_id' => $employee->id,
-                    'salary_type_id' => $salaryType['id'],
-                    'amount' => $salaryType['amount'],
-                ]);
-            }
-        }
+        return $this->showOne(new EmployeeResource($employee));
     }
 
     /**
