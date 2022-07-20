@@ -139,17 +139,6 @@ class EmployeeController extends Controller
                 'is_attendance_required' => $request->is_attendance_required
             ]);
 
-
-            // foreach ($request->employee_salary_types as $employeeSalaryType) {
-            //     $data = (object) [
-            //         'employee_id' => $employee->id,
-            //         'company_salary_type_id' => $employeeSalaryType['company_salary_type_id'],
-            //         'amount' => $employeeSalaryType['amount'],
-            //         'amount_type' => $employeeSalaryType['amount_type'],
-            //     ];
-            //     $this->employeeSalaryTypeService->createEmployeeSalaryType($data);
-            // }
-
             $employeeSalaryTypes = [];
             foreach ($request->employee_salary_types as $employeeSalaryType) {
                 $employeeSalaryTypes[$employeeSalaryType['company_salary_type_id']] =  [
@@ -157,7 +146,6 @@ class EmployeeController extends Controller
                     'amount_type' => $employeeSalaryType['amount_type'],
                 ];
             }
-            // dd($employeeSalaryTypes);
             $employee->employeeSalaryTypes()->sync($employeeSalaryTypes);
 
             $employeeOneTimeShifts = [];
