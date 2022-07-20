@@ -12,16 +12,6 @@ class SalaryType extends Model
         'name',
         'code',
         'type',
-        'company_id',
         'is_adhocable'
     ];
-
-    public function toArrayDefault()
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'company_id' => $this->company_id,
-        ];
-    }
 }

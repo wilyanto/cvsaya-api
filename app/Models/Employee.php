@@ -115,9 +115,9 @@ class Employee extends Authenticatable implements Auditable
         if ($employeeSalaryTypes->isNotEmpty()) {
             return $employeeSalaryTypes->map(function ($employeeSalaryType) {
                 return [
-                    'salary_type_id' => $employeeSalaryType->salaryType->id,
-                    'name' => $employeeSalaryType->salaryType->name,
-                    'amount' => $employeeSalaryType->amount,
+                    // 'salary_type_id' => $employeeSalaryType->salaryType->id,
+                    // 'name' => $employeeSalaryType->salaryType->name,
+                    // 'amount' => $employeeSalaryType->amount,
                 ];
             });
         }
@@ -171,7 +171,6 @@ class Employee extends Authenticatable implements Auditable
         return [
             'id' => $this->id,
             'name' => $this->candidate->name,
-            'salary_types' => $this->typeOfSalary(),
             'company' => $this->company,
             'department' => $this->department->onlyNameAndId(),
             'level' => $this->level->onlyNameAndId(),
@@ -202,6 +201,11 @@ class Employee extends Authenticatable implements Auditable
     public function resignations()
     {
         return $this->hasMany(EmployeeResignation::class, 'employee_id', 'id');
+    }
+
+    public function employeeSalaryTypes()
+    {
+        return $this->belongsToMany(EmployeeSalaryType::class, 'employees_salary_types', 'employee_id', 'company_salary_type_id')->withTimestamps();
     }
 
     public function getOneTimeShifts($date)
