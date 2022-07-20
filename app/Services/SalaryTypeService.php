@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Enums\SalaryTypeEnum;
+use App\Models\CompanySalaryType;
+use App\Models\EmployeeSalaryType;
 use App\Models\SalaryType;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -59,22 +61,19 @@ class SalaryTypeService
 
     public function seedByCompanyId($companyId)
     {
-        // get default salary types
-        $defaultSalaryTypes = [];
+        // get salary types
+        $salaryTypes = $this->salaryTypeService->getAll();
 
-        $salaryTypes = [];
-        foreach ($defaultSalaryTypes as $defaultSalaryType) {
-            $salaryType = SalaryType::create([
-                'name' => $defaultSalaryType->name,
-                'code' => $defaultSalaryType->code,
-                'type' => $defaultSalaryType->type,
-                'company_id' => $companyId,
+        $companySalaryTypes = [];
+        foreach ($salaryTypes as $salaryType) {
+            $companySalaryType = CompanySalaryType::create([
+                'salary_type_id' => $salaryType->id,
+                'company_id' => $companyId
             ]);
-
-            array_push($salaryTypes, $salaryType);
+            array_push($companySalaryTypes, $companySalaryType);
         }
 
-        return $salaryTypes;
+        return $companySalaryTypes;
     }
 
     public function seedDefaultSalaryType()
@@ -88,8 +87,14 @@ class SalaryTypeService
                 'is_adhocable' => false,
             ],
             [
-                'name' => 'Tunjangan',
+                'name' => 'Tunjangan Transport',
                 'code' => 'A02',
+                'type' => SalaryTypeEnum::allowance(),
+                'is_adhocable' => false,
+            ],
+            [
+                'name' => 'Tunjangan Makan',
+                'code' => 'A03',
                 'type' => SalaryTypeEnum::allowance(),
                 'is_adhocable' => false,
             ],
@@ -105,19 +110,19 @@ class SalaryTypeService
             // ad hoc
             [
                 'name' => 'Lembur',
-                'code' => 'A03',
-                'type' => SalaryTypeEnum::allowance(),
-                'is_adhocable' => true,
-            ],
-            [
-                'name' => 'THR',
                 'code' => 'A04',
                 'type' => SalaryTypeEnum::allowance(),
                 'is_adhocable' => true,
             ],
             [
-                'name' => 'Insentif',
+                'name' => 'THR',
                 'code' => 'A05',
+                'type' => SalaryTypeEnum::allowance(),
+                'is_adhocable' => true,
+            ],
+            [
+                'name' => 'Insentif',
+                'code' => 'A06',
                 'type' => SalaryTypeEnum::allowance(),
                 'is_adhocable' => true,
             ],
