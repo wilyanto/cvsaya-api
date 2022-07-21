@@ -10,6 +10,7 @@ use App\Models\Company;
 use App\Models\Employee;
 use App\Models\EmployeeAdHoc;
 use App\Models\EmployeePayslip;
+use App\Models\EmployeePayslipAdhoc;
 use App\Models\EmployeePayslipAllowance;
 use App\Models\EmployeePayslipDeduction;
 use App\Models\PayrollPeriod;
@@ -42,9 +43,6 @@ class PayslipService
         foreach ($employees as $employee) {
             $startDate = $payrollPeriod->started_at;
             $endDate = $payrollPeriod->ended_at;
-            $adhocs = EmployeeAdHoc::whereBetween('date', [$startDate, $endDate])
-                ->where('employee_id', $employee->id)
-                ->get();
 
             $isDailyEmployee = $employee->type == EmployeeType::daily();
             $isMonthlyEmployee = $employee->type == EmployeeType::monthly() && !$employee->is_attendance_required;
@@ -71,8 +69,19 @@ class PayslipService
                     }
                 }
 
-                // tunjangan
+                // tunjangan transport
                 if ($allowanceSalaryType->code == "A02") {
+                    if ($isDailyEmployee) {
+                        $totalAmount = $allowanceSalaryType->amount * $employeeWorkDayCount;
+                    } else if ($isMonthlyEmployeeAndAttendanceRequired) {
+                        $totalAmount = ($allowanceSalaryType->amount / $actualWorkDayCount) * $employeeWorkDayCount;
+                    } else {
+                        $totalAmount = $allowanceSalaryType->amount;
+                    }
+                }
+
+                // tunjangan makan
+                if ($allowanceSalaryType->code == "A03") {
                     if ($isDailyEmployee) {
                         $totalAmount = $allowanceSalaryType->amount * $employeeWorkDayCount;
                     } else if ($isMonthlyEmployeeAndAttendanceRequired) {
@@ -85,7 +94,7 @@ class PayslipService
                 EmployeePayslipAllowance::create([
                     'payslip_id' => $payslip->id,
                     'name' => $allowanceSalaryType->salaryType->name,
-                    'amount' => $allowanceSalaryType->amount,
+                    'amount' => $totalAmount,
                     'note' => '',
                 ]);
             }
@@ -120,6 +129,17 @@ class PayslipService
                     'name' => $employeeDeduction->name,
                     'amount' => $employeeDeduction->amount,
                     'note' => $employeeDeduction->note,
+                ]);
+            }
+
+            $adhocs = EmployeeAdHoc::whereBetween('date', [$startDate, $endDate])
+                ->where('employee_id', $employee->id)
+                ->get();
+
+            foreach ($adhocs as $adhoc) {
+                EmployeePayslipAdhoc::create([
+                    'payslip_id' => $payslip->id,
+                    'employee_ad_hoc_id' => $adhoc->id,
                 ]);
             }
         }
