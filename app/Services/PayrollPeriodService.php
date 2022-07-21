@@ -41,7 +41,8 @@ class PayrollPeriodService
             'working_day_count' => $data->working_day_count
         ]);
 
-        $this->payslipService->createPayslip($payrollPeriod->id);
+        // TODO: implement generate payslip
+        // $this->payslipService->createPayslip($payrollPeriod->id);
 
         return $payrollPeriod;
     }
