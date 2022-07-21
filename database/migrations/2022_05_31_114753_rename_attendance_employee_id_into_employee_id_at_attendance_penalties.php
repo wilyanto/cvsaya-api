@@ -14,8 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('attendance_penalties', function (Blueprint $table) {
-            $table->uuid('attendance_id')->change();
-            $table->foreign('attendance_id')->references('id')->on('attendances');
+            $table->renameColumn('attendance_employee_id', 'attendance_id');
         });
     }
 

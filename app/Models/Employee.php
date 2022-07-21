@@ -13,6 +13,8 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use OwenIt\Auditing\Contracts\Auditable;
 use App\Enums\AttendanceType;
+use App\Enums\LeavePermissionStatusType;
+use App\Enums\SalaryTypeEnum;
 use PDO;
 
 class Employee extends Authenticatable implements Auditable
@@ -20,6 +22,7 @@ class Employee extends Authenticatable implements Auditable
     use HasFactory, SoftDeletes, CrudTrait, HasRoles;
 
     use \OwenIt\Auditing\Auditable;
+    use \Staudenmeir\EloquentHasManyDeep\HasRelationships;
 
     protected $dates = [
         'joined_at',
@@ -31,11 +34,13 @@ class Employee extends Authenticatable implements Auditable
         'joined_at',
         'type',
         'is_default',
+        'is_attendance_required',
         'salary_type_id',
     ];
 
     public $casts = [
         'is_default' => 'boolean',
+        'is_attendance_required' => 'boolean'
     ];
 
     public function position()
@@ -83,6 +88,16 @@ class Employee extends Authenticatable implements Auditable
         return $this->hasMany(EmployeeSalaryType::class);
     }
 
+    public function getAllowanceSalaryTypes()
+    {
+        return $this->salaryTypes()->where('salary_types.type', SalaryTypeEnum::allowance())->get();
+    }
+
+    public function getDeductionSalaryTypes()
+    {
+        return $this->salaryTypes()->where('salary_types.type', SalaryTypeEnum::deduction())->get();
+    }
+
     public function attendances()
     {
         return $this->hasMany(Attendance::class, 'employee_id', 'id');
@@ -100,9 +115,9 @@ class Employee extends Authenticatable implements Auditable
         if ($employeeSalaryTypes->isNotEmpty()) {
             return $employeeSalaryTypes->map(function ($employeeSalaryType) {
                 return [
-                    'salary_type_id' => $employeeSalaryType->salaryType->id,
-                    'name' => $employeeSalaryType->salaryType->name,
-                    'amount' => $employeeSalaryType->amount,
+                    // 'salary_type_id' => $employeeSalaryType->salaryType->id,
+                    // 'name' => $employeeSalaryType->salaryType->name,
+                    // 'amount' => $employeeSalaryType->amount,
                 ];
             });
         }
@@ -156,7 +171,6 @@ class Employee extends Authenticatable implements Auditable
         return [
             'id' => $this->id,
             'name' => $this->candidate->name,
-            'salary_types' => $this->typeOfSalary(),
             'company' => $this->company,
             'department' => $this->department->onlyNameAndId(),
             'level' => $this->level->onlyNameAndId(),
@@ -187,6 +201,11 @@ class Employee extends Authenticatable implements Auditable
     public function resignations()
     {
         return $this->hasMany(EmployeeResignation::class, 'employee_id', 'id');
+    }
+
+    public function employeeSalaryTypes()
+    {
+        return $this->belongsToMany(EmployeeSalaryType::class, 'employees_salary_types', 'employee_id', 'company_salary_type_id')->withTimestamps();
     }
 
     public function getOneTimeShifts($date)
@@ -352,9 +371,48 @@ class Employee extends Authenticatable implements Auditable
 
     public function getAttendances($startDate, $endDate)
     {
-        return $this->attendances()->with('attendancePenalty')
-            ->whereBetween('scheduled_at', [$startDate, $endDate])
-            ->where('employee_id', $this->id)
+        return $this->attendances()
+            ->whereBetween('attendances.date', [$startDate, $endDate])
+            ->get();
+    }
+
+    public function getAttendanceCount($startDate, $endDate)
+    {
+        return $this->getAttendances($startDate, $endDate)->count();
+    }
+
+    public function attendancePenalties()
+    {
+        return $this->hasManyDeep(
+            AttendancePenalty::class,
+            [Attendance::class, AttendanceDetail::class]
+        );
+    }
+
+    public function getAttendancePenaltyTotalAmount($startDate, $endDate)
+    {
+        return $this->attendancePenalties()->whereBetween('attendances.created_at', [$startDate, $endDate])->dd();
+    }
+
+    public function leavePermissions()
+    {
+        return $this->hasMany(LeavePermission::class);
+    }
+
+    public function getLeavePermissionsByDateRange($startDate, $endDate)
+    {
+        return $this->leavePermissions()
+            ->where('status', LeavePermissionStatusType::accepted())
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereDate('started_at', '>=', $startDate)
+                    ->whereDate('ended_at', '<=', $endDate);
+            })->orWhere(function ($query) use ($startDate, $endDate) {
+                $query->whereDate('started_at', '>=', $startDate)
+                    ->whereDate('started_at', '<=', $endDate);
+            })->orWhere(function ($query) use ($startDate, $endDate) {
+                $query->whereDate('ended_at', '>=', $startDate)
+                    ->whereDate('ended_at', '<=', $endDate);
+            })
             ->get();
     }
 }

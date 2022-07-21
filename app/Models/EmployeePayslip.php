@@ -5,13 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SalaryType extends Model
+class EmployeePayslip extends Model
 {
     use HasFactory;
-    public $fillable = [
-        'name',
-        'code',
-        'type',
-        'is_adhocable'
-    ];
 }
