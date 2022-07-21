@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('payroll_periods', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->timestamp('started_at');
-            $table->timestamp('ended_at');
+            $table->timestamp('started_at')->useCurrent();
+            $table->timestamp('ended_at')->useCurrent();
             $table->string('company_id');
             $table->integer('working_day_count');
             $table->timestamps();
