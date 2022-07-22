@@ -19,8 +19,8 @@ class EmployeeSalaryType extends Pivot
         'amount_type'
     ];
 
-    public function salaryType()
+    public function companySalaryType()
     {
-        return $this->hasOne(SalaryType::class, 'id', 'salary_type_id');
+        return $this->hasOne(CompanySalaryType::class, 'id', 'company_salary_type_id');
     }
 }

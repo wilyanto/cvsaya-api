@@ -83,19 +83,19 @@ class Employee extends Authenticatable implements Auditable
         return $this->belongsTo(User::class, 'user_id', 'id_kustomer');
     }
 
-    public function salaryTypes()
+    public function employeeSalaryTypes()
     {
         return $this->hasMany(EmployeeSalaryType::class);
     }
 
     public function getAllowanceSalaryTypes()
     {
-        return $this->salaryTypes()->where('salary_types.type', SalaryTypeEnum::allowance())->get();
+        return $this->employeeSalaryTypes()->whereRelation('companySalaryType.salaryType', 'type', SalaryTypeEnum::allowance())->get();
     }
 
     public function getDeductionSalaryTypes()
     {
-        return $this->salaryTypes()->where('salary_types.type', SalaryTypeEnum::deduction())->get();
+        return $this->employeeSalaryTypes()->where('salary_types.type', SalaryTypeEnum::deduction())->get();
     }
 
     public function attendances()
@@ -203,9 +203,19 @@ class Employee extends Authenticatable implements Auditable
         return $this->hasMany(EmployeeResignation::class, 'employee_id', 'id');
     }
 
-    public function employeeSalaryTypes()
+    public function companySalaryTypes()
     {
-        return $this->belongsToMany(EmployeeSalaryType::class, 'employees_salary_types', 'employee_id', 'company_salary_type_id')->withTimestamps();
+        return $this->belongsToMany(CompanySalaryType::class, 'employees_salary_types', 'employee_id', 'company_salary_type_id')->with('salaryType')->withTimestamps();
+    }
+
+    public function getAllowanceEmployeeSalaryTypes()
+    {
+        return $this->companySalaryTypes()->whereRelation('salaryType', 'type', SalaryTypeEnum::allowance())->get();
+    }
+
+    public function getDeductionEmployeeSalaryTypes()
+    {
+        return $this->companySalaryTypes()->whereRelation('salaryType', 'type', SalaryTypeEnum::deduction())->get();
     }
 
     public function getOneTimeShifts($date)
