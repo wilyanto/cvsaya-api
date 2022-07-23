@@ -77,6 +77,9 @@ class PayrollPeriodService
     {
         $pageSize = $request->input('page_size', 10);
         $payrollPeriods = QueryBuilder::for(PayrollPeriod::class)
+            ->allowedFilters([
+                AllowedFilter::custom('search', new FilterPayrollPeriodSearch),
+            ])
             ->where('company_id', $companyId)
             ->paginate($pageSize);
 
