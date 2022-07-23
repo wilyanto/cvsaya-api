@@ -23,4 +23,19 @@ class EmployeePayslip extends Model
         'generated_at' => 'datetime',
         'paid_at' => 'datetime'
     ];
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
+    public function payrollPeriod()
+    {
+        return $this->belongsTo(PayrollPeriod::class);
+    }
+
+    public function payslipDetails()
+    {
+        return $this->hasMany(EmployeePayslipDetail::class);
+    }
 }

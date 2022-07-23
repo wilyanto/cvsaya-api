@@ -25,6 +25,7 @@ class EmployeeResource extends JsonResource
             'position' => $this->position,
             'candidate' => $this->candidate,
             'company' => $this->company,
+            'bank_account' => $this->bankAccount
         ];
     }
 }

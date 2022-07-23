@@ -2,9 +2,10 @@
 
 namespace App\Http\Resources;
 
+use App\Models\CompanySalaryType;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PayrollPeriodResource extends JsonResource
+class EmployeePayslipDetailResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,12 +18,10 @@ class PayrollPeriodResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'started_at' => $this->started_at,
-            'ended_at' => $this->ended_at,
-            'company_id' => $this->company_id,
-            'working_day_count' => $this->working_day_count,
-            'payslip_count' => $this->payslips->count(),
-            'payslips' => EmployeePayslipResource::collection($this->whenLoaded('payslips')),
+            'amount' => $this->amount,
+            'note' => $this->note,
+            'company_salary_type_id' => $this->company_salary_type_id,
+            'company_salary_type' => new CompanySalaryTypeResource($this->whenLoaded('companySalaryType'))
         ];
     }
 }

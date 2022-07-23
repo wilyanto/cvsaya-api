@@ -17,6 +17,9 @@ class SalaryTypeResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'code' => $this->code,
+            'type' => $this->type,
+            'is_adhocable' => $this->is_adhocable,
             'company_id' => $this->company_id,
         ];
     }

@@ -16,4 +16,9 @@ class EmployeePayslipDetail extends Model
         'amount',
         'note'
     ];
+
+    public function companySalaryType()
+    {
+        return $this->belongsTo(CompanySalaryType::class);
+    }
 }

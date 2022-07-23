@@ -31,6 +31,7 @@ class PayrollPeriodService
     {
         $query = PayrollPeriod::where('id', $id);
         $payrollPeriod = QueryBuilder::for($query)
+            ->allowedIncludes(['payslips.employee', 'payslips.payrollPeriod', 'payslips.payslipDetails.companySalaryType.salaryType'])
             ->firstOrFail();
 
         return $payrollPeriod;
@@ -80,6 +81,7 @@ class PayrollPeriodService
             ->allowedFilters([
                 AllowedFilter::custom('search', new FilterPayrollPeriodSearch),
             ])
+            ->allowedIncludes(['payslips.employee', 'payslips.payrollPeriod', 'payslips.payslipDetails.companySalaryType.salaryType'])
             ->where('company_id', $companyId)
             ->paginate($pageSize);
 

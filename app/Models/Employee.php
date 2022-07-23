@@ -218,6 +218,11 @@ class Employee extends Authenticatable implements Auditable
         return $this->companySalaryTypes()->whereRelation('salaryType', 'type', SalaryTypeEnum::deduction())->get();
     }
 
+    public function bankAccount()
+    {
+        return $this->hasOne(EmployeeBankAccount::class);
+    }
+
     public function getOneTimeShifts($date)
     {
         $date = new Carbon($date);

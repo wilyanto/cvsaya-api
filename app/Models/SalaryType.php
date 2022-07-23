@@ -8,10 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class SalaryType extends Model
 {
     use HasFactory;
-    public $fillable = [
+    protected $fillable = [
         'name',
         'code',
         'type',
         'is_adhocable'
+    ];
+
+    protected $casts = [
+        'is_adhocable' => 'boolean'
     ];
 }
