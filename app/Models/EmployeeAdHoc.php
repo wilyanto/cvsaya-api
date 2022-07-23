@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class EmployeeAdHoc extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'employee_id',
+        'company_salary_type_id',
+        'name',
+        'date',
+        'amount',
+        'note'
+    ];
 }

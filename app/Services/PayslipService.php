@@ -13,7 +13,9 @@ use App\Models\EmployeePayslip;
 use App\Models\EmployeePayslipAdhoc;
 use App\Models\EmployeePayslipAllowance;
 use App\Models\EmployeePayslipDeduction;
+use App\Models\EmployeePayslipDetail;
 use App\Models\PayrollPeriod;
+use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class PayslipService
@@ -38,111 +40,118 @@ class PayslipService
         $payrollPeriod = PayrollPeriod::findOrFail($payrollPeriodId);
         $company = Company::findOrFail($payrollPeriod->company_id);
         $employees = $company->employees;
-        $actualWorkDayCount = $payrollPeriod->working_day_count;
 
-        foreach ($employees as $employee) {
-            $startDate = $payrollPeriod->started_at;
-            $endDate = $payrollPeriod->ended_at;
+        DB::transaction(function () use ($employees, $payrollPeriod) {
+            foreach ($employees as $employee) {
+                $startDate = $payrollPeriod->started_at;
+                $endDate = $payrollPeriod->ended_at;
+                $actualWorkDayCount = $payrollPeriod->working_day_count;
 
-            $isDailyEmployee = $employee->type == EmployeeType::daily();
-            $isMonthlyEmployee = $employee->type == EmployeeType::monthly() && !$employee->is_attendance_required;
-            $isMonthlyEmployeeAndAttendanceRequired = $employee->type == EmployeeType::monthly() && $employee->is_attendance_required;
-            $employeeWorkDayCount = $employee->getAttendanceCount($startDate, $endDate);
+                $isDailyEmployee = $employee->type == EmployeeType::daily();
+                $isMonthlyEmployee = $employee->type == EmployeeType::monthly() && !$employee->is_attendance_required;
+                $isMonthlyEmployeeAndAttendanceRequired = $employee->type == EmployeeType::monthly() && $employee->is_attendance_required;
+                $employeeWorkDayCount = $employee->getAttendanceCount($startDate, $endDate);
 
-            $payslip = EmployeePayslip::create([
-                'employee_id' => $employee->employee_id,
-                'status' => PayslipStatusEnum::unpaid(),
-                'payroll_period_id' => $payrollPeriodId,
-            ]);
-
-            $allowanceSalaryTypes = $employee->getAllowanceSalaryTypes();
-            foreach ($allowanceSalaryTypes as $allowanceSalaryType) {
-                // gaji pokok
-                if ($allowanceSalaryType->code == "A01") {
-                    // TODO: codes
-                    if ($isDailyEmployee) {
-                        $totalAmount = $allowanceSalaryType->amount * $employeeWorkDayCount;
-                    } else if ($isMonthlyEmployeeAndAttendanceRequired) {
-                        $totalAmount = ($allowanceSalaryType->amount / $actualWorkDayCount) * $employeeWorkDayCount;
-                    } else {
-                        $totalAmount = $allowanceSalaryType->amount;
-                    }
-                }
-
-                // tunjangan transport
-                if ($allowanceSalaryType->code == "A02") {
-                    if ($isDailyEmployee) {
-                        $totalAmount = $allowanceSalaryType->amount * $employeeWorkDayCount;
-                    } else if ($isMonthlyEmployeeAndAttendanceRequired) {
-                        $totalAmount = ($allowanceSalaryType->amount / $actualWorkDayCount) * $employeeWorkDayCount;
-                    } else {
-                        $totalAmount = $allowanceSalaryType->amount;
-                    }
-                }
-
-                // tunjangan makan
-                if ($allowanceSalaryType->code == "A03") {
-                    if ($isDailyEmployee) {
-                        $totalAmount = $allowanceSalaryType->amount * $employeeWorkDayCount;
-                    } else if ($isMonthlyEmployeeAndAttendanceRequired) {
-                        $totalAmount = ($allowanceSalaryType->amount / $actualWorkDayCount) * $employeeWorkDayCount;
-                    } else {
-                        $totalAmount = $allowanceSalaryType->amount;
-                    }
-                }
-
-                EmployeePayslipAllowance::create([
-                    'payslip_id' => $payslip->id,
-                    'name' => $allowanceSalaryType->salaryType->name,
-                    'amount' => $totalAmount,
-                    'note' => '',
+                $payslip = EmployeePayslip::create([
+                    'employee_id' => $employee->id,
+                    'status' => PayslipStatusEnum::unpaid(),
+                    'payroll_period_id' => $payrollPeriod->id,
                 ]);
-            }
 
-            $deductionSalaryTypes = $employee->getDeductionSalaryTypes();
-            foreach ($deductionSalaryTypes as $deductionSalaryType) {
-                // keterlambatan
-                if ($allowanceSalaryType->code == "D01") {
-                    $attendancePenalties = [];
-                    $attendances = $employee->getAttendances($startDate, $endDate);
-                    foreach ($attendances as $attendance) {
-                        $clockInPenalty = $attendance->clockInAttendanceDetail?->attendancePenalty;
-                        $clockOutPenalty = $attendance->clockOutAttendanceDetail?->attendancePenalty;
-                        $startBreakPenalty = $attendance->startBreakAttendanceDetail?->attendancePenalty;
-                        $endBreakPenalty = $attendance->endBreakAttendanceDetail?->attendancePenalty;
-                        $attendancePenalty = [
-                            'date' => $attendance->date,
-                            'clock_in_penalty' => $clockInPenalty,
-                            'clock_out_penalty' => $clockOutPenalty,
-                            'start_break_penalty' => $startBreakPenalty,
-                            'end_break_penalty' => $endBreakPenalty,
-                        ];
-                        array_push($attendancePenalties, $attendancePenalty);
+                $allowanceEmployeeSalaryTypes = $employee->getAllowanceSalaryTypes();
+                foreach ($allowanceEmployeeSalaryTypes as $allowanceEmployeeSalaryType) {
+                    // gaji pokok
+                    $totalAmount = 0;
+                    // dd($allowanceEmployeeSalaryType->toJson(JSON_PRETTY_PRINT));
+                    if ($allowanceEmployeeSalaryType->companySalaryType->salaryType->code == "A01") {
+                        // TODO: codes
+                        if ($isDailyEmployee) {
+                            $totalAmount = $allowanceEmployeeSalaryType->amount * $employeeWorkDayCount;
+                        } else if ($isMonthlyEmployeeAndAttendanceRequired) {
+                            $totalAmount = ($allowanceEmployeeSalaryType->amount / $actualWorkDayCount) * $employeeWorkDayCount;
+                        } else {
+                            $totalAmount = $allowanceEmployeeSalaryType->amount;
+                        }
                     }
+
+                    // tunjangan transport
+                    if ($allowanceEmployeeSalaryType->companySalaryType->salaryType->code == "A02") {
+                        if ($isDailyEmployee) {
+                            $totalAmount = $allowanceEmployeeSalaryType->amount * $employeeWorkDayCount;
+                        } else if ($isMonthlyEmployeeAndAttendanceRequired) {
+                            $totalAmount = ($allowanceEmployeeSalaryType->amount / $actualWorkDayCount) * $employeeWorkDayCount;
+                        } else {
+                            $totalAmount = $allowanceEmployeeSalaryType->amount;
+                        }
+                    }
+
+                    // tunjangan makan
+                    if ($allowanceEmployeeSalaryType->companySalaryType->salaryType->code == "A03") {
+                        if ($isDailyEmployee) {
+                            $totalAmount = $allowanceEmployeeSalaryType->amount * $employeeWorkDayCount;
+                        } else if ($isMonthlyEmployeeAndAttendanceRequired) {
+                            $totalAmount = ($allowanceEmployeeSalaryType->amount / $actualWorkDayCount) * $employeeWorkDayCount;
+                        } else {
+                            $totalAmount = $allowanceEmployeeSalaryType->amount;
+                        }
+                    }
+
+                    EmployeePayslipDetail::create([
+                        'employee_payslip_id' => $payslip->id,
+                        'company_salary_type_id' => $allowanceEmployeeSalaryType->company_salary_type_id,
+                        'name' => $allowanceEmployeeSalaryType->companySalaryType->salaryType->name,
+                        'amount' => $totalAmount,
+                        'note' => '',
+                    ]);
+                }
+
+                $deductionEmployeeSalaryTypes = $employee->getDeductionEmployeeSalaryTypes();
+                foreach ($deductionEmployeeSalaryTypes as $deductionEmployeeSalaryType) {
+                    $totalAmount = 0;
+                    // keterlambatan
+                    if ($deductionEmployeeSalaryType->companySalaryType->salaryType->code == "D01") {
+                        $attendances = $employee->getAttendances($startDate, $endDate);
+                        foreach ($attendances as $attendance) {
+                            $totalAmount = 0;
+
+                            if ($attendance->clockInAttendanceDetail && $attendance->clockInAttendanceDetail->attendancePenalty) {
+                                $totalAmount += $attendance->clockInAttendanceDetail->attendancePenalty->penalty_amount;
+                            }
+
+                            if ($attendance->clockOutAttendanceDetail && $attendance->clockOutAttendanceDetail->attendancePenalty) {
+                                $totalAmount += $attendance->clockOutAttendanceDetail->attendancePenalty->penalty_amount;
+                            }
+
+                            if ($attendance->startBreakAttendanceDetail && $attendance->startBreakAttendanceDetail->attendancePenalty) {
+                                $totalAmount += $attendance->startBreakAttendanceDetail->attendancePenalty->penalty_amount;
+                            }
+
+                            if ($attendance->endBreakAttendanceDetail && $attendance->endBreakAttendanceDetail->attendancePenalty) {
+                                $totalAmount += $attendance->endBreakAttendanceDetail->attendancePenalty->penalty_amount;
+                            }
+                        }
+                    }
+                    EmployeePayslipDetail::create([
+                        'payslip_id' => $payslip->id,
+                        'company_salary_type_id' => $deductionEmployeeSalaryType->company_salary_type_id,
+                        'name' => $deductionEmployeeSalaryType->companySalaryType->salaryType->name,
+                        'amount' => $totalAmount,
+                        'note' => '',
+                    ]);
+                }
+
+                $adhocs = EmployeeAdHoc::whereBetween('date', [$startDate, $endDate])
+                    ->where('employee_id', $employee->id)
+                    ->get();
+
+                foreach ($adhocs as $adhoc) {
+                    EmployeePayslipAdHoc::create([
+                        'payslip_id' => $payslip->id,
+                        'employee_ad_hoc_id' => $adhoc->id,
+                    ]);
                 }
             }
-
-            $employeeDeductions = [];
-            foreach ($employeeDeductions as $employeeDeduction) {
-                EmployeePayslipDeduction::create([
-                    'payslip_id' => $payslip->id,
-                    'name' => $employeeDeduction->name,
-                    'amount' => $employeeDeduction->amount,
-                    'note' => $employeeDeduction->note,
-                ]);
-            }
-
-            $adhocs = EmployeeAdHoc::whereBetween('date', [$startDate, $endDate])
-                ->where('employee_id', $employee->id)
-                ->get();
-
-            foreach ($adhocs as $adhoc) {
-                EmployeePayslipAdhoc::create([
-                    'payslip_id' => $payslip->id,
-                    'employee_ad_hoc_id' => $adhoc->id,
-                ]);
-            }
-        }
+        });
     }
 
     public function showAllByCompanyId($request, $companyId)
