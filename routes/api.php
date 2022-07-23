@@ -36,6 +36,7 @@ use App\Http\Controllers\Api\v1\LeavePermissionOccasionController;
 use App\Http\Controllers\Api\v1\BlastTypeController;
 use App\Http\Controllers\Api\v1\BlastTypeRuleController;
 use App\Http\Controllers\Api\v1\CRMCredentialController;
+use App\Http\Controllers\Api\v1\EmployeeAdHocController;
 use App\Http\Controllers\Api\v1\EmployeeBankAccountController;
 use App\Http\Controllers\Api\v1\EmployeeResignationController;
 use App\Http\Controllers\Api\v1\PayrollController;
@@ -112,6 +113,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('employee-resignations', EmployeeResignationController::class);
             Route::apiResource('employee-bank-accounts', EmployeeBankAccountController::class);
             Route::apiResource('employee-payrolls', PayrollController::class);
+            Route::apiResource('employee-ad-hocs', EmployeeAdHocController::class);
             Route::patch('employee-resignations/{id}/status', [EmployeeResignationController::class, 'updateEmployeeResignationStatus']);
             Route::controller(EmployeeRecurringShiftController::class)->group(function () {
                 Route::get('employees/{employeeId}/recurring-shifts', 'getEmployeeRecurringShifts');
