@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Http\Common\Filter\FilterPayrollPeriodSearch;
 use App\Models\PayrollPeriod;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class PayrollPeriodService
@@ -17,6 +19,9 @@ class PayrollPeriodService
     public function getAll()
     {
         $payrollPeriods = QueryBuilder::for(PayrollPeriod::class)
+            ->allowedFilters([
+                AllowedFilter::custom('search', new FilterPayrollPeriodSearch),
+            ])
             ->get();
 
         return $payrollPeriods;

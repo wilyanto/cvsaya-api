@@ -27,4 +27,9 @@ class PayrollPeriod extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function payslips()
+    {
+        return $this->hasMany(EmployeePayslip::class);
+    }
 }

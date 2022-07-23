@@ -21,6 +21,7 @@ class PayrollPeriodResource extends JsonResource
             'ended_at' => $this->ended_at,
             'company_id' => $this->company_id,
             'working_day_count' => $this->working_day_count,
+            'payslip_count' => $this->payslips->count()
         ];
     }
 }
