@@ -33,7 +33,7 @@ class SalaryTypeService
             'name' => $data->name,
             'code' => $data->code,
             'type' => $data->type,
-            'company_id' => $data->company_id,
+            'is_adhocable' => $data->is_adhocable,
         ]);
 
         return $salaryType;
@@ -46,7 +46,7 @@ class SalaryTypeService
             'name' => $data->name,
             'code' => $data->code,
             'type' => $data->type,
-            'company_id' => $data->company_id,
+            'is_adhocable' => $data->is_adhocable,
         ]);
 
         return $salaryType;
