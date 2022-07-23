@@ -18,4 +18,9 @@ class CompanySalaryType extends Model
     {
         return $this->belongsTo(SalaryType::class);
     }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }
