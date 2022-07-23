@@ -19,7 +19,8 @@ class SalaryTypeController extends Controller
     {
         $salaryTypes = QueryBuilder::for(SalaryType::class)
             ->allowedFilters([
-                AllowedFilter::exact('company_id')
+                AllowedFilter::exact('company_id'),
+                AllowedFilter::exact('is_adhocable')
             ])->get();
 
         return $this->showAll(collect(SalaryTypeResource::collection($salaryTypes)));
