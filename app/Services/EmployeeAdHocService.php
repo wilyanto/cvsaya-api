@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\SalaryTypeEnum;
 use App\Models\EmployeeAdHoc;
 use App\Models\SalaryType;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class EmployeeAdHocService
@@ -12,6 +13,9 @@ class EmployeeAdHocService
     public function getAll()
     {
         $salaryTypes = QueryBuilder::for(EmployeeAdHoc::class)
+            ->allowedFilters([
+                AllowedFilter::exact('employee_id'),
+            ])
             ->get();
 
         return $salaryTypes;
