@@ -53,7 +53,7 @@ class PayrollPeriodService
         ]);
 
         // TODO: implement generate payslip
-        $this->payslipService->createPayslip($payrollPeriod->id);
+        $this->payslipService->generatePayslips($payrollPeriod->id);
 
         return $payrollPeriod;
     }

@@ -43,4 +43,14 @@ class EmployeePayslip extends Model
     {
         return $this->hasMany(EmployeePayslipAdHoc::class);
     }
+
+    public function paidBy()
+    {
+        return $this->belongsTo(Employee::class, 'paid_by');
+    }
+
+    public function generatedBy()
+    {
+        return $this->belongsTo(Employee::class, 'generated_by');
+    }
 }

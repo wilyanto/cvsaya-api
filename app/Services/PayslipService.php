@@ -51,7 +51,47 @@ class PayslipService
         return $employeePayslip;
     }
 
-    public function createPayslip($payrollPeriodId)
+    public function updatePayslip($data, $id)
+    {
+        $payslip = $this->getById($id);
+
+        $payslip->update([
+            'name' => $data->name,
+            'started_at' => $data->started_at,
+            'ended_at' => $data->ended_at,
+            'company_id' => $data->company_id,
+            'working_day_count' => $data->working_day_count
+        ]);
+
+        return $payslip;
+    }
+
+    public function generatePayslip($id, $generatedBy)
+    {
+        $payslip = $this->getById($id);
+
+        $payslip->update([
+            'generated_at' => now(),
+            'generated_by' => $generatedBy
+        ]);
+
+        return $payslip;
+    }
+
+    public function payPayslip($id, $paidBy)
+    {
+        $payslip = $this->getById($id);
+
+        $payslip->update([
+            'status' => PayslipStatusEnum::paid(),
+            'paid_at' => now(),
+            'paid_by' => $paidBy
+        ]);
+
+        return $payslip;
+    }
+
+    public function generatePayslips($payrollPeriodId)
     {
         $payrollPeriod = PayrollPeriod::findOrFail($payrollPeriodId);
         $company = Company::findOrFail($payrollPeriod->company_id);
