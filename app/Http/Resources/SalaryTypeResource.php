@@ -20,7 +20,6 @@ class SalaryTypeResource extends JsonResource
             'code' => $this->code,
             'type' => $this->type,
             'is_adhocable' => $this->is_adhocable,
-            'company_id' => $this->company_id,
         ];
     }
 }
