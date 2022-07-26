@@ -42,6 +42,7 @@ use App\Http\Controllers\Api\v1\EmployeeBankAccountController;
 use App\Http\Controllers\Api\v1\EmployeeResignationController;
 use App\Http\Controllers\Api\v1\PayrollController;
 use App\Http\Controllers\Api\v1\PayrollPeriodController;
+use App\Http\Controllers\Api\v1\PayslipController;
 use App\Http\Controllers\Api\v1\QuotaTypeController;
 
 /*
@@ -115,6 +116,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('employee-bank-accounts', EmployeeBankAccountController::class);
             Route::apiResource('employee-payrolls', PayrollController::class);
             Route::apiResource('employee-ad-hocs', EmployeeAdHocController::class);
+            Route::apiResource('employee-payslips', PayslipController::class);
             Route::apiResource('company-salary-types', CompanySalaryTypeController::class);
             Route::patch('employee-resignations/{id}/status', [EmployeeResignationController::class, 'updateEmployeeResignationStatus']);
             Route::controller(EmployeeRecurringShiftController::class)->group(function () {
