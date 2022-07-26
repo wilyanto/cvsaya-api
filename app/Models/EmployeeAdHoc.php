@@ -17,4 +17,14 @@ class EmployeeAdHoc extends Model
         'amount',
         'note'
     ];
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
+    public function companySalaryType()
+    {
+        return $this->belongsTo(CompanySalaryType::class);
+    }
 }

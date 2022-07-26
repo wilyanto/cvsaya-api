@@ -38,4 +38,9 @@ class EmployeePayslip extends Model
     {
         return $this->hasMany(EmployeePayslipDetail::class);
     }
+
+    public function payslipAdHocs()
+    {
+        return $this->hasMany(EmployeePayslipAdHoc::class);
+    }
 }
