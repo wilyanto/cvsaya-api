@@ -22,17 +22,19 @@ class PayslipService
 {
     public function getAll($pageSize)
     {
-        $employees = Employee::orderBy(
-            Candidate::select('name')
-                ->whereColumn('candidates.id', 'employees.candidate_id')
-        )->paginate($pageSize);
+        $employeePayslip = QueryBuilder::for(EmployeePayslip::class)
+            ->allowedIncludes([
+                'employee',
+                'payrollPeriod',
+                'payslipDetails.companySalaryType.salaryType',
+                'payslipAdHocs.employeeAdHoc.companySalaryType.salaryType'
+            ])
+            ->allowedFilters([
+                'payroll_period_id'
+            ])
+            ->paginate($pageSize);
 
-        // not hardcodeed, dynamic, how to solve
-        foreach ($employees as $employee) {
-            foreach ($employee->salaryTypes as $salaryType) {
-            }
-        }
-        return $employees;
+        return $employeePayslip;
     }
 
 
