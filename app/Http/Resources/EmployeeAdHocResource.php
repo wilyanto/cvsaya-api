@@ -23,6 +23,7 @@ class EmployeeAdHocResource extends JsonResource
             'employee_id' => $this->employee_id,
             'employee' => new EmployeeResource($this->whenLoaded('employee')),
             'company_salary_type_id' => $this->company_salary_type_id,
+            'company_salary_type' => new CompanySalaryTypeResource($this->whenLoaded('companySalaryType'))
         ];
     }
 }

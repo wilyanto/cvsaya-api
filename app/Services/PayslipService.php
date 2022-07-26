@@ -20,7 +20,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class PayslipService
 {
-    public function showAll($pageSize)
+    public function getAll($pageSize)
     {
         $employees = Employee::orderBy(
             Candidate::select('name')
@@ -33,6 +33,22 @@ class PayslipService
             }
         }
         return $employees;
+    }
+
+
+    public function getById($id)
+    {
+        $query = EmployeePayslip::where('id', $id);
+        $employeePayslip = QueryBuilder::for($query)
+            ->allowedIncludes([
+                'employee',
+                'payrollPeriod',
+                'payslipDetails.companySalaryType.salaryType',
+                'payslipAdHocs.employeeAdHoc.companySalaryType.salaryType'
+            ])
+            ->firstOrFail();
+
+        return $employeePayslip;
     }
 
     public function createPayslip($payrollPeriodId)
@@ -132,7 +148,7 @@ class PayslipService
                         }
                     }
                     EmployeePayslipDetail::create([
-                        'payslip_id' => $payslip->id,
+                        'employee_payslip_id' => $payslip->id,
                         'company_salary_type_id' => $deductionEmployeeSalaryType->company_salary_type_id,
                         'name' => $deductionEmployeeSalaryType->companySalaryType->salaryType->name,
                         'amount' => $totalAmount,
@@ -146,7 +162,7 @@ class PayslipService
 
                 foreach ($adhocs as $adhoc) {
                     EmployeePayslipAdHoc::create([
-                        'payslip_id' => $payslip->id,
+                        'employee_payslip_id' => $payslip->id,
                         'employee_ad_hoc_id' => $adhoc->id,
                     ]);
                 }

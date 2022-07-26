@@ -10,7 +10,17 @@ class EmployeePayslipAdHoc extends Model
     use HasFactory;
 
     protected $fillable = [
-        'payslip_id',
+        'employee_payslip_id',
         'employee_ad_hoc_id',
     ];
+
+    public function payslip()
+    {
+        return $this->belongsTo(Payslip::class);
+    }
+
+    public function employeeAdHoc()
+    {
+        return $this->belongsTo(EmployeeAdHoc::class);
+    }
 }

@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Enums\SalaryTypeEnum;
+use App\Http\Common\Filter\FilterCompanySalaryTypeSearch;
 use App\Models\CompanySalaryType;
 use App\Models\EmployeeSalaryType;
 use App\Models\SalaryType;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class CompanySalaryTypeService
@@ -14,6 +16,10 @@ class CompanySalaryTypeService
     {
         $salaryTypes = QueryBuilder::for(CompanySalaryType::class)
             ->allowedIncludes(['salaryType', 'company'])
+            ->allowedFilters([
+                AllowedFilter::exact('company_id'),
+                AllowedFilter::custom('search', new FilterCompanySalaryTypeSearch),
+            ])
             ->get();
 
         return $salaryTypes;
