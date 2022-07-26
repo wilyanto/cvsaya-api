@@ -20,6 +20,13 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class PayslipService
 {
+    protected $employeeAdHocService;
+
+    public function __construct(EmployeeAdHocService $employeeAdHocService)
+    {
+        $this->employeeAdHocService = $employeeAdHocService;
+    }
+
     public function getAll($pageSize)
     {
         $employees = Employee::orderBy(
@@ -54,14 +61,29 @@ class PayslipService
     public function updatePayslip($data, $id)
     {
         $payslip = $this->getById($id);
+        $payslip->payslipDetails->delete();
+        $payslip->payslipAdHocs->delete();
 
-        $payslip->update([
-            'name' => $data->name,
-            'started_at' => $data->started_at,
-            'ended_at' => $data->ended_at,
-            'company_id' => $data->company_id,
-            'working_day_count' => $data->working_day_count
-        ]);
+        $payslipDetails = $data->payslipDetails;
+        foreach ($payslipDetails as $payslipDetail) {
+            EmployeePayslipDetail::create([
+                'employee_payslip_id' => $payslip->id,
+                'company_salary_type_id' => $payslipDetail->company_salary_type_id,
+                'name' => $payslipDetail->name,
+                'amount' => $payslipDetail->amount,
+                'note' => $payslipDetail->note
+            ]);
+        }
+
+        $employeeAdHocs = $data->employeeAdHocs;
+        foreach ($employeeAdHocs as $employeeAdHoc) {
+            $employeeAdHoc = $this->employeeAdHocService->createEmployeeAdHoc($employeeAdHoc);
+
+            EmployeePayslipAdHoc::create([
+                'employee_payslip_id' => $payslip->id,
+                'employee_ad_hoc_id' => $employeeAdHoc->id,
+            ]);
+        }
 
         return $payslip;
     }
