@@ -16,6 +16,9 @@ class EmployeeAdHocService
             ->allowedFilters([
                 AllowedFilter::exact('employee_id'),
             ])
+            ->allowedIncludes([
+                'companySalaryType.salaryType'
+            ])
             ->get();
 
         return $salaryTypes;
@@ -25,6 +28,9 @@ class EmployeeAdHocService
     {
         $query = EmployeeAdHoc::where('id', $id);
         $salaryType = QueryBuilder::for($query)
+            ->allowedIncludes([
+                'companySalaryType.salaryType'
+            ])
             ->firstOrFail();
 
         return $salaryType;
