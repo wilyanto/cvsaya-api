@@ -25,7 +25,8 @@ class EmployeePayslipResource extends JsonResource
             'payroll_period_id' => $this->payroll_period_id,
             'employee' => new EmployeeResource($this->whenLoaded('employee')),
             'payroll_period' => new PayrollPeriodResource($this->whenLoaded('payrollPeriod')),
-            'payslip_details' => EmployeePayslipDetailResource::collection($this->whenLoaded('payslipDetails'))
+            'payslip_details' => EmployeePayslipDetailResource::collection($this->whenLoaded('payslipDetails')),
+            'payslip_ad_hocs' => EmployeePayslipAdHocResource::collection($this->whenLoaded('payslipAdHocs'))
         ];
     }
 }
