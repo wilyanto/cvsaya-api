@@ -19,6 +19,14 @@ class PayslipController extends Controller
         $this->payslipService = $payslipService;
     }
 
+    public function index(Request $request)
+    {
+        $pageSize = $request->input('page_size', 10);
+        $payslips = $this->payslipService->getAll($pageSize);
+
+        return $this->showPaginate('payslips', collect(EmployeePayslipResource::collection($payslips)), collect($payslips));
+    }
+
     public function show($id)
     {
         $payslip = $this->payslipService->getById($id);

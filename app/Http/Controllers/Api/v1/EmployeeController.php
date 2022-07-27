@@ -146,7 +146,7 @@ class EmployeeController extends Controller
                     'amount_type' => $employeeSalaryType['amount_type'],
                 ];
             }
-            $employee->employeeSalaryTypes()->sync($employeeSalaryTypes);
+            $employee->companySalaryTypes()->sync($employeeSalaryTypes);
 
             $employeeOneTimeShifts = [];
 
@@ -250,7 +250,7 @@ class EmployeeController extends Controller
                 'amount_type' => $employeeSalaryType['amount_type'],
             ];
         }
-        $employee->employeeSalaryTypes()->sync($employeeSalaryTypes);
+        $employee->companySalaryTypes()->sync($employeeSalaryTypes);
 
         return $this->showOne(new EmployeeResource($employee));
     }
