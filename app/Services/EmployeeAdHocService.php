@@ -12,7 +12,7 @@ class EmployeeAdHocService
 {
     public function getAll()
     {
-        $salaryTypes = QueryBuilder::for(EmployeeAdHoc::class)
+        $employeeAdHocs = QueryBuilder::for(EmployeeAdHoc::class)
             ->allowedFilters([
                 AllowedFilter::exact('employee_id'),
             ])
@@ -21,24 +21,24 @@ class EmployeeAdHocService
             ])
             ->get();
 
-        return $salaryTypes;
+        return $employeeAdHocs;
     }
 
     public function getById($id)
     {
         $query = EmployeeAdHoc::where('id', $id);
-        $salaryType = QueryBuilder::for($query)
+        $employeeAdHoc = QueryBuilder::for($query)
             ->allowedIncludes([
                 'companySalaryType.salaryType'
             ])
             ->firstOrFail();
 
-        return $salaryType;
+        return $employeeAdHoc;
     }
 
     public function createEmployeeAdHoc($data)
     {
-        $salaryType = EmployeeAdHoc::create([
+        $employeeAdHoc = EmployeeAdHoc::create([
             'employee_id' => $data->employee_id,
             'company_salary_type_id' => $data->company_salary_type_id,
             'name' => $data->name,
@@ -47,13 +47,13 @@ class EmployeeAdHocService
             'note' => $data->note,
         ]);
 
-        return $salaryType;
+        return $employeeAdHoc;
     }
 
     public function updateEmployeeAdHoc($data, $id)
     {
-        $salaryType = $this->getById($id);
-        $salaryType->update([
+        $employeeAdHoc = $this->getById($id);
+        $employeeAdHoc->update([
             'employee_id' => $data->employee_id,
             'company_salary_type_id' => $data->company_salary_type_id,
             'name' => $data->name,
@@ -62,13 +62,13 @@ class EmployeeAdHocService
             'note' => $data->note,
         ]);
 
-        return $salaryType;
+        return $employeeAdHoc;
     }
 
     public function deleteById($id)
     {
-        $salaryType = EmployeeAdHoc::where('id', $id)->firstOrFail();
-        $salaryType->delete();
+        $employeeAdHoc = EmployeeAdHoc::where('id', $id)->firstOrFail();
+        $employeeAdHoc->delete();
         return true;
     }
 }
