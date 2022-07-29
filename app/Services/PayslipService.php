@@ -60,13 +60,52 @@ class PayslipService
         return $employeePayslip;
     }
 
+    public function createPayslip($data)
+    {
+        $payslip = EmployeePayslip::create([
+            'employee_id' => $data->employee_id,
+            'payroll_period_id' => $data->payroll_period_id,
+            'status' => PayslipStatusEnum::unpaid(),
+        ]);
+
+        $payslipDetails = $data->payslip_details;
+        foreach ($payslipDetails as $payslipDetail) {
+            $payslipDetail = (object) $payslipDetail;
+            EmployeePayslipDetail::create([
+                'employee_payslip_id' => $payslip->id,
+                'company_salary_type_id' => $payslipDetail->company_salary_type_id,
+                'name' => $payslipDetail->name,
+                'amount' => $payslipDetail->amount,
+                'note' => $payslipDetail->note
+            ]);
+        }
+
+        $employeeAdHocs = $data->employee_ad_hocs;
+        foreach ($employeeAdHocs as $employeeAdHoc) {
+            $employeeAdHoc = (object) $employeeAdHoc;
+            $employeeAdHoc = $this->employeeAdHocService->createEmployeeAdHoc($employeeAdHoc);
+
+            EmployeePayslipAdHoc::create([
+                'employee_payslip_id' => $payslip->id,
+                'employee_ad_hoc_id' => $employeeAdHoc->id,
+            ]);
+        }
+
+        return $payslip;
+    }
+
     public function updatePayslip($data, $id)
     {
         $payslip = $this->getById($id);
         $payslip->payslipDetails->delete();
         $payslip->payslipAdHocs->delete();
 
-        $payslipDetails = $data->payslipDetails;
+        $payslip->update([
+            'employee_id' => $data->employee_id,
+            'payroll_period_id' => $data->payroll_period_id,
+        ]);
+
+        $payslipDetails = $data->payslip_details;
         foreach ($payslipDetails as $payslipDetail) {
             EmployeePayslipDetail::create([
                 'employee_payslip_id' => $payslip->id,
@@ -77,7 +116,7 @@ class PayslipService
             ]);
         }
 
-        $employeeAdHocs = $data->employeeAdHocs;
+        $employeeAdHocs = $data->employee_ad_hocs;
         foreach ($employeeAdHocs as $employeeAdHoc) {
             $employeeAdHoc = $this->employeeAdHocService->createEmployeeAdHoc($employeeAdHoc);
 
@@ -232,141 +271,6 @@ class PayslipService
                 }
             }
         });
-    }
-
-    public function showAllByCompanyId($request, $companyId)
-    {
-        $pageSize = $request->input('page_size', 10);
-        $keyword = $request->input('keyword', '');
-        $startDate = $request->input('start_date', '2022-07-12');
-        $endDate = $request->input('end_date', '2022-07-12');
-        $company = Company::findOrFail($companyId);
-        // $employees = $company->employees()->whereHas('candidate', function ($query) use ($keyword) {
-        //     $query->where('name', 'LIKE', '%' . $keyword . '%');
-        // })->orderBy(
-        //     Candidate::select('name')
-        //         ->whereColumn('candidates.id', 'employees.candidate_id')
-        // )->paginate($pageSize);
-
-        $employees = Employee::where('id', 1)->get();
-        // hari kerja
-        // check jika ada cuti atau dll
-        $data = [];
-        foreach ($employees as $employee) {
-            // TODO: change this from payslip period
-            $actualWorkDayCount = 26;
-            $isDailyEmployee = $employee->type == EmployeeType::daily();
-            $isMonthlyEmployee = $employee->type == EmployeeType::monthly() && !$employee->is_attendance_required;
-            $isMonthlyEmployeeAndAttendanceRequired = $employee->type == EmployeeType::monthly() && $employee->is_attendance_required;
-            $employeeWorkDayCount = $employee->getAttendanceCount($startDate, $endDate);
-            $employeeSalaryTypes = $employee->salaryTypes;
-            $allowanceSalaryTypes = $employee->getAllowanceSalaryTypes();
-            $deductionSalaryTypes = $employee->getDeductionSalaryTypes();
-
-            foreach ($allowanceSalaryTypes as $allowanceSalaryType) {
-                // gaji pokok
-                if ($allowanceSalaryType->code == "A01") {
-                    // TODO: codes
-                    if ($isDailyEmployee) {
-                        $totalAmount = $allowanceSalaryType->amount * $employeeWorkDayCount;
-                    } else if ($isMonthlyEmployeeAndAttendanceRequired) {
-                        $totalAmount = ($allowanceSalaryType->amount / $actualWorkDayCount) * $employeeWorkDayCount;
-                    } else {
-                        $totalAmount = $allowanceSalaryType->amount;
-                    }
-                }
-
-                // tunjangan
-                if ($allowanceSalaryType->code == "A02") {
-                    if ($isDailyEmployee) {
-                        $totalAmount = $allowanceSalaryType->amount * $employeeWorkDayCount;
-                    } else if ($isMonthlyEmployeeAndAttendanceRequired) {
-                        $totalAmount = ($allowanceSalaryType->amount / $actualWorkDayCount) * $employeeWorkDayCount;
-                    } else {
-                        $totalAmount = $allowanceSalaryType->amount;
-                    }
-                }
-            }
-
-            foreach ($deductionSalaryTypes as $deductionSalaryType) {
-                //TODO: how to calc deduction
-                // keterlambatan
-                if ($allowanceSalaryType->code == "D01") {
-                    $attendancePenalties = [];
-                    $attendances = $employee->getAttendances($startDate, $endDate);
-                    foreach ($attendances as $attendance) {
-                        $totalAttendancePenalty = $attendance->getAttendancePenaltyTotal();
-                        dd($totalAttendancePenalty);
-                        $clockInPenalty = $attendance->clockInAttendanceDetail?->attendancePenalty;
-                        $clockOutPenalty = $attendance->clockOutAttendanceDetail?->attendancePenalty;
-                        $startBreakPenalty = $attendance->startBreakAttendanceDetail?->attendancePenalty;
-                        $endBreakPenalty = $attendance->endBreakAttendanceDetail?->attendancePenalty;
-                        $attendancePenalty = [
-                            'date' => $attendance->date,
-                            'clock_in_penalty' => $clockInPenalty,
-                            'clock_out_penalty' => $clockOutPenalty,
-                            'start_break_penalty' => $startBreakPenalty,
-                            'end_break_penalty' => $endBreakPenalty,
-                        ];
-                        array_push($attendancePenalties, $attendancePenalty);
-                    }
-                }
-            }
-            // check if employee have leave permission or not
-            $leavePermissions = $employee->getLeavePermissionsByDateRange($startDate, $endDate);
-            $leavePermissionCount = $leavePermissions->count();
-
-            $deductions = [];
-            $attendances = $employee->getAttendances($startDate, $endDate);
-            $attendanceCount = $attendances->count();
-            $attendancePenalties = [];
-            $absentCount = 0;
-            foreach ($attendances as $attendance) {
-                if (
-                    !$attendance->clockInAttendanceDetail ||
-                    !$this->isLeavePermission($leavePermissions, $attendance->date)
-                ) {
-                    $absentCount++;
-                }
-                $clockInPenalty = $attendance->clockInAttendanceDetail?->attendancePenalty;
-                $clockOutPenalty = $attendance->clockOutAttendanceDetail?->attendancePenalty;
-                $startBreakPenalty = $attendance->startBreakAttendanceDetail?->attendancePenalty;
-                $endBreakPenalty = $attendance->endBreakAttendanceDetail?->attendancePenalty;
-                $attendancePenalty = [
-                    'date' => $attendance->date,
-                    'clock_in_penalty' => $clockInPenalty,
-                    'clock_out_penalty' => $clockOutPenalty,
-                    'start_break_penalty' => $startBreakPenalty,
-                    'end_break_penalty' => $endBreakPenalty,
-                ];
-                array_push($attendancePenalties, $attendancePenalty);
-            }
-
-            $attendanceCount = $attendanceCount - $leavePermissionCount - $absentCount;
-            // check absent or not from attendance clock in
-            $deductions = [
-                'attendance_penalties' => $attendancePenalties
-            ];
-
-            $datum = [
-                'employee' => $employee,
-                'incomes' => $incomes,
-                'deductions' => $deductions
-            ];
-
-            array_push($data, $datum);
-        }
-
-        dd(json_encode($data));
-        // komponen utama :
-        // Gaji Pokok
-        // Tunjangan
-        // Hari Kerja
-        // insentif
-        // potongan
-        // total
-
-        return $employees;
     }
 
     public function isLeavePermission($leavePermissions, $date)

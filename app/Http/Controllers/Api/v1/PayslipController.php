@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PayslipStoreRequest;
+use App\Http\Requests\PayslipUpdateRequest;
 use App\Http\Resources\EmployeePayslipResource;
 use App\Services\PayslipService;
 use App\Traits\ApiResponser;
@@ -30,6 +32,20 @@ class PayslipController extends Controller
     public function show($id)
     {
         $payslip = $this->payslipService->getById($id);
+
+        return $this->showOne(new EmployeePayslipResource($payslip));
+    }
+
+    public function store(PayslipStoreRequest $request)
+    {
+        $payslip = $this->payslipService->createPayslip($request);
+
+        return $this->showOne(new EmployeePayslipResource($payslip));
+    }
+
+    public function update(PayslipUpdateRequest $request, $id)
+    {
+        $payslip = $this->payslipService->updatePayslip($request, $id);
 
         return $this->showOne(new EmployeePayslipResource($payslip));
     }
