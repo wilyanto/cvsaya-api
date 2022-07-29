@@ -224,7 +224,7 @@ class PayslipService
                     ]);
                 }
 
-                $deductionEmployeeSalaryTypes = $employee->getDeductionEmployeeSalaryTypes();
+                $deductionEmployeeSalaryTypes = $employee->getDeductionSalaryTypes();
                 foreach ($deductionEmployeeSalaryTypes as $deductionEmployeeSalaryType) {
                     $totalAmount = 0;
                     // keterlambatan
