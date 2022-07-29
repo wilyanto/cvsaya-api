@@ -95,7 +95,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function getDeductionSalaryTypes()
     {
-        return $this->employeeSalaryTypes()->where('salary_types.type', SalaryTypeEnum::deduction())->get();
+        return $this->employeeSalaryTypes()->whereRelation('companySalaryType.salaryType', 'type', SalaryTypeEnum::deduction())->get();
     }
 
     public function attendances()
