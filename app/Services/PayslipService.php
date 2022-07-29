@@ -80,16 +80,8 @@ class PayslipService
             ]);
         }
 
-        $employeeAdHocs = $data->employee_ad_hocs;
-        foreach ($employeeAdHocs as $employeeAdHoc) {
-            $employeeAdHoc = (object) $employeeAdHoc;
-            $employeeAdHoc = $this->employeeAdHocService->createEmployeeAdHoc($employeeAdHoc);
-
-            EmployeePayslipAdHoc::create([
-                'employee_payslip_id' => $payslip->id,
-                'employee_ad_hoc_id' => $employeeAdHoc->id,
-            ]);
-        }
+        $employeeAdHocIds = $data->employee_ad_hoc_ids;
+        $payslip->employeeAdHocs()->sync($employeeAdHocIds);
 
         return $payslip;
     }
@@ -97,8 +89,8 @@ class PayslipService
     public function updatePayslip($data, $id)
     {
         $payslip = $this->getById($id);
-        $payslip->payslipDetails->delete();
-        $payslip->payslipAdHocs->delete();
+        $payslip->payslipDetails()->delete();
+        $payslip->payslipAdHocs()->delete();
 
         $payslip->update([
             'employee_id' => $data->employee_id,
@@ -107,6 +99,7 @@ class PayslipService
 
         $payslipDetails = $data->payslip_details;
         foreach ($payslipDetails as $payslipDetail) {
+            $payslipDetail = (object) $payslipDetail;
             EmployeePayslipDetail::create([
                 'employee_payslip_id' => $payslip->id,
                 'company_salary_type_id' => $payslipDetail->company_salary_type_id,
@@ -116,15 +109,8 @@ class PayslipService
             ]);
         }
 
-        $employeeAdHocs = $data->employee_ad_hocs;
-        foreach ($employeeAdHocs as $employeeAdHoc) {
-            $employeeAdHoc = $this->employeeAdHocService->createEmployeeAdHoc($employeeAdHoc);
-
-            EmployeePayslipAdHoc::create([
-                'employee_payslip_id' => $payslip->id,
-                'employee_ad_hoc_id' => $employeeAdHoc->id,
-            ]);
-        }
+        $employeeAdHocIds = $data->employee_ad_hoc_ids;
+        $payslip->employeeAdHocs()->sync($employeeAdHocIds);
 
         return $payslip;
     }

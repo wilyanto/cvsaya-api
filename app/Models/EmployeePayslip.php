@@ -34,6 +34,11 @@ class EmployeePayslip extends Model
         return $this->belongsTo(PayrollPeriod::class);
     }
 
+    public function employeeAdHocs()
+    {
+        return $this->belongsToMany(EmployeeAdHoc::class, 'employee_payslip_ad_hocs')->withTimestamps();
+    }
+
     public function payslipDetails()
     {
         return $this->hasMany(EmployeePayslipDetail::class);

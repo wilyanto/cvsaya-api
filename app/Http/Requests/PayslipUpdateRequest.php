@@ -31,14 +31,8 @@ class PayslipUpdateRequest extends FormRequest
             'payslip_details.*.company_salary_type_id' => 'required|exists:company_salary_types,id',
             'payslip_details.*.name' => 'required',
             'payslip_details.*.amount' => 'required',
-            'payslip_details.*.note' => 'required',
-            'employee_ad_hocs' => 'sometimes|array',
-            'employee_ad_hocs.*.employee_id' => 'required|exists:employees,id',
-            'employee_ad_hocs.*.company_salary_type_id' => 'required|exists:company_salary_types,id',
-            'employee_ad_hocs.*.name' => 'required',
-            'employee_ad_hocs.*.amount' => 'required',
-            'employee_ad_hocs.*.date' => 'required',
-            'employee_ad_hocs.*.note' => 'required',
+            'payslip_details.*.note' => 'nullable',
+            'employee_ad_hoc_ids.*' => 'required|exists:employee_ad_hocs,id',
         ];
     }
 }
