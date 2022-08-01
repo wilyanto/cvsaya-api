@@ -140,6 +140,19 @@ class PayslipService
         return $payslip;
     }
 
+    public function generateAndPayPayslip($id, $employeeId)
+    {
+        $payslip = $this->getById($id);
+
+        $payslip->update([
+            'status' => PayslipStatusEnum::paid(),
+            'paid_at' => now(),
+            'paid_by' => $employeeId,
+            'generated_at' => now(),
+            'generated_by' => $employeeId
+        ]);
+    }
+
     public function generatePayslips($payrollPeriodId)
     {
         $payrollPeriod = PayrollPeriod::findOrFail($payrollPeriodId);

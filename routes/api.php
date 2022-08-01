@@ -120,6 +120,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('employee-payslips', PayslipController::class);
             Route::patch('employee-payslips/{id}/generate', [PayslipController::class, 'generatePayslip']);
             Route::patch('employee-payslips/{id}/pay', [PayslipController::class, 'payPayslip']);
+            Route::patch('employee-payslips/{id}/generate-and-pay', [PayslipController::class, 'generateAndPayPayslip']);
             Route::patch('employee-resignations/{id}/status', [EmployeeResignationController::class, 'updateEmployeeResignationStatus']);
             Route::controller(EmployeeRecurringShiftController::class)->group(function () {
                 Route::get('employees/{employeeId}/recurring-shifts', 'getEmployeeRecurringShifts');

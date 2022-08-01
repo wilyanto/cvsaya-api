@@ -71,4 +71,15 @@ class PayslipController extends Controller
 
         return $this->showOne(new EmployeePayslipResource($payslip));
     }
+
+    public function generateAndPayPayslip(Request $request, $id)
+    {
+        $request->validate([
+            'employee_id' => 'required|exists:employees,id'
+        ]);
+        $employeeId = $request->employee_id;
+        $payslip = $this->payslipService->generateAndPayPayslip($id, $employeeId);
+
+        return $this->showOne(new EmployeePayslipResource($payslip));
+    }
 }
