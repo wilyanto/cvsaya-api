@@ -6,6 +6,7 @@ use App\Models\CvProfileDetail;
 use App\Models\CvDomicile;
 use App\Models\CvSosmed;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\EmployeeResource;
 use App\Models\Candidate;
 use App\Models\CandidatePosition;
 use App\Models\CvEducation;
@@ -299,6 +300,7 @@ class CvProfileDetailController extends Controller
         $data = [
             'candidate' => $employee->candidate,
             'profile' => $employee->profileDetail,
+            'employee' => new EmployeeResource($employee),
             'roles' => $employee->getRoleNames(),
             'permissions' => $employee->getAllPermissions()->pluck('name')
         ];
