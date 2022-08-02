@@ -154,6 +154,8 @@ class PayslipService
             'generated_at' => now(),
             'generated_by' => $employeeId
         ]);
+
+        return $payslip;
     }
 
     public function generatePayslips($payrollPeriodId)
