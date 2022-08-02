@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\EmployeeType;
 use App\Enums\PayslipStatusEnum;
 use App\Enums\SalaryTypeEnum;
+use App\Http\Common\Filter\FilterPayslipSearch;
 use App\Models\Candidate;
 use App\Models\Company;
 use App\Models\Employee;
@@ -16,6 +17,7 @@ use App\Models\EmployeePayslipDeduction;
 use App\Models\EmployeePayslipDetail;
 use App\Models\PayrollPeriod;
 use Illuminate\Support\Facades\DB;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class PayslipService
@@ -37,7 +39,8 @@ class PayslipService
                 'payslipAdHocs.employeeAdHoc.companySalaryType.salaryType'
             ])
             ->allowedFilters([
-                'payroll_period_id'
+                'payroll_period_id',
+                AllowedFilter::custom('search', new FilterPayslipSearch),
             ])
             ->paginate($pageSize);
 
