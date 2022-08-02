@@ -10,10 +10,11 @@ class FilterPayslipSearch implements Filter
 {
     public function __invoke(Builder $query, $value, string $property): Builder
     {
-        $query->whereHas('employee', function ($query) use ($value) {
-            $query->where('name', 'LIKE', '%' . $value . '%');
-        });
-
-        return $query;
+        return $query->whereRelation(
+            'employee.candidate',
+            'name',
+            'LIKE',
+            '%' . $value . '%'
+        );
     }
 }
