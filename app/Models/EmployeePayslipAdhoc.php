@@ -10,8 +10,12 @@ class EmployeePayslipAdHoc extends Model
     use HasFactory;
 
     protected $fillable = [
+        'company_salary_type_id',
         'employee_payslip_id',
-        'employee_ad_hoc_id',
+        'name',
+        'date',
+        'amount',
+        'note'
     ];
 
     public function payslip()
@@ -19,8 +23,8 @@ class EmployeePayslipAdHoc extends Model
         return $this->belongsTo(Payslip::class);
     }
 
-    public function employeeAdHoc()
+    public function companySalaryType()
     {
-        return $this->belongsTo(EmployeeAdHoc::class);
+        return $this->belongsTo(CompanySalaryType::class);
     }
 }
