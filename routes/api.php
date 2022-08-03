@@ -345,6 +345,7 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('employees')->group(function () {
             Route::get('/{id}/resignations', [EmployeeResignationController::class, 'showResignationsByEmployee']);
+            Route::get('/{id}/payslips', [PayslipController::class, 'showPayslipByEmployee']);
             Route::get('/{id}/employee-bank-accounts', [EmployeeBankAccountController::class, 'showByEmployeeId']);
             Route::controller(EmploymentTypeController::class)->group(function () {
                 Route::get('/types', 'index');

@@ -108,6 +108,11 @@ class Employee extends Authenticatable implements Auditable
         return $this->hasOne(Candidate::class, 'id', 'candidate_id');
     }
 
+    public function payslips()
+    {
+        return $this->hasMany(EmployeePayslip::class);
+    }
+
 
     public function typeOfSalary()
     {

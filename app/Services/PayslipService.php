@@ -63,6 +63,21 @@ class PayslipService
         return $employeePayslip;
     }
 
+    public function getByEmployeeId($employeeId)
+    {
+        $query = EmployeePayslip::where('employee_id', $employeeId);
+        $employeePayslips = QueryBuilder::for($query)
+            ->allowedIncludes([
+                'employee',
+                'payrollPeriod',
+                'payslipDetails.companySalaryType.salaryType',
+                'payslipAdHocs.employeeAdHoc.companySalaryType.salaryType'
+            ])
+            ->get();
+
+        return $employeePayslips;
+    }
+
     public function createPayslip($data)
     {
         $payslip = EmployeePayslip::create([

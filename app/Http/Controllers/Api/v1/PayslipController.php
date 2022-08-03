@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PayslipStoreRequest;
 use App\Http\Requests\PayslipUpdateRequest;
 use App\Http\Resources\EmployeePayslipResource;
+use App\Models\EmployeePayslip;
 use App\Services\PayslipService;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
@@ -81,5 +82,12 @@ class PayslipController extends Controller
         $payslip = $this->payslipService->generateAndPayPayslip($id, $employeeId);
 
         return $this->showOne(new EmployeePayslipResource($payslip));
+    }
+
+    public function showPayslipByEmployee($id)
+    {
+        $payslips = $this->payslipService->getByEmployeeId($id);
+
+        return $this->showAll(collect(EmployeePayslipResource::collection($payslips)));
     }
 }
