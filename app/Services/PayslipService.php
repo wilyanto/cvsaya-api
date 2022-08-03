@@ -36,7 +36,7 @@ class PayslipService
                 'employee',
                 'payrollPeriod',
                 'payslipDetails.companySalaryType.salaryType',
-                'payslipAdHocs.employeeAdHoc.companySalaryType.salaryType'
+                'payslipAdHocs.companySalaryType.salaryType'
             ])
             ->allowedFilters([
                 'payroll_period_id',
@@ -56,7 +56,7 @@ class PayslipService
                 'employee',
                 'payrollPeriod',
                 'payslipDetails.companySalaryType.salaryType',
-                'payslipAdHocs.employeeAdHoc.companySalaryType.salaryType'
+                'payslipAdHocs.companySalaryType.salaryType'
             ])
             ->firstOrFail();
 
@@ -71,7 +71,7 @@ class PayslipService
                 'employee',
                 'payrollPeriod',
                 'payslipDetails.companySalaryType.salaryType',
-                'payslipAdHocs.employeeAdHoc.companySalaryType.salaryType'
+                'payslipAdHocs.companySalaryType.salaryType'
             ])
             ->get();
 
@@ -98,8 +98,20 @@ class PayslipService
             ]);
         }
 
-        $employeeAdHocIds = $data->employee_ad_hoc_ids;
-        $payslip->employeeAdHocs()->sync($employeeAdHocIds);
+        $employeePayslipAdHocs = $data->employee_payslip_ad_hocs;
+        if ($employeePayslipAdHocs) {
+            foreach ($employeePayslipAdHocs as $employeePayslipAdHoc) {
+                $employeePayslipAdHoc = (object) $employeePayslipAdHoc;
+                EmployeePayslipAdHoc::create([
+                    'employee_payslip_id' => $payslip->id,
+                    'company_salary_type_id' => $employeePayslipAdHoc->company_salary_type_id,
+                    'name' => $employeePayslipAdHoc->name,
+                    'amount' => $employeePayslipAdHoc->amount,
+                    'note' => $employeePayslipAdHoc->note,
+                    'date' =>  $employeePayslipAdHoc->date
+                ]);
+            }
+        }
 
         return $payslip;
     }
@@ -127,8 +139,20 @@ class PayslipService
             ]);
         }
 
-        $employeeAdHocIds = $data->employee_ad_hoc_ids;
-        $payslip->employeeAdHocs()->sync($employeeAdHocIds);
+        $employeePayslipAdHocs = $data->employee_payslip_ad_hocs;
+        if ($employeePayslipAdHocs) {
+            foreach ($employeePayslipAdHocs as $employeePayslipAdHoc) {
+                $employeePayslipAdHoc = (object) $employeePayslipAdHoc;
+                EmployeePayslipAdHoc::create([
+                    'employee_payslip_id' => $payslip->id,
+                    'company_salary_type_id' => $employeePayslipAdHoc->company_salary_type_id,
+                    'name' => $employeePayslipAdHoc->name,
+                    'amount' => $employeePayslipAdHoc->amount,
+                    'note' => $employeePayslipAdHoc->note,
+                    'date' =>  $employeePayslipAdHoc->date
+                ]);
+            }
+        }
 
         return $payslip;
     }
@@ -278,16 +302,18 @@ class PayslipService
                     ]);
                 }
 
-                $adhocs = EmployeeAdHoc::whereBetween('date', [$startDate, $endDate])
-                    ->where('employee_id', $employee->id)
-                    ->get();
+                // uncomment this line if need to implement automatic ad hoc assignment
+                // when payroll period is created
+                // $adhocs = EmployeeAdHoc::whereBetween('date', [$startDate, $endDate])
+                //     ->where('employee_id', $employee->id)
+                //     ->get();
 
-                foreach ($adhocs as $adhoc) {
-                    EmployeePayslipAdHoc::create([
-                        'employee_payslip_id' => $payslip->id,
-                        'employee_ad_hoc_id' => $adhoc->id,
-                    ]);
-                }
+                // foreach ($adhocs as $adhoc) {
+                //     EmployeePayslipAdHoc::create([
+                //         'employee_payslip_id' => $payslip->id,
+                //         'employee_ad_hoc_id' => $adhoc->id,
+                //     ]);
+                // }
             }
         });
     }
