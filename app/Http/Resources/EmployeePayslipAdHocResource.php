@@ -17,10 +17,14 @@ class EmployeePayslipAdHocResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'name' => $this->name,
+            'date' => $this->date,
+            'amount' => $this->amount,
+            'note' => $this->note,
+            'company_salary_type_id' => $this->company_salary_type_id,
+            'company_salary_type' => new CompanySalaryTypeResource($this->whenLoaded('companySalaryType')),
             'employee_payslip_id' => $this->employee_payslip_id,
-            'employee_ad_hoc_id' => $this->employee_ad_hoc_id,
             'payslip' => new EmployeePayslipResource($this->whenLoaded('payslip')),
-            'employee_ad_hoc' => new EmployeeAdHocResource($this->whenLoaded('employeeAdHoc'))
         ];
     }
 }
