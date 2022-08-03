@@ -27,13 +27,15 @@ class PayslipStoreRequest extends FormRequest
             'employee_id' => 'required|exists:employees,id',
             'payroll_period_id' => 'required|exists:payroll_periods,id',
             'payslip_details' => 'required|array',
-            'payslip_details.*.employee_id' => 'required|exists:employees,id',
             'payslip_details.*.company_salary_type_id' => 'required|exists:company_salary_types,id',
             'payslip_details.*.name' => 'required',
             'payslip_details.*.amount' => 'required',
-            'payslip_details.*.note' => 'required',
             'payslip_details.*.note' => 'nullable',
-            'employee_ad_hoc_ids.*' => 'required|exists:employee_ad_hocs,id',
+            'employee_payslip_ad_hocs.*.company_salary_type_id' => 'required|exists:company_salary_types,id',
+            'employee_payslip_ad_hocs.*.name' => 'required',
+            'employee_payslip_ad_hocs.*.amount' => 'required',
+            'employee_payslip_ad_hocs.*.date' => 'required',
+            'employee_payslip_ad_hocs.*.note' => 'nullable',
         ];
     }
 }
