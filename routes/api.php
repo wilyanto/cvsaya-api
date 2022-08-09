@@ -39,6 +39,7 @@ use App\Http\Controllers\Api\v1\CompanySalaryTypeController;
 use App\Http\Controllers\Api\v1\CRMCredentialController;
 use App\Http\Controllers\Api\v1\EmployeeAdHocController;
 use App\Http\Controllers\Api\v1\EmployeeBankAccountController;
+use App\Http\Controllers\Api\v1\EmployeePayslipAdHocController;
 use App\Http\Controllers\Api\v1\EmployeeResignationController;
 use App\Http\Controllers\Api\v1\PayrollController;
 use App\Http\Controllers\Api\v1\PayrollPeriodController;
@@ -117,6 +118,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('employee-payrolls', PayrollController::class);
             Route::apiResource('employee-ad-hocs', EmployeeAdHocController::class);
             Route::apiResource('company-salary-types', CompanySalaryTypeController::class);
+            Route::apiResource('employee-payslips/{payslipId}/ad-hoc', EmployeePayslipAdHocController::class);
             Route::apiResource('employee-payslips', PayslipController::class);
             Route::patch('employee-payslips/{id}/generate', [PayslipController::class, 'generatePayslip']);
             Route::patch('employee-payslips/{id}/pay', [PayslipController::class, 'payPayslip']);
