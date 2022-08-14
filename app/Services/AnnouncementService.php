@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Announcement;
 use App\Models\AnnouncementEmployee;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class AnnouncementService
@@ -11,6 +12,10 @@ class AnnouncementService
     public function getAll()
     {
         $announcements = QueryBuilder::for(Announcement::class)
+            ->allowedIncludes(['company'])
+            ->allowedFilters([
+                AllowedFilter::exact('company_id'),
+            ])
             ->get();
 
         return $announcements;
@@ -20,6 +25,7 @@ class AnnouncementService
     {
         $query = Announcement::where('id', $id);
         $announcement = QueryBuilder::for($query)
+            ->allowedIncludes(['company'])
             ->firstOrFail();
 
         return $announcement;

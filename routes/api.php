@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\v1\AnnouncementController;
+use App\Http\Controllers\Api\v1\AnnouncementEmployeeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
@@ -81,6 +83,10 @@ Route::prefix('v1')->group(function () {
         Route::get('me/attendance-schedule', [EmployeeShiftController::class, 'getShift']);
         Route::put('me/update-name', [CandidateController::class, 'updateCandidateName']);
         Route::post('me/update-profile-picture', [CandidateController::class, 'updateProfilePicture']);
+        Route::post('announcements/{announcementId}/announcement-employees-batch', [AnnouncementEmployeeController::class, 'storeBatch']);
+        Route::get('announcements/{announcementId}/get-announcement-employees', [AnnouncementEmployeeController::class, 'showByEmployeeId']);
+        Route::put('announcements/{announcementId}/announcement-employees/{id}/update-announcement-employees-note', [AnnouncementEmployeeController::class, 'updateNote']);
+        Route::put('announcements/{announcementId}/announcement-employees/{id}/update-announcement-employees-status', [AnnouncementEmployeeController::class, 'updateStatus']);
 
         Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
         Route::apiResource('crm-credentials', CRMCredentialController::class, ['only' => ['index', 'show', 'store', 'update']]);
@@ -88,6 +94,8 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('blast-types', BlastTypeController::class);
         Route::apiResource('quota-types', QuotaTypeController::class);
         Route::apiResource('payroll-periods', PayrollPeriodController::class);
+        Route::apiResource('announcements', AnnouncementController::class);
+        Route::apiResource('announcements/{announcementId}/announcement-employees', AnnouncementEmployeeController::class);
 
         Route::prefix('companies')->group(function () {
             Route::get('/{id}/resignations', [EmployeeResignationController::class, 'showResignationsByCompany']);
