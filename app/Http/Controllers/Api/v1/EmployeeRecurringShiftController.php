@@ -6,6 +6,7 @@ use App\Http\Common\Filter\FilterShiftEmployeeCompany;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeRecurringShift;
 use App\Http\Requests\UpdateEmployeeRecurringShift;
+use App\Http\Resources\RecurringShiftResource;
 use App\Models\EmployeeRecurringShift;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
@@ -39,7 +40,7 @@ class EmployeeRecurringShiftController extends Controller
             })
             ->get();
 
-        return $this->showAll($employeeRecurringShifts);
+        return $this->showOne(collect(RecurringShiftResource::collection($employeeRecurringShifts)));
     }
 
     /**
@@ -51,7 +52,7 @@ class EmployeeRecurringShiftController extends Controller
     public function store(StoreEmployeeRecurringShift $request)
     {
         $employeeRecurringShift = EmployeeRecurringShift::create($request->all());
-        return $this->showOne($employeeRecurringShift);
+        return $this->showOne(new RecurringShiftResource($employeeRecurringShift));
     }
 
     /**
@@ -76,7 +77,7 @@ class EmployeeRecurringShiftController extends Controller
     {
         $updatedRecurringShift = EmployeeRecurringShift::findOrFail($id)
             ->update($request->all());
-        return $this->showOne($updatedRecurringShift);
+        return $this->showOne(new RecurringShiftResource($updatedRecurringShift));
     }
 
     /**
@@ -101,6 +102,6 @@ class EmployeeRecurringShiftController extends Controller
             ->where('employee_id', $employeeId)
             ->orderBy('day')
             ->get();
-        return $this->showAll($employeeRecurringShifts);
+        return $this->showOne(collect(RecurringShiftResource::collection($employeeRecurringShifts)));
     }
 }

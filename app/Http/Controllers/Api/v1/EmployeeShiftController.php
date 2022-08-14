@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OneTimeShiftResource;
+use App\Http\Resources\RecurringShiftResource;
 use App\Models\Candidate;
 use App\Models\Employee;
 use App\Models\EmployeeOneTimeShift;
@@ -77,8 +79,8 @@ class EmployeeShiftController extends Controller
             ->get();
 
         return $this->showOne([
-            'one_time_shifts' => $employeeOneTimeShifts,
-            'recurring_shifts' => $employeeRecurringShifts,
+            'one_time_shifts' => OneTimeShiftResource::collection($employeeOneTimeShifts),
+            'recurring_shifts' => RecurringShiftResource::collection($employeeRecurringShifts),
         ]);
     }
 
@@ -94,8 +96,8 @@ class EmployeeShiftController extends Controller
         $employeeOneTimeShifts = $employee->getOneTimeShifts($date);
         $employeeRecurringShifts = $employee->getRecurringShifts($date);
         return $this->showOne([
-            'one_time_shifts' => $employeeOneTimeShifts,
-            'recurring_shifts' => $employeeRecurringShifts,
+            'one_time_shifts' => OneTimeShiftResource::collection($employeeOneTimeShifts),
+            'recurring_shifts' => RecurringShiftResource::collection($employeeRecurringShifts),
         ]);
     }
     /**
