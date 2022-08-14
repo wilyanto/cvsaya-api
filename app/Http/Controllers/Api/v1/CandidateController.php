@@ -10,14 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
 use App\Models\CandidatePosition;
 use App\Models\CandidateInterviewSchedule;
-use App\Models\CandidateNote;
-use App\Models\CvDocument;
-use App\Models\CvEducation;
-use App\Models\CvExpectedJob;
-use App\Models\CvProfileDetail;
 use Illuminate\Validation\Rule;
-use App\Models\InterviewResult;
-use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManagerStatic as Image;
 
