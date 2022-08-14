@@ -10,12 +10,12 @@ use Carbon\Carbon;
 use DateInterval;
 use DateTimeZone;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use OwenIt\Auditing\Contracts\Auditable;
 use App\Enums\AttendanceType;
 use App\Enums\LeavePermissionStatusType;
 use App\Enums\SalaryTypeEnum;
-use PDO;
 
 class Employee extends Authenticatable implements Auditable
 {
@@ -231,7 +231,12 @@ class Employee extends Authenticatable implements Auditable
     public function getOneTimeShifts($date)
     {
         $date = new Carbon($date);
-        return EmployeeOneTimeShift::whereDate('date', $date->toDateString())
+
+        return QueryBuilder::for(EmployeeOneTimeShift::class)
+            ->allowedIncludes([
+                'employee'
+            ])
+            ->whereDate('date', $date->toDateString())
             ->where('employee_id', $this->id)
             ->with('shift')
             ->get();

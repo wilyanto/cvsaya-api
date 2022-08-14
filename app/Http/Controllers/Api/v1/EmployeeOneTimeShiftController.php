@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeOneTimeShift;
 use App\Http\Requests\UpdateEmployeeOneTimeShift;
 use App\Http\Resources\OneTimeShiftResource;
-use App\Models\Employee;
 use App\Models\EmployeeOneTimeShift;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;

@@ -8,7 +8,6 @@ use App\Http\Common\Filter\FilterBlastLogSearch;
 use App\Models\CRMBlastLog;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
-use Illuminate\Support\Str;
 
 class CRMBlastLogService
 {

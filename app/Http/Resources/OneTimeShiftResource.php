@@ -21,7 +21,7 @@ class OneTimeShiftResource extends JsonResource
             'shift_id' => $this->shift_id,
             'shift' => new ShiftResource($this->shift),
             'employee_id' => $this->employee_id,
-            'employee' => new EmployeeResource($this->employee),
+            'employee' => new EmployeeResource($this->whenLoaded('employee')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at
         ];
