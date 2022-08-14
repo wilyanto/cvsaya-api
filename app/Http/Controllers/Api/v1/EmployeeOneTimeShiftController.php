@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeOneTimeShift;
 use App\Http\Requests\UpdateEmployeeOneTimeShift;
+use App\Http\Resources\OneTimeShiftResource;
 use App\Models\Employee;
 use App\Models\EmployeeOneTimeShift;
 use App\Traits\ApiResponser;
@@ -31,7 +32,7 @@ class EmployeeOneTimeShiftController extends Controller
             })
             ->get();
 
-        return $this->showAll($employeeOneTimeShifts);
+        return $this->showAll(collect(OneTimeShiftResource::collection($employeeOneTimeShifts)));
     }
 
     /**
@@ -43,7 +44,7 @@ class EmployeeOneTimeShiftController extends Controller
     public function store(StoreEmployeeOneTimeShift $request)
     {
         $employeeOneTimeShift = EmployeeOneTimeShift::create($request->all());
-        return $this->showOne($employeeOneTimeShift);
+        return $this->showOne(new OneTimeShiftResource($employeeOneTimeShift));
     }
 
     /**
@@ -68,7 +69,7 @@ class EmployeeOneTimeShiftController extends Controller
     {
         $updatedOneTimeShift = EmployeeOneTimeShift::findOrFail($id)
             ->update($request->all());
-        return $this->showOne($updatedOneTimeShift);
+        return $this->showOne(new OneTimeShiftResource($updatedOneTimeShift));
     }
 
     /**
