@@ -272,7 +272,11 @@ class Employee extends Authenticatable implements Auditable
         }
 
         $getTodayDay = $date->dayOfWeek;
-        $shifts = EmployeeRecurringShift::where('day', $getTodayDay)
+        $shifts = QueryBuilder::for(EmployeeOneTimeShift::class)
+            ->allowedIncludes([
+                'employee'
+            ])
+            ->where('day', $getTodayDay)
             ->where('employee_id', $this->id)
             ->with('shift')
             ->get();
