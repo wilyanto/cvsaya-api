@@ -131,15 +131,15 @@ class ShiftController extends Controller
         $employeeShifts = $employee->getShifts($startDate);
         $data = [];
         foreach ($employeeShifts as $employeeShift) {
-            $data[]['shift'] = $employeeShift->shift;
+            $data[] = $employeeShift->shift;
             $attendance = Attendance::where('employee_id', $employee->id)
                 ->where('shift_id', $employeeShift->shift->id)
                 ->whereDate('date', $startDate)
                 ->first();
             if ($attendance) {
-                end($data)['shift']['attendance'] = new AttendanceResource($attendance);
+                end($data)['attendance'] = new AttendanceResource($attendance);
             } else {
-                end($data)['shift']['attendance'] = null;
+                end($data)['attendance'] = null;
             }
         }
 
