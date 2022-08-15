@@ -143,7 +143,7 @@ class ShiftController extends Controller
             }
         }
 
-        return $this->showAll(collect(ShiftResource::collection($data)));
-        // return $this->showAll(collect($data));
+        // return $this->showAll(collect(ShiftResource::collection($data)));
+        return $this->showAll(collect($data));
     }
 }
