@@ -254,10 +254,19 @@ class Employee extends Authenticatable implements Auditable
     public function getShifts($date)
     {
         $date = new Carbon($date);
-        $shifts = EmployeeOneTimeShift::whereDate('date', $date->toDateString())
+        $shifts = QueryBuilder::for(EmployeeOneTimeShift::class)
+            ->allowedIncludes([
+                'employee'
+            ])
+            ->whereDate('date', $date->toDateString())
             ->where('employee_id', $this->id)
             ->with('shift')
             ->get();
+
+        // $shifts = EmployeeOneTimeShift::whereDate('date', $date->toDateString())
+        //     ->where('employee_id', $this->id)
+        //     ->with('shift')
+        //     ->get();
         if (!$shifts->isEmpty()) {
             return $shifts;
         }
@@ -267,6 +276,10 @@ class Employee extends Authenticatable implements Auditable
             ->where('employee_id', $this->id)
             ->with('shift')
             ->get();
+        // $shifts = EmployeeRecurringShift::where('day', $getTodayDay)
+        //     ->where('employee_id', $this->id)
+        //     ->with('shift')
+        //     ->get();
         if ($shifts) {
             return $shifts;
         }
