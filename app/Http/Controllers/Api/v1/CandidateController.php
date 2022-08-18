@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
+use App\Http\Resources\EmployeeResource;
 use App\Models\CandidatePosition;
 use App\Models\CandidateInterviewSchedule;
 use Illuminate\Validation\Rule;
@@ -441,18 +442,8 @@ class CandidateController extends Controller
             'profile_picture_url' => $candidate->getProfilePictureUrl(),
         ];
 
-        $employee = Employee::where('candidate_id', $candidate->id)->first();
-        if ($employee) {
-            $result['is_employee'] = true;
-            $position = [
-                'id' => $employee->position ? $employee->position->id : null,
-                'name' => $employee->position ? $employee->position->name : null,
-                'company' => $employee->position ? $employee->position->company : null
-            ];
-            $result['position'] = $position;
-        } else {
-            $result['position'] = null;
-        }
+        $employees = Employee::where('candidate_id', $candidate->id)->get();
+        $result['employees'] = EmployeeResource::collection($employees);
 
         $result['completeness_status'] = $data;
 
