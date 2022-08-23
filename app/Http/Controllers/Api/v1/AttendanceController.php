@@ -556,7 +556,7 @@ class AttendanceController extends Controller
         $attendances = Attendance::whereIn('employee_id', $employeeIds)
             ->whereDate('date', '>=', $startDate)
             ->whereDate('date', '<=', $endDate)
-            ->orderBy('date')
+            ->orderBy('date', 'DESC')
             ->paginate($request->input('page_size', 10));
 
         return $this->showPaginate('attendances', collect(AttendanceResource::collection($attendances)), collect($attendances));
