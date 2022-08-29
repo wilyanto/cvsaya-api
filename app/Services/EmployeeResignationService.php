@@ -99,7 +99,7 @@ class EmployeeResignationService
     public function showResignationsByEmployee($employeeId)
     {
         $employee = Employee::findOrFail($employeeId);
-        $employeeResignations = $employee->resignations->latest();
+        $employeeResignations = $employee->resignations;
 
         foreach ($employeeResignations as $employeeResignation) {
             $employeeResignation = $employeeResignation->load(['employee']);

@@ -205,7 +205,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function resignations()
     {
-        return $this->hasMany(EmployeeResignation::class, 'employee_id', 'id');
+        return $this->hasMany(EmployeeResignation::class, 'employee_id', 'id')->latest();
     }
 
     public function companySalaryTypes()
