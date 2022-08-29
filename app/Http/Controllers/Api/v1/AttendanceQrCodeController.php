@@ -16,9 +16,9 @@ class AttendanceQrCodeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $companyId)
     {
-        $attendanceQrCodes = AttendanceQrCode::paginate($request->input('size', 10));
+        $attendanceQrCodes = AttendanceQrCode::where('company_id', $companyId)->paginate($request->input('size', 10));
 
         return $this->showPagination('attendance_qr_codes', $attendanceQrCodes);
     }
@@ -29,9 +29,16 @@ class AttendanceQrCodeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreAttendanceQrCodeRequest $request)
+    public function store(StoreAttendanceQrCodeRequest $request, $companyId)
     {
-        $attendanceQrCode = AttendanceQrCode::create($request->all());
+        $attendanceQrCode = AttendanceQrCode::create([
+            'location_name' => $request->location_name,
+            'longitude' => $request->longitude,
+            'latitude' => $request->latitude,
+            'radius' => $request->radius,
+            'is_geo_strict' => $request->is_geo_strict,
+            'company_id' => $companyId
+        ]);
 
         return $this->showOne($attendanceQrCode);
     }
@@ -42,9 +49,9 @@ class AttendanceQrCodeController extends Controller
      * @param  \App\Models\AttendanceQrCode  $attendanceQrCode
      * @return \Illuminate\Http\Response
      */
-    public function show(AttendanceQrCode $attendanceQrCode)
+    public function show($companyId, $id)
     {
-        $attendanceQrCode = AttendanceQrCode::findOrFail($attendanceQrCode->id);
+        $attendanceQrCode = AttendanceQrCode::findOrFail($id);
 
         return $this->showOne($attendanceQrCode);
     }
@@ -56,9 +63,19 @@ class AttendanceQrCodeController extends Controller
      * @param  \App\Models\AttendanceQrCode  $attendanceQrCode
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, AttendanceQrCode $attendanceQrCode)
+    public function update(Request $request, $companyId, $id)
     {
-        //
+        $attendanceQrCode = AttendanceQrCode::findOrFail($id);
+        $attendanceQrCode->update([
+            'location_name' => $request->location_name,
+            'longitude' => $request->longitude,
+            'latitude' => $request->latitude,
+            'radius' => $request->radius,
+            'is_geo_strict' => $request->is_geo_strict,
+            'company_id' => $companyId
+        ]);
+
+        return $this->showOne($attendanceQrCode);
     }
 
     /**
@@ -67,8 +84,17 @@ class AttendanceQrCodeController extends Controller
      * @param  \App\Models\AttendanceQrCode  $attendanceQrCode
      * @return \Illuminate\Http\Response
      */
-    public function destroy(AttendanceQrCode $attendanceQrCode)
+    public function destroy($companyId, $id)
     {
-        //
+        $attendanceQrCode = AttendanceQrCode::destroy($id);
+
+        return $this->showOne(null);
+    }
+
+    public function getById($id)
+    {
+        $attendanceQrCode = AttendanceQrCode::findOrFail($id);
+
+        return $this->showOne($attendanceQrCode);
     }
 }
