@@ -45,6 +45,7 @@ use App\Http\Controllers\Api\v1\PayrollController;
 use App\Http\Controllers\Api\v1\PayrollPeriodController;
 use App\Http\Controllers\Api\v1\PayslipController;
 use App\Http\Controllers\Api\v1\QuotaTypeController;
+use App\Models\LeavePermission;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,6 +83,7 @@ Route::prefix('v1')->group(function () {
         Route::put('me/update-name', [CandidateController::class, 'updateCandidateName']);
         Route::post('me/update-profile-picture', [CandidateController::class, 'updateProfilePicture']);
         Route::get('me/resignations', [EmployeeResignationController::class, 'showResignationsByEmployeeMobile']);
+        Route::get('me/leave-permissions', [LeavePermissionController::class, 'indexForEmployee']);
 
         Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
         Route::apiResource('crm-credentials', CRMCredentialController::class, ['only' => ['index', 'show', 'store', 'update']]);
@@ -101,6 +103,21 @@ Route::prefix('v1')->group(function () {
             });
 
             Route::apiResource('/{id}/attendance-qr-codes', AttendanceQrCodeController::class);
+            Route::get('/{companyId}/leave-permissions', [LeavePermissionController::class, 'indexForCompany']);
+
+            Route::apiResource('/{companyId}/leave-permission-occasions', LeavePermissionOccasionController::class);
+
+            Route::prefix('/{companyId}/leave-permissions')->group(function () {
+                Route::controller(LeavePermissionController::class)->group(function () {
+                    Route::get('/{id}', 'show');
+                    Route::get('/', 'index');
+                    Route::post('/', 'store');
+                    Route::put('/{id}/status', 'updateLeavePermissionStatus');
+                    Route::put('/{id}', 'update');
+                    Route::delete('/{id}', 'destroy');
+                    // Route::apiResource('/', LeavePermissionController::class);
+                });
+            });
 
             Route::controller(ShiftController::class)->group(function () {
                 Route::get('/{companyId}/shifts', 'getShiftsByCompany');
@@ -412,19 +429,6 @@ Route::prefix('v1')->group(function () {
                 });
             });
         });
-
-        Route::prefix('leave-permissions')->group(function () {
-            Route::controller(LeavePermissionController::class)->group(function () {
-                Route::get('/{id}', 'show');
-                Route::get('/{companyId}/companies', 'indexForCompany');
-                Route::get('/', 'index');
-                Route::post('/', 'store');
-                Route::put('/{id}/status', 'updateLeavePermissionStatus');
-                Route::put('/{id}', 'update');
-                // Route::apiResource('/', LeavePermissionController::class);
-            });
-        });
-        Route::apiResource('leave-permission-occasions', LeavePermissionOccasionController::class);
 
         Route::apiResource('candidate-positions', CandidatePositionController::class)->only(['index', 'show', 'store', 'update']);
         Route::prefix('candidate-positions')->controller(CandidatePositionController::class)->group(function () {
