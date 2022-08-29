@@ -24,7 +24,7 @@ class LeavePermissionStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'company_id' => 'required|exists:companies,id',
+            'employee_id' => 'required|exists:employees,id',
             'started_at' => 'required|date_format:Y-m-d H:i:s',
             'ended_at' => 'date_format:Y-m-d H:i:s|after:started_at',
             'occasion_id' => 'required|exists:leave_permission_occasions,id',
