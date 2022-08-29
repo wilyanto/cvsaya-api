@@ -62,7 +62,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->group(function () {
-    Route::apiResource('attendance-qr-codes', AttendanceQrCodeController::class);
+    Route::get('attendance-qr-codes/{id}', [AttendanceQrCodeController::class, 'getById']);
     Route::apiResource('shifts', ShiftController::class);
 
     Route::middleware('auth:api')->group(function () {
@@ -99,6 +99,9 @@ Route::prefix('v1')->group(function () {
                 Route::post('/', 'store');
                 Route::put('/{id}', 'update');
             });
+
+            Route::apiResource('/{id}/attendance-qr-codes', AttendanceQrCodeController::class);
+
             Route::controller(ShiftController::class)->group(function () {
                 Route::get('/{companyId}/shifts', 'getShiftsByCompany');
             });
