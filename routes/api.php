@@ -44,6 +44,7 @@ use App\Http\Controllers\Api\v1\EmployeeResignationController;
 use App\Http\Controllers\Api\v1\PayrollController;
 use App\Http\Controllers\Api\v1\PayrollPeriodController;
 use App\Http\Controllers\Api\v1\PayslipController;
+use App\Http\Controllers\Api\v1\PenaltyController;
 use App\Http\Controllers\Api\v1\QuotaTypeController;
 use App\Models\LeavePermission;
 
@@ -103,6 +104,7 @@ Route::prefix('v1')->group(function () {
             });
 
             Route::apiResource('/{id}/attendance-qr-codes', AttendanceQrCodeController::class);
+            Route::apiResource('/{companyId}/attendance-penalties', PenaltyController::class);
             Route::get('/{companyId}/leave-permissions', [LeavePermissionController::class, 'indexForCompany']);
 
             Route::apiResource('/{companyId}/leave-permission-occasions', LeavePermissionOccasionController::class);
