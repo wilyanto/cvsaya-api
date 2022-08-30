@@ -37,6 +37,7 @@ use App\Http\Controllers\Api\v1\BlastTypeController;
 use App\Http\Controllers\Api\v1\BlastTypeRuleController;
 use App\Http\Controllers\Api\v1\CompanySalaryTypeController;
 use App\Http\Controllers\Api\v1\CRMCredentialController;
+use App\Http\Controllers\Api\v1\EarlyClockOutAttendanceController;
 use App\Http\Controllers\Api\v1\EmployeeAdHocController;
 use App\Http\Controllers\Api\v1\EmployeeBankAccountController;
 use App\Http\Controllers\Api\v1\EmployeePayslipAdHocController;
@@ -46,7 +47,6 @@ use App\Http\Controllers\Api\v1\PayrollPeriodController;
 use App\Http\Controllers\Api\v1\PayslipController;
 use App\Http\Controllers\Api\v1\PenaltyController;
 use App\Http\Controllers\Api\v1\QuotaTypeController;
-use App\Models\LeavePermission;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +105,7 @@ Route::prefix('v1')->group(function () {
 
             Route::apiResource('/{id}/attendance-qr-codes', AttendanceQrCodeController::class);
             Route::apiResource('/{companyId}/attendance-penalties', PenaltyController::class);
+            Route::apiResource('/{companyId}/early-clock-out-attendances', EarlyClockOutAttendanceController::class);
             Route::get('/{companyId}/leave-permissions', [LeavePermissionController::class, 'indexForCompany']);
 
             Route::apiResource('/{companyId}/leave-permission-occasions', LeavePermissionOccasionController::class);
