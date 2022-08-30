@@ -9,6 +9,12 @@ class EarlyClockOutAttendance extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'attendance_detail_id',
+        'note',
+        'status'
+    ];
+
     public function attendanceDetail()
     {
         return $this->belongsTo(AttendanceDetail::class);

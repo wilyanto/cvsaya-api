@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\AttendancePenalty;
 use App\Enums\AttendanceType;
+use App\Enums\EarlyClockOutAttendanceStatusEnum;
 use App\Http\Resources\AttendanceResource;
 use App\Models\AttendanceCompanyGroup;
 use App\Models\AttendanceDetail;
@@ -16,6 +17,7 @@ use App\Models\Candidate;
 use App\Models\Company;
 use App\Models\Document;
 use App\Models\DocumentType;
+use App\Models\EarlyClockOutAttendance;
 use App\Models\Employee;
 use App\Models\EmployeeOneTimeShift;
 use App\Models\EmployeeRecurringShift;
@@ -186,6 +188,7 @@ class AttendanceController extends Controller
             'latitude' => 'required',
             'attendance_qr_code_id' => 'required|exists:attendance_qr_codes,id',
             'outside_radius_note' => 'string',
+            'early_clock_out_note' => 'string',
             'penalty_note' => 'string',
             'shift_id' => 'required|exists:shifts,id'
         ]);
@@ -288,13 +291,6 @@ class AttendanceController extends Controller
             now()->gt(today()->addSeconds($shiftTime->secondsSinceMidnight()))
         ) {
             return $this->errorResponse('Already out of break duration', 422, 42207);
-        }
-
-        if (
-            $attendanceType == AttendanceType::clockOut() &&
-            now()->lt(today()->addSeconds($shiftTime->secondsSinceMidnight()))
-        ) {
-            return $this->errorResponse('Not yet Clock Out Time !!!', 422, 42208);
         }
 
         $distance = $this->vincentyGreatCircleDistance($attendanceQRcode->latitude, $attendanceQRcode->longitude, $request->latitude, $request->longitude);
@@ -416,6 +412,18 @@ class AttendanceController extends Controller
             }
 
             Storage::disk('public')->put('images/attendance-details/' . $fileName, $img);
+
+            if (
+                $attendanceType == AttendanceType::clockOut() &&
+                now()->lt(today()->addSeconds($shiftTime->secondsSinceMidnight()))
+            ) {
+                // create early clock out attendance request
+                EarlyClockOutAttendance::create([
+                    'attendance_detail_id' => $attendanceDetail->id,
+                    'note' => $request->early_clock_out_note,
+                    'status' => EarlyClockOutAttendanceStatusEnum::pending()
+                ]);
+            }
 
             if ($penalty) {
                 $this->createPenalty($penalty, $attendanceDetail, $request->penalty_note);
