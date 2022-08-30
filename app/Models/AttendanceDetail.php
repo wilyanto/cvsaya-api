@@ -46,6 +46,11 @@ class AttendanceDetail extends Model
         return $this->hasOne(OutsideRadiusAttendance::class, 'attendance_detail_id', 'id');
     }
 
+    public function earlyClockOutAttendance()
+    {
+        return $this->hasOne(EarlyClockOutAttendance::class);
+    }
+
     public function getImageUrl()
     {
         if (!$this->image) {
