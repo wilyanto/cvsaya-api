@@ -94,7 +94,7 @@ class LeavePermissionController extends Controller
 
         $startDate = Carbon::parse($request->started_at);
 
-        if ($startDate->diff(now())->days <= $leavePermissionOccasion->max_day) {
+        if (($startDate->diffInDays(now()) + 1) < $leavePermissionOccasion->max_day) {
             return $this->errorResponse("You need to ask for permissions sooner", 422, 42201);
         }
 
@@ -166,8 +166,8 @@ class LeavePermissionController extends Controller
         $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($request->occasion_id);
         $startDate = Carbon::parse($request->started_at);
 
-        if ($startDate->diff(now())->days <= $leavePermissionOccasion->max_day) {
-            return $this->errorResponse("Cannot request leave permissions", 422, 42200);
+        if (($startDate->diffInDays(now()) + 1) < $leavePermissionOccasion->max_day) {
+            return $this->errorResponse("You need to ask for permissions sooner", 422, 42201);
         }
 
         $documentIds = $request->document_ids;

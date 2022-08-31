@@ -26,7 +26,7 @@ class LeavePermissionUpdateRequest extends FormRequest
         return [
             'employee_id' => 'required|exists:employees,id',
             'started_at' => 'required|date_format:Y-m-d H:i:s',
-            'ended_at' => 'date_format:Y-m-d H:i:s|after:started_at',
+            'ended_at' => 'required|date_format:Y-m-d H:i:s',
             'occasion_id' => 'required|exists:leave_permission_occasions,id',
             'document_ids' => 'required|array',
             'reason' => 'required',
