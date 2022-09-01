@@ -60,6 +60,7 @@ class LeavePermissionController extends Controller
             ->whereHas('company', function ($query) use ($company) {
                 $query->where('companies.id', $company->id);
             })
+            ->latest()
             ->paginate($request->input('page_size', 10));
 
         return $this->showPaginate('leave_permissions', collect(LeavePermissionResource::collection($leavePermissions)), collect($leavePermissions));
@@ -275,6 +276,7 @@ class LeavePermissionController extends Controller
                 AllowedFilter::custom('occasion', new FilterLeavePermissionOccasion)
             ])
             ->where('employee_id', $employee->id)
+            ->latest()
             ->paginate($request->input('page_size', 10));
 
         return $this->showPaginate('leave_permissions', collect(LeavePermissionResource::collection($leavePermissions)), collect($leavePermissions));
