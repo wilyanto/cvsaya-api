@@ -11,7 +11,7 @@ class FilterEarlyClockOutSearch implements Filter
     public function __invoke(Builder $query, $value, string $property): Builder
     {
         return $query->whereRelation(
-            'employee',
+            'employee.candidate',
             'name',
             'LIKE',
             '%' . $value . '%'
