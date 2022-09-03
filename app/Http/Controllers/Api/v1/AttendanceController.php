@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AttendancePenalty;
 use App\Enums\AttendanceType;
 use App\Enums\EarlyClockOutAttendanceStatusEnum;
+use App\Http\Resources\AttendanceDetailResource;
 use App\Http\Resources\AttendanceResource;
 use App\Models\AttendanceCompanyGroup;
 use App\Models\AttendanceDetail;
@@ -347,7 +348,7 @@ class AttendanceController extends Controller
             array_push($attendanceDetails, $attendanceDetail);
         }
 
-        return $this->showAll(collect($attendanceDetails));
+        return $this->showAll(collect(AttendanceDetailResource::collection($attendanceDetails)));
     }
 
 
