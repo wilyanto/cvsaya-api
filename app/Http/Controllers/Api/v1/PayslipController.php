@@ -98,6 +98,6 @@ class PayslipController extends Controller
         $id = $request->employee_id;
         $payslips = $this->payslipService->getByEmployeeId($id, $pageSize);
 
-        return $this->showAll(collect(EmployeePayslipResource::collection($payslips)));
+        return $this->showPaginate('payslips', collect(EmployeePayslipResource::collection($payslips)), collect($payslips));
     }
 }
