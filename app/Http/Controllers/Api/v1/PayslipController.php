@@ -94,8 +94,9 @@ class PayslipController extends Controller
     public function showPayslipByEmployeeMobile(Request $request)
     {
         $request->validate(['employee_id' => 'required|exists:employees,id']);
+        $pageSize = $request->input('page_size', 10);
         $id = $request->employee_id;
-        $payslips = $this->payslipService->getByEmployeeId($id);
+        $payslips = $this->payslipService->getByEmployeeId($id, $pageSize);
 
         return $this->showAll(collect(EmployeePayslipResource::collection($payslips)));
     }

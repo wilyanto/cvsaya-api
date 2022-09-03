@@ -63,7 +63,7 @@ class PayslipService
         return $employeePayslip;
     }
 
-    public function getByEmployeeId($employeeId)
+    public function getByEmployeeId($employeeId, $pageSize)
     {
         $query = EmployeePayslip::where('employee_id', $employeeId);
         $employeePayslips = QueryBuilder::for($query)
@@ -73,7 +73,8 @@ class PayslipService
                 'payslipDetails.companySalaryType.salaryType',
                 'payslipAdHocs.companySalaryType.salaryType'
             ])
-            ->get();
+            ->latest()
+            ->paginate($pageSize);
 
         return $employeePayslips;
     }
