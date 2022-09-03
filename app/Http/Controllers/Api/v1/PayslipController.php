@@ -90,4 +90,13 @@ class PayslipController extends Controller
 
         return $this->showAll(collect(EmployeePayslipResource::collection($payslips)));
     }
+
+    public function showPayslipByEmployeeMobile(Request $request)
+    {
+        $request->validate(['employee_id' => 'required|exists:employees,id']);
+        $id = $request->employee_id;
+        $payslips = $this->payslipService->getByEmployeeId($id);
+
+        return $this->showAll(collect(EmployeePayslipResource::collection($payslips)));
+    }
 }
