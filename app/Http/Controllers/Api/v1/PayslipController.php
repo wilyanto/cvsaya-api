@@ -84,12 +84,11 @@ class PayslipController extends Controller
         return $this->showOne(new EmployeePayslipResource($payslip));
     }
 
-    public function showPayslipByEmployee(Request $request, $id)
+    public function showPayslipByEmployee($id)
     {
-        $pageSize = $request->input('page_size', 10);
-        $payslips = $this->payslipService->getByEmployeeId($id, $pageSize);
+        $payslips = $this->payslipService->getByEmployeeId($id);
 
-        return $this->showPaginate('payslips', collect(EmployeePayslipResource::collection($payslips)), collect($payslips));
+        return $this->showAll(collect(EmployeePayslipResource::collection($payslips)));
     }
 
     public function showPayslipByEmployeeMobile(Request $request)
@@ -97,7 +96,7 @@ class PayslipController extends Controller
         $request->validate(['employee_id' => 'required|exists:employees,id']);
         $pageSize = $request->input('page_size', 10);
         $id = $request->employee_id;
-        $payslips = $this->payslipService->getByEmployeeId($id, $pageSize);
+        $payslips = $this->payslipService->getByEmployeeIdPaginated($id, $pageSize);
 
         return $this->showPaginate('payslips', collect(EmployeePayslipResource::collection($payslips)), collect($payslips));
     }

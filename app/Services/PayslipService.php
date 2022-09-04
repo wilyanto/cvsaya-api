@@ -63,7 +63,24 @@ class PayslipService
         return $employeePayslip;
     }
 
-    public function getByEmployeeId($employeeId, $pageSize)
+    public function getByEmployeeId($employeeId)
+    {
+        $query = EmployeePayslip::where('employee_id', $employeeId);
+        $employeePayslips = QueryBuilder::for($query)
+            ->allowedIncludes([
+                'employee',
+                'payrollPeriod',
+                'payslipDetails.companySalaryType.salaryType',
+                'payslipAdHocs.companySalaryType.salaryType'
+            ])
+            ->latest()
+            ->get();
+
+        return $employeePayslips;
+    }
+
+
+    public function getByEmployeeIdPaginated($employeeId, $pageSize)
     {
         $query = EmployeePayslip::where('employee_id', $employeeId);
         $employeePayslips = QueryBuilder::for($query)
