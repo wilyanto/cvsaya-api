@@ -17,6 +17,10 @@ class EmployeePayslipDetail extends Model
         'note'
     ];
 
+    protected $casts = [
+        'amount' => 'integer',
+    ];
+
     public function companySalaryType()
     {
         return $this->belongsTo(CompanySalaryType::class);
