@@ -180,9 +180,9 @@ class EmployeeCrudController extends CrudController
                 'name'  => 'id',
                 'type' => 'text',
                 'attribute' => 'id',
+                'model' => 'App\Models\Employee',
                 'attributes' => [
                     'readonly'    => 'readonly',
-                    'disabled'    => 'disabled',
                 ]
             ],
             [
@@ -195,7 +195,6 @@ class EmployeeCrudController extends CrudController
                 'subfields' => [],
                 'attributes' => [
                     'readonly'    => 'readonly',
-                    'disabled'    => 'disabled',
                 ]
             ],
             [
@@ -208,7 +207,6 @@ class EmployeeCrudController extends CrudController
                 'subfields' => [],
                 'attributes' => [
                     'readonly'    => 'readonly',
-                    'disabled'    => 'disabled',
                 ]
             ],
             [
@@ -221,7 +219,6 @@ class EmployeeCrudController extends CrudController
                 'subfields' => [],
                 'attributes' => [
                     'readonly'    => 'readonly',
-                    'disabled'    => 'disabled',
                 ]
             ],
 
@@ -234,7 +231,6 @@ class EmployeeCrudController extends CrudController
                 'model' => 'App\Models\Company',
                 'subfields' => [], 'attributes' => [
                     'readonly'    => 'readonly',
-                    'disabled'    => 'disabled',
                 ]
             ],
 
