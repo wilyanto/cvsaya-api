@@ -348,7 +348,12 @@ class AttendanceController extends Controller
             array_push($attendanceDetails, $attendanceDetail);
         }
 
-        return $this->showAll(collect(AttendanceDetailResource::collection($attendanceDetails)));
+        $data = [
+            'candidate' => $candidate,
+            'attendance_details' => AttendanceDetailResource::collection($attendanceDetails)
+        ];
+
+        return $this->showOne($data);
     }
 
 
