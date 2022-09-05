@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SalaryTypeEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
@@ -56,5 +57,15 @@ class Company extends Model implements Auditable
                 Employee::class,
             ],
         );
+    }
+
+    public function companySalaryTypes()
+    {
+        return $this->hasMany(CompanySalaryType::class);
+    }
+
+    public function getDeductionCompanySalaryTypes()
+    {
+        return $this->companySalaryTypes()->whereRelation('salaryType', 'type', SalaryTypeEnum::deduction())->get();
     }
 }
