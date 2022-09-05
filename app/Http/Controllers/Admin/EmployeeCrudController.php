@@ -160,6 +160,9 @@ class EmployeeCrudController extends CrudController
         $request->request->remove('password_confirmation');
         $request->request->remove('roles_show');
         $request->request->remove('permissions_show');
+        $request->request->remove('name');
+        $request->request->remove('phone_number');
+        $request->request->remove('position_id');
 
         // Encrypt password if specified.
         if ($request->input('password')) {
