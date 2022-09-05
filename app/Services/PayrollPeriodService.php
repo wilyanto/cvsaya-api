@@ -22,6 +22,7 @@ class PayrollPeriodService
             ->allowedFilters([
                 AllowedFilter::custom('search', new FilterPayrollPeriodSearch),
             ])
+            ->latest()
             ->get();
 
         return $payrollPeriods;
@@ -88,6 +89,7 @@ class PayrollPeriodService
             ])
             ->allowedIncludes(['payslips.employee', 'payslips.payrollPeriod', 'payslips.payslipDetails.companySalaryType.salaryType'])
             ->where('company_id', $companyId)
+            ->latest()
             ->paginate($pageSize);
 
         return $payrollPeriods;
