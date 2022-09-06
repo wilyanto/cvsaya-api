@@ -87,7 +87,7 @@ Route::prefix('v1')->group(function () {
         Route::get('me/leave-permissions', [LeavePermissionController::class, 'indexForEmployee']);
         Route::get('me/employee-bank-accounts', [EmployeeBankAccountController::class, 'showByEmployeeId']);
         Route::get('me/payslips', [PayslipController::class, 'showPayslipByEmployeeMobile']);
-
+        Route::get('me/payslips/{id}', [PayslipController::class, 'show']);
 
         Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
         Route::apiResource('crm-credentials', CRMCredentialController::class, ['only' => ['index', 'show', 'store', 'update']]);
