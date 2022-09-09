@@ -353,6 +353,16 @@ class AttendanceController extends Controller
             'attendance_details' => AttendanceDetailResource::collection($attendanceDetails)
         ];
 
+        $message = `Halo {$candidate->name}
+                    Absensi telah berhasil diverifikasi oleh {$security->name} (orang yg nge-scan)
+                    by Kada`;
+
+        $response = Http::asForm()->withHeaders(['Authorization' => config('blast.authorization_token')])->post('https://md.fonnte.com/api/send_message.php', [
+            'phone' => $candidate->country_code . $candidate->phone_number,
+            'type' => 'text',
+            'text' => $message,
+        ]);
+
         return $this->showOne($data);
     }
 
