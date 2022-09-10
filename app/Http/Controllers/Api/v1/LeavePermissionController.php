@@ -11,6 +11,7 @@ use App\Traits\ApiResponser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Enums\LeavePermissionStatusType;
+use App\Http\Common\Filter\FilterDateRange;
 use App\Http\Common\Filter\FilterLeavePermissionEmployeeNameSearch;
 use App\Http\Common\Filter\FilterLeavePermissionOccasion;
 use App\Http\Common\Filter\FilterLeavePermissionStatus;
@@ -56,6 +57,7 @@ class LeavePermissionController extends Controller
             ->allowedFilters([
                 AllowedFilter::exact('status'),
                 AllowedFilter::exact('occasion_id'),
+                AllowedFilter::custom('date-between', new FilterDateRange),
                 AllowedFilter::custom('name', new FilterLeavePermissionEmployeeNameSearch),
             ])
             ->whereHas('company', function ($query) use ($company) {
