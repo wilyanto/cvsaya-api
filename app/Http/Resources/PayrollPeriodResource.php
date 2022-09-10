@@ -22,7 +22,6 @@ class PayrollPeriodResource extends JsonResource
             'company_id' => $this->company_id,
             'working_day_count' => $this->working_day_count,
             'payslip_count' => $this->payslips->count(),
-            'payslips' => EmployeePayslipResource::collection($this->whenLoaded('payslips')),
         ];
     }
 }

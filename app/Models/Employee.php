@@ -116,13 +116,15 @@ class Employee extends Authenticatable implements Auditable
 
     public function typeOfSalary()
     {
-        $employeeSalaryTypes = $this->salaryTypes;
+        $employeeSalaryTypes = $this->employeeSalaryTypes;
         if ($employeeSalaryTypes->isNotEmpty()) {
             return $employeeSalaryTypes->map(function ($employeeSalaryType) {
                 return [
-                    // 'salary_type_id' => $employeeSalaryType->salaryType->id,
-                    // 'name' => $employeeSalaryType->salaryType->name,
-                    // 'amount' => $employeeSalaryType->amount,
+                    'salary_type_id' => $employeeSalaryType->id,
+                    'company_salary_type_id' => $employeeSalaryType->company_salary_type_id,
+                    'name' => $employeeSalaryType->companySalaryType->salaryType->name,
+                    'amount' => $employeeSalaryType->amount,
+                    'amount_type' => $employeeSalaryType->amount_type,
                 ];
             });
         }

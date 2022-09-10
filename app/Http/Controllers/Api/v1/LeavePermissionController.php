@@ -55,6 +55,7 @@ class LeavePermissionController extends Controller
             ->allowedIncludes(['occasion', 'documents'])
             ->allowedFilters([
                 AllowedFilter::exact('status'),
+                AllowedFilter::exact('occasion_id'),
                 AllowedFilter::custom('name', new FilterLeavePermissionEmployeeNameSearch),
             ])
             ->whereHas('company', function ($query) use ($company) {

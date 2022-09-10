@@ -160,6 +160,9 @@ class EmployeeCrudController extends CrudController
         $request->request->remove('password_confirmation');
         $request->request->remove('roles_show');
         $request->request->remove('permissions_show');
+        $request->request->remove('name');
+        $request->request->remove('phone_number');
+        $request->request->remove('position_id');
 
         // Encrypt password if specified.
         if ($request->input('password')) {
@@ -180,9 +183,9 @@ class EmployeeCrudController extends CrudController
                 'name'  => 'id',
                 'type' => 'text',
                 'attribute' => 'id',
+                'model' => 'App\Models\Employee',
                 'attributes' => [
                     'readonly'    => 'readonly',
-                    'disabled'    => 'disabled',
                 ]
             ],
             [
@@ -195,7 +198,6 @@ class EmployeeCrudController extends CrudController
                 'subfields' => [],
                 'attributes' => [
                     'readonly'    => 'readonly',
-                    'disabled'    => 'disabled',
                 ]
             ],
             [
@@ -208,7 +210,6 @@ class EmployeeCrudController extends CrudController
                 'subfields' => [],
                 'attributes' => [
                     'readonly'    => 'readonly',
-                    'disabled'    => 'disabled',
                 ]
             ],
             [
@@ -221,7 +222,6 @@ class EmployeeCrudController extends CrudController
                 'subfields' => [],
                 'attributes' => [
                     'readonly'    => 'readonly',
-                    'disabled'    => 'disabled',
                 ]
             ],
 
@@ -234,7 +234,6 @@ class EmployeeCrudController extends CrudController
                 'model' => 'App\Models\Company',
                 'subfields' => [], 'attributes' => [
                     'readonly'    => 'readonly',
-                    'disabled'    => 'disabled',
                 ]
             ],
 

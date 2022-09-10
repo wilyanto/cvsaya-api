@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AttendancePenalty;
 use App\Enums\AttendanceType;
 use App\Enums\EarlyClockOutAttendanceStatusEnum;
+use App\Http\Resources\AttendanceDetailResource;
 use App\Http\Resources\AttendanceResource;
 use App\Models\AttendanceCompanyGroup;
 use App\Models\AttendanceDetail;
@@ -347,7 +348,22 @@ class AttendanceController extends Controller
             array_push($attendanceDetails, $attendanceDetail);
         }
 
-        return $this->showAll(collect($attendanceDetails));
+        $data = [
+            'candidate' => $candidate,
+            'attendance_details' => AttendanceDetailResource::collection($attendanceDetails)
+        ];
+
+        $message = `Halo {$candidate->name}
+                    Absensi telah berhasil diverifikasi oleh {$security->name} (orang yg nge-scan)
+                    by Kada`;
+
+        $response = Http::asForm()->withHeaders(['Authorization' => config('blast.authorization_token')])->post('https://md.fonnte.com/api/send_message.php', [
+            'phone' => $candidate->country_code . $candidate->phone_number,
+            'type' => 'text',
+            'text' => $message,
+        ]);
+
+        return $this->showOne($data);
     }
 
 
