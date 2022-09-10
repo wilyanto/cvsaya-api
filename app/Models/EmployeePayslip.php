@@ -24,6 +24,10 @@ class EmployeePayslip extends Model
         'paid_at' => 'datetime'
     ];
 
+    protected $appends = [
+        'take_home_pay'
+    ];
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);

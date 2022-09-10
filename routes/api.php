@@ -135,7 +135,7 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        Route::group(['middleware' => ['permission:manage-employee']], function () {
+        // Route::group(['middleware' => ['permission:manage-employee']], function () {
             Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
             Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
             Route::apiResource('employee-resignations', EmployeeResignationController::class);
@@ -153,7 +153,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('employees/{employeeId}/recurring-shifts', 'getEmployeeRecurringShifts');
             });
             Route::apiResource('employee-shifts', EmployeeShiftController::class);
-        });
+        // });
 
         Route::group(['middleware' => ['permission:manage-candidate|manage-schedule']], function () {
             Route::prefix('admin')->group(function () {
