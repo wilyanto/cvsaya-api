@@ -88,6 +88,7 @@ Route::prefix('v1')->group(function () {
         Route::get('me/employee-bank-accounts', [EmployeeBankAccountController::class, 'showByEmployeeId']);
         Route::get('me/payslips', [PayslipController::class, 'showPayslipByEmployeeMobile']);
         Route::get('me/payslips/{id}', [PayslipController::class, 'show']);
+        Route::apiResource('employee-bank-accounts', EmployeeBankAccountController::class);
 
         Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
         Route::apiResource('crm-credentials', CRMCredentialController::class, ['only' => ['index', 'show', 'store', 'update']]);
@@ -141,7 +142,6 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
             Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
             Route::apiResource('employee-resignations', EmployeeResignationController::class);
-            Route::apiResource('employee-bank-accounts', EmployeeBankAccountController::class);
             Route::apiResource('employee-payrolls', PayrollController::class);
             Route::apiResource('employee-ad-hocs', EmployeeAdHocController::class);
             Route::apiResource('company-salary-types', CompanySalaryTypeController::class);
