@@ -39,12 +39,12 @@ class LeavePermissionController extends Controller
     public function index(Request $request, $companyId)
     {
         // date range?
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        // $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
         $company = Company::where('id', $companyId)->firstOrFail();
-        $employee = Employee::where('candidate_id', $candidate->id)
-            ->whereHas('company', function ($query) use ($company) {
-                $query->where('company_id', $company->id);
-            })->firstOrFail();
+        // $employee = Employee::where('candidate_id', $candidate->id)
+        //     ->whereHas('company', function ($query) use ($company) {
+        //         $query->where('company_id', $company->id);
+        //     })->firstOrFail();
 
         // check if employee have perms or not
         // if ($employee) {
