@@ -4,16 +4,10 @@ namespace App\Services;
 
 use App\Enums\EmployeeType;
 use App\Enums\PayslipStatusEnum;
-use App\Enums\SalaryTypeEnum;
 use App\Http\Common\Filter\FilterPayslipSearch;
-use App\Models\Candidate;
 use App\Models\Company;
-use App\Models\Employee;
-use App\Models\EmployeeAdHoc;
 use App\Models\EmployeePayslip;
 use App\Models\EmployeePayslipAdhoc;
-use App\Models\EmployeePayslipAllowance;
-use App\Models\EmployeePayslipDeduction;
 use App\Models\EmployeePayslipDetail;
 use App\Models\PayrollPeriod;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +27,7 @@ class PayslipService
     {
         $employeePayslip = QueryBuilder::for(EmployeePayslip::class)
             ->allowedIncludes([
-                'employee',
+                'employee.employeeSalaryTypes.companySalaryType.salaryType',
                 'payrollPeriod',
                 'payslipDetails.companySalaryType.salaryType',
                 'payslipAdHocs.companySalaryType.salaryType'
@@ -53,7 +47,7 @@ class PayslipService
         $query = EmployeePayslip::where('id', $id);
         $employeePayslip = QueryBuilder::for($query)
             ->allowedIncludes([
-                'employee',
+                'employee.employeeSalaryTypes.companySalaryType.salaryType',
                 'payrollPeriod',
                 'payslipDetails.companySalaryType.salaryType',
                 'payslipAdHocs.companySalaryType.salaryType'
@@ -68,7 +62,7 @@ class PayslipService
         $query = EmployeePayslip::where('employee_id', $employeeId);
         $employeePayslips = QueryBuilder::for($query)
             ->allowedIncludes([
-                'employee',
+                'employee.employeeSalaryTypes.companySalaryType.salaryType',
                 'payrollPeriod',
                 'payslipDetails.companySalaryType.salaryType',
                 'payslipAdHocs.companySalaryType.salaryType'
@@ -85,7 +79,7 @@ class PayslipService
         $query = EmployeePayslip::where('employee_id', $employeeId);
         $employeePayslips = QueryBuilder::for($query)
             ->allowedIncludes([
-                'employee',
+                'employee.employeeSalaryTypes.companySalaryType.salaryType',
                 'payrollPeriod',
                 'payslipDetails.companySalaryType.salaryType',
                 'payslipAdHocs.companySalaryType.salaryType'
