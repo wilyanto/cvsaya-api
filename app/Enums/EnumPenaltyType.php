@@ -12,9 +12,12 @@ use Spatie\Enum\Enum;
 
 class EnumPenaltyType extends Enum
 {
-    const MAP_VALUE = [
-        'clockIn' => 'clock_in',
-        'clockOut' => 'clock_out',
-        'breakTime' => 'break_time',
-    ];
+    protected static function values(): array
+    {
+        return [
+            'clockIn' => 'clock_in',
+            'clockOut' => 'clock_out',
+            'breakTime' => 'break_time',
+        ];
+    }
 }

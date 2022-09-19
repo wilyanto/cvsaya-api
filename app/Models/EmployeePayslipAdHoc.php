@@ -18,6 +18,10 @@ class EmployeePayslipAdHoc extends Model
         'note'
     ];
 
+    protected $casts = [
+        'amount' => 'integer',
+    ];
+
     public function payslip()
     {
         return $this->belongsTo(Payslip::class);

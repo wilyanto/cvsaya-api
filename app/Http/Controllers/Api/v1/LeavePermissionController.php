@@ -11,6 +11,7 @@ use App\Traits\ApiResponser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Enums\LeavePermissionStatusType;
+use App\Http\Common\Filter\FilterDateRange;
 use App\Http\Common\Filter\FilterLeavePermissionEmployeeNameSearch;
 use App\Http\Common\Filter\FilterLeavePermissionOccasion;
 use App\Http\Common\Filter\FilterLeavePermissionStatus;
@@ -31,50 +32,20 @@ class LeavePermissionController extends Controller
 {
     use ApiResponser;
 
-    private $employee;
-    private $company;
-
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $companyId)
     {
         // date range?
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $company = Company::where('id', $request->company_id)->firstOrFail();
-        $employee = Employee::where('candidate_id', $candidate->id)
-            ->whereHas('company', function ($query) use ($company) {
-                $query->where('companies.id', $company->id);
-            })->firstOrFail();
-
-        $leavePermissions = QueryBuilder::for(LeavePermission::class)
-            ->allowedIncludes(['occasion', 'documents'])
-            ->allowedFilters([
-                AllowedFilter::exact('status'),
-                AllowedFilter::custom('occasion', new FilterLeavePermissionOccasion)
-            ])
-            ->where('employee_id', $employee->id)
-            ->paginate($request->input('page_size', 10));
-
-        return $this->showPaginate('leave_permissions', collect(LeavePermissionResource::collection($leavePermissions)), collect($leavePermissions));
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function indexForCompany(Request $request, $companyId)
-    {
-        // date range?
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
+        // $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
         $company = Company::where('id', $companyId)->firstOrFail();
-        $employee = Employee::where('candidate_id', $candidate->id)
-            ->whereHas('company', function ($query) use ($company) {
-                $query->where('company_id', $company->id);
-            })->firstOrFail();
+        // $employee = Employee::where('candidate_id', $candidate->id)
+        //     ->whereHas('company', function ($query) use ($company) {
+        //         $query->where('company_id', $company->id);
+        //     })->firstOrFail();
 
         // check if employee have perms or not
         // if ($employee) {
@@ -85,11 +56,14 @@ class LeavePermissionController extends Controller
             ->allowedIncludes(['occasion', 'documents'])
             ->allowedFilters([
                 AllowedFilter::exact('status'),
+                AllowedFilter::exact('occasion_id'),
+                AllowedFilter::custom('date-between', new FilterDateRange),
                 AllowedFilter::custom('name', new FilterLeavePermissionEmployeeNameSearch),
             ])
             ->whereHas('company', function ($query) use ($company) {
                 $query->where('companies.id', $company->id);
             })
+            ->latest()
             ->paginate($request->input('page_size', 10));
 
         return $this->showPaginate('leave_permissions', collect(LeavePermissionResource::collection($leavePermissions)), collect($leavePermissions));
@@ -101,21 +75,10 @@ class LeavePermissionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($companyId, $id)
     {
-        $leavePermission = LeavePermission::findOrFail($id);
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
-        // handle multiple company
-        $this->company = $this->employee->company;
-
-        $company = $this->company;
         $leavePermission = QueryBuilder::for(LeavePermission::class)
             ->allowedIncludes(['occasion', 'documents'])
-            ->where('employee_id', $this->employee->id)
-            ->whereHas('company', function ($query) use ($company) {
-                $query->where('company_id', $company->id);
-            })
             ->findOrFail($id);
 
         return $this->showOne(new LeavePermissionResource($leavePermission));
@@ -129,21 +92,13 @@ class LeavePermissionController extends Controller
      */
     public function store(LeavePermissionStoreRequest $request)
     {
-        $company = Company::where('id', $request->company_id)->firstOrFail();
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $employee = Employee::where('candidate_id', $candidate->id)
-            ->whereHas('company', function ($query) use ($company) {
-                $query->where('companies.id', $company->id);
-            })->firstOrFail();
+        $employee = Employee::findOrFail($request->employee_id);
 
         $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($request->occasion_id);
-        if ($company->id != $leavePermissionOccasion->company_id) {
-            return $this->errorResponse("Leave Permission Not Allowed", 422, 42200);
-        }
 
         $startDate = Carbon::parse($request->started_at);
 
-        if ($startDate->diff(now())->days <= $leavePermissionOccasion->max_day) {
+        if (($startDate->diffInDays(now()) + 1) < $leavePermissionOccasion->max_day) {
             return $this->errorResponse("You need to ask for permissions sooner", 422, 42201);
         }
 
@@ -196,14 +151,9 @@ class LeavePermissionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(LeavePermissionUpdateRequest $request, $leavePermissionId)
+    public function update(LeavePermissionUpdateRequest $request, $companyId, $leavePermissionId)
     {
-        $company = Company::where('id', $request->company_id)->firstOrFail();
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $employee = Employee::where('candidate_id', $candidate->id)
-            ->whereHas('company', function ($query) use ($company) {
-                $query->where('companies.id', $company->id);
-            })->firstOrFail();
+        $employee = Employee::findOrFail($request->employee_id);
 
         $leavePermission = LeavePermission::findOrFail($leavePermissionId);
         if ($employee->id != $leavePermission->employee_id) {
@@ -220,8 +170,8 @@ class LeavePermissionController extends Controller
         $leavePermissionOccasion = LeavePermissionOccasion::findOrFail($request->occasion_id);
         $startDate = Carbon::parse($request->started_at);
 
-        if ($startDate->diff(now())->days <= $leavePermissionOccasion->max_day) {
-            return $this->errorResponse("Cannot request leave permissions", 422, 42200);
+        if (($startDate->diffInDays(now()) + 1) < $leavePermissionOccasion->max_day) {
+            return $this->errorResponse("You need to ask for permissions sooner", 422, 42201);
         }
 
         $documentIds = $request->document_ids;
@@ -287,37 +237,17 @@ class LeavePermissionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($companyId, $id)
     {
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $this->employee = Employee::where('candidate_id', $candidate->id)->firstOrFail();
-        // handle multiple company
-        $this->company = $this->employee->company;
-
         $leavePermission = LeavePermission::findOrFail($id);
-        if ($leavePermission->employee_id != $this->employee->id) {
-            return $this->errorResponse("You're not allowed to delete", 403, 40300);
-        }
         $leavePermission->delete();
 
         return $this->showOne(null);
     }
 
     // admin only
-    public function updateLeavePermissionStatus(Request $request, $leavePermissionId)
+    public function updateLeavePermissionStatus(Request $request, $companyId, $leavePermissionId)
     {
-        $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
-        $company = Company::where('id', $request->company_id)->firstOrFail();
-        $employee = Employee::where('candidate_id', $candidate->id)
-            ->whereHas('company', function ($query) use ($company) {
-                $query->where('companies.id', $company->id);
-            })->firstOrFail();
-
-        // check if employee is allowed to change or not
-        // if ($employee) {
-        //     return $this->errorResponse("Not allowed to change !", 403, 40300);
-        // }
-
         $status = $request->status;
         $leavePermission = LeavePermission::findOrFail($leavePermissionId);
         if (
@@ -329,5 +259,29 @@ class LeavePermissionController extends Controller
         $leavePermission->update(['status' => $status, 'answered_at' => now()]);
 
         return $this->showOne(new LeavePermissionResource($leavePermission->load('occasion')));
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexForEmployee(Request $request)
+    {
+        // date range?
+        $request->validate(['employee_id' => 'required|exists:employees,id']);
+        $employee = Employee::findOrFail($request->employee_id);
+
+        $leavePermissions = QueryBuilder::for(LeavePermission::class)
+            ->allowedIncludes(['occasion', 'documents'])
+            ->allowedFilters([
+                AllowedFilter::exact('status'),
+                AllowedFilter::custom('occasion', new FilterLeavePermissionOccasion)
+            ])
+            ->where('employee_id', $employee->id)
+            ->latest()
+            ->paginate($request->input('page_size', 10));
+
+        return $this->showPaginate('leave_permissions', collect(LeavePermissionResource::collection($leavePermissions)), collect($leavePermissions));
     }
 }

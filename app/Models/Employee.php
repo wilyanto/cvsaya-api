@@ -10,12 +10,12 @@ use Carbon\Carbon;
 use DateInterval;
 use DateTimeZone;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use OwenIt\Auditing\Contracts\Auditable;
 use App\Enums\AttendanceType;
 use App\Enums\LeavePermissionStatusType;
 use App\Enums\SalaryTypeEnum;
-use PDO;
 
 class Employee extends Authenticatable implements Auditable
 {
@@ -116,13 +116,15 @@ class Employee extends Authenticatable implements Auditable
 
     public function typeOfSalary()
     {
-        $employeeSalaryTypes = $this->salaryTypes;
+        $employeeSalaryTypes = $this->employeeSalaryTypes;
         if ($employeeSalaryTypes->isNotEmpty()) {
             return $employeeSalaryTypes->map(function ($employeeSalaryType) {
                 return [
-                    // 'salary_type_id' => $employeeSalaryType->salaryType->id,
-                    // 'name' => $employeeSalaryType->salaryType->name,
-                    // 'amount' => $employeeSalaryType->amount,
+                    'salary_type_id' => $employeeSalaryType->id,
+                    'company_salary_type_id' => $employeeSalaryType->company_salary_type_id,
+                    'name' => $employeeSalaryType->companySalaryType->salaryType->name,
+                    'amount' => $employeeSalaryType->amount,
+                    'amount_type' => $employeeSalaryType->amount_type,
                 ];
             });
         }
@@ -205,7 +207,7 @@ class Employee extends Authenticatable implements Auditable
 
     public function resignations()
     {
-        return $this->hasMany(EmployeeResignation::class, 'employee_id', 'id');
+        return $this->hasMany(EmployeeResignation::class, 'employee_id', 'id')->latest();
     }
 
     public function companySalaryTypes()
@@ -231,7 +233,12 @@ class Employee extends Authenticatable implements Auditable
     public function getOneTimeShifts($date)
     {
         $date = new Carbon($date);
-        return EmployeeOneTimeShift::whereDate('date', $date->toDateString())
+
+        return QueryBuilder::for(EmployeeOneTimeShift::class)
+            ->allowedIncludes([
+                'employee'
+            ])
+            ->whereDate('date', $date->toDateString())
             ->where('employee_id', $this->id)
             ->with('shift')
             ->get();
@@ -249,7 +256,11 @@ class Employee extends Authenticatable implements Auditable
     public function getShifts($date)
     {
         $date = new Carbon($date);
-        $shifts = EmployeeOneTimeShift::whereDate('date', $date->toDateString())
+        $shifts = QueryBuilder::for(EmployeeOneTimeShift::class)
+            ->allowedIncludes([
+                'employee'
+            ])
+            ->whereDate('date', $date->toDateString())
             ->where('employee_id', $this->id)
             ->with('shift')
             ->get();
@@ -258,7 +269,11 @@ class Employee extends Authenticatable implements Auditable
         }
 
         $getTodayDay = $date->dayOfWeek;
-        $shifts = EmployeeRecurringShift::where('day', $getTodayDay)
+        $shifts = QueryBuilder::for(EmployeeRecurringShift::class)
+            ->allowedIncludes([
+                'employee'
+            ])
+            ->where('day', $getTodayDay)
             ->where('employee_id', $this->id)
             ->with('shift')
             ->get();

@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PayrollPeriodResource extends JsonResource
+class EarlyClockOutAttendanceResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,12 +16,12 @@ class PayrollPeriodResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'started_at' => $this->started_at,
-            'ended_at' => $this->ended_at,
-            'company_id' => $this->company_id,
-            'working_day_count' => $this->working_day_count,
-            'payslip_count' => $this->payslips->count(),
+            'attendance_detail_id' => $this->attendance_detail_id,
+            'note' => $this->note,
+            'status' => $this->status,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'attendance_detail' => new AttendanceDetailResource($this->whenLoaded('attendanceDetail'))
         ];
     }
 }

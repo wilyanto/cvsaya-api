@@ -87,7 +87,8 @@ class EmployeeResignationService
                 $query->whereHas('candidate', function ($query) use ($keyword) {
                     $query->where('name', 'LIKE', '%' . $keyword . '%');
                 });
-            })->paginate($pageSize);
+            })->latest()
+            ->paginate($pageSize);
 
         foreach ($employeeResignations as $employeeResignation) {
             $employeeResignation = $employeeResignation->load(['employee']);

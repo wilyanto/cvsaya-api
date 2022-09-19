@@ -31,6 +31,7 @@ class AttendanceDetailResource extends JsonResource
             'updated_at' => $this->updated_at,
             'attendance_penalty' => $this->attendancePenalty,
             'outside_radius_note' => $this->outsideRadiusAttendance,
+            'early_clock_out' => $this->earlyClockOutAttendance,
         ];
     }
 }

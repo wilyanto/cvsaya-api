@@ -4,16 +4,10 @@ namespace App\Services;
 
 use App\Enums\EmployeeType;
 use App\Enums\PayslipStatusEnum;
-use App\Enums\SalaryTypeEnum;
 use App\Http\Common\Filter\FilterPayslipSearch;
-use App\Models\Candidate;
 use App\Models\Company;
-use App\Models\Employee;
-use App\Models\EmployeeAdHoc;
 use App\Models\EmployeePayslip;
 use App\Models\EmployeePayslipAdhoc;
-use App\Models\EmployeePayslipAllowance;
-use App\Models\EmployeePayslipDeduction;
 use App\Models\EmployeePayslipDetail;
 use App\Models\PayrollPeriod;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +27,7 @@ class PayslipService
     {
         $employeePayslip = QueryBuilder::for(EmployeePayslip::class)
             ->allowedIncludes([
-                'employee',
+                'employee.employeeSalaryTypes.companySalaryType.salaryType',
                 'payrollPeriod',
                 'payslipDetails.companySalaryType.salaryType',
                 'payslipAdHocs.companySalaryType.salaryType'
@@ -53,7 +47,7 @@ class PayslipService
         $query = EmployeePayslip::where('id', $id);
         $employeePayslip = QueryBuilder::for($query)
             ->allowedIncludes([
-                'employee',
+                'employee.employeeSalaryTypes.companySalaryType.salaryType',
                 'payrollPeriod',
                 'payslipDetails.companySalaryType.salaryType',
                 'payslipAdHocs.companySalaryType.salaryType'
@@ -68,12 +62,30 @@ class PayslipService
         $query = EmployeePayslip::where('employee_id', $employeeId);
         $employeePayslips = QueryBuilder::for($query)
             ->allowedIncludes([
-                'employee',
+                'employee.employeeSalaryTypes.companySalaryType.salaryType',
                 'payrollPeriod',
                 'payslipDetails.companySalaryType.salaryType',
                 'payslipAdHocs.companySalaryType.salaryType'
             ])
+            ->latest()
             ->get();
+
+        return $employeePayslips;
+    }
+
+
+    public function getByEmployeeIdPaginated($employeeId, $pageSize)
+    {
+        $query = EmployeePayslip::where('employee_id', $employeeId);
+        $employeePayslips = QueryBuilder::for($query)
+            ->allowedIncludes([
+                'employee.employeeSalaryTypes.companySalaryType.salaryType',
+                'payrollPeriod',
+                'payslipDetails.companySalaryType.salaryType',
+                'payslipAdHocs.companySalaryType.salaryType'
+            ])
+            ->latest()
+            ->paginate($pageSize);
 
         return $employeePayslips;
     }
@@ -228,7 +240,7 @@ class PayslipService
                     if ($allowanceEmployeeSalaryType->companySalaryType->salaryType->code == "A01") {
                         // TODO: codes
                         if ($isDailyEmployee) {
-                            $totalAmount = $allowanceEmployeeSalaryType->amount * $employeeWorkDayCount;
+                            $totalAmount = ($allowanceEmployeeSalaryType->amount / $actualWorkDayCount) * $employeeWorkDayCount;
                         } else if ($isMonthlyEmployeeAndAttendanceRequired) {
                             $totalAmount = ($allowanceEmployeeSalaryType->amount / $actualWorkDayCount) * $employeeWorkDayCount;
                         } else {
@@ -267,11 +279,11 @@ class PayslipService
                     ]);
                 }
 
-                $deductionEmployeeSalaryTypes = $employee->getDeductionSalaryTypes();
-                foreach ($deductionEmployeeSalaryTypes as $deductionEmployeeSalaryType) {
+                $deductionCompanySalaryTypes = $employee->company->getDeductionCompanySalaryTypes();
+                foreach ($deductionCompanySalaryTypes as $deductionCompanySalaryType) {
                     $totalAmount = 0;
                     // keterlambatan
-                    if ($deductionEmployeeSalaryType->companySalaryType->salaryType->code == "D01") {
+                    if ($deductionCompanySalaryType->salaryType->code == "D01") {
                         $attendances = $employee->getAttendances($startDate, $endDate);
                         foreach ($attendances as $attendance) {
                             $totalAmount = 0;
@@ -295,8 +307,8 @@ class PayslipService
                     }
                     EmployeePayslipDetail::create([
                         'employee_payslip_id' => $payslip->id,
-                        'company_salary_type_id' => $deductionEmployeeSalaryType->company_salary_type_id,
-                        'name' => $deductionEmployeeSalaryType->companySalaryType->salaryType->name,
+                        'company_salary_type_id' => $deductionCompanySalaryType->id,
+                        'name' => $deductionCompanySalaryType->salaryType->name,
                         'amount' => $totalAmount,
                         'note' => '',
                     ]);

@@ -2,10 +2,9 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Attendance;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ShiftResource extends JsonResource
+class PenaltyResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,12 +17,11 @@ class ShiftResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'clock_in' => $this->clock_in,
-            'clock_out' => $this->clock_out,
-            'start_break' => $this->start_break,
-            'end_break' => $this->end_break,
-            'break_duration' => $this->break_duration,
-            'company' => new CompanyResource($this->company),
+            'amount' => $this->amount,
+            'lateness' => $this->lateness,
+            'attendance_type' => $this->attendance_type,
+            'company_id' => $this->company_id,
+            'company' => new CompanyResource($this->whenLoaded('company'))
         ];
     }
 }

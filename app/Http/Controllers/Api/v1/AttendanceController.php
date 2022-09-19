@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\AttendancePenalty;
 use App\Enums\AttendanceType;
+use App\Enums\EarlyClockOutAttendanceStatusEnum;
+use App\Http\Resources\AttendanceDetailResource;
 use App\Http\Resources\AttendanceResource;
 use App\Models\AttendanceCompanyGroup;
 use App\Models\AttendanceDetail;
@@ -16,6 +18,7 @@ use App\Models\Candidate;
 use App\Models\Company;
 use App\Models\Document;
 use App\Models\DocumentType;
+use App\Models\EarlyClockOutAttendance;
 use App\Models\Employee;
 use App\Models\EmployeeOneTimeShift;
 use App\Models\EmployeeRecurringShift;
@@ -186,6 +189,7 @@ class AttendanceController extends Controller
             'latitude' => 'required',
             'attendance_qr_code_id' => 'required|exists:attendance_qr_codes,id',
             'outside_radius_note' => 'string',
+            'early_clock_out_note' => 'string',
             'penalty_note' => 'string',
             'shift_id' => 'required|exists:shifts,id'
         ]);
@@ -290,13 +294,6 @@ class AttendanceController extends Controller
             return $this->errorResponse('Already out of break duration', 422, 42207);
         }
 
-        if (
-            $attendanceType == AttendanceType::clockOut() &&
-            now()->lt(today()->addSeconds($shiftTime->secondsSinceMidnight()))
-        ) {
-            return $this->errorResponse('Not yet Clock Out Time !!!', 422, 42208);
-        }
-
         $distance = $this->vincentyGreatCircleDistance($attendanceQRcode->latitude, $attendanceQRcode->longitude, $request->latitude, $request->longitude);
         $isOutsideRadius = $this->isOutsideRadius($distance, $attendanceQRcode);
 
@@ -351,7 +348,22 @@ class AttendanceController extends Controller
             array_push($attendanceDetails, $attendanceDetail);
         }
 
-        return $this->showAll(collect($attendanceDetails));
+        $data = [
+            'candidate' => $candidate,
+            'attendance_details' => AttendanceDetailResource::collection($attendanceDetails)
+        ];
+
+        $message = `Halo {$candidate->name}
+                    Absensi telah berhasil diverifikasi oleh {$security->name} (orang yg nge-scan)
+                    by Kada`;
+
+        $response = Http::asForm()->withHeaders(['Authorization' => config('blast.authorization_token')])->post('https://md.fonnte.com/api/send_message.php', [
+            'phone' => $candidate->country_code . $candidate->phone_number,
+            'type' => 'text',
+            'text' => $message,
+        ]);
+
+        return $this->showOne($data);
     }
 
 
@@ -385,7 +397,7 @@ class AttendanceController extends Controller
                     now()->gt(today()->addSeconds($shiftTime->secondsSinceMidnight())))
             ) {
                 $verifiedAt = now();
-                $verifiedBy = auth()->id();
+                $verifiedBy = $employee->id;
             }
 
             $attendanceDetail = AttendanceDetail::create([
@@ -416,6 +428,18 @@ class AttendanceController extends Controller
             }
 
             Storage::disk('public')->put('images/attendance-details/' . $fileName, $img);
+
+            if (
+                $attendanceType == AttendanceType::clockOut() &&
+                now()->lt(today()->addSeconds($shiftTime->secondsSinceMidnight()))
+            ) {
+                // create early clock out attendance request
+                EarlyClockOutAttendance::create([
+                    'attendance_detail_id' => $attendanceDetail->id,
+                    'note' => $request->early_clock_out_note,
+                    'status' => EarlyClockOutAttendanceStatusEnum::pending()
+                ]);
+            }
 
             if ($penalty) {
                 $this->createPenalty($penalty, $attendanceDetail, $request->penalty_note);
@@ -556,7 +580,7 @@ class AttendanceController extends Controller
         $attendances = Attendance::whereIn('employee_id', $employeeIds)
             ->whereDate('date', '>=', $startDate)
             ->whereDate('date', '<=', $endDate)
-            ->orderBy('date')
+            ->orderBy('date', 'DESC')
             ->paginate($request->input('page_size', 10));
 
         return $this->showPaginate('attendances', collect(AttendanceResource::collection($attendances)), collect($attendances));

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreShiftRequest;
 use App\Http\Resources\AttendanceResource;
+use App\Http\Resources\ShiftResource;
 use App\Models\Attendance;
 use App\Models\Candidate;
 use App\Models\Employee;
@@ -13,7 +14,6 @@ use App\Models\EmployeeOneTimeShift;
 use App\Models\EmployeeRecurringShift;
 use App\Models\Position;
 use App\Models\Shift;
-use App\Models\ShiftPositions;
 use App\Traits\ApiResponser;
 
 class ShiftController extends Controller
@@ -106,64 +106,6 @@ class ShiftController extends Controller
         return $this->showAll($shifts);
     }
 
-    public function attachShiftPosition(Request $request, $id)
-    {
-        $rule = [
-            "shifts" => [
-                'array',
-                'required'
-            ]
-        ];
-
-        $request->validate($rule);
-        $shift = Shift::findOrFail($id);
-        foreach ($request->shifts as $newShift) {
-            $position = Position::findOrFail($newShift->position_id);
-            $exisitShift = ShiftPositions::where('position_id', $position->id)->whereIn('day', [$newShift->day])->get();
-            if (count($exisitShift)) {
-                return $this->errorResponse('founded antoher shift, please delete old one', 422, 42202);
-            }
-            $position = Position::findOrFail($newShift->position);
-            foreach ($newShift->days as $day) {
-
-                $data[] = [
-                    'shift_id' => $shift->id,
-                    'position_id' => $position->id,
-                    'day' => $day,
-                ];
-            }
-        }
-
-        ShiftPositions::insert($data);
-        return $this->showOne('Success');
-    }
-
-    public function attachShiftEmployee(Request $request, $id)
-    {
-        $rule = [
-            "shifts" => [
-                'array',
-                'required'
-            ]
-        ];
-
-        $request->validate($rule);
-        $shift = Shift::findOrFail($id);
-        foreach ($request->shifts as $newShift) {
-            $employee = Employee::findOrFail($newShift->position);
-            foreach ($newShift->days as $day) {
-                $data[] = [
-                    'shift_id' => $shift->id,
-                    'employee_id' => $employee->id,
-                    'day' => $day,
-                ];
-            }
-        }
-
-        ShiftPositions::insert($data);
-        return $this->showOne('Success');
-    }
-
     public function getShift(Request $request)
     {
         $request->validate([
@@ -189,18 +131,19 @@ class ShiftController extends Controller
         $employeeShifts = $employee->getShifts($startDate);
         $data = [];
         foreach ($employeeShifts as $employeeShift) {
-            $data[]['shift'] = $employeeShift->shift;
+            $data[] = $employeeShift->shift;
             $attendance = Attendance::where('employee_id', $employee->id)
                 ->where('shift_id', $employeeShift->shift->id)
                 ->whereDate('date', $startDate)
                 ->first();
             if ($attendance) {
-                end($data)['shift']['attendance'] = new AttendanceResource($attendance);
+                end($data)['attendance'] = new AttendanceResource($attendance);
             } else {
-                end($data)['shift']['attendance'] = null;
+                end($data)['attendance'] = null;
             }
         }
 
+        // return $this->showAll(collect(ShiftResource::collection($data)));
         return $this->showAll(collect($data));
     }
 }

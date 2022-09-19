@@ -18,6 +18,10 @@ class EmployeeAdHoc extends Model
         'note'
     ];
 
+    protected $casts = [
+        'amount' => 'integer',
+    ];
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);

@@ -77,4 +77,13 @@ class EmployeeResignationController extends Controller
 
         return $this->showAll(collect(EmployeeResignationResource::collection($employeeResignations)));
     }
+
+    public function showResignationsByEmployeeMobile(Request $request)
+    {
+        $request->validate(['employee_id' => 'required|exists:employees,id']);
+        $employeeId = $request->employee_id;
+        $employeeResignations = $this->employeeResignationService->showResignationsByEmployee($employeeId);
+
+        return $this->showAll(collect(EmployeeResignationResource::collection($employeeResignations)));
+    }
 }

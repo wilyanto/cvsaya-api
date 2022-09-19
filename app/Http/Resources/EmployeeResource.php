@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\EmployeeSalaryType;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class EmployeeResource extends JsonResource
@@ -25,7 +26,8 @@ class EmployeeResource extends JsonResource
             'position' => $this->position,
             'candidate' => $this->candidate,
             'company' => $this->company,
-            'bank_account' => $this->bankAccount
+            'bank_account' => $this->bankAccount,
+            'employee_salary_types' => EmployeeSalaryTypeResource::collection($this->whenLoaded('employeeSalaryTypes'))
         ];
     }
 }
