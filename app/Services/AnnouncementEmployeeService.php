@@ -35,10 +35,12 @@ class AnnouncementEmployeeService
 
     public function getUnreadAnnouncementByEmployeeId($employeeId)
     {
-        $announcementEmployee = AnnouncementEmployee::where('employee_id', $employeeId)
+        $announcementEmployee = QueryBuilder::for(AnnouncementEmployee::class)
+            ->allowedIncludes(['announcement'])
+            ->where('employee_id', $employeeId)
             ->where('status', AnnouncementEmployeeStatusEnum::unread())
             ->oldest()
-            ->first();
+            ->firstOrFail();
 
         return $announcementEmployee;
     }

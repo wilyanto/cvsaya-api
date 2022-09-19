@@ -86,7 +86,6 @@ Route::prefix('v1')->group(function () {
         Route::put('me/update-name', [CandidateController::class, 'updateCandidateName']);
         Route::post('me/update-profile-picture', [CandidateController::class, 'updateProfilePicture']);
         Route::post('announcements/{announcementId}/announcement-employees-batch', [AnnouncementEmployeeController::class, 'storeBatch']);
-        Route::get('announcements/{announcementId}/get-announcement-employees', [AnnouncementEmployeeController::class, 'showByEmployeeId']);
         Route::put('announcements/{announcementId}/announcement-employees/{id}/update-announcement-employees-note', [AnnouncementEmployeeController::class, 'updateNote']);
         Route::put('announcements/{announcementId}/announcement-employees/{id}/update-announcement-employees-status', [AnnouncementEmployeeController::class, 'updateStatus']);
         Route::get('me/resignations', [EmployeeResignationController::class, 'showResignationsByEmployeeMobile']);
@@ -94,6 +93,7 @@ Route::prefix('v1')->group(function () {
         Route::get('me/employee-bank-accounts', [EmployeeBankAccountController::class, 'showByEmployeeId']);
         Route::get('me/payslips', [PayslipController::class, 'showPayslipByEmployeeMobile']);
         Route::get('me/payslips/{id}', [PayslipController::class, 'show']);
+        Route::get('me/announcements', [AnnouncementEmployeeController::class, 'showByEmployeeId']);
         Route::apiResource('employee-bank-accounts', EmployeeBankAccountController::class);
 
         Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
