@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\v1\AnnouncementController;
+use App\Http\Controllers\Api\v1\AnnouncementEmployeeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\CvProfileDetailController;
@@ -83,11 +85,15 @@ Route::prefix('v1')->group(function () {
         Route::get('me/attendance-schedule', [EmployeeShiftController::class, 'getShift']);
         Route::put('me/update-name', [CandidateController::class, 'updateCandidateName']);
         Route::post('me/update-profile-picture', [CandidateController::class, 'updateProfilePicture']);
+        Route::post('announcements/{announcementId}/announcement-employees-batch', [AnnouncementEmployeeController::class, 'storeBatch']);
+        Route::put('announcements/{announcementId}/announcement-employees/{id}/update-announcement-employees-note', [AnnouncementEmployeeController::class, 'updateNote']);
+        Route::put('announcements/{announcementId}/announcement-employees/{id}/update-announcement-employees-status', [AnnouncementEmployeeController::class, 'updateStatus']);
         Route::get('me/resignations', [EmployeeResignationController::class, 'showResignationsByEmployeeMobile']);
         Route::get('me/leave-permissions', [LeavePermissionController::class, 'indexForEmployee']);
         Route::get('me/employee-bank-accounts', [EmployeeBankAccountController::class, 'showByEmployeeId']);
         Route::get('me/payslips', [PayslipController::class, 'showPayslipByEmployeeMobile']);
         Route::get('me/payslips/{id}', [PayslipController::class, 'show']);
+        Route::get('me/announcements', [AnnouncementEmployeeController::class, 'showByEmployeeId']);
         Route::apiResource('employee-bank-accounts', EmployeeBankAccountController::class);
 
         Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
@@ -96,6 +102,8 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('blast-types', BlastTypeController::class);
         Route::apiResource('quota-types', QuotaTypeController::class);
         Route::apiResource('payroll-periods', PayrollPeriodController::class);
+        Route::apiResource('announcements', AnnouncementController::class);
+        Route::apiResource('announcements/{announcementId}/announcement-employees', AnnouncementEmployeeController::class);
 
         Route::prefix('companies')->group(function () {
             Route::get('/{id}/resignations', [EmployeeResignationController::class, 'showResignationsByCompany']);
@@ -139,22 +147,22 @@ Route::prefix('v1')->group(function () {
         });
 
         // Route::group(['middleware' => ['permission:manage-employee']], function () {
-            Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
-            Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
-            Route::apiResource('employee-resignations', EmployeeResignationController::class);
-            Route::apiResource('employee-payrolls', PayrollController::class);
-            Route::apiResource('employee-ad-hocs', EmployeeAdHocController::class);
-            Route::apiResource('company-salary-types', CompanySalaryTypeController::class);
-            Route::apiResource('employee-payslips/{payslipId}/ad-hoc', EmployeePayslipAdHocController::class);
-            Route::apiResource('employee-payslips', PayslipController::class);
-            Route::patch('employee-payslips/{id}/generate', [PayslipController::class, 'generatePayslip']);
-            Route::patch('employee-payslips/{id}/pay', [PayslipController::class, 'payPayslip']);
-            Route::patch('employee-payslips/{id}/generate-and-pay', [PayslipController::class, 'generateAndPayPayslip']);
-            Route::patch('employee-resignations/{id}/status', [EmployeeResignationController::class, 'updateEmployeeResignationStatus']);
-            Route::controller(EmployeeRecurringShiftController::class)->group(function () {
-                Route::get('employees/{employeeId}/recurring-shifts', 'getEmployeeRecurringShifts');
-            });
-            Route::apiResource('employee-shifts', EmployeeShiftController::class);
+        Route::apiResource('employee-one-time-shifts', EmployeeOneTimeShiftController::class);
+        Route::apiResource('employee-recurring-shifts', EmployeeRecurringShiftController::class);
+        Route::apiResource('employee-resignations', EmployeeResignationController::class);
+        Route::apiResource('employee-payrolls', PayrollController::class);
+        Route::apiResource('employee-ad-hocs', EmployeeAdHocController::class);
+        Route::apiResource('company-salary-types', CompanySalaryTypeController::class);
+        Route::apiResource('employee-payslips/{payslipId}/ad-hoc', EmployeePayslipAdHocController::class);
+        Route::apiResource('employee-payslips', PayslipController::class);
+        Route::patch('employee-payslips/{id}/generate', [PayslipController::class, 'generatePayslip']);
+        Route::patch('employee-payslips/{id}/pay', [PayslipController::class, 'payPayslip']);
+        Route::patch('employee-payslips/{id}/generate-and-pay', [PayslipController::class, 'generateAndPayPayslip']);
+        Route::patch('employee-resignations/{id}/status', [EmployeeResignationController::class, 'updateEmployeeResignationStatus']);
+        Route::controller(EmployeeRecurringShiftController::class)->group(function () {
+            Route::get('employees/{employeeId}/recurring-shifts', 'getEmployeeRecurringShifts');
+        });
+        Route::apiResource('employee-shifts', EmployeeShiftController::class);
         // });
 
         Route::group(['middleware' => ['permission:manage-candidate|manage-schedule']], function () {
