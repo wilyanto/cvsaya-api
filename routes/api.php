@@ -85,9 +85,6 @@ Route::prefix('v1')->group(function () {
         Route::get('me/attendance-schedule', [EmployeeShiftController::class, 'getShift']);
         Route::put('me/update-name', [CandidateController::class, 'updateCandidateName']);
         Route::post('me/update-profile-picture', [CandidateController::class, 'updateProfilePicture']);
-        Route::post('announcements/{announcementId}/announcement-employees-batch', [AnnouncementEmployeeController::class, 'storeBatch']);
-        Route::put('announcements/{announcementId}/announcement-employees/{id}/update-announcement-employees-note', [AnnouncementEmployeeController::class, 'updateNote']);
-        Route::put('announcements/{announcementId}/announcement-employees/{id}/update-announcement-employees-status', [AnnouncementEmployeeController::class, 'updateStatus']);
         Route::get('me/resignations', [EmployeeResignationController::class, 'showResignationsByEmployeeMobile']);
         Route::get('me/leave-permissions', [LeavePermissionController::class, 'indexForEmployee']);
         Route::get('me/employee-bank-accounts', [EmployeeBankAccountController::class, 'showByEmployeeId']);
@@ -103,7 +100,8 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('quota-types', QuotaTypeController::class);
         Route::apiResource('payroll-periods', PayrollPeriodController::class);
         Route::apiResource('announcements', AnnouncementController::class);
-        Route::apiResource('announcements/{announcementId}/announcement-employees', AnnouncementEmployeeController::class);
+        Route::apiResource('announcement-employees', AnnouncementEmployeeController::class);
+        Route::post('announcement-employees/batch', [AnnouncementEmployeeController::class, 'storeBatch']);
 
         Route::prefix('companies')->group(function () {
             Route::get('/{id}/resignations', [EmployeeResignationController::class, 'showResignationsByCompany']);

@@ -24,7 +24,8 @@ class AnnouncementEmployeeStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'employee_id' => 'required',
+            'employee_id' => 'required|exists:employees,id',
+            'announcement_id' => 'required|exists:announcements,id'
         ];
     }
 }

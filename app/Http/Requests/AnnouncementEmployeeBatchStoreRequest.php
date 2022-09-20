@@ -25,7 +25,8 @@ class AnnouncementEmployeeBatchStoreRequest extends FormRequest
     {
         return [
             'employee_ids' => 'required',
-            'employee_ids.*' => 'required|exists:employees,id'
+            'employee_ids.*' => 'required|exists:employees,id',
+            'announcement_id' => 'required|exists:announcements,id'
         ];
     }
 }

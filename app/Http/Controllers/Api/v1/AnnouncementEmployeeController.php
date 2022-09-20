@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AnnouncementEmployeeBatchStoreRequest;
-use App\Http\Requests\AnnouncementEmployeeNoteUpdateRequest;
 use App\Http\Requests\AnnouncementEmployeeStoreRequest;
+use App\Http\Requests\AnnouncementEmployeeUpdateRequest;
 use App\Http\Resources\AnnouncementEmployeeResource;
 use App\Services\AnnouncementEmployeeService;
 use App\Traits\ApiResponser;
@@ -22,28 +22,28 @@ class AnnouncementEmployeeController extends Controller
         $this->announcementEmployeeService = $announcementEmployeeService;
     }
 
-    public function index($announcementId)
+    public function index()
     {
-        $announcementEmployees = $this->announcementEmployeeService->getAll($announcementId);
+        $announcementEmployees = $this->announcementEmployeeService->getAll();
 
         return $this->showAll(collect(AnnouncementEmployeeResource::collection($announcementEmployees)));
     }
 
-    public function store(AnnouncementEmployeeStoreRequest $request, $announcementId)
+    public function store(AnnouncementEmployeeStoreRequest $request)
     {
-        $announcementEmployee = $this->announcementEmployeeService->createAnnouncementEmployee($request, $announcementId);
+        $announcementEmployee = $this->announcementEmployeeService->createAnnouncementEmployee($request);
 
         return $this->showOne(new AnnouncementEmployeeResource($announcementEmployee));
     }
 
-    public function storeBatch(AnnouncementEmployeeBatchStoreRequest $request, $announcementId)
+    public function storeBatch(AnnouncementEmployeeBatchStoreRequest $request)
     {
-        $announcementEmployees = $this->announcementEmployeeService->createAnnouncementEmployees($request, $announcementId);
+        $announcementEmployees = $this->announcementEmployeeService->createAnnouncementEmployees($request);
 
         return $this->showAll(collect(AnnouncementEmployeeResource::collection($announcementEmployees)));
     }
 
-    public function show($announcementId, $id)
+    public function show($id)
     {
         $announcementEmployee = $this->announcementEmployeeService->getById($id);
 
@@ -52,27 +52,21 @@ class AnnouncementEmployeeController extends Controller
 
     public function showByEmployeeId(Request $request)
     {
+        $request->validate(['employee_id' => 'required|exists:employees,id']);
         $employeeId = $request->employee_id;
-        $announcementEmployee = $this->announcementEmployeeService->getUnreadAnnouncementByEmployeeId($employeeId);
+        $announcementEmployees = $this->announcementEmployeeService->getUnreadAnnouncementByEmployeeId($employeeId);
 
-        return $this->showOne(new AnnouncementEmployeeResource($announcementEmployee));
+        return $this->showAll(collect(AnnouncementEmployeeResource::collection($announcementEmployees)));
     }
 
-    public function updateNote(AnnouncementEmployeeNoteUpdateRequest $request, $announcementId, $id)
+    public function update(AnnouncementEmployeeUpdateRequest $request, $id)
     {
-        $announcementEmployee = $this->announcementEmployeeService->updateAnnouncementEmployeeNote($request, $id);
+        $announcementEmployee = $this->announcementEmployeeService->updateAnnouncementEmployee($request, $id);
 
         return $this->showOne(new AnnouncementEmployeeResource($announcementEmployee));
     }
 
-    public function updateStatus($announcementId, $id)
-    {
-        $announcementEmployee = $this->announcementEmployeeService->updateAnnouncementEmployeeStatus($id);
-
-        return $this->showOne(new AnnouncementEmployeeResource($announcementEmployee));
-    }
-
-    public function destroy($announcementId, $id)
+    public function destroy($id)
     {
         $message = $this->announcementEmployeeService->deleteById($id);
 

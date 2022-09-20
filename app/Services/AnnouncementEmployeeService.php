@@ -10,11 +10,11 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class AnnouncementEmployeeService
 {
-    public function getAll($announcementId)
+    public function getAll()
     {
         $announcementEmployees = QueryBuilder::for(AnnouncementEmployee::class)
-            ->where('announcement_id', $announcementId)
             ->allowedFilters([
+                AllowedFilter::exact('announcement_id'),
                 AllowedFilter::custom('search', new FilterAnnouncementEmployeeSearch),
             ])
             ->allowedIncludes(['announcement', 'employee'])
@@ -35,33 +35,35 @@ class AnnouncementEmployeeService
 
     public function getUnreadAnnouncementByEmployeeId($employeeId)
     {
-        $announcementEmployee = QueryBuilder::for(AnnouncementEmployee::class)
+        $announcementEmployees = QueryBuilder::for(AnnouncementEmployee::class)
             ->allowedIncludes(['announcement'])
+            ->allowedFilters([
+                AllowedFilter::exact('status')
+            ])
             ->where('employee_id', $employeeId)
-            ->where('status', AnnouncementEmployeeStatusEnum::unread())
             ->oldest()
-            ->firstOrFail();
+            ->get();
 
-        return $announcementEmployee;
+        return $announcementEmployees;
     }
 
-    public function createAnnouncementEmployee($data, $announcementId)
+    public function createAnnouncementEmployee($data)
     {
         $announcementEmployee = AnnouncementEmployee::create([
-            'announcement_id' => $announcementId,
+            'announcement_id' => $data->announcement_id,
             'employee_id' => $data->employee_id,
         ]);
 
         return $announcementEmployee;
     }
 
-    public function createAnnouncementEmployees($data, $announcementId)
+    public function createAnnouncementEmployees($data)
     {
         $employeeIds = $data->employee_ids;
         $announcementEmployees = [];
         foreach ($employeeIds as $employeeId) {
             $announcementEmployee = AnnouncementEmployee::create([
-                'announcement_id' => $announcementId,
+                'announcement_id' => $data->announcement_id,
                 'employee_id' => $employeeId,
             ]);
             array_push($announcementEmployees, $announcementEmployee);
@@ -74,28 +76,8 @@ class AnnouncementEmployeeService
     {
         $announcementEmployee = $this->getById($id);
         $announcementEmployee->update([
-            'announcement_id' => $data->announcement_id,
-            'employee_id' => $data->employee_id,
-        ]);
-
-        return $announcementEmployee;
-    }
-
-    public function updateAnnouncementEmployeeNote($data, $id)
-    {
-        $announcementEmployee = $this->getById($id);
-        $announcementEmployee->update([
             'note' => $data->note,
-            'replied_at' => now()
-        ]);
-
-        return $announcementEmployee;
-    }
-
-    public function updateAnnouncementEmployeeStatus($id)
-    {
-        $announcementEmployee = $this->getById($id);
-        $announcementEmployee->update([
+            'replied_at' => now(),
             'status' => AnnouncementEmployeeStatusEnum::read(),
             'seen_at' => now()
         ]);
