@@ -92,9 +92,10 @@ class EmployeeShiftController extends Controller
         $candidate = Candidate::where('user_id', auth()->id())->firstOrFail();
         $employee = Employee::where('candidate_id', $candidate->id)->whereHas('company', function ($query) use ($companyId) {
             $query->where('companies.id', $companyId);
-        })->first();
+        })->firstOrFail();
         $employeeOneTimeShifts = $employee->getOneTimeShifts($date);
         $employeeRecurringShifts = $employee->getRecurringShifts($date);
+
         return $this->showOne([
             'one_time_shifts' => OneTimeShiftResource::collection($employeeOneTimeShifts),
             'recurring_shifts' => RecurringShiftResource::collection($employeeRecurringShifts),
