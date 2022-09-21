@@ -31,7 +31,7 @@ class EmployeeShiftController extends Controller
         // TODO: can be improved using scopeWith
         $withRelationships = [
             'shift' => function ($query) {
-                $query->select('id', 'name', 'clock_in', 'clock_out', 'break_started_at', 'break_ended_at', 'break_duration');
+                $query->select('id', 'name', 'clock_in', 'clock_out', 'start_break', 'end_break', 'break_duration');
             },
             'employee' => function ($query) {
                 $query->select('id', 'candidate_id', 'position_id');

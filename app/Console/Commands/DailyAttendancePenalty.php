@@ -80,7 +80,7 @@ class DailyAttendancePenalty extends Command
             }
 
             if (!$attendance->startBreakAttendanceDetail) {
-                $shiftTime = new Carbon($shift->break_started_at);
+                $shiftTime = new Carbon($shift->start_break);
 
                 $penalty = Penalty::where('attendance_type', AttendanceType::breakTime())
                     ->where('company_id', $company->id)
@@ -110,7 +110,7 @@ class DailyAttendancePenalty extends Command
             }
 
             if (!$attendance->endBreakAttendanceDetail) {
-                $shiftTime = new Carbon($shift->break_ended_at);
+                $shiftTime = new Carbon($shift->end_break);
                 $penalty = Penalty::where('attendance_type', AttendanceType::breakTime())
                     ->where('company_id', $company->id)
                     ->whereNull('lateness')
