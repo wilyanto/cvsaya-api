@@ -234,11 +234,11 @@ class PayslipService
 
                 $allowanceEmployeeSalaryTypes = $employee->getAllowanceSalaryTypes();
                 foreach ($allowanceEmployeeSalaryTypes as $allowanceEmployeeSalaryType) {
-                    // gaji pokok
                     $totalAmount = 0;
-                    // dd($allowanceEmployeeSalaryType->toJson(JSON_PRETTY_PRINT));
+                    $note = '';
+
+                    // gaji pokok
                     if ($allowanceEmployeeSalaryType->companySalaryType->salaryType->code == "A01") {
-                        // TODO: codes
                         if ($isDailyEmployee) {
                             $totalAmount = ($allowanceEmployeeSalaryType->amount / $actualWorkDayCount) * $employeeWorkDayCount;
                         } else if ($isMonthlyEmployeeAndAttendanceRequired) {
@@ -246,6 +246,8 @@ class PayslipService
                         } else {
                             $totalAmount = $allowanceEmployeeSalaryType->amount;
                         }
+
+                        $note = `${employeeWorkDayCount} hari kerja`;
                     }
 
                     // tunjangan transport
@@ -275,7 +277,7 @@ class PayslipService
                         'company_salary_type_id' => $allowanceEmployeeSalaryType->company_salary_type_id,
                         'name' => $allowanceEmployeeSalaryType->companySalaryType->salaryType->name,
                         'amount' => $totalAmount,
-                        'note' => '',
+                        'note' => $note,
                     ]);
                 }
 
